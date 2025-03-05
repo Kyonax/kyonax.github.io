@@ -1,0 +1,53 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+.persistent-data {
+    .user-data {
+        display: block;
+        justify-content: center;
+
+        header {
+            display: grid;
+            gap: 0.25rem;
+        }
+
+        &__image {
+            border: 1px solid var(--clr-border-100);
+            left: 0px;
+            margin: auto;
+            padding: 0.25rem;
+            right: 0px;
+            width: min-content;
+
+        }
+    }
+
+    &__contact {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
+
+    .img-container {
+        display: none;
+        width: 180px; // Adjust to your desired width
+        height: 180px; // Adjust to your desired height
+        overflow: hidden;
+        position: relative; // Required for child absolute positioning
+        background-color: var(--clr-neutral-400);
+
+        picture {
+            position: absolute;
+            width: max-content;
+            height: 100%;
+            top: 0px;
+            right: 0px;
+        }
+
+        img {
+            height: 201%;
+            object-fit: cover; // Ensures the image covers the area
+        }
+    }
+}
