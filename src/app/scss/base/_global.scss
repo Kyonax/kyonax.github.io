@@ -53,7 +53,7 @@ body {
  * Defines the grid layout for the main container and individual blocks,
  * ensuring consistent spacing and alignment.
  */
-#main-container {
+#root {
     overflow: hidden; // Disable scrolling by default
     height: calc(var(--vh, 1vh) * 98);
     display: grid;
@@ -84,14 +84,14 @@ body {
  * Defines the layout for the left and main sections using grid with gaps
  * for better spacing.
  */
-#left-section,
-#right-section {
+#persistent-data,
+#content-data {
     position: relative;
     display: grid;
     height: calc(var(--vh, 1vh) * 98);
 }
 
-#left-section {
+#persistent-data {
     gap: 0.5rem;
 }
 
@@ -109,7 +109,7 @@ body {
         overflow: auto; // Enable scrolling for small devices
     }
 
-    #main-container {
+    #root {
         height: auto;
         overflow: auto;
         grid-template-columns: 1fr; // Stacks sections vertically
@@ -117,8 +117,8 @@ body {
         margin-bottom: 3rem;
     }
 
-    #left-section,
-    #right-section {
+    #persistent-data,
+    #content-data {
         height: auto;
         gap: 0.5rem;
     }
@@ -126,7 +126,7 @@ body {
 
 /* Medium Devices (Tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
-    #main-container {
+    #root {
         grid-template-columns: min-content auto; // Default layout
     }
 
@@ -134,8 +134,8 @@ body {
         padding: 0.36rem;
     }
 
-    #left-section,
-    #right-section {
+    #persistent-data,
+    #content-data {
         gap: 0.5rem;
     }
 }
@@ -146,7 +146,7 @@ body {
         overflow: hidden; // Disable scrolling on larger screens
     }
 
-    #main-container {
+    #root {
         grid-template-columns: min-content auto;
     }
 
@@ -161,7 +161,7 @@ body {
         overflow: hidden; // Disable scrolling on larger screens
     }
 
-    #main-container {
+    #root {
         grid-template-columns: min-content auto;
     }
 
