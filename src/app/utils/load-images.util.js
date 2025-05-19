@@ -78,10 +78,7 @@ const load_images = () => {
 
     // e.g. '/kyo-web-online/page.html' → ['kyo-web-online', 'page.html'] → base = '/kyo-web-online'
     const pathSegs = window.location.pathname.split('/').filter(Boolean);
-    const baseRoute = pathSegs.length > 1 ? `/${pathSegs[0]}` : '';
-
-    console.log(`Dev Environment Test: [pathSegs]`, pathSegs);
-    console.log(`Dev Environment Test: [baseRoute]`, baseRoute);
+    const baseRoute = pathSegs.length > 0 ? `/${pathSegs[0]}` : '';
 
     const webp_src_set = variants[image_id]
       ? variants[image_id]
