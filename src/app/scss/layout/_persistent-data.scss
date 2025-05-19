@@ -1,7 +1,7 @@
 @use "../abstracts/variables" as *;
 @use "../abstracts/mixins" as *;
 
-.persistent-data {
+#persistent-data {
     .user-data {
         display: block;
         justify-content: center;
@@ -19,7 +19,28 @@
             right: 0px;
             width: min-content;
 
+            .img-container {
+                width: 200px;
+                height: 200px;
+                overflow: hidden;
+                position: relative;
+                background-color: var(--clr-neutral-400);
+
+                picture {
+                    position: absolute;
+                    width: max-content;
+                    height: 100%;
+                    top: 0px;
+                    right: 0px;
+                }
+
+                img {
+                    height: 201%;
+                    object-fit: cover;
+                }
+            }
         }
+
     }
 
     &__contact {
@@ -27,27 +48,5 @@
         display: flex;
         justify-content: center;
         position: relative;
-    }
-
-    .img-container {
-        display: none;
-        width: 180px; // Adjust to your desired width
-        height: 180px; // Adjust to your desired height
-        overflow: hidden;
-        position: relative; // Required for child absolute positioning
-        background-color: var(--clr-neutral-400);
-
-        picture {
-            position: absolute;
-            width: max-content;
-            height: 100%;
-            top: 0px;
-            right: 0px;
-        }
-
-        img {
-            height: 201%;
-            object-fit: cover; // Ensures the image covers the area
-        }
     }
 }
