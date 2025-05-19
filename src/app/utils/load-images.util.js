@@ -76,14 +76,18 @@ const load_images = () => {
       return; // Skip main processing for variants
     }
 
+    // e.g. '/kyo-web-online/page.html' → ['kyo-web-online', 'page.html'] → base = '/kyo-web-online'
+    const pathSegs = window.location.pathname.split('/').filter(Boolean);
+    const baseRoute = pathSegs.length > 1 ? `/${pathSegs[0]}` : '';
+
     const webp_src_set = variants[image_id]
       ? variants[image_id]
           .map(
             (variant) =>
-              `/assets/${variant.replace(/\.(png|jpe?g|gif|webp)$/, "")}.webp ${variant.match(/\d+/g)}w`,
+            `${baseRoute}/assets/${variant.replace(/\.(png|jpe?g|gif|webp)$/, "")}.webp ${variant.match(/\d+/g)}w`,
           )
           .join(", ")
-      : `/assets/${base_image_path}.webp`;
+      : `${baseRoute}/assets/${base_image_path}.webp`;
 
     const fallback_src = _images_context(image_path); // Fallback image path
 
