@@ -80,6 +80,9 @@ const load_images = () => {
     const pathSegs = window.location.pathname.split('/').filter(Boolean);
     const baseRoute = pathSegs.length > 1 ? `/${pathSegs[0]}` : '';
 
+    console.log(`Dev Environment Test: [pathSegs]`, pathSegs);
+    console.log(`Dev Environment Test: [baseRoute]`, baseRoute);
+
     const webp_src_set = variants[image_id]
       ? variants[image_id]
           .map(
