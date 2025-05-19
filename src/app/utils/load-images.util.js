@@ -78,7 +78,7 @@ const load_images = () => {
 
     // e.g. '/kyo-web-online/page.html' → ['kyo-web-online', 'page.html'] → base = '/kyo-web-online'
     const path_segments = window.location.pathname.split('/').filter(Boolean);
-    const base_route = paths_segments.length > 0 ? `/${path_segments[0]}` : '';
+    const base_route = path_segments.length > 0 ? `/${path_segments[0]}` : '';
 
     const webp_src_set = variants[image_id]
       ? variants[image_id]
