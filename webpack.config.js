@@ -143,7 +143,7 @@ module.exports = {
         use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
       },
       {
-        test: /\.(png|jpg|jpeg|gif)$/i,
+        test: /\.(png|jpg|jpeg|gif|pdf)$/i,
         type: "asset/resource",
         generator: {
           filename: "assets/[name][ext]",

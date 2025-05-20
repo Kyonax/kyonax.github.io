@@ -36,6 +36,15 @@ import "@styling/main.scss";
 import "@components/blast-image.component";
 import "@components/class-scheduler.component";
 
+import cv_en from './cv/cv_cristian_d_moreno_en.pdf';
+import cv_es from './cv/cv_cristian_d_moreno_es.pdf';
+
+const link_en = document.getElementById('download-en');
+const link_es = document.getElementById('download-es');
+
+link_en.href = cv_en;
+link_es.href = cv_es;
+
 import { load_images } from "@utils/load-images.util";
 
 load_images();
