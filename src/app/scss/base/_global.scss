@@ -66,6 +66,20 @@ body::-webkit-scrollbar {
   width: 8px;
 }
 
+// Hide scrollbar on mobile (up to 768px width)
+@media (max-width: 882px) {
+  * {
+    // For Firefox
+    scrollbar-width: none;
+
+    // For WebKit-based browsers (Chrome, Safari, Edge)
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+
 /**
  * Body Styles
  *
