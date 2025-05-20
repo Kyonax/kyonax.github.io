@@ -1,0 +1,25 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+#content-data {
+    .main-data {
+        &__title {
+            font-family: Geomanist;
+            font-weight: 700;
+            background-color: black;
+            height: max-content;
+            text-align: center;
+            line-height: 0;
+
+            h1 {
+                font-size: 12rem;
+            }
+
+            .hack-letter {
+                font-size: 15rem;
+                font-family: PPmodwest;
+                letter-spacing: -0.5rem;
+            }
+        }
+    }
+}
