@@ -45,13 +45,13 @@ module.exports = {
   // SEO and Social Media Metadata
   SEO: {
     description:
-      "Welcome to the universe of a Syndicate Sentinel—where freedom in cyberspace isn’t just a concept, it’s a damn way of life!", // Main description for SEO
+      "Kyonax, con +7 años de experiencia, crea sitios únicos y futuristas. Transforma tu idea en una experiencia digital impactante. ¡Da click ahora y lleva tu marca al siguiente nivel!", // Main description for SEO
     keywords: ["KYO-T", "kyo", "kyonax", "kyonax_on_tech", "kyo-wtf", "京"], // SEO keywords
-    ogTitle: "My name is Kyonax", // Open Graph title for social media
-    twitterTitle: "My name is Kyonax", // Twitter card title
+    ogTitle: "¡70% de descuento en todas las páginas web!", // Open Graph title for social media
+    twitterTitle: "¡70% de descuento en todas las páginas web!", // Twitter card title
     title: "I'm Kyo", // Website title
     websiteBanner: "assets/landscape_mountain-pink-sky.webp", // Website banner image
-    websiteUrl: "https://kyo.wtf", // Website URL
+    websiteUrl: "https://kyonax.github.io/kyo-web-online/", // Website URL
   },
 
   // Theme Settings
@@ -73,9 +73,9 @@ module.exports = {
       appShortName: "Kyo", // Short name of your app
       appDescription: "Cristian Moreno (Kyonax)", // Description of your app
       developerName: "Cristian Moreno", // Developer name
-      developerURL: "https://kyo.wtf", // Developer URL
+      developerURL: "https://kyonax.github.io/kyo-web-online/", // Developer URL
       dir: "auto",
-      url: "https://kyo.wtf/", // URL for your site
+      url: "https://kyonax.github.io/kyo-web-online/", // URL for your site
       display: "standalone", // How the app should be displayed
       orientation: "any", // Orientation of the icons
       start_url: "/?homescreen=1", // Start URL of the app
@@ -95,10 +95,10 @@ module.exports = {
   },
 
   // Application URL and Metadata
-  SITE_URL: "https://kyo.wtf", // Main URL of the website
+  SITE_URL: "https://kyonax.github.io/kyo-web-online/", // Main URL of the website
   SITE_TITLE: "I'm Kyo", // The site's title (from SEO object)
   APP_DESCRIPTION:
-    "Welcome to the universe of a Syndicate Sentinel—where freedom in cyberspace isn’t just a concept, it’s a damn way of life!", // The app description (from SEO object)
+    "Kyonax, con +7 años de experiencia, crea sitios únicos y futuristas. Transforma tu idea en una experiencia digital impactante. ¡Da click ahora y lleva tu marca al siguiente nivel!", // The app description (from SEO object)
 
   // Components Information
   CUSTOM_COMPONENT: {
