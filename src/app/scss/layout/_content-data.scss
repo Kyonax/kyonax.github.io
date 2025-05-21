@@ -5,7 +5,7 @@
     display: grid;
     position: absolute;
     top: -0.25rem;
-    width: 100%;
+    width: 95%;
     justify-items: end;
     padding: 0.5rem 0rem;
     background-color: black;
@@ -51,7 +51,7 @@
                 background: radial-gradient(
                     circle at center,
                     var(--clr-neutral-200) 0%,    // color inicial
-                    var(--clr-neutral-400) 100%    // color final
+                    var(--clr-neutral-500) 100%    // color final
                 );
                 background-clip: text;
                 -webkit-background-clip: text; /* para Safari/Chrome */
@@ -259,9 +259,7 @@
     }
 }
 
-
-@media (max-width: 505px) {
-
+@media (max-width: 477.98px) {
     .banner-ad {
         top: 52rem;
     }
@@ -287,6 +285,101 @@
                         h1 {
                             font-size: 3rem;
                         }
+                    }
+                }
+            }
+
+            .about-me {
+                margin-bottom: 3rem;
+
+                &__nick-title{
+                    h1 {
+                        font-size: calc(10vw + 6rem);
+                        margin-left: -23rem;
+                        padding-bottom: 7rem;
+                    }
+                }
+
+                &__description {
+                    p {
+                        font-size: 1.05rem;
+                    }
+                }
+            }
+
+            .experience {
+                grid-template-columns: 1fr;
+
+                &__container {
+                    height: 33rem;
+
+                    h4 {
+                        line-height: 1.05;
+                    }
+                }
+            }
+
+            .feature {
+                &__item {
+                    h1 {
+                        font-size: 1.5rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (min-width: 478px) and (max-width: 620px) {
+    .banner-ad {
+        top: 45rem;
+    }
+}
+
+@media (min-width: 478px) and (max-width: 505px) {
+    .banner-ad {
+        top: 52rem;
+    }
+
+    #content-data {
+        .main-data {
+            .minimal-introduction {
+                &__ascii-art {
+                    font-size: 0.39rem;
+                    margin-left: -26rem;
+                    margin-top: -30rem;
+                }
+
+                &__title {
+                    top: 9rem;
+
+                    .container-title {
+                        h1, p {
+                            padding-left: 1rem;
+                            padding-right: 1.5rem;
+                        }
+
+                        h1 {
+                            font-size: 3rem;
+                        }
+                    }
+                }
+            }
+
+            .about-me {
+                margin-bottom: 3rem;
+
+                &__nick-title{
+                    h1 {
+                        font-size: calc(10vw + 7rem);
+                        margin-left: -26rem;
+                        padding-bottom: 6rem;
+                    }
+                }
+
+                &__description {
+                    p {
+                        font-size: 1.05rem;
                     }
                 }
             }
@@ -337,7 +430,7 @@
                 grid-template-columns: 1fr;
 
                 &__container {
-                    height: 21rem;
+                    height: 23rem;
 
                     h4 {
                         line-height: 1.05;
