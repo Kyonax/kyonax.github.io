@@ -50,7 +50,7 @@ module.exports = {
     ogTitle: "¡70% de descuento en todas las páginas web!", // Open Graph title for social media
     twitterTitle: "¡70% de descuento en todas las páginas web!", // Twitter card title
     title: "I'm Kyo", // Website title
-    websiteBanner: "assets/ai_kyonax_landscape_background.webp", // Website banner image
+    websiteBanner: "assets/seo_banner.webp", // Website banner image
     websiteUrl: "https://kyonax.github.io/kyo-web-online/", // Website URL
   },
 
