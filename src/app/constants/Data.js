@@ -9,7 +9,7 @@
  *
  * @author Cristian Moreno (Kyonax)
  * @contact iamkyo@kyo.wtf
- * @date 2025-01-17
+ * @date 2025-05-27
  *
  * Code Guidelines :: @CCSv0.1
  * More details: https://code-guidelines.cybercodesyndicate.org
@@ -108,5 +108,11 @@ module.exports = {
     CLASS_SCHEDULER_COMPONENT: {
       name: "class-scheduler",
     },
+  },
+
+  // CV-BUTTONs Plugin Data
+  CV_BUTTON: {
+    EN_ID: "download-en",
+    ES_ID: "download-es",
   },
 };

@@ -33,18 +33,30 @@
  */
 import "@styling/main.scss";
 
-import "@components/blast-image.component";
-import "@components/class-scheduler.component";
+// Initialize all the Custom Components
+const comp_context = require.context("@components", false, /\.component\.js$/);
+comp_context.keys().forEach((component_path) => {
+  comp_context(component_path);
+});
 
-import cv_en from './cv/cv_cristian_d_moreno_en.pdf';
-import cv_es from './cv/cv_cristian_d_moreno_es.pdf';
-
-const link_en = document.getElementById('download-en');
-const link_es = document.getElementById('download-es');
-
-link_en.href = cv_en;
-link_es.href = cv_es;
-
+// Intitialize all the Utils and Core Methods
 import { load_images } from "@utils/load-images.util";
-
 load_images();
+
+// Initializing all the Plugins for the Web App
+const plugins_context = require.context("@plugins", true, /\.plugin\.js$/);
+plugins_context.keys().forEach((plugin_path) => {
+  const plugin_module = plugins_context(plugin_path);
+  const plugin_name = plugin_path
+    .split("/")
+    .slice(-2, -1)[0]
+    .replace(/-/g, "_")
+    .toUpperCase();
+
+  if (plugin_module?.default?.init) {
+    plugin_module.default.init();
+    console.log("ƛ :: PLUGIN INITIALIZED - " + plugin_name);
+  } else {
+    console.log("ƛ :: PLUGIN LOAD FAILED - " + plugin_name);
+  }
+});
