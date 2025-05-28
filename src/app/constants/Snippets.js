@@ -77,7 +77,14 @@ const TRANSLATIONS = {
                 }
             },
             "widget": {
-                "discount": `<span>70%</span> DISCOUNT ON ALL WEB PAGES`
+                "discount": `<span>70%</span> DISCOUNT ON ALL WEB PAGES`,
+                "trans-lang": {
+                    "current": `EN`,
+                    "en": `ENGLISH`,
+                    "es": `ESPAÑOL`,
+                    "ja": `日本語`,
+                    "pt": `PORTUGUÊS`
+                }
             }
         }
     },
@@ -159,7 +166,14 @@ const TRANSLATIONS = {
                 }
             },
             "widget": {
-                "discount": `<span>70%</span> 割引 すべてのウェブページ対象`
+                "discount": `<span>70%</span> 割引 すべてのウェブページ対象`,
+                "trans-lang": {
+                    "current": `JA`,
+                    "en": `ENGLISH`,
+                    "es": `ESPAÑOL`,
+                    "ja": `日本語`,
+                    "pt": `PORTUGUÊS`
+                }
             }
         }
     },
@@ -241,7 +255,14 @@ const TRANSLATIONS = {
                 }
             },
             "widget": {
-                "discount": `DESCONTO DE <span>70%</span> EM TODAS AS PÁGINAS WEB`
+                "discount": `DESCONTO DE <span>70%</span> EM TODAS AS PÁGINAS WEB`,
+                "trans-lang": {
+                    "current": `PT`,
+                    "en": `ENGLISH`,
+                    "es": `ESPAÑOL`,
+                    "ja": `日本語`,
+                    "pt": `PORTUGUÊS`
+                }
             }
         }
     },
@@ -323,7 +344,14 @@ const TRANSLATIONS = {
                 }
             },
             "widget": {
-                "discount": `DESCUENTO DEL <span>70%</span> EN TODAS LAS PÁGINAS WEB`
+                "discount": `DESCUENTO DEL <span>70%</span> EN TODAS LAS PÁGINAS WEB`,
+                "trans-lang": {
+                    "current": `ES`,
+                    "en": `ENGLISH`,
+                    "es": `ESPAÑOL`,
+                    "ja": `日本語`,
+                    "pt": `PORTUGUÊS`
+                }
             }
         }
     }
