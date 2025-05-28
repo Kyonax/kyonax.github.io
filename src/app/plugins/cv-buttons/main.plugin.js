@@ -1,5 +1,5 @@
 /**
- * @file core-functionality.plugin.js - CV Buttons JS Functionality
+ * @file main.plugin.js - CV Buttons JS Functionality
  *
  * Imports and replace the href <a> tag parameter by the actual
  * CV files to be Downloaded on click.

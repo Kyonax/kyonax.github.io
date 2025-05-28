@@ -40,6 +40,7 @@
  * - `npm run dev`: This command starts the development server with hot-reloading and live-reloading capabilities for a smooth development experience.
  * - `npm run build-all`: Runs the full build process, which includes bundling the assets and generating favicons and manifests.
  */
+const TranslationWebpackPlugin = require('./translation-webpack-plugin');
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -279,6 +280,9 @@ module.exports = {
 
         return manifest;
       },
+    }),
+    new TranslationWebpackPlugin({
+      file: "index.html"
     }),
   ],
 
