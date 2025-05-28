@@ -21,7 +21,7 @@
 
         &__data {
             display: grid;
-            grid-template: auto;
+            grid-template-columns: auto;
             gap: 0rem;
             font-size: 1rem;
             margin-bottom: 1rem;
@@ -207,7 +207,6 @@
 
         .user-data {
             display: grid;
-            grid-template: auto 1fr;
             grid-template-columns: 1fr 1fr;
             grid-template-areas:
                 "header header"
