@@ -257,10 +257,11 @@
             }
         }
 
-        .feature {
+        .feature, .now {
             position: relative;
             font-family: Geomanist;
             width: 100%;
+            margin-bottom: 6rem;
 
             .global-titles {
                 top: -3rem;
