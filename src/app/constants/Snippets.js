@@ -58,8 +58,11 @@ const TRANSLATIONS = {
                 },
                 "feature": {
                     "label": `FΣATURΣD`,
-                    "ft-ccs": `<h1>CYBER CODE SYNDICATE <span>ΘN DΣVELΘPMΣNT</span></h1>`,
-                    "ft-emacs": `<h1>EMACS DARK THEME <span>ΘN DΣVELΘPMΣNT</span></h1>`
+                    "ft-ccs": `CYBER CODE SYNDICATE <span>ΘN DΣVELΘPMΣNT</span>`,
+                    "ft-emacs": `EMACS DARK THEME <span>ΘN DΣVELΘPMΣNT</span>`
+                },
+                "now": {
+                    "label": `NΘW`
                 },
                 "intro-title": `DIVΣ INT☻ A CRΣATIVE UNIVERSΣ ENGINEERΣD T☻ PROPΣL Y☻UR BR@ND TO THE NΣXT TIER ‣ LΣT'$ LEVEL UP`,
                 "scroll": `Everything within a scroll's reach ⬎`
@@ -147,8 +150,12 @@ const TRANSLATIONS = {
                 },
                 "feature": {
                     "label": `注目`,
-                    "ft-ccs": `<h1>サイバーコードシンジケート <span>開発中</span></h1>`,
-                    "ft-emacs": `<h1>EMACSダークテーマ <span>開発中</span></h1>`
+                    "ft-ccs": `CYBER CODE SYNDICATE <span>開発中</span>`,
+                    "ft-emacs": `EMACS DARK THEME <span>開発中</span>`
+                },
+                "now": {
+                    "label": `今
+`
                 },
                 "intro-title": `あなたのブランドを次のステージへ引き上げるクリエイティブな宇宙へ飛び込め ‣ レベルアップだ`,
                 "scroll": `スクロールで全てが手の届く距離に ⬎`
@@ -236,8 +243,11 @@ const TRANSLATIONS = {
                 },
                 "feature": {
                     "label": `DΣSTAQUES`,
-                    "ft-ccs": `<h1>CYBER CODE SYNDICATE <span>ΣM DΣSENVΘLVIMΣNTΘ</span></h1>`,
-                    "ft-emacs": `<h1>TEMA ESCURO EMACS <span>ΣM DΣSENVΘLVIMΣNTΘ</span></h1>`
+                    "ft-ccs": `CYBER CODE SYNDICATE <span>ΣM DΣSENVΘLVIMΣNTΘ</span>`,
+                    "ft-emacs": `EMACS DARK THEME <span>ΣM DΣSENVΘLVIMΣNTΘ</span>`
+                },
+                "now": {
+                    "label": `AGΘRA`
                 },
                 "intro-title": `MΣRGULHE ΣM UM UNIVERS☻ CRIATIV☻ PROJΣTADO P@RA ELΣVAR SUA MARCA A☻ PRÓXIMO NÍVΣL ‣ LΣT'$ LEVEL UP`,
                 "scroll": `Tudo ao alcance de um scroll ⬎`
@@ -325,8 +335,11 @@ const TRANSLATIONS = {
                 },
                 "feature": {
                     "label": `DΣSTACADΘS`,
-                    "ft-ccs": `<h1>CYBER CODE SYNDICATE <span>ΣN DΣSARRΘLLΘ</span></h1>`,
-                    "ft-emacs": `<h1>EMACS DARK THEME <span>ΣN DΣSARRΘLLΘ</span></h1>`
+                    "ft-ccs": `CYBER CODE SYNDICATE <span>ΣN DΣSARRΘLLΘ</span>`,
+                    "ft-emacs": `EMACS DARK THEME <span>ΣN DΣSARRΘLLΘ</span>`
+                },
+                "now": {
+                    "label": `AHΘRA`
                 },
                 "intro-title": `SUMÉRGΣTE EN UN UNIVΣRSO CREATIV☻ DISEÑAD☻ P@RA LLΣVAR TU M@RCA AL $IGUI3NTE NIVΣL ‣ LET'$ LEVEL UP`,
                 "scroll": `Todo al alcance de un scroll ⬎`
