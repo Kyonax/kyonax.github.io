@@ -12,8 +12,6 @@ const PROJECTS = {
         "name": `GITHUB COVER GENERATOR`,
         "url": `#on-going`,
         "deadlines": {
-            "repo creation": `May 30 23:00:06 2025`,
-            "website structure": `Jun 07 22:00:06 2025`
         }
     }
 }
