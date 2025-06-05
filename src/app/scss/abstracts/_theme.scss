@@ -80,6 +80,21 @@
     }
 }
 
+// SCSS file (e.g., main.scss or base/_global.scss)
+
+::selection {
+  background-color: var(--clr-primary-100);
+  color: var(--clr-neutral-500);
+  -webkit-text-stroke-color: var(--clr-neutral-500);
+}
+
+::-moz-selection {
+  background-color: var(--clr-primary-100);
+  color: var(--clr-neutral-500);
+  -webkit-text-stroke-color: var(--clr-neutral-500);
+}
+
+
 /**
  * Element Flare
  *

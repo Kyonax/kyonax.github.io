@@ -6,15 +6,12 @@ const MONTH_MAP = {
     Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
 };
 
-// Colombia time offset (UTC-5) in milliseconds
-const COLOMBIA_OFFSET = -5 * 60 * 60 * 1000;
-
 let timer = null;
 let project_data = {};
 let project_keys = [];
 
 /**
- * Parse Colombia time string to UTC timestamp
+ * Convert Bogotá time string to UTC timestamp using IANA zone
  * @param {string} ts - Time string (e.g. "May 31 10:00:00 2025")
  * @returns {number} UTC timestamp
  */
@@ -31,9 +28,40 @@ const _parse_colombia_time = ts => {
     const minutes = parseInt(time_parts[1], 10);
     const seconds = parseInt(time_parts[2], 10);
 
-    // Create date in Colombia time (UTC-5)
-    const date = new Date(Date.UTC(year, month, day, hours, minutes, seconds));
-    return date.getTime() + COLOMBIA_OFFSET;
+    // Treat as UTC first
+    const utc_guess = Date.UTC(year, month, day, hours, minutes, seconds);
+
+    // Get Bogotá's local time for that UTC time
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Bogota',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: false
+    });
+
+    const parts_local = formatter.formatToParts(new Date(utc_guess));
+    const date_parts = {};
+    for (const part of parts_local) {
+        if (part.type !== 'literal') {
+            date_parts[part.type] = parseInt(part.value, 10);
+        }
+    }
+
+    const local_as_utc = Date.UTC(
+        date_parts.year,
+        date_parts.month - 1,
+        date_parts.day,
+        date_parts.hour,
+        date_parts.minute,
+        date_parts.second
+    );
+
+    const offset_ms = utc_guess - local_as_utc;
+    return utc_guess + offset_ms;
 };
 
 /**

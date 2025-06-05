@@ -64,8 +64,8 @@ const TRANSLATIONS = {
                 "now": {
                     "label": `NΘW`
                 },
-                "intro-title": `DIVΣ INT☻ A CRΣATIVE UNIVERSΣ ENGINEERΣD T☻ PROPΣL Y☻UR BR@ND TO THE NΣXT TIER ‣ LΣT'$ LEVEL UP`,
-                "scroll": `Everything within a scroll's reach ⬎`
+                "intro-title": `I TURN IDEAS INTO FAST - FUNCTIONAL <span>WEBSITES</span>`,
+                "description": `Specialized in building fast, high-quality websites using clean, modular, scalable code and responsive UI components. Whether it’s for selling products or showcasing portfolios, I focus on frontend performance, accessibility, and real-world usability`
             },
             "persistent-data": {
                 "important-data": `IMPORTANT DATA`,
@@ -157,8 +157,8 @@ const TRANSLATIONS = {
                     "label": `今
 `
                 },
-                "intro-title": `あなたのブランドを次のステージへ引き上げるクリエイティブな宇宙へ飛び込め ‣ レベルアップだ`,
-                "scroll": `スクロールで全てが手の届く距離に ⬎`
+                "intro-title": `アイデアを高速かつ機能的な<span>ウェブサイトへ</span>`,
+                "description": `クリーンでモジュール化されたコードとレスポンシブなUIコンポーネントを使用し、高速かつ信頼性の高いウェブサイトを構築することを専門としています。商品販売やポートフォリオの紹介など、目的に応じてフロントエンドのパフォーマンス、アクセシビリティ、そして実用的なユーザビリティに重点を置いています`,
             },
             "persistent-data": {
                 "important-data": `重要データ`,
@@ -249,8 +249,8 @@ const TRANSLATIONS = {
                 "now": {
                     "label": `AGΘRA`
                 },
-                "intro-title": `MΣRGULHE ΣM UM UNIVERS☻ CRIATIV☻ PROJΣTADO P@RA ELΣVAR SUA MARCA A☻ PRÓXIMO NÍVΣL ‣ LΣT'$ LEVEL UP`,
-                "scroll": `Tudo ao alcance de um scroll ⬎`
+                "intro-title": `TRANSFORMO IDEIAS EM RAPIDOS E FUNCIONAIS <span>WEB SITES</span>`,
+                "description": `Especializado em criar sites rápidos e confiáveis usando código limpo, modular e componentes de interface responsivos. Seja para vender produtos ou apresentar portfólios, foco no desempenho do frontend, acessibilidade e usabilidade no mundo real.`,
             },
             "persistent-data": {
                 "important-data": `DADOS IMPORTANTES`,
@@ -341,8 +341,8 @@ const TRANSLATIONS = {
                 "now": {
                     "label": `AHΘRA`
                 },
-                "intro-title": `SUMÉRGΣTE EN UN UNIVΣRSO CREATIV☻ DISEÑAD☻ P@RA LLΣVAR TU M@RCA AL $IGUI3NTE NIVΣL ‣ LET'$ LEVEL UP`,
-                "scroll": `Todo al alcance de un scroll ⬎`
+                "intro-title": `TRANSFORMO IDEAS EN RAPIDOS Y FUNCIONALES <span>SITIOS WEB</span>`,
+                "description": `Especializado en desarrollar sitios web rápidos y confiables utilizando código limpio y modular junto con componentes UI responsivos. Ya sea para vender productos o mostrar portafolios, me enfoco en el rendimiento del frontend, la accesibilidad y la usabilidad práctica`,
             },
             "persistent-data": {
                 "important-data": `DATOS IMPORTANTES`,
