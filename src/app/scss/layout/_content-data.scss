@@ -21,11 +21,13 @@
         border: 3px solid var(--clr-neutral-100);
         color: var(--clr-neutral-500);
         background-color: var(--clr-neutral-100);
+        @include cyberpunk-glow(var(--clr-neutral-400), 1px, 9px, true);
 
         &.scrolled {
             border: 3px solid var(--clr-success-100);
             color: var(--clr-success-500);
             background-color: var(--clr-success-100);
+            @include cyberpunk-glow(var(--clr-success-400), 1px, 9px, true);
         }
     }
 }
