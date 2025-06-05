@@ -129,8 +129,6 @@
             <ul id="language-list" class="language-list hidden">
                 <li data-lang="en" trans="kyo-web.widget.trans-lang.en"></li>
                 <li data-lang="es" trans="kyo-web.widget.trans-lang.es"></li>
-                <li data-lang="ja" trans="kyo-web.widget.trans-lang.ja"></li>
-                <li data-lang="pt" trans="kyo-web.widget.trans-lang.pt"></li>
             </ul>
             <button id="language-toggle" trans="kyo-web.widget.trans-lang.current"></button>
         </div>
@@ -235,7 +233,7 @@
                         <div class="container-title">
                             <h1 trans="kyo-web.content-data.intro-title"></h1>
 
-                            <p trans="kyo-web.content-data.scroll"></p>
+                            <p trans="kyo-web.content-data.description"></p>
                         </div>
                     </div>
 
@@ -466,9 +464,9 @@
                     </code></pre>
 
                     <section class="about-me">
-                        <div class="about-me__nick-title">
-                            <h1 trans="kyo-web.content-data.about-me.title"></h1>
-                        </div>
+                        <!-- <div class="about-me__nick-title">
+                                                    <h1 trans="kyo-web.content-data.about-me.title"></h1>
+                                                </div> -->
                         <div class="about-me__description">
                             <p trans="kyo-web.content-data.about-me.description"></p>
                         </div>
@@ -571,6 +569,44 @@
             </div>
         </div>
     </div>
+
+    <script>
+        /**
+         * Applies 'scrolled' class to banner based on scroll position.
+         * Uses window scroll for mobile (≤ 882px), container scroll otherwise.
+         */
+
+        const banner_text = document.querySelector('.banner-ad h4');
+        const scroll_container = document.querySelector('.main-scroll-block');
+        const SCROLL_THRESHOLD = 300;
+        const MOBILE_BREAKPOINT = 882;
+
+        function handle_scroll_state(scroll_top) {
+            if (scroll_top > SCROLL_THRESHOLD) {
+                banner_text.classList.add('scrolled');
+            } else {
+                banner_text.classList.remove('scrolled');
+            }
+        }
+
+        function initialize_scroll_listener() {
+            if (!banner_text) return;
+
+            const is_mobile = window.innerWidth <= MOBILE_BREAKPOINT;
+
+            if (is_mobile) {
+                window.addEventListener('scroll', () => {
+                    handle_scroll_state(window.scrollY);
+                });
+            } else if (scroll_container) {
+                scroll_container.addEventListener('scroll', () => {
+                    handle_scroll_state(scroll_container.scrollTop);
+                });
+            }
+        }
+
+        initialize_scroll_listener();
+    </script>
 </body>
 
 </html>

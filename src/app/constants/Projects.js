@@ -1,6 +1,6 @@
 const PROJECTS = {
     "sofia-married": {
-        "name": `DIG. WEDDING INVITE`,
+        "name": `WEB WEDDING INVITE`,
         "url": `#on-going`,
         "deadlines": {
             "repo creation": `May 30 21:00:30 2025`,

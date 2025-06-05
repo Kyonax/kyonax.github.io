@@ -57,6 +57,10 @@
   background-color: #f1f1f1;
 }
 
+*, ::before, ::after {
+    box-sizing: border-box;
+}
+
 body, html {
   scrollbar-width: thin;
   scrollbar-color: #fff transparent;

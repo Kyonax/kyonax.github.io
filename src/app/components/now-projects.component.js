@@ -54,7 +54,7 @@ class NowProjectsComponent extends HTMLElement {
         style.textContent = `
     a {
       text-decoration: none;
-      color: inherit;
+      color: var(--clr-neutral-300);
       display: grid;
       grid-template-columns: max-content max-content max-content;
       gap: 1rem;
@@ -70,11 +70,16 @@ class NowProjectsComponent extends HTMLElement {
 
     span {
       font-size: 1rem;
-      color: var(--clr-neutral-300);
+      color: var(--clr-neutral-400);
     }
 
     a:hover {
+      color: var(--clr-neutral-100);
       background-color: var(--clr-border-100);
+
+      span {
+       color: var(--clr-neutral-300);
+      }
     }
 
     .deadline-label {
