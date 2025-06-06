@@ -67,6 +67,35 @@ const TRANSLATIONS = {
         "intro-title": `I TURN IDEAS INTO FAST & FUNCTIONAL <span>WEBSITES</span>`,
         description: `Specialized in building fast, high-quality websites using clean, modular, scalable code and responsive UI components. Whether it’s for selling products or showcasing portfolios, I focus on frontend performance, accessibility, and real-world usability`,
       },
+      footer: {
+        "main-profile": `<h1>GIMME A FOLLOW</h1>`,
+        "terms-brief": `
+    <p>
+      I may share the development process and final results of commissioned work on my social media, livestreams, and portfolio. This includes websites, apps, or any digital content created for you.
+      For full details, see <a href="#" target="_blank" rel="noopener">Terms & Conditions</a>
+    </p>
+    <p>
+      <strong>© 2025 Kyonax</strong> — All rights reserved on original work.
+    </p>
+  `,
+        "follow-tech": `
+    <div class="follow-section">
+      <p>Follow <strong>@kyonax_on_tech</strong></p>
+      <a href="https://instagram.com/kyonax_on_tech" target="_blank" rel="noopener">Instagram</a> |
+      <a href="https://facebook.com/kyonaxtech" target="_blank" rel="noopener">Facebook</a> |
+      <a href="https://x.com/kyonax_on_tech" target="_blank" rel="noopener">X</a> |
+      <a href="https://tiktok.com/@kyonax_on_tech" target="_blank" rel="noopener">TikTok</a>
+    </div>
+  `,
+        "follow-main": `
+    <div class="follow-section">
+      <p>Follow <strong>@is.kyonax</strong></p>
+      <a href="https://instagram.com/is.kyonax" target="_blank" rel="noopener">Instagram</a> |
+      <a href="https://facebook.com/is.kyonax" target="_blank" rel="noopener">Facebook</a> |
+      <a href="https://tiktok.com/@is.kyonax" target="_blank" rel="noopener">TikTok</a>
+    </div>
+  `,
+      },
       "persistent-data": {
         "important-data": `IMPORTANT DATA`,
         name: `CRISTIAN D. MORENO`,
@@ -156,6 +185,35 @@ const TRANSLATIONS = {
         },
         "intro-title": `TRANSFORMO IDEAS EN RAPIDOS Y FUNCIONALES <span>SITIOS WEB</span>`,
         description: `Especializado en desarrollar sitios web rápidos y confiables utilizando código limpio y modular junto con componentes UI responsivos. Ya sea para vender productos o mostrar portafolios, me enfoco en el rendimiento del frontend, la accesibilidad y la usabilidad práctica`,
+      },
+      footer: {
+        "main-profile": `<h1>GIMME A FOLLOW</h1>`,
+        "terms-brief": `
+    <p>
+      I may share the development process and final results of commissioned work on my social media, livestreams, and portfolio. This includes websites, apps, or any digital content created for you.
+      For full details, see <a href="#" target="_blank" rel="noopener">Terms & Conditions</a>
+    </p>
+    <p>
+      <strong>© 2025 Kyonax</strong> — All rights reserved on original work.
+    </p>
+  `,
+        "follow-tech": `
+    <div class="follow-section">
+      <p>Follow <strong>@kyonax_on_tech</strong></p>
+      <a href="https://instagram.com/kyonax_on_tech" target="_blank" rel="noopener">Instagram</a> |
+      <a href="https://facebook.com/kyonaxtech" target="_blank" rel="noopener">Facebook</a> |
+      <a href="https://x.com/kyonax_on_tech" target="_blank" rel="noopener">X</a> |
+      <a href="https://tiktok.com/@kyonax_on_tech" target="_blank" rel="noopener">TikTok</a>
+    </div>
+  `,
+        "follow-main": `
+    <div class="follow-section">
+      <p>Follow <strong>@is.kyonax</strong></p>
+      <a href="https://instagram.com/is.kyonax" target="_blank" rel="noopener">Instagram</a> |
+      <a href="https://facebook.com/is.kyonax" target="_blank" rel="noopener">Facebook</a> |
+      <a href="https://tiktok.com/@is.kyonax" target="_blank" rel="noopener">TikTok</a>
+    </div>
+  `,
       },
       "persistent-data": {
         "important-data": `DATOS IMPORTANTES`,

@@ -98,6 +98,7 @@
 
 #content-data {
     .main-data {
+        position: relative;
         overflow-x: hidden;
 
         .global-titles {
@@ -139,14 +140,14 @@
                 position: absolute;
                 align-content: center;
                 justify-items: center;
-                top: 1rem;
+                top: 18rem;
                 width: 99%;
-                height: 45vw;
+                height: 45vh;
 
                 .container-title {
                     color: var(--clr-neutral-300);
                     text-align: center;
-                    max-width: 1200px;
+                    max-width: 1440px;
 
                     p {
                         text-align: justify;
@@ -334,22 +335,58 @@
         }
 
         .footer {
+            position: absolute;
+            display: grid;
+            justify-items: center;
+            left: 0rem;
             width: 100%;
             text-align: left;
-            padding-left: 0.5rem;
+            padding: 3rem 1rem;
+            padding-bottom: 3.5rem;
             margin-top: 6rem;
             margin-bottom: 6rem;
+            line-height: 1.3rem;
+            color: var(--clr-neutral-500);
+            background-color: var(--clr-primary-100);
 
             a {
-                font-weight: 700;
-                text-decoration: none;
-                color: inherit;
-                display: inline-block;
-                color: var(--clr-neutral-300);
+                text-decoration: underline;
             }
 
-            a:hover {
-                color: var(--clr-neutral-100);
+            h1 {
+                font-size: 6rem;
+                letter-spacing: -0.1rem;
+                line-height: 4.7rem;
+                word-spacing: -2rem;
+                margin: 0rem;
+            }
+
+            &__container {
+                position: relative;
+                width: 100%;
+                max-width: 1440px;
+            }
+
+            &__section {
+                display: grid;
+                margin: 1rem 0rem;
+
+                &:not(:last-of-type) {
+                    grid-template-columns: 1fr 1fr 1fr;
+                    padding-bottom: 3rem;
+                    border-bottom: 1px solid var(--clr-primary-500);
+
+                    .socials {
+                        display: grid;
+                        align-items: center;
+                    }
+                }
+
+                &:last-of-type {
+                    grid-template-columns: 2fr 1fr;
+                    margin-bottom: 0;
+                    border-bottom: none;
+                }
             }
         }
     }
@@ -642,7 +679,8 @@
                 }
 
                 &__title {
-                    height: 70vw;
+                    top: 9rem;
+                    height: 70vh;
                     .container-title {
                         h1,
                         p {
@@ -670,12 +708,61 @@
     }
 }
 
+@media (max-width: 599.98px) {
+    #content-data {
+        .main-data {
+            .footer {
+                h1 {
+                    font-size: 5rem;
+                }
+
+                &__section {
+                    &:not(:last-of-type) {
+                        grid-template-columns: 1fr;
+                        padding-bottom: 3rem;
+                        border-bottom: 1px solid var(--clr-primary-500);
+                    }
+
+                    &:last-of-type {
+                        grid-template-columns: auto;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (min-width: 600px) and (max-width: 1199px) {
+    #content-data {
+        .main-data {
+            .footer {
+                &__section {
+                    &:not(:last-of-type) {
+                        grid-template-columns: 1fr 1fr;
+                        padding-bottom: 3rem;
+                        border-bottom: 1px solid var(--clr-primary-500);
+
+                        > div:first-child {
+                            grid-column: 1 / -1;
+                        }
+
+                        .socials {
+                            display: grid;
+                            align-items: center;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @media (min-width: 1024px) and (max-width: 1199px) {
     #content-data {
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: -1rem;
+                    top: 9rem;
                     height: auto;
 
                     .container-title {
@@ -700,7 +787,7 @@
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: -3rem;
+                    top: 6rem;
                     height: auto;
 
                     .container-title {
@@ -731,7 +818,7 @@
                 }
 
                 &__title {
-                    top: -3rem;
+                    top: 1rem;
                     height: auto;
 
                     .container-title {
