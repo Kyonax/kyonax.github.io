@@ -651,8 +651,10 @@
     #content-data {
         .main-data {
             .minimal-introduction {
+            margin-bottom: 9rem;
+
                 &__title {
-                    top: 9rem;
+                    top: 15rem;
                     .container-title {
                         h1 {
                             font-size: 7.5rem;
@@ -684,7 +686,7 @@
 
                 &__title {
                     top: 9rem;
-                    height: 70vh;
+                    height: 60vh;
                     .container-title {
                         h1,
                         p {
@@ -701,7 +703,7 @@
 
             .experience {
                 &__container {
-                    height: 26rem;
+                    height: 28rem;
 
                     h4 {
                         line-height: 1.05;
