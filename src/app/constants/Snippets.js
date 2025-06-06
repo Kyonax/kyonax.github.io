@@ -104,7 +104,7 @@ const TRANSLATIONS = {
         user: {
           experience: `<strong>EXP.</strong> 7+ YEARS | 2018 - 2025`,
           focus: `FOCUSED ON`,
-          "focus-work": `FUTURISTIC-DESIGNS BLOGS SEO MINIMALISM EXCLUSIVE-PRODUCTS SCRIPTS AUTOMATION DEV-OPS PORTFOLIOS UI SIMPLICITY RESPONSIVE-WEBS`,
+          "focus-work": `FUTURISTIC-DESIGNS BLOGS MINIMALISM EXCLUSIVE-PRODUCTS AUTOMATION DEV-OPS PORTFOLIOS UI SIMPLICITY RESPONSIVE-WEBS`,
           nick: `<strong>NICK.</strong> KYONAX<sub>京</sub>`,
           place: `<strong>PLACE.</strong> VILLAVICENCIO/COLOMBIA`,
         },
@@ -224,7 +224,7 @@ const TRANSLATIONS = {
         user: {
           experience: `<strong>EXP.</strong> 7+ AÑOS | 2018 - 2025`,
           focus: `ENFOCADO EN`,
-          "focus-work": `DISEÑOS-FUTURISTAS BLOGS SEO MINIMALISMO PRODUCTOS-EXCLUSIVOS SCRIPTS AUTOMATIZACIÓN DEV-OPS PORTAFOLIOS UI SIMPLICIDAD RESPONSIVE-WEBS`,
+          "focus-work": `DISEÑO-FUTURISTA BLOGS MINIMALISM PRODUCTOS-EXCLUSIVOS AUTOMATION DEV-OPS PORTAFOLIOS UI SIMPLICIDAD RESPONSIVE-WEBS`,
           nick: `<strong>NICK.</strong> KYONAX<sub>京</sub>`,
           place: `<strong>LUGAR.</strong> VILLAVICENCIO/COLOMBIA`,
         },
