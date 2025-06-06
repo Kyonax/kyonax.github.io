@@ -115,11 +115,9 @@
                 line-height: 1.06;
                 letter-spacing: 0.08rem;
                 overflow-x: hidden;
-                // color: var(--clr-neutral-300);
                 width: calc(100% + 40rem);
                 margin-left: -16rem;
                 margin-top: -30rem;
-                z-index: 0;
 
                 /* Gradient text */
                 background: radial-gradient(
@@ -150,8 +148,9 @@
                     max-width: 1440px;
 
                     p {
-                        text-align: justify;
-                        text-align-last: justify;
+                        margin-top: 3rem;
+                        max-width: 700px;
+                        text-align: left;
                     }
 
                     h1 {
@@ -175,6 +174,7 @@
         .about-me {
             width: 100%;
             overflow: hidden;
+            z-index: 9;
 
             &__nick-title {
                 // TODO: REMOVE IF NOT USED
@@ -195,8 +195,7 @@
                 width: 100%;
                 justify-items: center;
                 text-align: center;
-                margin-top: 30rem;
-                margin-bottom: 36rem;
+                margin-top: -3rem;
 
                 p {
                     padding-left: 0.5rem;
@@ -265,7 +264,7 @@
             width: 100%;
             justify-items: center;
             align-content: center;
-            margin-bottom: 6rem;
+            margin: 6rem 0rem;
 
             .btn-download {
                 padding: 0.5rem;
@@ -298,18 +297,22 @@
 
             a {
                 text-decoration: none;
-                color: var(--clr-neutral-300);
+                color: var(--clr-neutral-200);
                 display: inline-block;
                 padding: 0.5rem;
                 width: 100%;
-                background-color: var(--clr-border-500);
+                background-color: var(--clr-neutral-500);
                 border: 1px solid var(--clr-border-100);
                 margin-bottom: 0.5rem;
             }
 
             a:hover {
                 color: var(--clr-neutral-100);
-                background-color: var(--clr-border-100);
+                background-image: linear-gradient(
+                    to right,
+                    var(--clr-border-500),
+                    var(--clr-neutral-500)
+                );
 
                 span {
                     color: var(--clr-warning-100);
@@ -404,7 +407,7 @@
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: 30rem;
+                    top: 20rem;
 
                     .container-title {
                         h1 {
@@ -431,7 +434,7 @@
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: 30rem;
+                    top: 20rem;
 
                     .container-title {
                         h1 {
@@ -457,7 +460,7 @@
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: 25rem;
+                    top: 15rem;
 
                     .container-title {
                         h1 {
@@ -611,7 +614,7 @@
                 }
 
                 &__title {
-                    top: 25rem;
+                    top: 20rem;
 
                     .container-title {
                         h1,

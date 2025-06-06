@@ -12,7 +12,8 @@ const TRANSLATIONS = {
       "content-data": {
         "about-me": {
           title: `KYONAX KYONAX`,
-          description: `My name is <strong>Cristian D. Moreno</strong>, aka <strong>Kyonax<sup>京</sup></strong>, a Network-Developer with over 7+ years of experience writing code and crafting solutions with a signature style. Passionate about Cyberpunk/Science Fiction.`,
+          description:
+            "Hello There! I’m <strong>Cristian D. Moreno</strong>, also known as <strong>Kyonax<sup>京</sup></strong>. I’ve been building websites for over 7 years, creating fast, high-quality sites with clean, modular, and scalable code. <br><br> I specialize in frontend performance, accessibility, and practical usability, whether it’s for exclusive products or portfolios. I love Cyberpunk and Sci-Fi, which inspires the futuristic flair in my work.",
         },
         download: {
           "cv-en": `DOWNLOAD CV (EN)`,
@@ -131,7 +132,8 @@ const TRANSLATIONS = {
       "content-data": {
         "about-me": {
           title: `KYONAX KYONAX`,
-          description: `Mi nombre es <strong>Cristian D. Moreno</strong>, aka <strong>Kyonax<sup>京</sup></strong>, Network-Developer con más de 7+ años de experiencia escribiendo código y creando soluciones con un estilo propio. Apasionado del Cyberpunk/Ciencia Ficción.`,
+          description:
+            "¡Hola! Soy <strong>Cristian D. Moreno</strong>, también conocido como <strong>Kyonax<sup>京</sup></strong>. Llevo más de 7 años desarrollando sitios web rápidos y de alta calidad, con código limpio, modular y escalable. <br><br> Me especializo en optimización del frontend, accesibilidad y usabilidad práctica, ya sea para productos exclusivos o portafolios. Me apasiona el Cyberpunk y la ciencia ficción, lo que le da un toque futurista a mi trabajo.",
         },
         download: {
           "cv-en": `DOWNLOAD CV (EN)`,
@@ -187,19 +189,19 @@ const TRANSLATIONS = {
         description: `Especializado en desarrollar sitios web rápidos y confiables utilizando código limpio y modular junto con componentes UI responsivos. Ya sea para vender productos o mostrar portafolios, me enfoco en el rendimiento del frontend, la accesibilidad y la usabilidad práctica`,
       },
       footer: {
-        "main-profile": `<h1>GIMME A FOLLOW</h1>`,
+        "main-profile": `<h1>DAME UN FOLLOW</h1>`,
         "terms-brief": `
     <p>
-      I may share the development process and final results of commissioned work on my social media, livestreams, and portfolio. This includes websites, apps, or any digital content created for you.
-      For full details, see <a href="#" target="_blank" rel="noopener">Terms & Conditions</a>
+      Podría compartir el proceso de desarrollo y los resultados finales de trabajos encargados en mis redes sociales, transmisiones en vivo y portafolio. Esto incluye sitios web, aplicaciones o cualquier contenido digital creado para ti.
+      Para más detalles, consulta los <a href="/terms-and-conditions" target="_blank" rel="noopener">Términos y Condiciones</a>
     </p>
     <p>
-      <strong>© 2025 Kyonax</strong> — All rights reserved on original work.
+      <strong>© 2025 Kyonax</strong> — Todos los derechos reservados sobre trabajos originales.
     </p>
   `,
         "follow-tech": `
     <div class="follow-section">
-      <p>Follow <strong>@kyonax_on_tech</strong></p>
+      <p>Sígueme en <strong>@kyonax_on_tech</strong></p>
       <a href="https://instagram.com/kyonax_on_tech" target="_blank" rel="noopener">Instagram</a> |
       <a href="https://facebook.com/kyonaxtech" target="_blank" rel="noopener">Facebook</a> |
       <a href="https://x.com/kyonax_on_tech" target="_blank" rel="noopener">X</a> |
@@ -208,7 +210,7 @@ const TRANSLATIONS = {
   `,
         "follow-main": `
     <div class="follow-section">
-      <p>Follow <strong>@is.kyonax</strong></p>
+      <p>Sígueme en <strong>@is.kyonax</strong></p>
       <a href="https://instagram.com/is.kyonax" target="_blank" rel="noopener">Instagram</a> |
       <a href="https://facebook.com/is.kyonax" target="_blank" rel="noopener">Facebook</a> |
       <a href="https://tiktok.com/@is.kyonax" target="_blank" rel="noopener">TikTok</a>
