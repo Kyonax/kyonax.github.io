@@ -335,7 +335,7 @@
         }
 
         .footer {
-            position: absolute;
+            position: relative;
             display: grid;
             justify-items: center;
             left: 0rem;
@@ -344,7 +344,6 @@
             padding: 3rem 1rem;
             padding-bottom: 3.5rem;
             margin-top: 6rem;
-            margin-bottom: 6rem;
             line-height: 1.3rem;
             color: var(--clr-neutral-500);
             background-color: var(--clr-primary-100);
