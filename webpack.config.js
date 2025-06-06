@@ -40,7 +40,7 @@
  * - `npm run dev`: This command starts the development server with hot-reloading and live-reloading capabilities for a smooth development experience.
  * - `npm run build-all`: Runs the full build process, which includes bundling the assets and generating favicons and manifests.
  */
-const TranslationWebpackPlugin = require('./translation-webpack-plugin');
+const TranslationWebpackPlugin = require("./translation-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -175,7 +175,33 @@ module.exports = {
           {
             loader: "svgo-loader",
             options: {
-              plugins: [{ removeViewBox: false }],
+              // In SVGO v2, everything is driven by "plugins" inside "svgoConfig".
+              svgoConfig: {
+                plugins: [
+                  {
+                    name: "preset-default",
+                    params: {
+                      overrides: {
+                        // <-- keep viewBox in your final SVG
+                        removeViewBox: false,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          {
+            loader: "image-webpack-loader",
+            options: {
+              mozjpeg: {
+                progressive: true,
+                quality: 65,
+              },
+              pngquant: {
+                quality: [0.65, 0.9],
+                speed: 4,
+              },
             },
           },
         ],
@@ -260,13 +286,27 @@ module.exports = {
       : []),
     new WebpackManifestPlugin({
       publicPath: "/",
+
+      // Filter out ANY file object where file.path is undefined
+      filter: (file) => {
+        if (!file.path) {
+          console.warn(
+            `Manifest filter: skipping undefined-path asset → ${file.name}`,
+          );
+          return false;
+        }
+        return true;
+      },
+
       generate: (seed, files, entries) => {
+        // (At this point, every file in “files” will have a defined file.path.)
         const manifest = files.reduce((acc, file) => {
+          // file.path is guaranteed to be a string here
           acc[file.name] = file.path;
           return acc;
         }, seed);
 
-        // Ensure favicons are included
+        // Include any favicons in dist/favicons
         const faviconsPath = path.resolve(__dirname, "dist/favicons");
         if (fs.existsSync(faviconsPath)) {
           const favicons = fs.readdirSync(faviconsPath).map((filename) => ({
@@ -282,7 +322,7 @@ module.exports = {
       },
     }),
     new TranslationWebpackPlugin({
-      file: "index.html"
+      file: "index.html",
     }),
   ],
 
