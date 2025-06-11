@@ -10,7 +10,9 @@ const PROJECTS = {
   "github-images": {
     name: `GITHUB COVER GENERATOR`,
     url: `#on-going`,
-    deadlines: {},
+    deadlines: {
+      "repo creation": `Jun 12 23:00:06 2025`
+    },
   },
 };
 
