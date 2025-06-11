@@ -125,6 +125,8 @@ class NowProjectsComponent extends HTMLElement {
       // Create single anchor per project
       const anchor = document.createElement("a");
       anchor.href = project.url;
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
       anchor.dataset.projectKey = key;
 
       // Add project name directly to anchor
