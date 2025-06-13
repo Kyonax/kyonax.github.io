@@ -108,7 +108,10 @@
         }
 
         .minimal-introduction {
+            border-bottom: 1px solid var(--clr-border-100);
+            display: grid;
             margin-bottom: 6rem;
+            position: relative;
 
             &__ascii-art {
                 font-family: "Courier New", Courier, monospace;
@@ -117,9 +120,11 @@
                 line-height: 1.06;
                 letter-spacing: 0.08rem;
                 overflow-x: hidden;
+                position: absolute;
                 width: calc(100% + 40rem);
                 margin-left: -16rem;
                 margin-top: -30rem;
+                z-index: -1;
 
                 /* Gradient text */
                 background: radial-gradient(
@@ -136,78 +141,49 @@
 
             &__title {
                 display: grid;
-                padding: 0rem 0.75rem;
-                position: absolute;
+                position: relative;
+                padding: 0rem 6rem;
                 align-content: center;
                 justify-items: center;
-                top: 18rem;
-                width: 99%;
-                height: 45vh;
+                top: 0rem;
+                width: 100%;
 
                 .container-title {
                     color: var(--clr-neutral-300);
                     text-align: center;
                     max-width: 1440px;
 
-                    p {
-                        margin-top: 3rem;
-                        max-width: 700px;
-                        text-align: left;
+                    .about-me {
+                        padding: 1rem;
+                        margin: 0rem;
+                        width: 100%;
+                        border: 1px solid var(--clr-border-100);
+                        border-bottom: 0px;
+
+                        p {
+                            max-width: 700px;
+                            text-align: left;
+                        }
+
                     }
 
+
                     h1 {
+                        border-left: 1px solid var(--clr-border-100);
+                        border-right: 1px solid var(--clr-border-100);
                         font-family: Geomanist;
                         font-size: 13rem;
                         line-height: 0.79;
-                        margin-bottom: 0rem;
+                        margin: 0rem;
                         letter-spacing: 0rem;
                         color: transparent;
+                        padding: 5rem 1rem;
                         -webkit-text-stroke-width: 1.5px;
                         -webkit-text-stroke-color: var(--clr-neutral-100);
 
                         span {
                             color: var(--clr-neutral-50);
                         }
-                    }
-                }
-            }
-        }
-
-        .about-me {
-            width: 100%;
-            overflow: hidden;
-            z-index: 9;
-
-            &__nick-title {
-                // TODO: REMOVE IF NOT USED
-                h1 {
-                    font-family: Geomanist;
-                    font-size: calc(10vw + 12rem);
-                    white-space: nowrap;
-                    margin: 0rem;
-                    margin-left: -50rem;
-                    padding-bottom: 9rem;
-                    padding-top: 9rem;
-                    color: var(--clr-neutral-100);
-                }
-            }
-
-            &__description {
-                display: grid;
-                width: 100%;
-                justify-items: center;
-                text-align: center;
-                margin-top: -3rem;
-
-                p {
-                    padding-left: 0.5rem;
-                    padding-right: 0.5rem;
-                    font-size: 1.2rem;
-                    color: var(--clr-neutral-300);
-                    max-width: 600px;
-
-                    strong {
-                        color: var(--clr-neutral-100);
                     }
                 }
             }
@@ -409,8 +385,6 @@
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: 20rem;
-
                     .container-title {
                         h1 {
                             line-height: 0.85;
@@ -436,7 +410,6 @@
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: 20rem;
 
                     .container-title {
                         h1 {
@@ -462,7 +435,6 @@
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: 15rem;
 
                     .container-title {
                         h1 {
@@ -484,25 +456,6 @@
                     font-size: 0.39rem;
                     margin-left: -26rem;
                     margin-top: -30rem;
-                }
-            }
-
-            .about-me {
-                margin-bottom: 3rem;
-
-                &__nick-title {
-                    // TODO: REMOVE IF NOT USED
-                    h1 {
-                        font-size: calc(10vw + 6rem);
-                        margin-left: -23rem;
-                        padding-bottom: 7rem;
-                    }
-                }
-
-                &__description {
-                    p {
-                        font-size: 1.05rem;
-                    }
                 }
             }
 
@@ -547,7 +500,6 @@
                 }
 
                 &__title {
-                    top: 20rem;
 
                     .container-title {
                         h1,
@@ -560,25 +512,6 @@
                             line-height: 0.85;
                             font-size: 5rem;
                         }
-                    }
-                }
-            }
-
-            .about-me {
-                margin-bottom: 3rem;
-
-                &__nick-title {
-                    // TODO: REMOVE IF NOT USED
-                    h1 {
-                        font-size: calc(10vw + 7rem);
-                        margin-left: -26rem;
-                        padding-bottom: 6rem;
-                    }
-                }
-
-                &__description {
-                    p {
-                        font-size: 1.05rem;
                     }
                 }
             }
@@ -616,7 +549,6 @@
                 }
 
                 &__title {
-                    top: 20rem;
 
                     .container-title {
                         h1,
@@ -654,7 +586,6 @@
             margin-bottom: 9rem;
 
                 &__title {
-                    top: 15rem;
                     .container-title {
                         h1 {
                             font-size: 7.5rem;
@@ -685,8 +616,6 @@
                 }
 
                 &__title {
-                    top: 9rem;
-                    height: 60vh;
                     .container-title {
                         h1,
                         p {
@@ -717,6 +646,24 @@
 @media (max-width: 599.98px) {
     #content-data {
         .main-data {
+            .minimal-introduction {
+                &__title {
+                    padding: 0rem;
+                    .container-title {
+
+                        .about-me {
+                            border-left: 0rem;
+                            border-right: 0rem;
+                        }
+
+                        h1 {
+                            border: 0px;
+                        }
+
+                    }
+                }
+            }
+
             .footer {
                 h1 {
                     font-size: 5rem;
@@ -768,8 +715,6 @@
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: 9rem;
-                    height: auto;
 
                     .container-title {
                         h1,
@@ -793,7 +738,6 @@
         .main-data {
             .minimal-introduction {
                 &__title {
-                    top: -2rem;
                     height: auto;
 
                     .container-title {
@@ -824,7 +768,6 @@
                 }
 
                 &__title {
-                    top: 1rem;
                     height: auto;
 
                     .container-title {
@@ -848,6 +791,26 @@
                     height: 25rem;
                 }
             }
+        }
+    }
+}
+
+@media (min-width: 1858px) {
+    #content-data {
+        .main-data {
+            .minimal-introduction {
+
+                &__title {
+
+                    .container-title {
+
+                        h1 {
+                            font-size: 17rem;
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

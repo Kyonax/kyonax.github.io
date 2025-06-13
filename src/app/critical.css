@@ -53,7 +53,6 @@ body {
  */
 .container-block {
     border: 1px solid hsla(0, 0%, 100%, 0.1);
-    padding: 0.36rem;
     position: relative;
 }
 
@@ -145,7 +144,6 @@ body {
     }
 
     .container-block {
-        padding: 0.25rem;
     }
 
     #root {
@@ -157,7 +155,6 @@ body {
 /* Small Devices (Landscape Phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
     .container-block {
-        padding: 0.3rem;
     }
 
     #root {
@@ -173,7 +170,6 @@ body {
     }
 
     .container-block {
-        padding: 0.36rem;
     }
 
     #root {
@@ -184,7 +180,6 @@ body {
 /* Large Devices (Desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
     .container-block {
-        padding: 0.4rem;
     }
 
     #root {
@@ -195,7 +190,6 @@ body {
 /* Extra Large Devices (Large Desktops, 1200px and up) */
 @media (min-width: 1200px) {
     .container-block {
-        padding: 0.5rem;
     }
 
     #root {

@@ -26,6 +26,7 @@
             font-size: 1rem;
             margin-bottom: 1rem;
             color: var(--clr-neutral-300);
+            padding: 0rem 0.5rem;
 
             strong {
                 color: var(--clr-neutral-100);
@@ -47,9 +48,9 @@
 
         &__title-section {
             border: 1px solid var(--clr-border-400);
+            border-right: 0px;
+            border-left: 0px;
             background-color: var(--clr-border-500);
-            width: 106%;
-            margin-left: -3.5%;
             margin-bottom: 0.25rem;
             padding-left: 0.5rem;
 
@@ -272,10 +273,6 @@
                 p.style-separated {
                     max-width: 17rem;
                 }
-            }
-
-            &__title-section {
-                width: 105.5%;
             }
         }
     }
