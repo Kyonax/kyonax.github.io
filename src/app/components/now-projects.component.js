@@ -59,7 +59,7 @@ class NowProjectsComponent extends HTMLElement {
       grid-template-columns: max-content max-content max-content;
       gap: 1rem;
       padding: 0.5rem;
-      width: 100%;
+      width: auto;
       background-color: var(--clr-neutral-500);
       border: 1px solid var(--clr-border-100);
       margin-bottom: 0.5rem;

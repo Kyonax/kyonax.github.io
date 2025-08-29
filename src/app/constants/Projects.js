@@ -1,17 +1,23 @@
 const PROJECTS = {
   "sofia-married": {
     name: `THE INVITE S&C`,
-    url: `https://kyonax.github.io/the-invite-sc/`,
+    url: `https://github.com/Kyonax/sofia-y-cristhian-se-casan`,
     deadlines: {
-      "loading page": `Jun 11 22:00:03 2025`,
-      "first section": `Jun 13 22:00:03 2025`,
+      "refining last changes": `Aug 30 22:00:03 2025`,
     },
   },
-  "github-images": {
-    name: `GITHUB COVER GENERATOR`,
-    url: `#on-going`,
+  "veyra-organization": {
+    name: `VEYRA ORG LANDING PAGE`,
+    url: `https://github.com/veyra-code`,
     deadlines: {
-      "repo creation": `Jun 12 23:00:06 2025`
+      "create repo": `Aug 31 22:00:03 2025`,
+    },
+  },
+  "zeronet-labs": {
+    name: `ZERONET LABS LANDING PAGE`,
+    url: `https://github.com/zeronet-labs`,
+    deadlines: {
+      "create repo": `Aug 31 22:00:03 2025`,
     },
   },
 };
