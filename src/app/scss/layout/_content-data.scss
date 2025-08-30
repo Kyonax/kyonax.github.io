@@ -318,6 +318,10 @@
           }
         }
       }
+
+      @include max-media-query(lg) {
+        padding: 0rem 1rem;
+      }
     }
 
     .footer {
