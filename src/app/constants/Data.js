@@ -115,4 +115,94 @@ module.exports = {
     EN_ID: "download-en",
     ES_ID: "download-es",
   },
+
+  // Add this technologies array (example items)
+  // Replace your existing TECHNOLOGIES array in Data.js with this:
+
+  TECHNOLOGIES: [
+    {
+      id: "html",
+      name: { en: "HTML5", es: "HTML5" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "css",
+      name: { en: "CSS / SASS", es: "CSS / SASS" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "js",
+      name: { en: "JavaScript", es: "JavaScript" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "ts",
+      name: { en: "TypeScript", es: "TypeScript" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "react",
+      name: { en: "React", es: "React" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "next",
+      name: { en: "Next.js", es: "Next.js" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "vue",
+      name: { en: "Vue.js", es: "Vue.js" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "symfony",
+      name: { en: "Symfony (PHP)", es: "Symfony (PHP)" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "node",
+      name: { en: "Node.js", es: "Node.js" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "express",
+      name: { en: "Express.js", es: "Express.js" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "docker",
+      name: { en: "Docker", es: "Docker" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "git",
+      name: { en: "Git", es: "Git" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "aws",
+      name: { en: "AWS (Cloud)", es: "AWS (Nube)" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "jest",
+      name: { en: "Jest (Testing)", es: "Jest (Pruebas)" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+  ],
 };
