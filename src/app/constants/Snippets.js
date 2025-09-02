@@ -13,7 +13,7 @@ const TRANSLATIONS = {
         "about-me": {
           title: `KYONAX KYONAX`,
           description:
-            "Hello There! I’m <strong>Cristian D. Moreno</strong>, also known as <strong>Kyonax<sup>京</sup></strong>. With 7 years of experience as a Senior Full Stack Web Developer, I craft scalable, adaptable, and high-performance digital solutions for both national and international clients. <br><br> I specialize in building seamless frontend experiences and solid backend architectures, always committed to strong design patterns, clear documentation, and detailed manuals that ensure maintainability and team collaboration. <br><br> My work is powered by clean code practices and strict coding guidelines, where functionality merges with futuristic cyberpunk-inspired aesthetics to deliver systems that are not only efficient but also built to last.",
+            "Hello! I’m <strong>Cristian D. Moreno</strong>, also known as <strong>Kyonax<sup>京</sup></strong>. A Senior Full Stack Web Developer with 7+ years of experience, I specialize in building scalable, high-performance solutions with clean code and strong design patterns. I’m also the Full Stack Lead and Founder of <strong>Zeronet Labs</strong>, where we create innovative, AI-driven tools and automations with a futuristic, cyberpunk-inspired edge.",
         },
         download: {
           "cv-en": `DOWNLOAD CV (EN)`,
@@ -21,39 +21,39 @@ const TRANSLATIONS = {
         },
         experience: {
           label: `ΣXPERIΣNCE`,
+          zeronet: {
+            role: `FOUNDER & LEAD FULL STACK ENGINEER`,
+            specs: `2017-PRESENT <strong>ZERØNET-LABS</strong> REMOTE-VILLAVICENCIO///COLOMBIA`,
+            description: `Founded <strong>Zerønet Labs</strong>, building <strong>frontend apps</strong> with <strong>React.js</strong>, <strong>Next.js</strong>, <strong>Vue.js</strong>, <strong>Vite</strong>, and Vanilla JS. Engineered <strong>REST/GraphQL APIs</strong>, microservices, and automation systems with <strong>Node.js</strong>, <strong>Nest.js</strong>, <strong>Symfony</strong>, <strong>TypeScript</strong>, <strong>Python</strong>, and SQL databases. Created reusable <strong>NPM packages</strong> and UI libraries with automated publishing (semantic-release). Containerized environments with <strong>Docker</strong> and multi-stage pipelines. Built <strong>Discord bots</strong> and backend services improving data accessibility. Experimented with <strong>caching</strong>, <strong>replication</strong>, and <strong>API rate limiting</strong> for performance.`,
+            tools: `<strong>reactjs - nextjs - vuejs - vite - symfony - nestjs - nodejs - python - postgresql - mariadb - mysql - docker - graphql - rest - semantic-release - github actions - sass/scss</strong>`,
+            "tools-label": `TECHNOLOGIES///TOOLS`,
+          },
           softtek: {
             role: `SENIOR SOFTWARE ENGINEER (FULL STACK WEB DEVELOPER)`,
             specs: `2023-2025 <strong>SOFTTEK</strong> REMOTE-BOGOTÁ-D.C///COLOMBIA`,
             description: `Migrated an internal <strong>admin platform</strong> into a fully functional <strong>e-commerce</strong> site using <strong>Shopware</strong> (<strong>Symfony</strong>, <strong>Vue.js</strong>), automating <strong>purchase flows</strong> and enabling smoother sales processes. Designed reusable <strong>SASS/SCSS</strong> patterns and integrated <strong>PostCSS</strong> for cross-browser support. Built <strong>CI/CD pipelines</strong> with <strong>Azure DevOps</strong>, <strong>Docker</strong>, and automated testing. Delivered <strong>REST/GraphQL APIs</strong> with high performance and reliability. Mentored engineers through PR reviews and documentation.`,
-            tools: `symfony - vuejs - docker - mysql - shopware - sass - postcss - graphql - rest<br> javascript - php - bash - sql - azure devops`,
+            tools: `<strong>symfony - vuejs - docker - mysql - shopware - sass - postcss - graphql - rest - javascript - php - bash - sql - azure devops</strong>`,
             "tools-label": `TECHNOLOGIES///TOOLS`,
           },
           "cr-senior-fullstack": {
             role: `SENIOR FULL STACK WEB DEVELOPER`,
             specs: `2021-2023 <strong>CABEZA-ROTA</strong> REMOTE-VILLAVICENCIO///COLOMBIA`,
             description: `Developed <strong>e-commerce sites</strong>, <strong>landing pages</strong>, and <strong>microservices</strong> using <strong>Next.js</strong>, <strong>React.js</strong>, <strong>Vue.js</strong>, <strong>Nest.js</strong>, and <strong>Symfony</strong>. Built <strong>GraphQL/REST APIs</strong> with PostgreSQL, MySQL, and MongoDB. Implemented <strong>authentication</strong> (JWT), caching, and query optimizations. Improved <strong>UX</strong> with A/B testing, <strong>GA4</strong>, and <strong>Hotjar</strong>. Established <strong>CI/CD pipelines</strong> with Docker + GitHub Actions and enforced PR review standards.`,
-            tools: `nextjs - reactjs - vuejs - nestjs - symfony - docker - mysql - postgresql - mongodb<br> graphql - rest - ga4 - hotjar - jest - rspec - github actions`,
+            tools: `<strong>nextjs - reactjs - vuejs - nestjs - symfony - docker - mysql - postgresql - mongodb - graphql - rest - ga4 - hotjar - jest - rspec - github actions</strong>`,
             "tools-label": `TECHNOLOGIES///TOOLS`,
           },
           "cr-web-dev": {
             role: `DIGITAL MARKETING & WEB DEVELOPER`,
             specs: `2021-2021 <strong>CABEZA-ROTA</strong> REMOTE-VILLAVICENCIO///COLOMBIA`,
             description: `Improved <strong>marketing campaigns</strong> with <strong>A/B Testing</strong> using <strong>GA4</strong> and <strong>Hotjar</strong>, refining websites for stronger engagement. Delivered optimized frontends with <strong>Next.js</strong>, <strong>React.js</strong>, <strong>Vue.js</strong>, <strong>Nest.js</strong>, <strong>Redux</strong>, <strong>SASS/SCSS</strong>, <strong>Tailwind</strong>, <strong>Bootstrap</strong>, and <strong>WordPress</strong>. Designed and implemented reusable, maintainable components aligned to client requirements.`,
-            tools: `nextjs - reactjs - vuejs - nestjs - redux - tailwind - bootstrap - wordpress - sass/scss<br> ga4 - hotjar`,
+            tools: `<strong>nextjs - reactjs - vuejs - nestjs - redux - tailwind - bootstrap - wordpress - sass/scss - ga4 - hotjar</strong>`,
             "tools-label": `TECHNOLOGIES///TOOLS`,
           },
           "cr-growth": {
             role: `GROWTH MARKETER & WEB DEVELOPER`,
             specs: `2020-2021 <strong>CABEZA-ROTA</strong> REMOTE-VILLAVICENCIO///COLOMBIA`,
             description: `Drove <strong>brand awareness</strong> on <strong>Twitter</strong>, <strong>Instagram</strong>, <strong>Discord</strong>, and <strong>YouTube</strong> with targeted strategies. Designed and deployed <strong>VPS environments</strong> on <strong>AWS EC2</strong> with Apache, PHP, and MySQL. Integrated <strong>PayU</strong> and <strong>Cybersource</strong> payment services. Optimized <strong>frontend performance</strong> with custom components, hooks, and query optimizations.`,
-            tools: `aws - ec2 - apache - mysql - php - reactjs - nodejs - typescript - sass<br> twitter - youtube - tiktok - payu - cybersource`,
-            "tools-label": `TECHNOLOGIES///TOOLS`,
-          },
-          zeronet: {
-            role: `FOUNDER & LEAD FULL STACK ENGINEER`,
-            specs: `2017-PRESENT <strong>Zerønet Labs</strong> REMOTE-VILLAVICENCIO///COLOMBIA`,
-            description: `Founded <strong>Zerønet Labs</strong>, building <strong>frontend apps</strong> with <strong>React.js</strong>, <strong>Next.js</strong>, <strong>Vue.js</strong>, <strong>Vite</strong>, and Vanilla JS. Engineered <strong>REST/GraphQL APIs</strong>, microservices, and automation systems with <strong>Node.js</strong>, <strong>Nest.js</strong>, <strong>Symfony</strong>, <strong>TypeScript</strong>, <strong>Python</strong>, and SQL databases. Created reusable <strong>NPM packages</strong> and UI libraries with automated publishing (semantic-release). Containerized environments with <strong>Docker</strong> and multi-stage pipelines. Built <strong>Discord bots</strong> and backend services improving data accessibility. Experimented with <strong>caching</strong>, <strong>replication</strong>, and <strong>API rate limiting</strong> for performance.`,
-            tools: `reactjs - nextjs - vuejs - vite - symfony - nestjs - nodejs - python - postgresql - mariadb - mysql<br> docker - graphql - rest - semantic-release - github actions - sass/scss`,
+            tools: `<strong>aws - ec2 - apache - mysql - php - reactjs - nodejs - typescript - sass - twitter - youtube - tiktok - payu - cybersource</strong>`,
             "tools-label": `TECHNOLOGIES///TOOLS`,
           },
         },
@@ -109,9 +109,9 @@ const TRANSLATIONS = {
         user: {
           experience: `<strong>EXP.</strong> 7+ YEARS | 2018 - 2025`,
           focus: `FOCUSED ON`,
-          "focus-work": `FUTURISTIC-DESIGNS BLOGS MINIMALISM EXCLUSIVE-PRODUCTS AUTOMATION DEV-OPS PORTFOLIOS UI SIMPLICITY RESPONSIVE-WEBS`,
+          "focus-work": `FUTURISTIC-DESIGNS BLOGS AI MINIMALISM EXCLUSIVE-PRODUCTS AUTOMATION DEV-OPS PORTFOLIOS UI SIMPLICITY RESPONSIVE-WEBS`,
           nick: `<strong>NICK.</strong> KYONAX<sub>京</sub>`,
-          place: `<strong>PLACE.</strong> VILLAVICENCIO/COLOMBIA`,
+          place: `<strong>PLACE.</strong> VILLAVICENCIO/COLOMBIA 🇨🇴`,
         },
       },
       widget: {
@@ -138,7 +138,7 @@ const TRANSLATIONS = {
         "about-me": {
           title: `KYONAX KYONAX`,
           description:
-            "¡Hola! Soy <strong>Cristian D. Moreno</strong>, también conocido como <strong>Kyonax<sup>京</sup></strong>. Con 7 años de experiencia como Senior Full Stack Web Developer, diseño y desarrollo soluciones digitales escalables, adaptables y de alto rendimiento para clientes nacionales e internacionales. <br><br> Me especializo en crear experiencias frontend fluidas y arquitecturas backend sólidas, siempre con un fuerte compromiso en aplicar patrones de diseño, documentación clara y manuales detallados que facilitan la mantenibilidad y la colaboración en equipo. <br><br> Mi trabajo se fundamenta en prácticas de código limpio y guías de programación bien definidas, fusionando la funcionalidad con una estética futurista inspirada en el cyberpunk, para entregar sistemas que no solo son eficientes sino también duraderos.",
+            "¡Hola! Soy <strong>Cristian D. Moreno</strong>, también conocido como <strong>Kyonax<sup>京</sup></strong>. Senior Full Stack Web Developer con más de 7 años de experiencia, especializado en crear soluciones escalables y de alto rendimiento, aplicando clean code y strong design patterns. Además, soy Full Stack Lead y Fundador de <strong>Zeronet Labs</strong>, donde desarrollamos herramientas y automatizaciones impulsadas por AI con una estética futurista inspirada en el cyberpunk.",
         },
         download: {
           "cv-en": `DOWNLOAD CV (EN)`,
@@ -146,39 +146,39 @@ const TRANSLATIONS = {
         },
         experience: {
           label: `EXPΣRIENCIA`,
+          zeronet: {
+            role: `FUNDADOR & LEAD FULL STACK ENGINEER`,
+            specs: `2017-PRESENTE <strong>ZERØNET-LABS</strong> REMOTO-VILLAVICENCIO///COLOMBIA`,
+            description: `Fundé <strong>Zerønet Labs</strong>, desarrollando <strong>aplicaciones frontend</strong> con <strong>React.js</strong>, <strong>Next.js</strong>, <strong>Vue.js</strong>, <strong>Vite</strong> y Vanilla JS. Creé <strong>APIs REST/GraphQL</strong>, microservicios y sistemas de automatización con <strong>Node.js</strong>, <strong>Nest.js</strong>, <strong>Symfony</strong>, <strong>TypeScript</strong>, <strong>Python</strong> y bases de datos SQL. Desarrollé <strong>librerías y paquetes NPM</strong> reutilizables con publicación automatizada mediante <strong>semantic-release</strong>. Contenericé entornos con <strong>Docker</strong> y pipelines multi-stage. Construí <strong>bots en Discord</strong> y servicios backend mejorando accesibilidad a datos. Experimenté con <strong>caché</strong>, <strong>replicación</strong> y <strong>limitación de APIs</strong> para mayor rendimiento.`,
+            tools: `<strong>reactjs - nextjs - vuejs - vite - symfony - nestjs - nodejs - python - postgresql - mariadb - mysql - docker - graphql - rest - semantic-release - github actions - sass/scss</strong>`,
+            "tools-label": `TECNOLOGÍAS///HERRAMIENTAS`,
+          },
           softtek: {
             role: `SENIOR SOFTWARE ENGINEER (FULL STACK WEB DEVELOPER)`,
             specs: `2023-2025 <strong>SOFTTEK</strong> REMOTO-BOGOTÁ-D.C///COLOMBIA`,
             description: `Migré una <strong>plataforma administrativa</strong> interna a un <strong>e-commerce</strong> completo con <strong>Shopware</strong> (<strong>Symfony</strong>, <strong>Vue.js</strong>), automatizando los <strong>flujos de compra</strong> y mejorando los procesos de venta. Diseñé patrones <strong>SASS/SCSS</strong> reutilizables e integré <strong>PostCSS</strong> para soporte cross-browser. Implementé <strong>CI/CD</strong> con <strong>Azure DevOps</strong>, <strong>Docker</strong> y pruebas automatizadas. Desarrollé <strong>APIs REST/GraphQL</strong> escalables y de alto rendimiento. Guié y mentoricé ingenieros mediante revisiones de PRs y documentación.`,
-            tools: `symfony - vuejs - docker - mysql - shopware - sass - postcss - graphql - rest<br> javascript - php - bash - sql - azure devops`,
+            tools: `<strong>symfony - vuejs - docker - mysql - shopware - sass - postcss - graphql - rest - javascript - php - bash - sql - azure devops</strong>`,
             "tools-label": `TECNOLOGÍAS///HERRAMIENTAS`,
           },
           "cr-senior-fullstack": {
             role: `SENIOR FULL STACK WEB DEVELOPER`,
             specs: `2021-2023 <strong>CABEZA-ROTA</strong> REMOTO-VILLAVICENCIO///COLOMBIA`,
             description: `Desarrollé <strong>sitios e-commerce</strong>, <strong>landing pages</strong> y <strong>microservicios</strong> con <strong>Next.js</strong>, <strong>React.js</strong>, <strong>Vue.js</strong>, <strong>Nest.js</strong> y <strong>Symfony</strong>. Construí <strong>APIs REST/GraphQL</strong> con PostgreSQL, MySQL y MongoDB. Implementé <strong>autenticación</strong> (JWT), caché y optimizaciones de queries. Mejoré la <strong>experiencia de usuario</strong> con <strong>A/B testing</strong>, <strong>GA4</strong> y <strong>Hotjar</strong>. Establecí pipelines de <strong>CI/CD</strong> con Docker + GitHub Actions y aseguré estándares de calidad mediante revisiones de código.`,
-            tools: `nextjs - reactjs - vuejs - nestjs - symfony - docker - mysql - postgresql - mongodb<br> graphql - rest - ga4 - hotjar - jest - rspec - github actions`,
+            tools: `<strong>nextjs - reactjs - vuejs - nestjs - symfony - docker - mysql - postgresql - mongodb - graphql - rest - ga4 - hotjar - jest - rspec - github actions</strong>`,
             "tools-label": `TECNOLOGÍAS///HERRAMIENTAS`,
           },
           "cr-web-dev": {
             role: `DESARROLLADOR WEB Y MARKETING DIGITAL`,
             specs: `2021-2021 <strong>CABEZA-ROTA</strong> REMOTO-VILLAVICENCIO///COLOMBIA`,
             description: `Mejoré <strong>campañas de marketing</strong> con <strong>A/B Testing</strong> usando <strong>GA4</strong> y <strong>Hotjar</strong>, refinando sitios web para mayor interacción. Desarrollé frontends optimizados con <strong>Next.js</strong>, <strong>React.js</strong>, <strong>Vue.js</strong>, <strong>Nest.js</strong>, <strong>Redux</strong>, <strong>SASS/SCSS</strong>, <strong>Tailwind</strong>, <strong>Bootstrap</strong> y <strong>WordPress</strong>. Diseñé e implementé componentes reutilizables y mantenibles alineados a los requerimientos de cada proyecto.`,
-            tools: `nextjs - reactjs - vuejs - nestjs - redux - tailwind - bootstrap - wordpress - sass/scss<br> ga4 - hotjar`,
+            tools: `<strong>nextjs - reactjs - vuejs - nestjs - redux - tailwind - bootstrap - wordpress - sass/scss - ga4 - hotjar</strong>`,
             "tools-label": `TECNOLOGÍAS///HERRAMIENTAS`,
           },
           "cr-growth": {
             role: `GROWTH MARKETER & WEB DEVELOPER`,
             specs: `2020-2021 <strong>CABEZA-ROTA</strong> REMOTO-VILLAVICENCIO///COLOMBIA`,
             description: `Impulsé el <strong>reconocimiento de marca</strong> en <strong>Twitter</strong>, <strong>Instagram</strong>, <strong>Discord</strong> y <strong>YouTube</strong> con estrategias de crecimiento enfocadas. Diseñé y desplegué <strong>entornos VPS</strong> en <strong>AWS EC2</strong> con Apache, PHP y MySQL. Integré <strong>PayU</strong> y <strong>Cybersource</strong> para pagos automatizados. Optimicé <strong>flujos de usuario</strong> con componentes y hooks personalizados, mejorando la velocidad de renderizado y la experiencia general.`,
-            tools: `aws - ec2 - apache - mysql - php - reactjs - nodejs - typescript - sass<br> twitter - youtube - tiktok - payu - cybersource`,
-            "tools-label": `TECNOLOGÍAS///HERRAMIENTAS`,
-          },
-          zeronet: {
-            role: `FUNDADOR & LEAD FULL STACK ENGINEER`,
-            specs: `2017-PRESENTE <strong>Zerønet Labs</strong> REMOTO-VILLAVICENCIO///COLOMBIA`,
-            description: `Fundé <strong>Zerønet Labs</strong>, desarrollando <strong>aplicaciones frontend</strong> con <strong>React.js</strong>, <strong>Next.js</strong>, <strong>Vue.js</strong>, <strong>Vite</strong> y Vanilla JS. Creé <strong>APIs REST/GraphQL</strong>, microservicios y sistemas de automatización con <strong>Node.js</strong>, <strong>Nest.js</strong>, <strong>Symfony</strong>, <strong>TypeScript</strong>, <strong>Python</strong> y bases de datos SQL. Desarrollé <strong>librerías y paquetes NPM</strong> reutilizables con publicación automatizada mediante <strong>semantic-release</strong>. Contenericé entornos con <strong>Docker</strong> y pipelines multi-stage. Construí <strong>bots en Discord</strong> y servicios backend mejorando accesibilidad a datos. Experimenté con <strong>caché</strong>, <strong>replicación</strong> y <strong>limitación de APIs</strong> para mayor rendimiento.`,
-            tools: `reactjs - nextjs - vuejs - vite - symfony - nestjs - nodejs - python - postgresql - mariadb - mysql<br> docker - graphql - rest - semantic-release - github actions - sass/scss`,
+            tools: `<strong>aws - ec2 - apache - mysql - php - reactjs - nodejs - typescript - sass - twitter - youtube - tiktok - payu - cybersource</strong>`,
             "tools-label": `TECNOLOGÍAS///HERRAMIENTAS`,
           },
         },
@@ -234,9 +234,9 @@ const TRANSLATIONS = {
         user: {
           experience: `<strong>EXP.</strong> 7+ AÑOS | 2018 - 2025`,
           focus: `ENFOCADO EN`,
-          "focus-work": `DISEÑO-FUTURISTA BLOGS MINIMALISM PRODUCTOS-EXCLUSIVOS AUTOMATION DEV-OPS PORTAFOLIOS UI SIMPLICIDAD RESPONSIVE-WEBS`,
+          "focus-work": `DISEÑO-FUTURISTA BLOGS AI MINIMALISM PRODUCTOS-EXCLUSIVOS AUTOMATION DEV-OPS PORTAFOLIOS UI SIMPLICIDAD RESPONSIVE-WEBS`,
           nick: `<strong>NICK.</strong> KYONAX<sub>京</sub>`,
-          place: `<strong>LUGAR.</strong> VILLAVICENCIO/COLOMBIA`,
+          place: `<strong>LUGAR.</strong> VILLAVICENCIO/COLOMBIA 🇨🇴`,
         },
       },
       widget: {

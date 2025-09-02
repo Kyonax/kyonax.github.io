@@ -108,7 +108,7 @@
         card.setAttribute("aria-label", nameText + " icon");
 
         const iconWrap = document.createElement("div");
-        iconWrap.className = "tech-card__icon";
+        iconWrap.className = "tech-card__icon ";
 
         if (t.iconClass) {
           const i = document.createElement("i");

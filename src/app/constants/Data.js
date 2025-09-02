@@ -123,13 +123,19 @@ module.exports = {
     {
       id: "html",
       name: { en: "HTML5", es: "HTML5" },
-      iconGlyph: "",
+      iconGlyph: "",
       iconClass: "",
     },
     {
       id: "css",
-      name: { en: "CSS / SASS", es: "CSS / SASS" },
+      name: { en: "CSS / CSS3", es: "CSS / CSS3" },
       iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "scss",
+      name: { en: "SCSS / SASS", es: "SCSS / SASS" },
+      iconGlyph: "󰟬",
       iconClass: "",
     },
     {
@@ -141,7 +147,19 @@ module.exports = {
     {
       id: "ts",
       name: { en: "TypeScript", es: "TypeScript" },
-      iconGlyph: "",
+      iconGlyph: "󰛦",
+      iconClass: "",
+    },
+    {
+      id: "php",
+      name: { en: "PHP", es: "PHP" },
+      iconGlyph: "",
+      iconClass: "",
+    },
+    {
+      id: "python",
+      name: { en: "Python", es: "Python" },
+      iconGlyph: "",
       iconClass: "",
     },
     {
@@ -171,7 +189,7 @@ module.exports = {
     {
       id: "node",
       name: { en: "Node.js", es: "Node.js" },
-      iconGlyph: "",
+      iconGlyph: "",
       iconClass: "",
     },
     {

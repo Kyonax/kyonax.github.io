@@ -14,7 +14,14 @@
     "type": "git",
     "url": "git+https://github.com/Kyonax/kyo-web-online.git"
   },
-  "keywords": ["Kyonax", "kyo", "kyonax_on_tech", "kyo-wtf", "KYO-T", "京"],
+  "keywords": [
+    "Kyonax",
+    "kyo",
+    "kyonax_on_tech",
+    "kyo-wtf",
+    "KYO-T",
+    "京"
+  ],
   "author": "Cristian Moreno (Kyonax)",
   "license": "GPL-2.0-only",
   "bugs": {
@@ -50,5 +57,10 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0"
-  }
+  },
+  "browserslist": [
+    ">0.5%",
+    "last 2 versions",
+    "not dead"
+  ]
 }

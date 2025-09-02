@@ -88,7 +88,11 @@
       try {
         const params = new URLSearchParams(window.location.search);
         const q = params.get("language");
-        if (q) return q.toLowerCase();
+        if (q) {
+          return q.toLowerCase();
+        } else {
+          return "en";
+        }
       } catch (err) {
         // ignore
       }
