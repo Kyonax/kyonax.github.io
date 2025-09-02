@@ -47,8 +47,10 @@ module.exports = {
     description:
       "Kyonax, con +7 años de experiencia, crea sitios únicos y futuristas. Transforma tu idea en una experiencia digital impactante. ¡Da click ahora y lleva tu marca al siguiente nivel!", // Main description for SEO
     keywords: ["KYO-T", "kyo", "kyonax", "kyonax_on_tech", "kyo-wtf", "京"], // SEO keywords
-    ogTitle: "¡70% de descuento en todas las páginas web!", // Open Graph title for social media
-    twitterTitle: "¡70% de descuento en todas las páginas web!", // Twitter card title
+    ogTitle:
+      "Fast. Functional. Futuristic. Web Development by Cristian D. Moreno", // Open Graph title for social media
+    twitterTitle:
+      "Fast. Functional. Futuristic. Web Development by Cristian D. Moreno", // Twitter card title
     title: "I'm Kyo", // Website title
     websiteBanner: "assets/seo_banner.webp", // Website banner image
     websiteUrl: "https://kyonax.github.io/kyo-web-online/", // Website URL
