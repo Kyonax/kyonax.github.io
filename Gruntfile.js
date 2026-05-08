@@ -1,43 +1,23 @@
-/**
- * @file Gruntfile.js - GruntFile
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
- * This Gruntfile configures tasks for automating various build and
- * development processes using Grunt. The main task configured in this
- * file is the generation of favicons, which uses the `grunt-favicons`
- * plugin to create and place the necessary favicon files in the appropriate
- * directories based on the source image defined in the `FAVICON` constant.
+ * Gruntfile — favicon generation only. Invoked via `npm run generate-favicons`
+ * and chained by `npm run build-all`.
  *
- * node.js-v20.17.0
+ * Inline configuration: this file is CommonJS (Grunt requires it), and
+ * src/data/data.js is ESM. Rather than wiring an ESM-↔-CJS bridge for one
+ * static config block, the favicon path + dest are duplicated here.
  *
- * @author Cristian Moreno (Kyonax)
- * @contact iamkyo@kyo.wtf
- * @date 2025-01-17
- *
- * Code Guidelines :: @CCSv0.1
- * More details: https://code-guidelines.cybercodesyndicate.org
- * - Tabs only—no spaces.
- * - Naming:
- *   - snake_case for variables/methods.
- *   - _private_method() for private methods (underscore prefix).
- *   - UPPER_SNAKE_CASE for constants (in constant files).
- *   - kebab-case for file names (e.g., file-example.js).
- * - Meaningful names—fetch_user_data() over doThing().
- *
- * Repository-URL
- * https://github.com/Kyonax/kyo-web-online
- *
- * @dependencies
- * - FAVICON from "./src/app/constants/Data"
- *
- * @usage
- * This Gruntfile is executed via the following npm commands:
- * - `npm run generate-favicons`: To generate favicon files based on the configured settings.
- * - `npm run build-all`: Includes the favicon generation as part of the overall build process.
+ * Note: `grunt-favicons` calls ImageMagick `convert`, which is deprecated.
+ * Future option: switch to vite-plugin-favicons (PERFORMANCE_MIGRATION.md
+ * §3, §7.5 decision point #6 — currently keeping Grunt for less churn).
  */
-const { FAVICON } = require("./src/app/constants/Data");
 
-// TODO: Fix the Favicon Issue by creating a Grunt Plugin - Favicon use ImageMagick, however
-// this version uses something call 'convert' a command deprecated by ImageMagick
+const FAVICON = {
+  path: 'src/assets/favicon.png',
+  dest: 'dist/favicons',
+};
 
 module.exports = function (grunt) {
   grunt.initConfig({
@@ -53,6 +33,6 @@ module.exports = function (grunt) {
     },
   });
 
-  grunt.loadNpmTasks("grunt-favicons");
-  grunt.registerTask("default", ["favicons"]);
+  grunt.loadNpmTasks('grunt-favicons');
+  grunt.registerTask('default', ['favicons']);
 };

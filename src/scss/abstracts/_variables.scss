@@ -1,0 +1,153 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ *
+ * Theme tokens — single source of truth for the cyberpunk palette + scale.
+ * Values verbatim from kyo-web-online-old/src/app/scss/abstracts/_variables.scss
+ * (verified against ../../../../../reckit/src/app/scss/abstracts/_variables.scss
+ * — both projects share the same palette by design).
+ *
+ * Consumed via:
+ *   - vite.config.js css.preprocessorOptions.scss.additionalData
+ *     (auto-injected at the top of every .scss + every <style lang="scss">)
+ *   - abstracts/_index.scss @forward (declarations only — _theme is loaded
+ *     ONCE via main.scss because it emits CSS rules)
+ *   - _theme.scss @each loop → emits :root { --clr-* / --fs-* } at runtime
+ *
+ * Counts:
+ *   $colors      → 7 families × 5–7 shades = 43 tokens
+ *   $typo-scale  → 8 sizes × 3 breakpoint tiers = 24 tokens
+ *   $breakpoints → 4 keys
+ */
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Breakpoints — mobile-first. Consumed by min-media-query / max-media-query.
+ * ──────────────────────────────────────────────────────────────────────────── */
+$breakpoints: (
+  sm: 48em,      /* 768px  — Landscape phones */
+  md: 64em,      /* 1024px — Tablets */
+  lg: 82.667em,  /* 1320px — Desktops */
+  xl: 100em,     /* 1600px — Wide displays */
+);
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Color palette — emitted as --clr-{family}-{shade} CSS custom properties.
+ * The brand color is --clr-primary-100 (#f9cd26).
+ * Background is --clr-neutral-500 (#000000).
+ * Default border is --clr-border-100 (semi-transparent white, 0.2 alpha).
+ * ──────────────────────────────────────────────────────────────────────────── */
+$colors: (
+  primary: (
+    50:  hsl(48,  95%,  78%),
+    100: hsl(47,  95%,  56%),  /* #f9cd26 — canonical brand color */
+    200: hsl(49,  100%, 39%),
+    300: hsl(48,  100%, 29%),
+    400: hsl(45,  100%, 20%),
+    500: hsl(35,  100%, 13%),
+  ),
+  secondary: (
+    50:  hsl(224, 95%, 78%),
+    100: hsl(224, 95%, 56%),  /* #265ef9 */
+    200: hsl(224, 74%, 45%),
+    300: hsl(224, 74%, 39%),
+    400: hsl(224, 74%, 34%),
+    500: hsl(224, 74%, 22%),
+  ),
+  neutral: (
+    50:  hsl(0, 0%, 95%),
+    100: hsl(0, 0%, 85%),
+    200: hsl(0, 0%, 65%),
+    300: hsl(0, 0%, 45%),
+    400: hsl(0, 0%, 25%),
+    500: hsl(0, 0%, 0%),       /* #000000 — page background */
+  ),
+  border: (
+    50:  hsla(0, 0%, 95.29%, 0.2),
+    100: hsla(0, 0%, 100%,   0.2),  /* default border */
+    200: hsla(0, 0%, 90.59%, 0.2),
+    300: hsla(0, 0%, 85.88%, 0.2),
+    400: hsla(0, 0%, 61.18%, 0.2),
+    500: hsla(0, 0%, 46.47%, 0.2),
+    600: hsla(0, 0%, 26.47%, 0.2),
+  ),
+  success: (
+    50:  hsl(91, 48%,  72%),
+    100: hsl(91, 62%,  44%),  /* #6cb42a */
+    200: hsl(91, 100%, 28%),
+    300: hsl(105, 100%, 21%),
+    400: hsl(120, 100%, 15%),
+    500: hsl(120, 100%, 9%),
+  ),
+  warning: (
+    50:  hsl(29, 95%,  78%),
+    100: hsl(29, 95%,  56%),  /* #f98b26 */
+    200: hsl(30, 100%, 40%),
+    300: hsl(25, 100%, 32%),
+    400: hsl(17, 100%, 24%),
+    500: hsl(0,  100%, 17%),
+  ),
+  error: (
+    50:  hsl(352, 65%, 74%),
+    100: hsl(352, 69%, 48%),  /* #d1263d */
+    200: hsl(352, 70%, 39%),
+    300: hsl(352, 70%, 34%),
+    400: hsl(352, 70%, 29%),
+    500: hsl(352, 69%, 19%),
+  ),
+  /* `accent` family — magenta neon (316°). Used by the WORKING_ON project
+     state. Sits between red-error (352°) and blue-secondary (224°) on
+     the wheel, distinct from every other family in the palette and
+     reads as a high-energy "live now" cyberpunk highlight. */
+  accent: (
+    50:  hsl(316, 80%, 78%),
+    100: hsl(316, 90%, 60%),  /* #ee3ec5 */
+    200: hsl(316, 95%, 48%),
+    300: hsl(316, 95%, 38%),
+    400: hsl(316, 95%, 28%),
+    500: hsl(316, 95%, 18%),
+  ),
+);
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Typography scale — emitted as --fs-{size} CSS custom properties.
+ * Three breakpoint tiers (small / medium / large) re-emit at min-md / min-lg.
+ * ──────────────────────────────────────────────────────────────────────────── */
+$typo-scale: (
+  small: (
+    /* Small tier — substantially bumped from the legacy values which
+       rendered body text at 12px and captions at 7.5px on a 12px root,
+       both illegible on phones. New baseline targets phone reading
+       distance: 11.4px–15px for the lower three steps; headings
+       proportionally up so the hierarchy holds. The desktop tiers
+       (medium/large) are intentionally unchanged — they're already
+       sized for further reading distances. */
+    100: 0.95rem,    /* 11.4px */
+    200: 1.05rem,    /* 12.6px */
+    300: 1.15rem,    /* 13.8px */
+    400: 1.25rem,    /* 15px   */
+    500: 1.625rem,   /* 19.5px */
+    600: 2rem,       /* 24px   */
+    700: 2.375rem,   /* 28.5px */
+    800: 3.125rem,   /* 37.5px */
+  ),
+  medium: (
+    100: 0.75rem,    /* 9px    */
+    200: 1rem,       /* 12px   */
+    300: 1.125rem,   /* 13.5px */
+    400: 1.25rem,    /* 15px   */
+    500: 1.75rem,    /* 21px   */
+    600: 2.25rem,    /* 27px   */
+    700: 3rem,       /* 36px   */
+    800: 4rem,       /* 48px   */
+  ),
+  large: (
+    100: 0.875rem,   /* 10.5px */
+    200: 1.125rem,   /* 13.5px */
+    300: 1.25rem,    /* 15px   */
+    400: 1.5rem,     /* 18px   */
+    500: 2rem,       /* 24px   */
+    600: 3rem,       /* 36px   */
+    700: 4.5rem,     /* 54px   */
+    800: 6rem,       /* 72px   */
+  ),
+);

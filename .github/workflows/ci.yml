@@ -1,0 +1,88 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+#
+# Continuous integration. Mirrors reckit's 6-job pipeline (CODE_STANDARDS_MIGRATION.md §7)
+# adapted for kyo-web-online.
+#
+# Job graph:
+#   eslint  ─┐
+#   precheck ┼─→ pre-check  (aggregator — required for merge)
+#   tests   ─┤
+#   build   ─┘
+#
+# Each job runs independently; the aggregator fails if any depends-on job fails.
+# Triggers on PR + push to develop/main/vue-migration.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop, vue-migration]
+  push:
+    branches: [main, develop, vue-migration]
+
+jobs:
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+
+  precheck:
+    name: Migration gates (precheck)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      # Composite gate — runs check-i18n + check-i18n-keys + check-trans-attrs
+      # + check-color-usage + check-aliases + check-license-headers in sequence.
+      - run: npm run precheck
+
+  tests:
+    name: Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      # Skip favicon generation (separate Grunt step requiring ImageMagick).
+      # The deploy workflows handle that via build-all when needed.
+      - run: npm run build
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist/
+          retention-days: 7
+
+  pre-check:
+    name: Pre-check (aggregator)
+    needs: [eslint, precheck, tests, build]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All migration gates passed. Ready to merge."

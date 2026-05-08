@@ -1,0 +1,121 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ *
+ * Global resets and document chrome (scrollbar, box-sizing, body background).
+ * Page-shell layout (#root grid, #persistent-data, #content-data) lives in
+ * layout/_persistent-data.scss — separation per the 7-1 architecture.
+ */
+
+/* Box-sizing reset. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Smooth anchor scroll + padding offset for the sticky HudNav.
+   The nav is ~60px tall on mobile, ~72px on desktop — pad scroll-margin so
+   in-page anchors don't hide behind it. */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
+}
+
+/* Custom scrollbar — Firefox. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--clr-neutral-50) transparent;
+}
+
+/* Custom scrollbar — WebKit (Chrome / Edge / Safari). */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--clr-neutral-50);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--clr-neutral-100);
+}
+
+/* Hide scrollbars on small viewports for a cleaner mobile look. */
+@media (max-width: 882px) {
+  * {
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+/* Body baseline. */
+body {
+  background-color: var(--clr-neutral-500);
+  color: var(--clr-neutral-50);
+  margin: 0;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Accessibility — keyboard scroll + focus-visible outlines.
+ *
+ * Scrollable regions (#persistent-data, .main-scroll-block) get:
+ *   - tabindex="0" via the SFC markup → focusable
+ *   - focus-visible outline → keyboard users see they're focused
+ *   - keyboard scroll works natively when the element has focus
+ *     (arrow keys, Page Up/Down, Home/End, Space — browser-default)
+ * ──────────────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--clr-primary-100);
+  outline-offset: 2px;
+}
+
+#persistent-data:focus-visible,
+.main-scroll-block:focus-visible {
+  /* Inset the outline so it doesn't get clipped by the parent grid's overflow. */
+  outline-offset: -2px;
+}
+
+/* Skip-link target for screen readers. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Reduced-motion — honor the OS-level setting.
+ *
+ * The landing has many simultaneous infinite animations (element-flare
+ * pseudos × ~30 cards/items, two grid loaders, scan-line, scroll-bounce,
+ * marquee). Users who prefer reduced motion get all of those collapsed
+ * to instant single-shot transitions. Smooth scroll is also disabled —
+ * jump-cuts are part of the contract.
+ * ──────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1      !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto   !important;
+  }
+}

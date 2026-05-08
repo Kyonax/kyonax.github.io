@@ -1,0 +1,24 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+#
+# Mirrors CCS / reckit conventions. Aligned with eslint.config.mjs.
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 80
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{org,scss,vue}]
+max_line_length = off
+
+[Makefile]
+indent_style = tab
