@@ -16,21 +16,31 @@ RewriteRule ^(.*)$ https://kyonax.com/$1 [R=301,L]
 RewriteCond %{HTTP_HOST} ^(www\.)?kyo\.wtf$ [NC]
 RewriteRule ^(.*)$ https://kyonax.com/$1 [R=301,L]
 
-# === Legacy ?language= -> /es/ or / (server-side 301 for crawler accuracy) ==
+# === Legacy ?language= -> /es or / (server-side 301 for crawler accuracy) ==
 RewriteCond %{QUERY_STRING} (^|&)language=es(&|$) [NC]
-RewriteRule ^$ /es/? [R=301,L]
+RewriteRule ^$ /es? [R=301,L]
 RewriteCond %{QUERY_STRING} (^|&)language=en(&|$) [NC]
 RewriteRule ^(es/?)?$ /? [R=301,L]
 
 # === Canonical: NO trailing slash =========================================
-# Disable Apache's auto-add-slash for directory requests. Without this,
-# hitting /es would 301 to /es/ via mod_dir before our rule fires.
+# Disable Apache/LiteSpeed auto-add-slash for directory requests. Without
+# this, hitting /es would 301 to /es/ via mod_dir before our rules fire.
 DirectorySlash Off
 
-# Strip any trailing slash from non-root paths. Catches /es/, /privacy/,
-# /es/privacy/ and any future sub-route directory.
+# Strip trailing slash on non-directory paths only. Skipping real
+# directories breaks the LiteSpeed redirect loop where mod_dir adds the
+# slash for /es (real dir) and our strip rule removes it again.
 RewriteCond %{REQUEST_URI} !^/$
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# Internally serve the index.html of every prerendered route directory
+# (/es, /privacy, /es/privacy) without exposing the trailing slash to
+# the browser. The URL stays canonical-no-slash. The content comes from
+# the matching index.html inside that directory.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_URI} !/$
+RewriteRule ^(.+)$ $1/index.html [L]
 
 # === MIME types (LiteSpeed lacks AVIF by default) ==========================
 <IfModule mod_mime.c>
