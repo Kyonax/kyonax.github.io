@@ -46,21 +46,30 @@ const portrait_aria = computed(() =>
   `${t('kyo-web.persistent-data.name')} — ${t('kyo-web.landing.hero.open-portrait')}`,
 );
 
-/* CSS `order` doesn't move tab focus — swap the visual DOM position
-   via v-if to match reading order on each breakpoint. */
+/* Two HeroVisual instances render at every breakpoint; v-show hides the
+   off-breakpoint one via display:none, which browsers skip from tab order.
+   The mobile instance sits before .hero__content (source order: visual →
+   content) so mobile keyboard users tab visual-first. The desktop instance
+   sits after .hero__content (content → visual) so desktop tab order is
+   content-first, matching the grid layout. */
 /* 1200px = SCSS `lg` token. Keep in lockstep with the grid's
-   `@include min-media-query(lg)` in the SCSS below — otherwise the v-if
-   branch and the grid layout disagree at iPad-landscape (1024-1199px),
-   producing content-first / image-below order. */
-const _viewport_mq = typeof window !== 'undefined'
-  ? window.matchMedia('(min-width: 1200px)')
-  : null;
-const is_desktop = ref(_viewport_mq?.matches ?? false);
+   `@include min-media-query(lg)` in the SCSS below — otherwise the
+   v-show branch and the grid layout disagree at iPad-landscape
+   (1024-1199px), producing content-first / image-below order. */
+/* is_desktop initializes to false on BOTH SSR and CSR so the hydration
+   diff is empty. _viewport_mq is read inside onMounted (post-hydration)
+   and the visible instance flips reactively. */
+const is_desktop = ref(false);
+let _viewport_mq = null;
 const _on_viewport_change = (event) => {
-  is_desktop.value = event.matches; 
+  is_desktop.value = event.matches;
 };
 
-onMounted(() => _viewport_mq?.addEventListener('change', _on_viewport_change));
+onMounted(() => {
+  _viewport_mq = window.matchMedia('(min-width: 1200px)');
+  is_desktop.value = _viewport_mq.matches;
+  _viewport_mq.addEventListener('change', _on_viewport_change);
+});
 onBeforeUnmount(() => _viewport_mq?.removeEventListener('change', _on_viewport_change));
 
 
@@ -77,7 +86,7 @@ const GLYPH_ARROW = '\uF063';
     <UiHudDeco variant="bl" text="// VECTOR :: KYO-001" />
     <div class="hero__inner">
       <HeroVisual
-        v-if="!is_desktop"
+        v-show="!is_desktop"
         class="hero__visual"
         :aria-label="portrait_aria"
         :alt="t('kyo-web.landing.hero.portrait-alt')"
@@ -173,7 +182,7 @@ const GLYPH_ARROW = '\uF063';
       </div>
 
       <HeroVisual
-        v-if="is_desktop"
+        v-show="is_desktop"
         class="hero__visual"
         :aria-label="portrait_aria"
         :alt="t('kyo-web.landing.hero.portrait-alt')"

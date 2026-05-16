@@ -296,6 +296,11 @@ export default defineConfig(({ mode }) => {
       target: 'es2020',
       cssCodeSplit: true,
       sourcemap: true,
+      /* Subset fonts (e.g. SymbolsNerdFontMono → 2.7 KB) would otherwise
+         fall under Vite's 4 KB inline threshold and be embedded as
+         data: URLs inside the render-blocking CSS. We need them as
+         separately-hashed cacheable assets so Phase 4 can preload them. */
+      assetsInlineLimit: (filePath) => filePath.endsWith('.woff2') ? false : undefined,
       rollupOptions: {
         output: {
           assetFileNames: 'assets/[name]-[hash][extname]',

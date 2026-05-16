@@ -144,7 +144,10 @@ const _format_deadline_ms = (ms) => {
     return null;
   }
   const fmt = locale.value === 'es' ? _deadline_fmt.es : _deadline_fmt.en;
-  return fmt.format(new Date(ms)).toUpperCase();
+  /* es-CO Intl emits U+00A0 between "A." and "M." — SSR escapes it as
+     &nbsp; while CSR emits the raw codepoint, producing a text-content
+     hydration mismatch. Collapse to ASCII space at the boundary. */
+  return fmt.format(new Date(ms)).toUpperCase().replace(/ /g, ' ');
 };
 
 const _format_deadline = (deadline_str) =>
@@ -154,7 +157,20 @@ const _next_future_deadline = (project) => {
   if (!project.deadlines) {
     return null;
   }
-  const now = Date.now();
+  /* Pre-hydration (_now_ms === 0) returns the FIRST parseable deadline so
+     SSR prerender and CSR initial render produce identical text. After
+     onMounted populates _now_ms, the reactive read here re-evaluates with
+     the real wall clock and the "earliest future" branch takes over. */
+  const now = _now_ms.value;
+  if (now === 0) {
+    for (const [label, ts] of Object.entries(project.deadlines)) {
+      const ms = _parse_bogota(ts);
+      if (ms !== null && ms !== undefined) {
+        return { label, ms };
+      }
+    }
+    return null;
+  }
   let best = null;
   for (const [label, ts] of Object.entries(project.deadlines)) {
     const ms = _parse_bogota(ts);
@@ -489,9 +505,7 @@ const _warm_modal = (key) => {
             <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
           </div>
 
-          <p class="now-projects-section__milestone">
-            // {{ card.label.toUpperCase() }}
-          </p>
+          <p class="now-projects-section__milestone">// {{ card.label.toUpperCase() }}</p>
           <div v-if="card.is_working_on" class="now-projects-section__countdown">
             <div class="now-projects-section__countdown-head">
               <span class="now-projects-section__countdown-label">

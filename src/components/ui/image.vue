@@ -26,9 +26,21 @@ const props = defineProps({
   scale:    { type: Number,  default: 1 },
   framed:   { type: Boolean, default: false },
 });
+/* aspect-ratio lives in a CSS custom property, consumed by scoped CSS,
+   rather than as an inline `aspect-ratio` declaration. Two reasons:
+   (1) vite-ssg's HTML minifier collapses `3 / 4` to `3/4` inside style="";
+   (2) Vue's client-side stringifyStyle keeps `3 / 4` verbatim — the
+   minifier-collapsed SSR output then differs from the client's expected
+   output. Storing the value spaceless from the start keeps both sides
+   byte-identical; CSS `aspect-ratio` accepts `3/4` without surrounding
+   whitespace per spec. */
+const _aspect_compact = computed(() =>
+  String(props.aspect).replace(/\s+/g, ''),
+);
+
 const frame_style = computed(() => {
   const style = {
-    aspectRatio: props.aspect,
+    '--image-aspect': _aspect_compact.value,
     '--image-fit': props.fit,
     '--image-position': props.position,
     '--image-scale': props.scale,
@@ -89,10 +101,11 @@ const wrapper_class = computed(() => [
   }
 
   &__frame {
-    
+
     position: relative;
     overflow: hidden;
     background-color: var(--clr-neutral-400);
+    aspect-ratio: var(--image-aspect, 1 / 1);
 
     width: var(--image-size-sm, 140px);
 

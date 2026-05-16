@@ -11,10 +11,14 @@
 #   - or: woff2_compress + pyftsubset on PATH
 #
 # Usage:
-#   ./scripts/convert-fonts.sh                      # auto-detect input dir
-#   ./scripts/convert-fonts.sh src/fonts            # explicit input
-#   ./scripts/convert-fonts.sh --subset             # apply Latin Extended subset
-#   ./scripts/convert-fonts.sh --symbols-glyphs FILE  # use FILE as Symbols Nerd glyph list
+#   ./scripts/convert-fonts.sh                                 # auto-detect input dir
+#   ./scripts/convert-fonts.sh src/fonts                       # explicit input
+#   ./scripts/convert-fonts.sh --subset                        # apply Latin Extended subset
+#   ./scripts/convert-fonts.sh --symbols-glyphs=FILE           # use FILE as Symbols Nerd glyph list
+#   ./scripts/convert-fonts.sh --only=PATTERN                  # process only fonts whose path matches PATTERN
+#
+# Phase 1 (Symbols subset only):
+#   ./scripts/convert-fonts.sh --subset --symbols-glyphs=scripts/_nerd-font-glyphs.txt --only=Symbols
 
 set -euo pipefail
 
@@ -24,10 +28,12 @@ INPUT="${REPO_ROOT}/src/fonts"
 
 SUBSET=false
 SYMBOLS_LIST=""
+ONLY_PATTERN=""
 for arg in "$@"; do
   case "$arg" in
     --subset)               SUBSET=true ;;
     --symbols-glyphs=*)     SYMBOLS_LIST="${arg#*=}" ;;
+    --only=*)               ONLY_PATTERN="${arg#*=}" ;;
     /*|src/*|../*)          INPUT="$arg" ;;
   esac
 done
@@ -49,6 +55,9 @@ count=0
 while IFS= read -r -d '' ttf; do
   name="$(basename "$ttf" .ttf)"
   rel="${ttf#$INPUT/}"
+  if [[ -n "$ONLY_PATTERN" && "$rel" != *"$ONLY_PATTERN"* ]]; then
+    continue
+  fi
   rel_dir="$(dirname "$rel")"
   out_dir="${REPO_ROOT}/src/fonts/$rel_dir"
   mkdir -p "$out_dir"
@@ -56,13 +65,19 @@ while IFS= read -r -d '' ttf; do
   woff2_out="${out_dir}/${name}.woff2"
 
   if [[ "$SUBSET" == "true" ]]; then
-    # Symbols-Nerd-Font gets a separate glyph list if provided
+    # Symbols-Nerd-Font gets its own glyph list (icon-only payload).
+    # Flags: drop OT layout features (no shaping needed for icons),
+    # drop hinting (icons render fine without it), keep .notdef outline
+    # so unmapped glyphs render a visible tofu instead of zero-width.
     if [[ "$name" == *Symbols* && -n "$SYMBOLS_LIST" ]]; then
       pyftsubset "$ttf" \
         --output-file="$woff2_out" \
         --flavor=woff2 \
         --unicodes-file="$SYMBOLS_LIST" \
-        --layout-features='*' --glyph-names --symbol-cmap --legacy-cmap
+        --layout-features-='*' \
+        --no-hinting \
+        --notdef-outline \
+        --symbol-cmap --legacy-cmap
     else
       pyftsubset "$ttf" \
         --output-file="$woff2_out" \
