@@ -1,0 +1,25 @@
+# Latin + CJK corpus for Geomanist + SpaceMonoNerdFont subsets.
+# Source of truth for scripts/convert-fonts.sh --latin-subset.
+# One codepoint (or range) per line; '#' starts a comment.
+#
+# Adding a character: append the hex codepoint here, then run
+#   npm run convert:fonts:subset
+# and commit both this file and the regenerated WOFF2s.
+
+# ASCII printable (everything from space to tilde)
+0020-007E
+
+# Latin-1 supplement — Spanish diacritics + symbols actually used
+00A1 00A9 00B7 00BF 00C1 00CD 00D1 00D3 00D7 00D8
+00E1 00E9 00ED 00F1 00F3 00F8 00FA 00FC
+
+# General Punctuation — em-dash + curly apostrophe
+2014 2019
+
+# CJK Unified Ideographs — HUD watermarks rendered in Geomanist Bold
+# 京 化 去 問 応 未 来 発 答 者 質 進 過 開
+4EAC 5316 53BB 554F 5FDC 672A 6765 767A 7B54 8005
+8CEA 9032 904E 958B
+
+# Katakana — HUD watermarks (デ パ ベ ロ ー ッ)
+30C3 30C7 30D1 30D9 30ED 30FC

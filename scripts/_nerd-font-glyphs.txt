@@ -1,0 +1,25 @@
+# Symbols Nerd Font Mono — PUA codepoints kept in the subset WOFF2.
+# Source of truth for scripts/convert-fonts.sh + scripts/check-nerd-glyphs.mjs.
+# One hex codepoint per line; lines starting with # are ignored.
+#
+# Adding a glyph: append the hex codepoint here, run
+#   npm run convert:fonts:subset
+# then commit both this file and the regenerated WOFF2.
+
+F005
+F00D
+F053
+F054
+F058
+F063
+F08E
+F09B
+F0C2
+F0C9
+F0E0
+F0E1
+F121
+F16D
+F232
+F233
+F2DB

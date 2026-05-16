@@ -9,11 +9,49 @@ import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
 const STORAGE_KEY = 'kyo:consent';
+const GA_MEASUREMENT_ID = 'G-6M3P3M2HG5';
 
 const privacy_href = computed(() => (locale.value === 'es' ? '/es/privacy' : '/privacy'));
 
 const open = ref(false);
 const decline_btn = ref(null);
+
+/* Idempotent gtag bootstrap. Called from onMounted (when localStorage
+   already has a decision) or from accept()/decline(). Users who never
+   interact with the banner never trigger this — zero analytics payload. */
+const _inject_gtag = (granted) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  if (window.__gtag_loaded) {
+    _update(granted);
+    return;
+  }
+  window.__gtag_loaded = true;
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    window.dataLayer.push(arguments); 
+  }
+  window.gtag = gtag;
+
+  const value = granted ? 'granted' : 'denied';
+  gtag('consent', 'default', {
+    ad_storage:           value,
+    ad_user_data:         value,
+    ad_personalization:   value,
+    analytics_storage:    value,
+    functionality_storage:'granted',
+    security_storage:     'granted',
+  });
+  gtag('js', new Date());
+  gtag('config', GA_MEASUREMENT_ID, { anonymize_ip: true });
+
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+  document.head.append(script);
+};
 
 const _update = (granted) => {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
@@ -30,17 +68,17 @@ const _update = (granted) => {
 
 const accept = () => {
   try {
-    localStorage.setItem(STORAGE_KEY, 'granted'); 
+    localStorage.setItem(STORAGE_KEY, 'granted');
   } catch { /* private mode */ }
-  _update(true);
+  _inject_gtag(true);
   open.value = false;
 };
 
 const decline = () => {
   try {
-    localStorage.setItem(STORAGE_KEY, 'denied'); 
+    localStorage.setItem(STORAGE_KEY, 'denied');
   } catch { /* private mode */ }
-  _update(false);
+  _inject_gtag(false);
   open.value = false;
 };
 
@@ -62,10 +100,20 @@ watch(open, async (is_open) => {
 });
 
 onMounted(() => {
+  let stored = null;
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    open.value = stored !== 'granted' && stored !== 'denied';
+    stored = localStorage.getItem(STORAGE_KEY);
   } catch {
+    open.value = true;
+    return;
+  }
+  if (stored === 'granted') {
+    _inject_gtag(true);
+    open.value = false;
+  } else if (stored === 'denied') {
+    _inject_gtag(false);
+    open.value = false;
+  } else {
     open.value = true;
   }
 });

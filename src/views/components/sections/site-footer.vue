@@ -49,10 +49,10 @@ const manifest = computed(() => [
 ]);
 
 const SOCIALS = [
-  { id: 'github',    url: 'https://github.com/kyonax',             glyph: '', label: 'GitHub, @kyonax',    delay: '1s' },
-  { id: 'linkedin',  url: 'https://linkedin.com/in/kyonax',        glyph: '', label: 'LinkedIn profile, Cristian D. Moreno',  delay: '2s' },
+  { id: 'github',    url: 'https://github.com/kyonax',             glyph: '\uF09B', label: 'GitHub, @kyonax',    delay: '1s' },
+  { id: 'linkedin',  url: 'https://linkedin.com/in/kyonax',        glyph: '\uF0E1', label: 'LinkedIn profile, Cristian D. Moreno',  delay: '2s' },
   { id: 'x',         url: 'https://x.com/kyonax_on_tech',          brand: 'x',      label: 'X (formerly Twitter), @kyonax_on_tech',        delay: '3s' },
-  { id: 'instagram', url: 'https://instagram.com/kyonax_on_tech',  glyph: '', label: 'Instagram, @kyonax_on_tech', delay: '4s' },
+  { id: 'instagram', url: 'https://instagram.com/kyonax_on_tech',  glyph: '\uF16D', label: 'Instagram, @kyonax_on_tech', delay: '4s' },
   { id: 'tiktok',    url: 'https://tiktok.com/@kyonax_on_tech',    brand: 'tiktok', label: 'TikTok, @kyonax_on_tech',    delay: '5s' },
 ];
 

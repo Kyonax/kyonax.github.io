@@ -5,7 +5,12 @@
  */
 
 import BlastImage from '@components/blast-image.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+
+const loaded = ref(false);
+const on_loaded = () => {
+  loaded.value = true; 
+};
 
 const props = defineProps({
   img:      { type: String,  required: true },
@@ -26,9 +31,21 @@ const props = defineProps({
   scale:    { type: Number,  default: 1 },
   framed:   { type: Boolean, default: false },
 });
+/* aspect-ratio lives in a CSS custom property, consumed by scoped CSS,
+   rather than as an inline `aspect-ratio` declaration. Two reasons:
+   (1) vite-ssg's HTML minifier collapses `3 / 4` to `3/4` inside style="";
+   (2) Vue's client-side stringifyStyle keeps `3 / 4` verbatim — the
+   minifier-collapsed SSR output then differs from the client's expected
+   output. Storing the value spaceless from the start keeps both sides
+   byte-identical; CSS `aspect-ratio` accepts `3/4` without surrounding
+   whitespace per spec. */
+const _aspect_compact = computed(() =>
+  String(props.aspect).replace(/\s+/g, ''),
+);
+
 const frame_style = computed(() => {
   const style = {
-    aspectRatio: props.aspect,
+    '--image-aspect': _aspect_compact.value,
     '--image-fit': props.fit,
     '--image-position': props.position,
     '--image-scale': props.scale,
@@ -58,6 +75,7 @@ const frame_style = computed(() => {
 const wrapper_class = computed(() => [
   'ui-image',
   props.framed ? 'ui-image--framed' : null,
+  loaded.value ? 'is-loaded' : null,
 ]);
 </script>
 
@@ -73,7 +91,9 @@ const wrapper_class = computed(() => [
         :alt="alt || img"
         :eager="eager"
         :sizes="sizes"
+        @load="on_loaded"
       />
+      <div class="ui-image__skeleton" aria-hidden="true" />
     </div>
   </div>
 </template>
@@ -89,10 +109,16 @@ const wrapper_class = computed(() => [
   }
 
   &__frame {
-    
+
     position: relative;
     overflow: hidden;
+    /* Local stacking context so the skeleton (z-index 1) and the picture
+       (z-index 2) stay contained inside UiImage — otherwise their indices
+       bubble up to the nearest positioned ancestor and outrank sibling
+       overlays like `.hero-visual__inner` (the cyberpunk scan flare). */
+    isolation: isolate;
     background-color: var(--clr-neutral-400);
+    aspect-ratio: var(--image-aspect, 1 / 1);
 
     width: var(--image-size-sm, 140px);
 
@@ -114,6 +140,7 @@ const wrapper_class = computed(() => [
     inset: 0;
     width: 100%;
     height: 100%;
+    z-index: 2;
 
     :deep(img) {
       width: 100%;
@@ -122,7 +149,19 @@ const wrapper_class = computed(() => [
       object-position: var(--image-position, center);
       transform: scale(var(--image-scale, 1));
       transform-origin: var(--image-position, center);
+      opacity: 0;
+      transition: opacity 0.4s ease;
     }
+  }
+
+  &.is-loaded &__picture :deep(img) { opacity: 1; }
+
+  &__skeleton { @include media-skeleton; }
+  &.is-loaded &__skeleton { opacity: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__picture :deep(img),
+    &__skeleton { transition: none; }
   }
 }
 </style>

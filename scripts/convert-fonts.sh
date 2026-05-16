@@ -3,18 +3,24 @@
 # Copyright (c) 2026 Cristian D. Moreno — @Kyonax
 # Mozilla Public License 2.0 — see LICENSE.
 #
-# convert-fonts.sh — Phase 2 helper. TTF → WOFF2 conversion + Latin Extended
-# subsetting for every font under src/fonts/ (or, pre-migration, kyo-web-online-old/src/app/fonts/).
+# convert-fonts.sh — TTF → WOFF2 conversion + optional unicode-range subsetting.
 #
 # Requires:
 #   - python3 + pip install fonttools brotli
 #   - or: woff2_compress + pyftsubset on PATH
 #
 # Usage:
-#   ./scripts/convert-fonts.sh                      # auto-detect input dir
-#   ./scripts/convert-fonts.sh src/fonts            # explicit input
-#   ./scripts/convert-fonts.sh --subset             # apply Latin Extended subset
-#   ./scripts/convert-fonts.sh --symbols-glyphs FILE  # use FILE as Symbols Nerd glyph list
+#   ./scripts/convert-fonts.sh                                 # auto-detect input dir
+#   ./scripts/convert-fonts.sh src/fonts                       # explicit input
+#   ./scripts/convert-fonts.sh --subset                        # apply Latin Extended subset
+#   ./scripts/convert-fonts.sh --symbols-glyphs=FILE           # use FILE as Symbols Nerd glyph list
+#   ./scripts/convert-fonts.sh --latin-subset=FILE             # use FILE as Latin glyph list (non-Symbols fonts)
+#   ./scripts/convert-fonts.sh --only=PATTERN                  # process only fonts whose path matches PATTERN
+#
+# Examples:
+#   ./scripts/convert-fonts.sh --subset --symbols-glyphs=scripts/_nerd-font-glyphs.txt --only=Symbols
+#   ./scripts/convert-fonts.sh --subset --latin-subset=scripts/_latin-corpus.txt --only=Geomanist
+#   ./scripts/convert-fonts.sh --subset --latin-subset=scripts/_latin-corpus.txt --only=SpaceMono
 
 set -euo pipefail
 
@@ -24,10 +30,14 @@ INPUT="${REPO_ROOT}/src/fonts"
 
 SUBSET=false
 SYMBOLS_LIST=""
+LATIN_LIST=""
+ONLY_PATTERN=""
 for arg in "$@"; do
   case "$arg" in
     --subset)               SUBSET=true ;;
     --symbols-glyphs=*)     SYMBOLS_LIST="${arg#*=}" ;;
+    --latin-subset=*)       LATIN_LIST="${arg#*=}" ;;
+    --only=*)               ONLY_PATTERN="${arg#*=}" ;;
     /*|src/*|../*)          INPUT="$arg" ;;
   esac
 done
@@ -49,6 +59,9 @@ count=0
 while IFS= read -r -d '' ttf; do
   name="$(basename "$ttf" .ttf)"
   rel="${ttf#$INPUT/}"
+  if [[ -n "$ONLY_PATTERN" && "$rel" != *"$ONLY_PATTERN"* ]]; then
+    continue
+  fi
   rel_dir="$(dirname "$rel")"
   out_dir="${REPO_ROOT}/src/fonts/$rel_dir"
   mkdir -p "$out_dir"
@@ -56,13 +69,25 @@ while IFS= read -r -d '' ttf; do
   woff2_out="${out_dir}/${name}.woff2"
 
   if [[ "$SUBSET" == "true" ]]; then
-    # Symbols-Nerd-Font gets a separate glyph list if provided
+    # Symbols-Nerd-Font gets its own glyph list (icon-only payload).
+    # Flags: drop OT layout features (no shaping needed for icons),
+    # drop hinting (icons render fine without it), keep .notdef outline
+    # so unmapped glyphs render a visible tofu instead of zero-width.
     if [[ "$name" == *Symbols* && -n "$SYMBOLS_LIST" ]]; then
       pyftsubset "$ttf" \
         --output-file="$woff2_out" \
         --flavor=woff2 \
         --unicodes-file="$SYMBOLS_LIST" \
-        --layout-features='*' --glyph-names --symbol-cmap --legacy-cmap
+        --layout-features-='*' \
+        --no-hinting \
+        --notdef-outline \
+        --symbol-cmap --legacy-cmap
+    elif [[ -n "$LATIN_LIST" ]]; then
+      pyftsubset "$ttf" \
+        --output-file="$woff2_out" \
+        --flavor=woff2 \
+        --unicodes-file="$LATIN_LIST" \
+        --layout-features='kern,liga,clig,calt'
     else
       pyftsubset "$ttf" \
         --output-file="$woff2_out" \
@@ -71,7 +96,6 @@ while IFS= read -r -d '' ttf; do
         --layout-features='kern,liga,clig,calt'
     fi
   else
-    # Plain WOFF2 conversion (no subset)
     pyftsubset "$ttf" \
       --output-file="$woff2_out" \
       --flavor=woff2 \

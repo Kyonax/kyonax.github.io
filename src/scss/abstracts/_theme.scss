@@ -63,6 +63,18 @@
   -webkit-text-stroke-color: var(--clr-neutral-500);
 }
 
+/* Companion @keyframes for the media-skeleton mixin (see _mixins.scss).
+   Emitted once globally; consumed by ui/image.vue + ui/image-viewer.vue
+   + project modal carousel. */
+/* Companion @keyframes for the `media-skeleton` mixin. Compositor-thread
+   (transform + opacity). Half-cycle-offset pseudo on `::after` keeps one
+   wave always rising. */
+@keyframes media-skeleton-ripple {
+  0%   { transform: translate(-50%, -50%) scale(0.35); opacity: 0;    }
+  18%  {                                                 opacity: 0.55; }
+  100% { transform: translate(-50%, -50%) scale(8);    opacity: 0;    }
+}
+
 @keyframes kyo-glow-pulse {
   0%, 100% {
     filter: drop-shadow(

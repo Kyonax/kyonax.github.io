@@ -9,10 +9,11 @@
  * youtube-nocookie.com unconditionally.
  */
 
+import { vImageReady } from '@composables/use-image-ready';
 import { warmYoutube } from '@composables/use-youtube-warmup';
 import { buildYoutubeThumbnails } from '@data/youtube';
 import BrandIcon from '@ui/brand-icon.vue';
-import { computed, nextTick, onBeforeUnmount, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
@@ -32,6 +33,26 @@ const { t, locale } = useI18n();
 const _activated = ref(props.autoLoad);
 const _consent_prompt_open = ref(false);
 const _iframe_ref = ref(null);
+const _consent_decline_ref = ref(null);
+const poster_loaded = ref(false);
+const on_poster_load = () => {
+  poster_loaded.value = true; 
+};
+
+const _on_consent_keydown = (event) => {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    decline_consent();
+  }
+};
+
+watch(_consent_prompt_open, async (is_open) => {
+  if (!is_open) {
+    return;
+  }
+  await nextTick();
+  _consent_decline_ref.value?.focus?.();
+});
 
 const _origin = computed(() => {
   if (props.origin) {
@@ -168,15 +189,18 @@ onBeforeUnmount(pause);
       v-else
       type="button"
       class="youtube-facade__button"
+      :class="{ 'is-loaded': poster_loaded }"
       :aria-label="play_label"
       @click="activate"
-      @pointerover="_warm"
+      @pointerenter="_warm"
       @focus="_warm"
     >
+      <div class="youtube-facade__skeleton" aria-hidden="true" />
       <picture class="youtube-facade__poster">
         <source v-if="poster_avif" :srcset="poster_avif" type="image/avif" />
         <source :srcset="poster_webp" type="image/webp" />
         <img
+          v-image-ready="on_poster_load"
           class="youtube-facade__poster-img"
           :src="poster_fallback"
           :data-fallback="poster_alt_low"
@@ -208,16 +232,18 @@ onBeforeUnmount(pause);
       aria-modal="false"
       :aria-labelledby="`yt-consent-title-${videoId}`"
       :aria-describedby="`yt-consent-body-${videoId}`"
+      @keydown="_on_consent_keydown"
     >
       <div class="youtube-facade__consent-card">
-        <h4 :id="`yt-consent-title-${videoId}`" class="youtube-facade__consent-title">
+        <h1 :id="`yt-consent-title-${videoId}`" class="youtube-facade__consent-title">
           {{ t('kyo-web.landing.projects.youtube-consent-title') }}
-        </h4>
+        </h1>
         <p :id="`yt-consent-body-${videoId}`" class="youtube-facade__consent-body">
           {{ t('kyo-web.landing.projects.youtube-consent-body') }}
         </p>
         <div class="youtube-facade__consent-actions">
           <button
+            ref="_consent_decline_ref"
             type="button"
             class="youtube-facade__consent-decline"
             @click="decline_consent"
@@ -284,6 +310,7 @@ onBeforeUnmount(pause);
     position: absolute;
     inset: 0;
     display: block;
+    z-index: 2;
   }
 
   &__poster-img {
@@ -291,8 +318,14 @@ onBeforeUnmount(pause);
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, opacity 0.4s ease;
+    opacity: 0;
   }
+
+  &__button.is-loaded &__poster-img { opacity: 1; }
+
+  &__skeleton { @include media-skeleton; }
+  &__button.is-loaded &__skeleton { opacity: 0; }
 
   &__play {
     position: absolute;
