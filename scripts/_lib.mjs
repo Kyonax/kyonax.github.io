@@ -1,18 +1,16 @@
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
- * Mozilla Public License 2.0 — see LICENSE.
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
  * Tiny shared helpers for migration scripts.
  * Pure Node built-ins, no deps. ESM only.
  */
 
-import { readdirSync, readFileSync, statSync } from 'node:fs';
-import { extname, join, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { dirname, extname, join, relative } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
-export const OLD_REPO_ROOT = join(REPO_ROOT, '..', 'kyo-web-online-old');
 
 const COLORS = {
   reset: '\x1b[0m', red: '\x1b[31m', green: '\x1b[32m',
@@ -60,12 +58,52 @@ export function exitWith({ failures, name }) {
   process.exit(1);
 }
 
-/**
- * Match the CCS license-header convention.
- * Either a /* ... *‍/ block in the first 6 lines containing "Copyright"
- * and "Mozilla Public License" or "MPL", or "@Kyonax".
- */
+/** Test if file content carries the CCS license header in the first 8 lines. */
 export function hasCcsHeader(content) {
   const head = content.split('\n').slice(0, 8).join('\n');
   return /Copyright/i.test(head) && /(Mozilla Public License|MPL|Apache|@Kyonax)/i.test(head);
+}
+
+/** Walk a nested locale tree; returns every leaf as a dot-path string. */
+export function flattenI18nKeys(obj, prefix = '') {
+  const out = [];
+  for (const [k, v] of Object.entries(obj)) {
+    const path = prefix ? `${prefix}.${k}` : k;
+    if (v && typeof v === 'object' && !Array.isArray(v)) out.push(...flattenI18nKeys(v, path));
+    else if (typeof v === 'string') out.push(path);
+  }
+  return out;
+}
+
+/**
+ * Load the TRANSLATIONS map from the first existing candidate.
+ * Defaults prefer the alias-free source so Node can resolve without Vite.
+ * @returns {Promise<{data: object, file: string} | null>}
+ */
+export async function loadTranslations(candidates = ['src/data/snippets.js', 'src/i18n/messages.js']) {
+  for (const rel_path of candidates) {
+    const abs = join(REPO_ROOT, rel_path);
+    if (!existsSync(abs)) continue;
+    try {
+      const mod = await import(pathToFileURL(abs).href);
+      let data = mod.TRANSLATIONS || mod.default || mod.messages;
+      if (data && typeof data === 'object' && data.TRANSLATIONS) data = data.TRANSLATIONS;
+      if (data && typeof data === 'object') return { data, file: rel_path };
+    } catch (e) {
+      if (!e.message.includes('Cannot find package')) throw e;
+    }
+  }
+  return null;
+}
+
+/** ISO `YYYY-MM-DD` for the current UTC moment. */
+export const today = () => new Date().toISOString().slice(0, 10);
+
+/** True when `dst_path` is missing, older than `src_path`, or `force` is set. */
+export function isOutdated(src_path, dst_path, { force = false } = {}) {
+  if (force) return true;
+  if (!existsSync(dst_path)) return true;
+  const src_mtime = statSync(src_path).mtimeMs;
+  const dst_mtime = statSync(dst_path).mtimeMs;
+  return src_mtime > dst_mtime;
 }

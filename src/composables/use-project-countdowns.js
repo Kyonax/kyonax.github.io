@@ -9,7 +9,8 @@ import { PROJECTS } from '@data/projects';
 import NowProjectWorker from '@workers/now-project.worker.js?worker';
 
 /**
- * @param {string[]} keys — project keys to track (subset of PROJECTS).
+ * Reactive countdown map for the given project keys.
+ * Backed by a Web Worker that ticks at 1Hz and pauses on `visibilitychange`.
  * @returns {Record<string, {label: string, countdown: string|null, utc_ts: number}>}
  */
 export const useProjectCountdowns = (keys) => {

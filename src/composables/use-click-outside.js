@@ -5,10 +5,6 @@
 
 import { onBeforeUnmount, onMounted, unref } from 'vue';
 
-/**
- * @param {import('vue').Ref<HTMLElement|null>} target_ref
- * @param {(event: MouseEvent) => void} handler
- */
 export const useClickOutside = (target_ref, handler) => {
   const on_document_click = (event) => {
     const el = unref(target_ref);

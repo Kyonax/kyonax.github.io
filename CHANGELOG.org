@@ -1,0 +1,395 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+
+#  ________ ______  __   ____  _________
+# /_  __/ // / __/ / /  / __ \/ ___/ __/
+#  / / / _  / _/  / /__/ /_/ / (_ /\ \
+# /_/ /_//_/___/ /____/\____/\___/___/
+#
+# CHANGELOG.org — Release history and pending work
+# 2026-05-14
+#
+# Tracks every version, decisions made, and the TODO backlog.
+# Each release entry follows:
+#   * [vX.Y.Z] — YYYY-MM-DD :: Short Title
+#     *Summary:* one-line hook
+#     ** Added / Changed / Removed / Decided sub-groups
+#
+#   [TODO] — backlog (bugs, features, infrastructure)
+#   [Unreleased] — landed on default branch, not yet tagged
+#   [vX.Y.Z] — tagged releases, newest first
+#
+# Guidelines:
+#   No em-dashes in user-facing copy (titles excepted)
+#   No emojis, no arrows, no private-file references
+#   Bold the *Summary:* hook, then bare facts
+#   Decided items: bolded title with rationale
+
+#+TITLE: kyo-web-online Changelog
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+#+EMAIL: kyonax.corp@gmail.com
+#+DATE: May 14, 2026
+#+FILETAGS: :KYO:WEB:CHANGELOG:
+#+LAST_UPDATE: May 14, 2026
+#+OPTIONS: toc:nil num:nil H:4
+
+* [Unreleased]
+
+* [v2.0.0-vue-migration] — 2026-05-15 :: Vue 3 + Vite SSG + SEO surface
+
+*Summary:* Full rewrite of the portfolio from a custom Web Components +
+Webpack stack onto Vue 3 + Vite + vite-ssg. Adds prerendered EN/ES
+landing routes, a cyberpunk-HUD landing redesign (Hero / Skills /
+Experience / NowProjects / FAQ / Footer), and a complete SEO surface
+(JSON-LD graph with 3 site nodes + standalone FAQPage, hreflang
+alternates, OG/Twitter meta, sitemap, robots.txt, AD-12 Google Consent
+Mode v2, pre-hydration redirect script).
+
+** Added
+- Vue 3 + Vite SSG architecture with =createSSRApp= hydration
+- vue-router 4 with two routes (=/= EN, =/es= ES, no trailing slash)
+- vue-i18n 9 with per-app instance factory (=createI18nInstance=)
+- 8 UI primitives under =@ui/= (UiCard, UiLink, UiButton, UiImage,
+  UiIcon, UiSectionHeading, BrandIcon, UiModal)
+- =BrandIcon= sprite system with 30+ tech-brand SVGs sourced from
+  Simple Icons; single source of truth via =@data/brand-icons=
+- Sharp-based image pipeline (WebP q=90, AVIF q=75) wired as
+  =predev= and =prebuild=
+- Project state model with 9 statuses across NowShipping (5) and
+  Featured (4) tiers; sort by =NOW_STATUS_PRIORITY=
+- Web Worker for project countdowns with visibilitychange pause/resume
+- Cyberpunk HUD decorations (corner labels + kanji watermarks) in
+  every section
+- Element-flare CSS API with symmetric hover fade
+- Skills grid with brand-icon dispatch + abbreviation-tile fallback
+- Experience timeline with card-as-button + UiModal pattern;
+  CV-verbatim bullets per locale
+- NowProjects with WORKING_ON count-up + IN_PROGRESS/ON_HOLD countdown
+- FAQ section with single-open accordion + JSON-LD FAQPage emission
+- SiteFooter SYS // SIGNATURE manifest pulling runtime browser data
+- Hostinger deploy workflow: =main= push -> build -> force-push
+  =dist/= to =deploy= branch (single commit) via JamesIves action
+
+** SEO
+- JSON-LD =@graph= with three top-level nodes: WebSite, ProfilePage,
+  Person (employer / alumni / membership inlined)
+- Standalone FAQPage JSON-LD block with locale-aware =@id= helpers
+  (=profilePageId=, =faqPageId=, =faqQuestionId=)
+- =useSeoHead()= composable emitting title, description, canonical,
+  hreflang (en/es/x-default), full OG set, Twitter Card
+- Pre-hydration redirect script (AD-10): inline =<script>= replaces
+  page synchronously before bundle load when =localStorage[kyo:lang]=
+  or =navigator.language= prefers Spanish
+- Google Consent Mode v2 with default-deny + cookie consent banner
+- =sitemap.xml= + =robots.txt= + =.htaccess= (HTTPS force, www -> apex,
+  trailing-slash strip, AVIF MIME, cache headers, security headers)
+- Custom =scripts/seo-audit.mjs= + =scripts/seo-analyzer-run.mjs=
+  validation harness; 46/0 pass across =/=, =/es=, =/privacy=,
+  =/es/privacy=
+
+** Performance
+- LCP image preload via =transformIndexHtml= Vite plugin
+- =100svh= viewport units; viewport-conditional v-if DOM for hero
+  visual to keep tab order correct on mobile and desktop
+- Local 1Hz tick in NowProjects for WORKING_ON count-up timers
+- Per-instance memoization caches (=_image_cache=, =_stack_cache=,
+  =_chip_cache=) in NowProjects + Experience
+- =prefers-reduced-motion= global collapse
+- All infinite animations are compositor-thread (opacity / transform
+  only)
+
+** Tooling
+- 14 scripts under =scripts/=, all callable via =npm run check:*=
+- =scripts/precheck.mjs= composite gate (7 validators) wired as
+  =prebuild= and CI gate
+- =scripts/check-license-headers.mjs= asserts CCS preamble on every
+  =.js / .mjs / .vue= under =src/= and =scripts/=
+- 14 Vite aliases under =src/= with ESLint resolver lockstep
+- SCSS 7-1 trimmed to =abstracts/= + =base/= only
+- 8 color families in =_theme.scss=, enforced 60/30/10 via
+  =scripts/check-color-usage.mjs=
+- =vite-ssg= integration with =dirStyle: 'nested'= for canonical
+  no-slash URLs
+
+** Migration
+- Removed: Webpack, vite-imagetools, =class-scheduler.worker.js=,
+  legacy two-column SCSS partials, dead Web Components
+- Replaced: typed PUA glyphs -> =\uXXXX= escape sequences (encoding
+  determinism); CSS filter chain on logo -> SVG =?raw= + currentColor
+- Decommissioned: =develop= branch; =vue-migration= -> =main= for
+  release
+
+** ADA accessibility
+- WCAG 1.4.3 sweep on decorative text. New =UiHudDeco= primitive
+  (=src/components/ui/hud-deco.vue=) emits =aria-hidden="true"= plus
+  =[data-text]=. Global rule in =_theme.scss=:
+  =[aria-hidden="true"][data-text]::before { content: attr(data-text); }=
+  Scanners cannot measure contrast on what is not a DOM text node.
+  16 hand-written =<span class="hud-deco">= instances across 6
+  sections migrated. FAQ index numbers, project card index nums,
+  hero meta panel "FRAME // -001" + "@KYONAX_ON_TECH" also migrated.
+- WCAG 1.4.3 fix on semantic text. =--clr-neutral-300= lifted
+  =45% -> 48%=. Contrast on =#000= bg climbs from 4.48:1 to 4.92:1,
+  clears the 4.5:1 threshold. Visual delta ~3% HSL (invisible).
+  Rollback math at =docs/changes/2026-05-15-neutral-300-contrast-bump.md=
+- WCAG 2.5.3 stretched-link pattern for the 3 featured project
+  cards (RECKIT, WEBCAM2ASCII, ORG2HTML). Visible content sits in
+  sibling =<div>= blocks. New empty =<a class="...-hit"
+  aria-label="..." href="...">= overlay layered via
+  =position: absolute; inset: 0=. Diagnosed via CDP probe after an
+  8-iteration surface-level cascade. =innerText= newline mismatch
+  was the root cause. Rule formalized as =rule-u-ada-021=
+- WCAG 4.1.2 fix. =<h2 class="ui-modal__title">= promoted to
+  =<h1>= in =src/components/ui/modal.vue=. Dialog
+  (=aria-modal="true"=) is its own heading context. 4 modal-body
+  section titles bumped =h3 -> h2=. CSS drives rank, visual
+  unchanged
+- WCAG 1.3.1 fix. =<div aria-label="...">= requires an explicit
+  =role=. Bare div has no role for aria-label to attach to. Modal
+  title already names the context, so the redundant
+  =:aria-label= on =project-modal__carousel-frame= was dropped
+- New =.icon-mask= decorative-icon utility in =_theme.scss=. Uses
+  =mask-image= + =background-color: currentColor= for icons nested
+  inside =<a>= where =content: attr(data-text)= would trip WCAG
+  2.5.3. =.icon-mask--external= modifier ships a Lucide external
+  arrow SVG. Rule =rule-u-ada-023=
+- CCS =▣= glyph fully removed from the interactive =hero.tag=
+  string (EN + ES). The wrapper =<span class="ccs-glyph">▣</span>=
+  inside =<a>= trips the image-of-text heuristic even at
+  =font-size: 1.4em=. The 1.5em threshold is wrong in practice.
+  =.ccs-glyph= utility retained at original 1.75em scale for the
+  =aria-hidden= meta panel in =hero-visual.vue= only
+
+** YouTube facade (Phases A through F)
+- =src/data/_youtube.js= (now =src/data/youtube.js=). WHATWG URL
+  parser + ID extractor + thumbnail builder + media-entry
+  normaliser. Handles =youtube.com/watch?v==, =youtu.be/<id>=,
+  =youtube-nocookie.com/embed/<id>=, =shorts/<id>=, =live/<id>=
+- =src/components/ui/youtube-facade.vue= (~280 lines). Static
+  poster, play overlay, cyber-neutral attribution chip
+  (BrandIcon + i18n source label + optional channel name), inline
+  consent prompt. Iframe loads from
+  =youtube-nocookie.com/embed/<id>?autoplay=1&rel=0&playsinline=1=
+- =useImageViewer= extended to branch on =picture.kind === 'youtube'=
+  for the chromeless lightbox. =16/9= aspect ratio, full-viewport
+  scale via =min(95dvw, 90dvh * 16 / 9)=
+- =now-projects-section.vue= carousel: per-image-slide =<button>=
+  for lightbox, outer =<div>= (avoids nested-button HTML),
+  =pointer-events: none= on inactive slides. =watch(carousel_idx)=
+  posts =pauseVideo= to the previous slide via =postMessage=
+- =src/seo/json-ld/videos.js=. One =VideoObject= per YouTube entry
+  with locale-aware =@id= (=<site>/#video-<id>-<locale>=),
+  =isPartOf -> WEBSITE_ID=, required =name=/=thumbnailUrl[]=/=uploadDate=
+- =public/privacy/index.html= + =public/es/privacy/index.html=
+  gain an "Embedded videos" section between Cookies and Your
+  rights. Discloses =i.ytimg.com= (no cookies) ->
+  =youtube-nocookie.com= (post-consent) -> Google's privacy policy
+- =src/assets/brands/youtube.svg= auto-registers via the
+  =@data/brand-icons= glob (sprite went 34 -> 35)
+- =scripts/check-projects-media.mjs= validates every
+  =PROJECTS[*].images[]= entry, wired as the 8th precheck gate
+
+** Content and copy
+- §1.101 v3 4-paragraph project description pattern. Toolkit
+  variant (Problem -> Purpose+identity -> Tech -> Status) for
+  webcam2ascii, reckit, org2html. Landing-page variant
+  (Brand -> Site purpose -> Tech -> Status) for kyo-website,
+  zeronet-labs-website, cyber-code-syndicate. All 12 strings
+  rewritten (6 projects x EN + ES), 1383 to 2575 chars per locale.
+  Zero =;=, =:=, or em-dashes in body copy
+- =.kyo-prose code= + =.kyo-code= SCSS utility. SpaceMono on a
+  =--clr-border-100= 35% tint with 1px outline at 0.88em sizing.
+  Nested overrides drop chrome inside =<a>= or =<strong>=. First
+  retrofit: =<code>.org</code>= in org2html descriptions
+- =.kyo-prose a= link style. Primary-yellow, 1px underline at
+  0.2em offset, 0.75 hover opacity. =.kyo-prose a strong= flatten
+  rule so the chip background of =.kyo-prose strong= does not
+  leak through =<strong>= inside =<a>=
+- ES calque cleanup. =estructura rica -> formatos estructurados
+  como Org-mode=. =performante/-s -> de alto rendimiento=.
+  =sondeo de assets -> detección de assets=. =tematización
+  superpuesta -> sistema de theming encima=. =después del hecho=
+  dropped
+- ES copy refinement principles. Verb context match, double-y
+  restructure (not =que=-swap), temporal connectors at paragraph
+  hand-offs, no verb repetition within close proximity,
+  concrete-over-playful for technical descriptions, EN parity
+  audit is context-driven not symmetry-driven
+- FAQ "vive en Colombia" pivot to "trabaja desde Colombia" to
+  match the answer's remote-work framing. =trabajo desde
+  Villavicencio= opens the answer. Second =Trabajo -> Colaboro=
+  breaks in-paragraph verb repetition. EN parallel kept (=based
+  in= covers both senses)
+- Reckit version semantics fix in =projects.js=. =reckit.version=
+  changed =v0.4.0 -> v0.3.0= (currently shipped, not in
+  development). Description status beat updated to "Currently at
+  v0.3.0, with v0.4.0 in development but on hold". Convention
+  codified. Chip equals SHIPPED version
+
+** Countdown source of truth
+- =now-projects-section.vue= main-thread =_next_future_deadline=
+  mirror of worker logic. =buildNowCard= rewired to
+  =deadline_ms = cd?.utc_ts ?? next?.ms ?? null=. Section UI was
+  hardcoding =Object.values(project.deadlines)[0]= (always the
+  first deadline, often stale)
+- Bogotá tz anchored end to end. =_parse_colombia_time= in the
+  worker, =_parse_bogota= in the section, display formatters with
+  =timeZone: 'America/Bogota'=. Colombia has no DST so
+  =GMT-0500= year-round. Tokyo viewer sees identical date and
+  counter to Bogotá viewer
+
+** ASCII art pipeline
+- =scripts/ascii-to-image.mjs= v5. Per-file directive system.
+  =DIRECTIVE_RE= = =^([a-z][a-z-]*):\s*(.+?)\s*$=. First key:
+  =left-alignment: <px>= overrides the global =ASCII_CENTER_OFFSET_X=.
+  Per-art log line annotates =[key=value]=. Unknown directives
+  logged non-fatally
+- v4 auto-scaling. =ASCII_BASE_FONT_PX = 32=,
+  =ASCII_MAX_WIDTH = W * 0.55=, =ASCII_MAX_HEIGHT = H * 0.65=,
+  =ASCII_CENTER_OFFSET_X = -19=. Uniform scale =min(1, w_cap/natural_w,
+  h_cap/natural_h)= applied to font_size + line_height + block_width.
+  Log line: =(rows × cols, font Xpx [scaled by width|height])=
+- 6 ASCII sources committed under =src/assets/ascii/=:
+  =kyo-website.txt=, =reckit.txt=, =webcam2ascii.txt=,
+  =org2html.txt=, =cyber-code-syndicate.txt=,
+  =zeronet-labs-website.txt=
+- =src/assets/projects/<slug>.{jpg,webp,avif}= raster outputs
+  generated via =npm run convert:ascii:force= + =convert:images:force=
+- =§1.100= ASCII Art Refinement Methodology rules (17+ sections):
+  alphabet =░▒▓█= + space only (foreign Unicode banned),
+  fades, bow-tie wires, antenna/cable/base patterns, lens-body
+  decoration zones, layered-vs-modify rule,
+  never-break-the-circle rule, centering math, width/height caps
+
+** Bug fixes
+- Privacy page dev-serve. =vite-plugin-html= is =enforce: 'pre'=
+  and installs =connect-history-api-fallback= that rewrites every
+  =Accept: text/html= request to =/index.html=. Diagnosed via
+  4-iteration middleware-stack dump. Fix: added =enforce: 'pre'=
+  to my =canonical-routing= plugin AND listed it before
+  =createHtmlPlugin()= in =plugins[]=. Pre-bucket processes in
+  array order. =applyCanonicalMiddleware= split into
+  =applyDevMiddleware= (new =servePublicHtmlInDev= helper reads
+  =public/<path>/index.html= and =res.end()=s) and
+  =applyPreviewMiddleware= (kept =resolveDirIndex= against =dist/=)
+- FAQ kanji watermark =&__watermark= flipped from =bottom -> top=.
+  Every other section uses =top= for its watermark anchor.
+  =応答= kanji now sits top-right matching skills =開発者=,
+  experience =過去=, now-projects =未来=
+- Vue 3 scoped-style specificity. Chained-class selector
+  =&__brand.brand-icon { transform: translateY(0.02em) }= wins
+  over BrandIcon's own =translateY(-0.08em)=. =:deep()= only
+  matches real descendants, not the same element
+
+** Brand-icon registry
+- 30 SVGs sourced verbatim from Simple Icons. =viewBox="0 0 24 24"=,
+  =currentColor= fills, kebab-case filenames matching the tech id
+- Auto-registration via =@data/brand-icons= glob. Drop a new SVG
+  in =src/assets/brands/= and it is available everywhere
+- =fill-rule="evenodd"= on the =<path>= element (not the =<svg>=)
+  where propagation is unreliable across browsers (Next.js,
+  Express, Jest)
+- Off-palette brand tokens in =_theme.scss :root=:
+  =--clr-orcid-bg= (=#a6ce39=), =--clr-orcid-fg= (=#ffffff=),
+  =--clr-youtube-red= (=#ff0000=). SFCs reference them via
+  =var()= only
+- Footer "ORCID iD" chip pairs the SVG (=BrandIcon name="orcid"=)
+  with the official badge layout
+
+** Governance and security file stack
+- =.github/CODEOWNERS=. =@Kyonax= as the sole reviewer
+- =.github/SECURITY.md=. Disclosure address
+  =security@kyonax.com=, banned code patterns (=eval=,
+  =innerHTML=, hardcoded secrets, insecure URLs), supported
+  versions table
+- =LICENSING.org=. GPL-2.0-only canonical, per-file preamble
+  format, =scripts/check-license-headers.mjs= as the gate
+- =NOTICE=. Required redistribution attribution
+- =CONTRIBUTING.org=. Repo does not accept external
+  contributions (personal portfolio scope)
+- =.gitignore= expansion. =.claude/= AI-agent workspace,
+  =.cache/=, =reports/=, dotenv variants, OS noise, IDE artifacts
+
+** Tier 1 figlet file-header rollout
+- UPPERCASE figlet via =pyfiglet --font smslant=. Place-name
+  registry under =@kyonax_on_tech=. New root config file picks
+  an unused place name. =DOCTYPE-first= rule on =.html= files:
+  figlet comment lives INSIDE =<head>=, never before
+  =<!doctype html>=
+- Headers added to =index.html=, =vite.config.js=,
+  =eslint.config.mjs=, =package.json= (via doc comment in
+  scripts), =CHANGELOG.org=, =README.org=, =LICENSING.org=
+
+** README
+- Rewritten using the reckit README template. ASCII logo embed
+  from =src/assets/ascii/kyo-website.txt=. Tagline:
+  =Kyonax . Personal Portfolio . Cyberpunk Landing . Vue 3 + Vite + vite-ssg=.
+  Shields.io badges with the reckit flat-square yellow-purple
+  palette. CCS Member chip
+- New sections: =PREREQUISITES= (Required / Optional / What
+  ships with npm install), =EDITING CONTENT= (Projects schema,
+  Translation strings + hard rules, Experience timeline,
+  Skills grid, FAQ, Author info, Static assets folder table,
+  ASCII art directives)
+- No CONTRIBUTING section. Repo does not accept external
+  contributions
+- Zero em-dashes, zero prose semicolons or colons
+
+** SEO architecture (post-foundation polish)
+- JSON-LD consolidation. 22 atomic entities cross-referenced by
+  =@id= collapsed into a 3-node =@graph= (WebSite, ProfilePage,
+  Person) plus a standalone FAQPage block with per-locale =@id=.
+  Inlined =employer= / =alumni= / =membership= over
+  =@id= cross-refs. Reduces graph-traversal cost for crawlers
+- Per-locale =@id= helpers in =src/seo/json-ld/identifiers.js=:
+  =profilePageId(locale)=, =faqPageId(locale)=,
+  =faqQuestionId(locale, slug)=
+- =knowsAbout= canonicalization. Schema.org entity matching for
+  every keyword
+- Build-date hoist pattern. =BUILD_DATE= constant for stable
+  =dateModified= across the build
+- =scripts/seo-analyzer-run.mjs=. Site-wide SEO audit harness,
+  46/0 pass across =/=, =/es=, =/privacy=, =/es/privacy=
+- =scripts/seo-audit.mjs= wired as =postbuild=
+- =sitemap.xml= generator at =scripts/generate-sitemap.mjs=,
+  wired as =predev= + =prebuild=
+- =public/robots.txt= permits all
+- =public/.htaccess=: HTTPS force, www -> apex, trailing-slash
+  strip, AVIF MIME, cache headers (immutable for hashed assets,
+  no-cache for index.html), security headers
+  (X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
+- Pre-hydration redirect script (AD-10). Inline =<script>= in
+  =<head>= replaces the page synchronously before bundle load
+  when =localStorage[kyo:lang]= or =navigator.language= prefers
+  Spanish on the EN canonical URL
+- Google Consent Mode v2 (AD-12). Default-deny baseline. Cookie
+  consent banner (=src/components/cookie-consent.vue=) updates
+  =gtag('consent', 'update', ...)= on accept/reject. Stored in
+  =localStorage[kyo:consent]=
+- Hostinger deploy workflow. =main= push -> =npm run build= ->
+  =dist/= force-pushed to =build-main= branch via
+  =s0/git-publish-subdir-action= for Hostinger pickup. Live at
+  [[https://kyonax.com]]
+
+** Decided
+- *No glyph wrappers inside interactive elements.* Even at
+  =font-size: 1.4em= a styled wrapper around a single character
+  inside =<a>= or =<button>= trips the image-of-text heuristic.
+  Keep glyphs at natural size or remove them. Safe inside
+  =aria-hidden= subtrees only
+- *Scanner uses innerText, not textContent.* Block-level grid
+  children inject newlines into =innerText= which scanners use
+  for the accessible-name match. Mismatch with =aria-label=
+  fires WCAG 2.5.3 even when =textContent= matches. Stretched-
+  link pattern is the fix
+- *CDP probe first, then fix.* When a scanner flag persists,
+  dump ={ariaLabel, textContent, innerText}= via Chrome
+  DevTools Protocol. Connect via =127.0.0.1=, file extension
+  =.cjs=. Saves 8-iteration cascades of surface-level guesses
+- *Memoization caches in =now-projects-section.vue= +
+  =experience.vue=.* Per-instance =_image_cache=, =_stack_cache=,
+  =_chip_cache= keyed on slug + locale. Carousel scroll no
+  longer re-parses stack chips on every paint
+- *Hostinger over GitHub Pages.* Hostinger pulls =build-main=
+  as web root. GitHub Pages was rejected for the apex domain
+  setup friction with Kyonax.com

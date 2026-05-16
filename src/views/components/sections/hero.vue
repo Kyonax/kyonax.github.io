@@ -4,12 +4,15 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { computed } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BrandIcon from '@ui/brand-icon.vue';
-import UiImage from '@ui/image.vue';
 import UiLink from '@ui/link.vue';
+import UiImageViewer from '@ui/image-viewer.vue';
+import UiStateGrid from '@ui/state-grid.vue';
+import UiHudDeco from '@ui/hud-deco.vue';
+import HeroVisual from '@sections/hero-visual.vue';
 
 import { PROJECTS } from '@data/projects';
 import { TECHNOLOGIES } from '@data/data';
@@ -34,33 +37,56 @@ const stack_count = computed(() => TECHNOLOGIES.length);
 
 const years_suffix = computed(() => locale.value === 'es' ? 'AÑOS' : 'YEARS');
 
+const portrait_viewer_open = ref(false);
+const open_portrait_viewer  = () => { portrait_viewer_open.value = true; };
+const close_portrait_viewer = () => { portrait_viewer_open.value = false; };
 
-const GLYPH_DOWNLOAD = '';
-const GLYPH_ARROW    = '';
+const portrait_aria = computed(() =>
+  `${t('kyo-web.persistent-data.name')} — ${t('kyo-web.landing.hero.open-portrait')}`,
+);
+
+/* CSS `order` doesn't move tab focus — swap the visual DOM position
+   via v-if to match reading order on each breakpoint. */
+/* 1200px = SCSS `lg` token. Keep in lockstep with the grid's
+   `@include min-media-query(lg)` in the SCSS below — otherwise the v-if
+   branch and the grid layout disagree at iPad-landscape (1024-1199px),
+   producing content-first / image-below order. */
+const _viewport_mq = typeof window !== 'undefined'
+  ? window.matchMedia('(min-width: 1200px)')
+  : null;
+const is_desktop = ref(_viewport_mq?.matches ?? false);
+const _on_viewport_change = (event) => { is_desktop.value = event.matches; };
+
+onMounted(() => _viewport_mq?.addEventListener('change', _on_viewport_change));
+onBeforeUnmount(() => _viewport_mq?.removeEventListener('change', _on_viewport_change));
+
+
+const GLYPH_ARROW = '\uF063';
 </script>
 
 <template>
   <section
     id="hero"
     class="hero"
-    role="region"
     :aria-label="t('kyo-web.landing.hero.tag')">
-    <span class="hud-deco hud-deco--tr" aria-hidden="true">// HANDSHAKE :: VERIFIED</span>
-    <span class="hud-deco hud-deco--bl" aria-hidden="true">// VECTOR :: KYO-001</span>
+    <UiHudDeco variant="tr" text="// HANDSHAKE :: VERIFIED" />
+    <UiHudDeco variant="bl" text="// VECTOR :: KYO-001" />
     <div class="hero__inner">
+      <HeroVisual
+        v-if="!is_desktop"
+        class="hero__visual"
+        :aria-label="portrait_aria"
+        :alt="t('kyo-web.landing.hero.portrait-alt')"
+        @open="open_portrait_viewer" />
+
       <div class="hero__content">
         <div class="hero__tag-row">
           <a
             class="hero__tag"
             href="https://github.com/ccs-devhub"
             target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Cyber Code Syndicate on GitHub">
-            <span class="state-grid" aria-hidden="true">
-              <span /><span /><span />
-              <span /><span /><span />
-              <span /><span /><span />
-            </span>
+            rel="noopener noreferrer">
+            <UiStateGrid />
             <span v-html="t('kyo-web.landing.hero.tag')" />
           </a>
           <a
@@ -68,7 +94,7 @@ const GLYPH_ARROW    = '';
             href="https://orcid.org/0009-0006-4459-5538"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="ORCID profile">
+            :aria-label="t('kyo-web.landing.hero.orcid-aria')">
             <BrandIcon class="hero__orcid-icon" name="orcid" />
             <span class="hero__orcid-label">ORCID</span>
           </a>
@@ -137,30 +163,25 @@ const GLYPH_ARROW    = '';
         </div>
       </div>
 
-      <aside class="hero__visual" aria-hidden="true">
-        <div class="hero__visual-frame">
-          <UiImage
-            img="kyonax_multiverse_characters"
-            alt="Kyonax multiverse characters portrait"
-            aspect="3 / 4"
-            :size="{ sm: 240, md: 300, lg: 360, xl: 420 }"
-            fit="cover"
-            position="top center"
-            sizes="(max-width: 768px) 70vw, 380px"
-            eager />
-          <div class="hero__visual-frame-inner" />
-        </div>
-        <div class="hero__visual-meta">
-          <span>FRAME // <span class="ccs-glyph">▣</span>-001</span>
-          <span>@KYONAX_ON_TECH</span>
-        </div>
-      </aside>
+      <HeroVisual
+        v-if="is_desktop"
+        class="hero__visual"
+        :aria-label="portrait_aria"
+        :alt="t('kyo-web.landing.hero.portrait-alt')"
+        @open="open_portrait_viewer" />
     </div>
 
     <a class="hero__scroll-hint" href="#skills" :aria-label="t('kyo-web.landing.hero.scroll-hint')">
       <span>{{ t('kyo-web.landing.hero.scroll-hint') }}</span>
-      <span class="icon-glyph" aria-hidden="true">{{ GLYPH_ARROW }}</span>
+      <span class="icon-glyph" :data-text="GLYPH_ARROW" aria-hidden="true" />
     </a>
+
+    <UiImageViewer
+      :is-open="portrait_viewer_open"
+      :close-label="t('kyo-web.landing.modal.close')"
+      img="kyonax_portrait"
+      alt="Cristian D. Moreno (Kyonax) portrait"
+      @close="close_portrait_viewer" />
   </section>
 </template>
 
@@ -186,11 +207,13 @@ const GLYPH_ARROW    = '';
   }
 
   @include max-media-query(md) {
+    padding-bottom: 5rem;
+
     :deep(.hud-deco--tr) {
       top: 0.6rem;
     }
     :deep(.hud-deco--bl) {
-      bottom: 0.6rem;
+      bottom: 1.75rem;
     }
   }
 
@@ -221,9 +244,14 @@ const GLYPH_ARROW    = '';
     gap: 3rem;
     align-items: center;
 
-    @include min-media-query(md) {
+    @include min-media-query(lg) {
       grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
       gap: 4rem;
+
+      /* Pin to row 1 — sparse auto-placement otherwise drops the
+         later child to row 2. */
+      & > .hero__content { grid-column: 1; grid-row: 1; }
+      & > .hero__visual  { grid-column: 2; grid-row: 1; }
     }
   }
 
@@ -259,6 +287,11 @@ const GLYPH_ARROW    = '';
       background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
       outline: none;
     }
+
+    &:focus-visible {
+      outline: 2px solid var(--clr-primary-100);
+      outline-offset: 3px;
+    }
   }
 
 
@@ -284,9 +317,9 @@ const GLYPH_ARROW    = '';
     font-size: var(--fs-200);
     letter-spacing: 0.12em;
     font-weight: 700;
-    color: color-mix(in srgb, var(--clr-orcid-bg) 55%, transparent);
+    color: color-mix(in srgb, var(--clr-success-100) 55%, transparent);
     background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
-    border: 1px solid color-mix(in srgb, var(--clr-orcid-bg) 55%, transparent);
+    border: 1px solid color-mix(in srgb, var(--clr-success-100) 55%, transparent);
     padding: 0.4rem 0.8rem;
     text-decoration: none;
     cursor: pointer;
@@ -295,10 +328,15 @@ const GLYPH_ARROW    = '';
     &:focus,
     &:focus-visible,
     &:active {
-      color: color-mix(in srgb, var(--clr-orcid-bg) 55%, transparent);
-      border-color: color-mix(in srgb, var(--clr-orcid-bg) 55%, transparent);
+      color: color-mix(in srgb, var(--clr-success-100) 55%, transparent);
+      border-color: color-mix(in srgb, var(--clr-success-100) 55%, transparent);
       background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
       outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--clr-success-100);
+      outline-offset: 3px;
     }
   }
 
@@ -350,7 +388,11 @@ const GLYPH_ARROW    = '';
     word-spacing: 0.05em;
     color: var(--clr-neutral-100);
     margin: 0 0 2rem;
-    max-width: 80ch;
+    max-width: 100%;
+
+    @include min-media-query(lg) {
+      max-width: 80ch;
+    }
 
     :deep(strong) {
       color: var(--clr-primary-100);
@@ -376,9 +418,6 @@ const GLYPH_ARROW    = '';
     padding: 0.75rem;
     display: grid;
     gap: 0.25rem;
-    transition: border-color 0.2s ease;
-
-    &:hover { border-color: var(--clr-primary-100); }
 
     dt {
       font-family: "SpaceMono", monospace;
@@ -460,99 +499,6 @@ const GLYPH_ARROW    = '';
     gap: 1rem;
   }
 
-  &__visual {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    justify-self: center;
-
-    @include max-media-query(md) {
-      order: -1;
-      justify-self: stretch;
-      width: 100%;
-      align-items: center;
-    }
-  }
-
-  &__visual-frame {
-    position: relative;
-    padding: 0.5rem;
-    border: 1px solid var(--clr-primary-100);
-    background: color-mix(in srgb, var(--clr-primary-100) 5%, var(--clr-neutral-500));
-    overflow: hidden;
-    display: flex;
-
-    /* Force block on UiImage's inline-block default — kills the
-       baseline strut that breaks the frame's symmetric padding. */
-    :deep(.ui-image) { display: block; }
-
-    /* On max-md the frame switches to block + percent width so the
-       inner UiImage chain doesn't collapse via circular min-content. */
-    @include max-media-query(md) {
-      display: block;
-      width: 100%;
-      max-width: 320px;
-      margin-inline: auto;
-
-      :deep(.ui-image) {
-        width: 100%;
-        margin: 0;
-      }
-
-      :deep(.ui-image__frame) {
-        aspect-ratio: 1 / 1 !important;
-        width: 100% !important;
-        max-width: none !important;
-      }
-    }
-
-    &::before,
-    &::after {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      border: 1px solid var(--clr-primary-100);
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    &::before { top: -5px; left: -5px;  border-right: 0; border-bottom: 0; }
-    &::after  { bottom: -5px; right: -5px; border-left: 0;  border-top: 0; }
-  }
-
-  &__visual-frame-inner {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      linear-gradient(
-        to bottom,
-        transparent 0%,
-        color-mix(in srgb, var(--clr-primary-100) 6%, transparent) 38%,
-        color-mix(in srgb, var(--clr-primary-100) 28%, transparent) 50%,
-        color-mix(in srgb, var(--clr-primary-100) 6%, transparent) 62%,
-        transparent 100%
-      );
-    mix-blend-mode: screen;
-    opacity: 0.55;
-    animation: hero-scan 12s linear infinite;
-    z-index: 1;
-  }
-
-  &__visual-meta {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 380px;
-    font-family: "SpaceMono", monospace;
-    font-size: var(--fs-100);
-    color: var(--clr-neutral-300);
-    letter-spacing: 0.08em;
-  }
-
   &__scroll-hint {
     align-self: center;
     margin-top: 3.5rem;
@@ -574,16 +520,10 @@ const GLYPH_ARROW    = '';
 
     &:hover, &:focus-visible {
       color: var(--clr-primary-100);
-      outline: none;
     }
 
     .icon-glyph { animation: hero-bounce 1.5s ease-in-out infinite; }
   }
-}
-
-@keyframes hero-scan {
-  0%   { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
 }
 
 @keyframes hero-bounce {

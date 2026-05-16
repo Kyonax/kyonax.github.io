@@ -1,59 +1,20 @@
 #!/usr/bin/env node
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
- * Mozilla Public License 2.0 — see LICENSE.
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
- * check-i18n.mjs — locale parity gate.
- *
- * Loads src/i18n/messages.js (or src/data/snippets.js — either ESM)
- * and asserts every key in any locale exists in every locale.
- * Also asserts every RAW_HTML_KEYS allowlist entry exists.
- *
- * Run: node scripts/check-i18n.mjs
- * CI:  add as `prebuild` in package.json
+ * check-i18n.mjs — locale parity gate. Asserts every key in any locale
+ * exists in every locale, and every RAW_HTML_KEYS allowlist entry resolves.
  */
 
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { REPO_ROOT, head, ok, fail, exitWith, c } from './_lib.mjs';
-
-/* Prefer the alias-free source. messages.js re-exports via @data/snippets,
-   which Node can't resolve without Vite. */
-const CANDIDATES = [
-  'src/data/snippets.js',
-  'src/i18n/messages.js',
-  'src/app/constants/Snippets.js',
-];
-
-async function loadTranslations() {
-  for (const rel of CANDIDATES) {
-    const abs = join(REPO_ROOT, rel);
-    if (!existsSync(abs)) continue;
-    try {
-      let data;
-      // Legacy file is CommonJS; ESM `import()` would fail. createRequire
-      // works for both.
-      if (rel.endsWith('Snippets.js') || rel.endsWith('snippets.js')) {
-        const { createRequire } = await import('node:module');
-        const require = createRequire(import.meta.url);
-        try { delete require.cache[require.resolve(abs)]; } catch {}
-        const mod = require(abs);
-        data = mod.default || mod.TRANSLATIONS || mod.messages || mod;
-      } else {
-        const mod = await import(pathToFileURL(abs).href);
-        data = mod.default || mod.TRANSLATIONS || mod.messages;
-      }
-      // Unwrap if the loaded object is { TRANSLATIONS: { en: ..., es: ... } }
-      if (data && typeof data === 'object' && data.TRANSLATIONS) data = data.TRANSLATIONS;
-      if (data && typeof data === 'object') return { data, file: rel };
-    } catch (e) {
-      fail(`failed to import ${rel}: ${e.message}`);
-    }
-  }
-  return null;
-}
+import {
+  REPO_ROOT, head, ok, fail, exitWith, c, walk,
+  flattenI18nKeys, loadTranslations,
+} from './_lib.mjs';
 
 async function loadRawHtmlKeys() {
   const abs = join(REPO_ROOT, 'src/i18n/raw-html-keys.js');
@@ -63,23 +24,13 @@ async function loadRawHtmlKeys() {
   return set instanceof Set ? set : new Set(set || []);
 }
 
-function flatten(obj, prefix = '') {
-  const out = [];
-  for (const [k, v] of Object.entries(obj)) {
-    const path = prefix ? `${prefix}.${k}` : k;
-    if (v && typeof v === 'object' && !Array.isArray(v)) out.push(...flatten(v, path));
-    else if (typeof v === 'string') out.push(path);
-  }
-  return out;
-}
-
 const failures = [];
 
 head('check-i18n — locale parity + raw-html allowlist');
 
 const loaded = await loadTranslations();
 if (!loaded) {
-  fail(`no translation source found. Tried: ${CANDIDATES.join(', ')}`);
+  fail(`no translation source found in src/data/snippets.js or src/i18n/messages.js`);
   exitWith({ failures: ['no translation source'], name: 'check-i18n' });
 }
 ok(`source: ${loaded.file}`);
@@ -87,7 +38,7 @@ ok(`source: ${loaded.file}`);
 const locales = Object.keys(loaded.data);
 ok(`locales: ${locales.join(', ')}`);
 
-const keys = Object.fromEntries(locales.map((l) => [l, new Set(flatten(loaded.data[l]))]));
+const keys = Object.fromEntries(locales.map((l) => [l, new Set(flattenI18nKeys(loaded.data[l]))]));
 const all = new Set(Object.values(keys).flatMap((s) => [...s]));
 ok(`total unique keys across locales: ${all.size}`);
 
@@ -107,6 +58,23 @@ if (rawHtml) {
       failures.push(`RAW_HTML_KEYS contains a missing key: ${key}`);
     }
   }
+
+  /* Scan templates for `v-html="t('...')"` and `v-html="t(\`...\`)"` —
+     every cited literal key must be in the allowlist. Skips computed
+     paths like `v-html="t(\`...\${id}.description\`)"`. */
+  const vhtml_re = /v-html\s*=\s*"\s*t\s*\(\s*['"`]([^'"`\${}]+)['"`]\s*\)\s*"/g;
+  const sfc_files = walk(join(REPO_ROOT, 'src'), { ext: ['.vue'] });
+  let vhtml_hits = 0;
+  for (const file of sfc_files) {
+    const text = readFileSync(file, 'utf8');
+    for (const m of text.matchAll(vhtml_re)) {
+      vhtml_hits += 1;
+      if (!rawHtml.has(m[1])) {
+        failures.push(`v-html uses unlisted key in ${file.replace(REPO_ROOT + '/', '')}: ${m[1]}`);
+      }
+    }
+  }
+  ok(`v-html literal keys scanned: ${vhtml_hits}`);
 }
 
 if (failures.length) {

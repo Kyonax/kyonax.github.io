@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
- * Mozilla Public License 2.0 — see LICENSE.
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
  * check-license-headers.mjs — assert every committed .js / .mjs / .vue
  * file under src/ and scripts/ carries the CCS license preamble.

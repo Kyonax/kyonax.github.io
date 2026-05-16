@@ -20,29 +20,44 @@
  * src/config/features.js — flip to true when a new video is ready).
  */
 
+import { useI18n } from 'vue-i18n';
+
 import HudNav from '@widgets/hud-nav.vue';
 import HeroSection from '@sections/hero.vue';
 import SkillsSection from '@sections/skills.vue';
 import ExperienceSection from '@sections/experience.vue';
 import NowProjectsSection from '@sections/now-projects-section.vue';
+import FaqSection from '@sections/faq.vue';
 import SiteFooter from '@sections/site-footer.vue';
+import IconSprite from '@ui/icon-sprite.vue';
+import CookieConsent from '@components/cookie-consent.vue';
 
-import useSeoHead from '@composables/use-seo-head';
+import useSeoHead       from '@composables/use-seo-head';
+import useStructuredData from '@composables/use-structured-data';
 
+const { t } = useI18n();
 useSeoHead();
+useStructuredData();
 </script>
 
 <template>
+  <IconSprite />
+
+  <a class="skip-link" href="#hero">{{ t('kyo-web.landing.nav.skip-to-content') }}</a>
+
   <HudNav />
 
-  <main class="landing">
+  <main class="landing" id="main">
     <HeroSection />
     <SkillsSection />
     <ExperienceSection />
     <NowProjectsSection />
+    <FaqSection />
   </main>
 
   <SiteFooter />
+
+  <CookieConsent />
 </template>
 
 <style lang="scss" scoped>
@@ -50,5 +65,28 @@ useSeoHead();
   display: block;
   width: 100%;
   scroll-behavior: smooth;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transform: translateY(-150%);
+  padding: 0.75rem 1.25rem;
+  background: var(--clr-primary-100);
+  color: var(--clr-neutral-500);
+  font-family: "SpaceMono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+
+  &:focus,
+  &:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--clr-neutral-50);
+    outline-offset: 2px;
+  }
 }
 </style>

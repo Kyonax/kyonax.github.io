@@ -38,7 +38,6 @@ const inline_style = computed(() =>
   props.flareDelay ? { '--element-flare-delay': props.flareDelay } : null,
 );
 
-/* When external is set, force a sane safe-default rel value. */
 const target_attr = computed(() => (props.external ? '_blank' : null));
 const rel_attr    = computed(() => (props.external ? 'noopener' : null));
 
@@ -73,12 +72,10 @@ const download_attr = computed(() => {
     color           0.2s ease,
     transform       0.2s ease;
 
-  /* ── Sizes ───────────────────────────────────────────────── */
   &--size-sm { padding: 0.4rem 0.6rem; font-size: var(--fs-200); }
   &--size-md { padding: 0.6rem 1rem;   font-size: var(--fs-300); }
   &--size-lg { padding: 0.8rem 1.4rem; font-size: var(--fs-400); }
 
-  /* ── Variants ────────────────────────────────────────────── */
   &--primary {
     display: inline-flex;
     align-items: center;
@@ -95,7 +92,6 @@ const download_attr = computed(() => {
     &:focus-visible {
       background: var(--clr-primary-100);
       color: var(--clr-neutral-500);
-      outline: none;
     }
   }
 
@@ -114,7 +110,6 @@ const download_attr = computed(() => {
     &:focus-visible {
       color: var(--clr-primary-100);
       border-color: var(--clr-primary-100);
-      outline: none;
     }
   }
 
@@ -130,7 +125,6 @@ const download_attr = computed(() => {
     &:hover,
     &:focus-visible {
       color: var(--clr-primary-100);
-      outline: none;
     }
   }
 
@@ -146,11 +140,10 @@ const download_attr = computed(() => {
     &:focus-visible {
       border-color: var(--clr-primary-100);
       color: var(--clr-primary-100);
-      outline: none;
     }
   }
 
-  
+
   &--cyber {
     position: relative;
     display: inline-flex;
@@ -183,9 +176,13 @@ const download_attr = computed(() => {
       transform: translateY(-2px);
       outline: none;
     }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--clr-neutral-50);
+    }
   }
 
-  
+
   &--cyber-outline {
     position: relative;
     display: inline-flex;
@@ -215,8 +212,8 @@ const download_attr = computed(() => {
       border: 1px solid var(--clr-primary-100);
       pointer-events: none;
       transition:
-        width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        height 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+        width 0.4s var(--ease-standard),
+        height 0.4s var(--ease-standard) 0.2s;
     }
     &::before { top: -1px;    left: -1px;    border-right: 0; border-bottom: 0; }
     &::after  { bottom: -1px; right: -1px;   border-left: 0;  border-top: 0; }
@@ -232,6 +229,11 @@ const download_attr = computed(() => {
         width: calc(100% + 2px);
         height: calc(100% + 2px);
       }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--clr-primary-100);
+      outline-offset: 4px;
     }
   }
 }

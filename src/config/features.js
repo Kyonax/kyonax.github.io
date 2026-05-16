@@ -14,19 +14,8 @@
  *
  * Adding a new flag: define it here, plumb it through vite.config.js
  * (define + vite-plugin-html if needed), and gate use-sites with v-if.
- *
- * Reference: PERFORMANCE_MIGRATION.md §7.2 (full rationale + worked example)
  */
 
-/**
- * Read a boolean env var with a fallback.
- * Vite injects values via the `define:` block in vite.config.js, replacing
- * `import.meta.env.VITE_*` with literal strings at build time.
- *
- * @param {string} key — env key without the VITE_ prefix
- * @param {boolean} fallback — value when the env var is unset
- * @returns {boolean}
- */
 const env = (key, fallback) => {
   const val = import.meta.env?.[`VITE_${key}`];
   if (val === undefined || val === null) return fallback;

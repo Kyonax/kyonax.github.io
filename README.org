@@ -1,92 +1,118 @@
-#+TITLE: kyo-web-online
-#+SUBTITLE: Cristian D. Moreno's personal portfolio — Vue 3 + Vite
+# Copyright (c) 2026 Cristian D. Moreno, @Kyonax.
+# Distributed under the terms of GPL-2.0-only. See LICENSE.
+
+#  ________ ______  ___  ___  _______  _________
+# /_  __/ // / __/ / _ )/ _ \/  _/ _ \/ ___/ __/
+#  / / / _  / _/  / _  / , _// // // / (_ / _/
+# /_/ /_//_/___/ /____/_/|_/___/____/\___/___/
+
 #+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
 #+EMAIL: kyonax.corp@gmail.com
-#+DATE: May 05, 2026
+#+DATE: May 16, 2026
 #+FILETAGS: :KYO:WEB:PORTFOLIO:VUE:CCS:
-#+VERSION: v2.0.0-vue-migration
-#+LAST_UPDATE: May 05, 2026
+#+VERSION: v2.0
+#+LAST_UPDATE: May 16, 2026
 
 #+BEGIN_HTML
-<p align="left">
-  <a href="https://www.reddit.com/user/kyonax_on"><img src="https://img.shields.io/reddit/user-karma/combined/kyonax_on?style=social&logo=reddit&logoColor=%23FFD400&labelColor=%23FFD400&color=%23FFD400" alt="Reddit"></a>
-  <a href="https://twitter.com/kyonax_on_tech" target="_blank"><img src="https://img.shields.io/twitter/url?url=https%3A%2F%2Ftwitter.com%2Fkyonax_on_tech&style=social&logoColor=%23FFD400&label=Twitter" alt="Twitter"></a>
-  <a href="https://www.instagram.com/is.kyonax/" target="_blank"><img src="https://img.shields.io/twitter/url?url=https%3A%2F%2Finstagram.com%2Fis.kyonax&style=social&logo=instagram&logoColor=%23FFD400&label=Instagram" alt="Instagram"></a>
-  <a href="https://www.linkedin.com/in/kyonax/" target="_blank"><img src="https://img.shields.io/twitter/url?url=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fkyonax%2F&style=social&logo=linkedin&logoColor=%23FFD400&label=Linkedin" alt="LinkedIn"></a>
-  <br>
-  <img src="https://img.shields.io/github/languages/code-size/Kyonax/kyo-web-online?logoColor=%23FFD400&labelColor=%23FFD400&color=%23FFD400" alt="Code size">
-  <img src="https://img.shields.io/github/languages/top/Kyonax/kyo-web-online?logoColor=%23FFD400&labelColor=%23FFD400&color=%23FFD400" alt="Top language">
-  <img src="https://img.shields.io/github/last-commit/Kyonax/kyo-web-online?logoColor=%23FFD400&labelColor=%23FFD400&color=%23FFD400" alt="Last commit">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0-FFD400?labelColor=000000" alt="GPL-2.0-only"></a>
-  <a href="#"><img src="https://img.shields.io/badge/version-v2.0.0-FFD400?labelColor=000000" alt="v2.0.0-vue-migration"></a>
-</p>
+<div align="left">
+<table align="center"><tr><td>
+<pre>
+           ░░░░░░░
+░░░░░░░░░░░▒█████▒░░░░░░░░░░░ ░░░░░░░░            ░░░░░░░░░
+░▓▓▓▓▓▓▓▓▓▒▒█████▒▒▓▓▓▓▓▓▓▓▒░ ░▒▓▓▓▓▒░░           ░▒▓▓▓▓▓▓▒
+▒█████████▒▒█████▒▒████████▓░ ░▓██████▒░░         ░▓██████▒
+▒█████████▒▒█████▒▒████████▓░ ░▓████████▒░░       ░▓██████▒
+▒█████████▒▒█████▒▒████████▓░ ░▓██████████▓░░     ░▓██████▒
+▒███████▒░░▒█████▒░░▒██████▓░ ░▓████████████▓▒░   ░▓██████▒
+▒███████░░ ▒▓███▓▒ ░░██████▓░ ░▓██████████████▓▒░ ░▓██████▒
+▒███████░░  ░░░░░  ░░██████▓░ ░▓█████████████████▒░▓██████▒
+▒███████░░         ░░██████▓░ ░▓██████▒░▒█████████████████▒
+▒███████▓▓▓▓▓▓▓▓▓▓▓▓▓██████▓░ ░▓██████▒░░░▒▓██████████████▒
+▒██████████████████████████▓░ ░▓██████▒░   ░▒▓████████████▒
+▒██████████████████████████▓░ ░▓██████▒░     ░░▓██████████▒
+▒██████████████████████████▓░ ░▓██████▒░      ░░░▒████████▒
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ ░░░░░░░░░░          ░░░░░░░░░ v2.0
+</pre>
+</td></tr></table>
+</div>
 
-<p align="left">
-  <a id="cover" href="#cover">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset=".github/readme/dark.png">
-      <img style="white-space:pre-wrap" alt="kyo-web-online cover" src=".github/readme/light.png">
-    </picture>
-  </a>
-</p>
+<div align="center">
+<strong>Kyonax</strong> &middot; <strong>Personal Portfolio</strong> &middot; <strong>Cyberpunk Landing</strong> &middot; <strong>Vue 3 + Vite + vite-ssg</strong>
+<br>
+<br>
+</div>
+
+<div align="center">
+<a href="https://kyonax.com"><img src="https://img.shields.io/badge/live-kyonax.com-FFE564?labelColor=FFD400" alt="Live site"></a>
+<a href="#"><img src="https://img.shields.io/github/languages/top/Kyonax/kyo-web-online?labelColor=FFD400&color=FFE564" alt="Top language"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0-9A51C0?labelColor=7409AA" alt="GPL-2.0-only"></a>
+<a href="#"><img src="https://img.shields.io/badge/version-v2.0-755AC4?labelColor=3B14AF" alt="v2.0"></a>
+<a href="https://github.com/ccs-devhub"><img src="https://img.shields.io/badge/CCS_Member-FFE564?&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48cGF0aCBmaWxsPSIjOUI4MjAwIiBkPSJNIDI3IDIwMCBsIDAgMTczIDE3MyAwIDE3MyAwIDAgLTE3MyAwIC0xNzMgLTE3MyAwIC0xNzMgMCAwIDE3MyB6IG0gMzMyIDAgbCAwIDE1OSAtMTU5LjUgMCAtMTU5LjUgMCAwIC0xNTkgMCAtMTU5IDE1OS41IDAgMTU5LjUgMCAwIDE1OSB6IE0gNTIgMTIwIGwgMCA2OCA0OCAwIDQ4IDAgMCAtMjAgMCAtMjAgNTEuNSAwIDUxLjUgMCAwIDIwIDAgMjAgMjEuNSAwIDIxLjUgMCAwIC00MS41IDAgLTQxLjUgLTk0LjUgMCAtOTQuNSAwIDAgMjAgMCAyMCAtNSAwIC01IDAgMCAtMjUgMCAtMjUgMTA1IDAgMTA1IDAgMCA1MS41IDAgNTEuNSAtMTI2LjUgMCAtMTI2LjUgMCAwIDQ4IDAgNDggMTI2LjMgMC4yIDEyNi4yIDAuMyAwLjMgNS4zIDAuMyA1LjIgLTEyNi41IDAgLTEyNi42IDAgMCAyMS41IDAgMjEuNSAxNDggMCAxNDggMCAwIC00OCAwIC00OCAtMTI2LjIgLTAuMiAtMTI2LjMgLTAuMyAtMC4zIC01LjMgLTAuMyAtNS4yIDEyNi41IDAgMTI2LjYgMCAwIC05NC41IDAgLTk0LjUgLTE0OCAwIC0xNDggMCAwIDY4IHogTSAxNTkgMTczLjUgbCAwIDE0LjUgNDEgMCA0MSAwIDAgLTE0LjUgMCAtMTQuNSAtNDEgMCAtNDEgMCAwIDE0LjUgeiIvPjwvc3ZnPg==&labelColor=FFD400&style=flat-square" alt="Cyber Code Syndicate"></a>
+<br>
+<a href="https://x.com/kyonax_on_tech">
+  <img src="https://img.shields.io/twitter/follow/kyonax_on_tech" alt="X followers">
+</a>
+<a href="https://www.youtube.com/channel/UCrNDk3dbrDQL9CWd1_fjyvA">
+  <img src="https://img.shields.io/youtube/channel/subscribers/UCrNDk3dbrDQL9CWd1_fjyvA" alt="YouTube Channel Subscribers">
+</a>
+<a href="#"><img src="https://img.shields.io/github/followers/Kyonax" alt="GitHub followers"></a>
+<a href="#"><img src="https://img.shields.io/github/stars/Kyonax/kyo-web-online" alt="GitHub Repo stars"></a>
+</div>
 #+END_HTML
 
 * WHAT IS KYO-WEB-ONLINE?
-Personal portfolio for *[[https://github.com/Kyonax][Cristian D. Moreno - Kyonax]]* — a multilingual (EN / ES) cyberpunk-themed single-page web app showcasing experience, active projects, and contact channels.
+The personal portfolio site for *[[https://github.com/Kyonax][Cristian D. Moreno (Kyonax)]]* at [[https://kyonax.com]], a multilingual (EN / ES) cyberpunk-themed single-page web app showcasing experience, active projects, FAQ, and contact channels. Statically rendered per locale with =vite-ssg= so every route ships pre-baked HTML for SEO, AI-engine answer extraction, and instant first paint.
 
-The codebase migrated from native Web Components + Webpack to *Vue 3 (=<script setup>= + Composition API) + Vite* in May 2026. Architectural conventions mirror the sibling [[https://github.com/Kyonax/reckit][reckit]] project — same SCSS palette, same naming rules (Rules A–J), same kind-folder layout, same ESLint configuration.
+The codebase migrated from native Web Components + Webpack to *Vue 3 (=<script setup>= + Composition API) + Vite* in May 2026. Conventions mirror the sibling [[https://github.com/Kyonax/reckit][reckit]] project, same SCSS palette, same naming rules (Rules A–J), same kind-folder layout, same ESLint configuration.
 
 #+BEGIN_EXAMPLE
 src/
-├── App.vue                          root component (HudNav + 5 sections + SiteFooter)
-├── main.js                          bootstrap (Vite + i18n + Unhead)
-├── components/
-│   ├── ui/                          [@ui] domain-agnostic primitives
-│   │   ├── icon.vue                 UiIcon
-│   │   ├── link.vue                 UiLink (6 variants × 3 sizes)
-│   │   ├── button.vue               UiButton (5 variants × 3 sizes)
-│   │   ├── image.vue                UiImage (wraps blast-image)
-│   │   ├── card.vue                 UiCard
-│   │   ├── section-heading.vue      UiSectionHeading
-│   │   └── brand-icon.vue           BrandIcon (inline SVG primitive)
-│   └── blast-image.vue              <picture> with AVIF/WebP/JPG fallback
-├── widgets/                         [@widgets] components with side effects
-│   ├── hud-nav.vue                  sticky cyberpunk navigation rail
-│   └── language-toggle.vue          ADA-compliant locale dropdown
-├── views/components/sections/       [@sections] landing page sections
-│   ├── hero.vue                     hero (CCS + ORCID badges, CTAs, portrait)
-│   ├── skills.vue                   3-category tech grid (22 items)
-│   ├── experience.vue               vertical HUD timeline (5 entries)
-│   ├── now-projects-section.vue     state-model project cards
-│   └── site-footer.vue              brand + dynamic SYS // SIGNATURE manifest
-├── composables/                     [@composables] use* hooks
-├── workers/                         [@workers] now-project countdown worker
-├── i18n/                            [@i18n] vue-i18n config + raw-html-keys allowlist
-├── data/                            [@data] projects + snippets + technologies
-├── scss/                            [@scss] 7-1 SCSS (abstracts/ + base/ only)
-├── config/                          [@config] build-time feature flags
-├── assets/                          static assets (images, brand SVGs, CV PDFs)
-└── fonts/                           font files (TTF + WOFF2)
+  App.vue                          root component (HudNav + sections + SiteFooter)
+  main.js                          bootstrap (vite-ssg + i18n + Unhead + router)
+  components/
+    ui/                            [@ui] domain-agnostic primitives
+      icon.vue / link.vue / button.vue / image.vue / card.vue
+      brand-icon.vue / modal.vue / section-heading.vue
+      image-viewer.vue / hud-deco.vue / icon-sprite.vue
+    blast-image.vue                <picture> with AVIF / WebP / JPG fallback
+  widgets/                         [@widgets] components with side effects
+    hud-nav.vue                    sticky cyberpunk navigation rail
+    language-toggle.vue            ADA-compliant locale dropdown
+  views/components/sections/       [@sections] landing page sections
+    hero.vue                       hero (CCS + ORCID badges, CTAs, portrait)
+    skills.vue                     3-category tech grid
+    experience.vue                 vertical HUD timeline
+    now-projects-section.vue       state-model project cards + modals
+    faq.vue                        per-locale FAQ accordion
+    site-footer.vue                brand + dynamic SYS // SIGNATURE manifest
+  composables/                     [@composables] use* hooks
+  workers/                         [@workers] now-project countdown worker
+  i18n/                            [@i18n] vue-i18n config + raw-html-keys allowlist
+  data/                            [@data] projects + snippets + technologies + youtube
+  scss/                            [@scss] 7-1 SCSS (abstracts/ + base/ only)
+  seo/                             JSON-LD builders + sitemap data
+  config/                          [@config] build-time feature flags
+  assets/                          static assets (images, brands, ASCII art, fonts, CVs)
+public/                            served as-is (favicons, og-banner, privacy HTML, sitemap)
+scripts/                           validation gates + image / ASCII / font / sitemap pipelines
 #+END_EXAMPLE
 
-* REQUIREMENTS
+* PREREQUISITES
 
-The runtime stack is small — Node + npm cover the dev server, build, lint, tests, and the image conversion step that runs as =predev= / =prebuild=.
-
-** Required (every contributor)
-- *Node.js* =>= 20.0.0= (LTS) — enforced by the =engines.node= field in =package.json=. Verified on Node =22.x=.
+** Required
+- *Node.js* =>= 20.0.0= (LTS), enforced by the =engines.node= field in =package.json=. Verified on Node =22.x=.
 - *npm* =>= 10.x= (bundled with Node 20+).
 - *Git* =>= 2.30= for cloning and CI hooks.
-- *POSIX shell* (bash / zsh) — required for =scripts/convert-fonts.sh=. On Windows, run via WSL2.
+- *POSIX shell* (bash / zsh), required for =scripts/convert-fonts.sh=. On Windows, run via WSL2.
 
-** Optional (only for specific scripts)
-- *ImageMagick* =>= 7.0= — only for favicon generation (=npm run generate-favicons= / =npm run build-all=). Skip if you don't need favicons.
-- *python3* =>= 3.9= with =fonttools= + =brotli= — only for the WOFF2 subsetting helper. Install with =pip install fonttools brotli=. Without it, =./scripts/convert-fonts.sh= falls back to whole-font =woff2_compress=.
+** Optional (specific scripts only)
+- *python3* =>= 3.9= with =fonttools= + =brotli=, only for the WOFF2 subsetting helper. Install with =pip install fonttools brotli=. Without it, =./scripts/convert-fonts.sh= falls back to whole-font =woff2_compress=.
+- *pyfiglet*, only for generating new Tier 1 file-header place-name ASCII art. Install with =pip install --user pyfiglet=.
 
-** What ships with =npm install=
-- =sharp ^0.34= — drives the WebP (q=90) + AVIF (q=75) variant generation in =scripts/convert-images.mjs= (wired as =predev= / =prebuild=).
-- =vue ^3.5=, =vite ^6.0=, =vue-i18n ^9.14=, =@unhead/vue ^1.11= — runtime stack.
-- =vitest ^2.1=, =@vue/test-utils=, =happy-dom=, =eslint ^9.17= + plugins — dev / test / lint stack.
+** Shipped with =npm install=
+- =sharp ^0.34=, drives the WebP (q=90) + AVIF (q=75) variant generation in =scripts/convert-images.mjs= (wired as =predev= and =prebuild=).
+- =vue ^3.5=, =vite ^6.0=, =vite-ssg=, =vue-router=, =vue-i18n ^9.14=, =@unhead/vue ^1.11= for the runtime stack.
+- =vitest ^2.1=, =@vue/test-utils=, =happy-dom=, =eslint ^9.17= plus plugins for the dev, test, and lint stack.
 
 * SETUP
 
@@ -97,90 +123,158 @@ npm install
 npm run dev   # dev server on http://localhost:9000
 #+END_SRC
 
-The first =npm install= fetches sharp's prebuilt binaries — no compiler toolchain needed on Linux / macOS / Windows-WSL2. The =predev= hook regenerates AVIF + WebP variants from any new JPG / PNG in =src/assets/app/= the first time you start the dev server.
+The first =npm install= fetches sharp's prebuilt binaries, no compiler toolchain needed on Linux, macOS, or Windows-WSL2. The =predev= hook regenerates ASCII art rasters, AVIF + WebP variants, and the sitemap before the dev server starts.
 
-* DEV / BUILD COMMANDS
-| Command                   | What it does                                                     |
-|---------------------------+------------------------------------------------------------------|
-| =npm run dev=               | Vite dev server at http://localhost:9000 (HMR, source maps).     |
-| =npm run build=             | Production build to =dist/=. Runs =npm run precheck= as =prebuild=.    |
-| =npm run preview=           | Serves the built =dist/= locally — sanity-check production output. |
-| =npm run lint=              | ESLint over =**/*.{js,mjs,vue}= (CCS standards + Vue ruleset).     |
-| =npm run lint:fix=          | ESLint with =--fix=.                                               |
-| =npm test=                  | Vitest single-run.                                               |
-| =npm run test:watch=        | Vitest watch mode.                                               |
-| =npm run test:coverage=     | Vitest with v8 coverage.                                         |
-| =npm run generate-favicons= | Grunt favicon generation (requires ImageMagick).                 |
-| =npm run build-all=         | Sequentially runs favicon generation + production build.         |
+* DEV AND BUILD COMMANDS
 
-** Validation scripts
-Six gates that run before every build via =prebuild= (and wired into =.github/workflows/ci.yml=).
+| Command                   | What it does                                                                |
+|---------------------------+-----------------------------------------------------------------------------|
+| =npm run dev=             | Vite dev server at http://localhost:9000 (HMR, source maps).                |
+| =npm run build=           | Static-site build (=vite-ssg=) to =dist/=. Runs =precheck= as =prebuild=.   |
+| =npm run build:csr=       | Plain CSR build (=vite build=), escape hatch when SSG debugging is needed.  |
+| =npm run preview=         | Serves the built =dist/= locally for a sanity check.                         |
+| =npm run lint=            | ESLint over =**/*.{js,mjs,vue}= (CCS standards + Vue ruleset).              |
+| =npm run lint:fix=        | ESLint with =--fix=.                                                        |
+| =npm test=                | Vitest single-run.                                                          |
+| =npm run test:watch=      | Vitest watch mode.                                                          |
+| =npm run test:coverage=   | Vitest with v8 coverage.                                                    |
 
-| Command                          | What it does                                                                          |
-|----------------------------------+---------------------------------------------------------------------------------------|
-| =npm run check:i18n=             | Locale parity gate — every key in any locale exists in every locale; =RAW_HTML_KEYS= entries all resolve. |
-| =npm run check:i18n-keys=        | Every =t('...')= / =<i18n-t keypath>= reference resolves to a real key.               |
-| =npm run check:trans=            | Asserts ZERO =[trans=]= / =kyo:language-changed= / =class-scheduler= references in =src/=. |
-| =npm run check:color=            | Per-SFC 60/30/10 color-tier audit + zero hardcoded color literals (scans =<style>= AND comments). |
-| =npm run check:aliases=          | Vite alias map ↔ ESLint resolver kept in sync; every aliased folder exists.           |
-| =npm run check:licenses=         | CCS license preamble on every committed =.js= / =.mjs= / =.vue= file.                 |
-| =npm run precheck=               | Composite — runs all six validators with a PASS/FAIL summary. Wired as =prebuild=.   |
+** Validation gates
+Eight checks run before every build inside =precheck= (wired as =prebuild= and into =.github/workflows/ci.yml=). =check:seo= is separate and runs as =postbuild= against the built =dist/=.
 
-** Image / font conversion scripts
-| Command                          | What it does                                                                          |
-|----------------------------------+---------------------------------------------------------------------------------------|
-| =npm run convert:images=         | Sharp-based WebP (q=90) + AVIF (q=75) generator over =src/assets/app/=. Wired as =predev= / =prebuild=. |
-| =npm run convert:images:force=   | Same, but regenerates every variant (use after swapping a source image).             |
-| =npm run convert:fonts=          | TTF → WOFF2 conversion via =woff2_compress=.                                          |
-| =npm run convert:fonts:subset=   | TTF → WOFF2 with per-family unicode-range subsetting (requires =pyftsubset=).         |
+| Command                          | What it does                                                                                       |
+|----------------------------------+----------------------------------------------------------------------------------------------------|
+| =npm run check:i18n=             | Locale parity, every key in any locale exists in every locale and every =RAW_HTML_KEYS= entry resolves. |
+| =npm run check:i18n-keys=        | Every =t('...')= or =<i18n-t keypath>= reference resolves to a real key.                            |
+| =npm run check:trans=            | Asserts ZERO =[trans=]=, =kyo:language-changed=, or =class-scheduler= references in =src/=.         |
+| =npm run check:color=            | Per-SFC 60/30/10 color-tier audit plus zero hardcoded color literals (scans =<style>= AND comments). |
+| =npm run check:aliases=          | Vite alias map and ESLint resolver kept in sync, every aliased folder exists.                       |
+| =npm run check:licenses=         | CCS license preamble on every committed =.js=, =.mjs=, or =.vue= file.                              |
+| =npm run check:json-ld=          | Validates the JSON-LD =@graph= shape plus required fields per entity type (Person, WebSite, FAQPage). |
+| (precheck-only)                  | =scripts/check-projects-media.mjs= validates every =PROJECTS[*].images[]= entry resolves cleanly.    |
+| =npm run precheck=               | Composite, runs every validator with a PASS/FAIL summary. Wired as =prebuild=.                      |
+| =npm run check:seo=              | Crawls the built =dist/= and audits =<title>=, meta description, canonical, hreflang, JSON-LD. Wired as =postbuild=. |
+
+** Asset pipelines
+| Command                          | What it does                                                                                       |
+|----------------------------------+----------------------------------------------------------------------------------------------------|
+| =npm run convert:images=         | Sharp-based WebP (q=90) + AVIF (q=75) generator over =src/assets/app/= and =src/assets/projects/=.  |
+| =npm run convert:images:force=   | Same, but regenerates every variant (use after swapping a source image).                            |
+| =npm run convert:ascii=          | Renders every =src/assets/ascii/<slug>.txt= to JPG / WebP / AVIF in =src/assets/projects/=.         |
+| =npm run convert:ascii:force=    | Same, but regenerates every raster (use after editing an ASCII source).                             |
+| =npm run convert:fonts=          | TTF to WOFF2 conversion via =woff2_compress=.                                                       |
+| =npm run convert:fonts:subset=   | TTF to WOFF2 with per-family unicode-range subsetting (requires =pyftsubset=).                      |
+| =npm run generate:sitemap=       | Emits =public/sitemap.xml= from the route and locale matrix.                                        |
 
 ** Feature flags (build-time)
 Set the env var to override the defaults in =src/config/features.js=. Disabled features are tree-shaken from the build (zero bytes shipped).
-| Variable                         | Default | Effect                                                                |
-|----------------------------------+---------+-----------------------------------------------------------------------|
-| =VITE_VIMEO_ENABLED=             | =true=  | Set =false= to omit the Vimeo embed entirely (no chunk, no preconnect, no facade). |
-| =VITE_VIMEO_PRECONNECT=          | =true=  | Set =false= to keep the embed but skip the =<link rel="preconnect">= hint. |
+
+| Variable                         | Default | Effect                                                                              |
+|----------------------------------+---------+-------------------------------------------------------------------------------------|
+| =VITE_VIMEO_ENABLED=             | =false= | Set =true= to ship the Vimeo intro embed (chunk + facade).                          |
+| =VITE_VIMEO_PRECONNECT=          | =false= | Set =true= to emit the =<link rel="preconnect">= hint for vimeo.com.                |
 
 #+BEGIN_SRC sh
-# Production build with Vimeo disabled
-VITE_VIMEO_ENABLED=false npm run build
+# Production build with Vimeo enabled
+VITE_VIMEO_ENABLED=true npm run build
 #+END_SRC
 
-* TECHNOLOGIES
-| Layer            | Choice                                                                                  |
-|------------------+-----------------------------------------------------------------------------------------|
-| Framework        | Vue 3 (=<script setup>= + Composition API; Options API forbidden via lint)              |
-| Build tool       | Vite 6 + esbuild                                                                        |
-| Styling          | SCSS (modern compiler API), 7-1 architecture, =additionalData= injection per SFC        |
-| i18n             | vue-i18n@9 (Composition API mode, =legacy: false=)                                      |
-| Head management  | =@unhead/vue=                                                                           |
-| Image pipeline   | =sharp= via =scripts/convert-images.mjs= → AVIF (q=75) + WebP (q=90) + JPG variants     |
-| Critical CSS     | =vite-plugin-beasties= (effective once SSR/SSG arrives; no-op for pure CSR)             |
-| HTML injection   | =vite-plugin-html= + a custom =transformIndexHtml= plugin for the LCP =<link rel="preload">= |
-| Worker           | =now-project.worker.js= via Vite =?worker= import (parse-once + 1 Hz tick + visibility-pause) |
-| Tests            | Vitest + =@vue/test-utils= + happy-dom                                                  |
-| Lint             | ESLint flat config (=eslint-plugin-vue= + simple-import-sort + unicorn + security + jsdoc) |
-| Favicons         | Grunt + =grunt-favicons= (legacy, kept for low churn)                                   |
+* EDITING CONTENT
 
-* CONTRIBUTING
-This project is licensed under [[file:LICENSE][GPL-2.0-only]].
+Almost every reader-facing string, project, image, and icon lives in =src/data/= or =src/assets/=. The validation gates (=precheck=) catch missing keys, broken references, and unconverted images before they reach =dist/=.
 
-Code style follows [[https://github.com/ccs-devhub][CCS]] standards, enforced via [[file:eslint.config.mjs][eslint.config.mjs]]. The linter mirrors the [[https://github.com/Kyonax/reckit/blob/master/eslint.config.mjs][reckit project's configuration]] verbatim with a Vue overlay layered on top.
+** Projects (now-shipping plus featured cards)
+Edit =src/data/projects.js=. The =PROJECTS= map keys the cards on the landing, and each entry follows this schema.
 
-Naming conventions and folder layout follow reckit's [[https://github.com/Kyonax/reckit][Rules A–J]] (recorded in =CODE_STANDARDS_MIGRATION.md= §3 and the =reckit_naming_conventions= org-roam node):
-- =camelCase= functions
-- =snake_case= variables
-- =UPPER_SNAKE_CASE= constants
-- =PascalCase= classes + component import bindings
-- =kebab-case= filenames
+#+BEGIN_SRC js
+'project-slug': {
+  name: 'PROJECT NAME',                  // uppercase, displayed verbatim
+  description: 'ONE-LINE TAG',           // uppercase, sits under the name
+  url: 'https://github.com/...',         // empty string hides the external link
+  featured: true,                        // true → "FEATURED" grid, false → "NOW SHIPPING" carousel
+  status: 'IN_PROGRESS',                 // see PROJECT_STATUS keys below
+  version: 'v0.3.0',                     // SHIPPED version (v0.4.0-dev goes in the description body)
+  modality: 'REMOTE',                    // OR version, never both (used for client engagements)
+  started: 'Nov 03 08:00:00 2025',       // WORKING_ON cards show "STARTED IN" count-up
+  deadlines: {                           // "Mon DD HH:MM:SS YYYY" in Bogotá local time
+    'dev release v0.4.0': 'May 25 21:00:00 2026',
+  },
+  images: ['project-slug.jpg'],          // file basename in src/assets/projects/ (JPG required)
+  stack: ['vue', 'vite', 'eslint'],      // brand-icon slugs (see Skills grid below)
+}
+#+END_SRC
 
-Every committed =.js= / =.mjs= / =.vue= file carries the CCS license preamble (verified by the =check:licenses= gate). Every PR must pass =npm run precheck= (locale parity, key resolution, banned-reference check, color-tier audit, alias sync, license headers).
+- *Status values* are defined at the top of the same file (=PROJECT_STATUS=). The full set is =WORKING_ON=, =DONE=, =IN_PROGRESS=, =ON_HOLD=, =ON_TODO=, =LIVE=, =DEPRECATED=, =UPDATING=, =RELEASE=. Each maps to a color and an i18n label key.
+- *Deadlines* drive the countdown card. The worker picks the earliest =utc_ts > now=. Past deadlines stay in the object as historical record (do not delete them).
+- *Images*. Drop =project-slug.jpg= into =src/assets/projects/=, then run =npm run convert:images:force=. WebP plus AVIF variants generate automatically.
+- *YouTube entries*. An =images[]= slot accepts a full YouTube URL (=https://youtu.be/<id>= or =https://www.youtube.com/watch?v=<id>=). The modal carousel renders it as a privacy-respecting facade (poster plus click-to-play). The =projects-media= precheck gate validates every URL.
+- *Long-form descriptions* live in =src/data/snippets.js= under =kyo-web.content-data.projects.<slug>.description= (HTML allowed, see *Translation strings* below). The 4-paragraph flow convention (problem, purpose, tech, status) is documented in =docs/= and in the session memory.
 
-The CI pipeline at =.github/workflows/ci.yml= enforces the gates on every push and pull request to =main= / =develop= / =vue-migration=.
+** Translation strings (EN and ES)
+=src/data/snippets.js= is the single source of truth. It exports =TRANSLATIONS= with mirrored =en= and =es= trees under =kyo-web.{contact,content-data,landing}=.
+
+Three template patterns map to it.
+1. =t('key.path')= for plain string interpolation.
+2. =<i18n-t keypath="key.path" tag="..."><template #slot>...</template></i18n-t>= for named slots.
+3. =v-html="t('key.path')"= for opaque HTML, allowed only for keys listed in =src/i18n/raw-html-keys.js=.
+
+Hard rules (gates fail otherwise).
+- Both locales must contain the same key set. =npm run check:i18n= validates parity.
+- Every =t(...)= reference in templates and scripts must resolve. =npm run check:i18n-keys= validates references.
+- *No em-dashes* in body copy (use commas, periods, or parentheses). Titles (=<title>=, =og:title=, =meta.title=) are the only exception.
+- *No semicolons or colons* in body copy. The =:= inside URL protocols (=https://=) is fine.
+- *@* characters in i18n strings encode as =&#64;=, because vue-i18n treats raw =@= as a linked-message marker. The =v-html= path decodes it for the DOM, and =stripHtml= decodes it for JSON-LD.
+- General-audience framing. Descriptions address anyone curious about the work, never "recruiters" or "hiring managers".
+
+** Experience timeline
+Entries live in =src/data/snippets.js= under =kyo-web.content-data.experience.<slug>=. Each entry has =role=, =specs=, =description=, =bullets= (HTML =<li>= sequence), and =tools=. The bullets are copy-pasted verbatim from the CV PDF at =src/assets/cv/cv_cristian_d_moreno_<en|es>.pdf= and intentionally diverge between locales (do not reconcile them).
+
+When swapping the CV PDFs, keep the filename pattern. The hero CTA links to them by hardcoded path.
+
+** Skills grid
+=src/data/data.js= holds the =SKILLS= object. Each category lists technology IDs that must match either a Nerd Font codepoint (rendered via =<span class="icon-glyph">=) or a brand SVG basename in =src/assets/brands/<id>.svg= (rendered via =<BrandIcon name="...">=).
+
+The =BrandIcon= registry is glob-derived. Drop a new SVG in =src/assets/brands/= (=viewBox="0 0 24 24"=, =currentColor= fills, =kebab-case= filename matching the tech id) and it is auto-available everywhere. Pull paths verbatim from Simple Icons for fidelity.
+
+** FAQ
+=src/data/snippets.js= holds =kyo-web.landing.faq.items[]=. Each item has =question= plus =answer= (HTML allowed via =raw-html-keys.js= entries, so add the new key there). The FAQ section also emits a per-locale =FAQPage= JSON-LD block automatically.
+
+** Author info, SEO defaults, social links
+=src/data/data.js= holds =AUTHOR_INFO=, =SEO=, =SUPPORTED_LANGUAGES=, and =DEFAULT_LANGUAGE=. The =SEO.keywords= array feeds =<meta name="keywords">= and the JSON-LD =knowsAbout= node.
+
+** Static assets
+| Folder                         | What goes there                                                                            |
+|--------------------------------+--------------------------------------------------------------------------------------------|
+| =src/assets/app/=              | Hero portrait, landscape background, OG banner. Drop JPG or PNG and predev converts variants. |
+| =src/assets/projects/=         | One =<slug>.jpg= per project (matches the =PROJECTS= key). WebP plus AVIF auto-generated.    |
+| =src/assets/brands/=           | =<id>.svg= brand icons. Simple Icons sourcing, =currentColor= fills, =viewBox="0 0 24 24"=. |
+| =src/assets/ascii/=            | =<slug>.txt= ASCII art. =convert:ascii= rasters into =src/assets/projects/=.                |
+| =src/assets/cv/=               | =cv_cristian_d_moreno_<en|es>.pdf=, the EN and ES résumé PDFs linked from the hero CTA.     |
+| =src/assets/fonts/=            | TTF sources. =convert:fonts:subset= emits WOFF2 plus unicode-range subsets.                 |
+| =public/=                      | Served as-is. Holds favicons, =og-banner.jpg=, =privacy/index.html= (en and es), =robots.txt=. |
+
+** ASCII art
+Sources live at =src/assets/ascii/<slug>.txt=. The alphabet is =░▒▓█= plus space only (foreign Unicode breaks the renderer).
+
+Per-file directives override defaults via a =key value= line at the bottom of the source.
+
+#+BEGIN_SRC
+░░░░ … your ASCII art … ░░░░
+
+left-alignment: -55
+#+END_SRC
+
+Supported directive, =left-alignment <px>= overrides the global =ASCII_CENTER_OFFSET_X=. Run =npm run convert:ascii:force= after edits and it regenerates JPG, WebP, and AVIF for every art at the right scale, centering, and font size.
 
 * DEPLOY
-Two GitHub Actions workflows (=.github/workflows/=) deploy the built =dist/= to dedicated branches for static hosting:
-- =deploy-to-build-main.yml= — pushes =main= → =build-main= branch (production at https://kyonax.github.io/kyo-web-online/).
-- =deploy-to-build-dev.yml= — pushes =develop= → =build-dev= branch (staging).
+Two GitHub Actions workflows push the built =dist/= to dedicated branches for static hosting.
 
-Both run =npm run build-all= (favicons + production build) and publish via =s0/git-publish-subdir-action=.
+- =deploy-to-build-main.yml=, =main= → =build-main= branch. Production at [[https://kyonax.com]], served by Hostinger.
+- =deploy-to-build-dev.yml=, =develop= → =build-dev= branch (staging).
+
+Both run =npm run build= and publish via =s0/git-publish-subdir-action=. Hostinger pulls =build-main= as the public web root. The =.htaccess= at the repo root handles trailing-slash normalization, locale routing, and cache-busting headers.
+
+* LICENSE
+Distributed under [[file:LICENSE][GPL-2.0-only]]. Every committed =.js=, =.mjs=, or =.vue= file carries the CCS license preamble (verified by =npm run check:licenses=). Version history is tracked in [[file:CHANGELOG.org][CHANGELOG.org]]. Security disclosures go to =security@kyonax.com= (see =.github/SECURITY.md=).
+
+This is a personal portfolio repository and does not accept external contributions.

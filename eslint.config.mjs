@@ -1,10 +1,23 @@
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ */
+
+/*
+ *  ________ ______  ___  ___  ______________  _____________
+ * /_  __/ // / __/ / _ \/ _ \/ __/ ___/  _/ |/ / ___/_  __/
+ *  / / / _  / _/  / ___/ , _/ _// /___/ //    / /__  / /
+ * /_/ /_//_/___/ /_/  /_/|_/___/\___/___/_/|_/\___/ /_/
  *
- * ================================================================
- *  KYO-WEB-ONLINE — ESLint Flat-Config (Vue 3 + browser JS)
- * ================================================================
+ * eslint.config.mjs — CCS code standards for Vue 3 + browser JS
+ * 2026-05-14
+ *
+ * Flat-config enforcing Cyber Code Syndicate conventions for
+ * browser JS and Vue 3 SFCs. No TypeScript, no Node globals.
+ * The naming table below is enforced via code-review since
+ * ESLint core cannot distinguish variable/function/class
+ * naming natively. Mirrors ../reckit/eslint.config.mjs
+ * (last sync 2026-04-13).
  *
  *  Mirrors ../reckit/eslint.config.mjs (last sync 2026-04-13)
  *  Layered Vue ruleset per CODE_STANDARDS_MIGRATION.md §2.2
@@ -132,7 +145,6 @@ export default [
       '.cache/**',
       'public/**',
       'src/assets/**',
-      'Gruntfile.js',
     ],
   },
 

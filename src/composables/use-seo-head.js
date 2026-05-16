@@ -9,55 +9,67 @@ import { useHead } from '@unhead/vue';
 
 import {
   AUTHOR_INFO,
-  APP_DESCRIPTION,
   SEO,
-  SITE_TITLE,
-  SITE_URL,
   THEME_SETTINGS,
+  LOCALE_URL,
 } from '@data/data';
 
-/**
- * Bind reactive head tags to the app. Call once from App.vue's setup.
- */
+import { HREFLANG_ALTERNATES, absoluteUrl } from '@seo/routes';
+
+const OG_LOCALE = { en: 'en_US', es: 'es_CO' };
+
 export const useSeoHead = () => {
   const { t, locale } = useI18n();
 
-  /* Description varies by locale. Spanish version lives in APP_DESCRIPTION
-     (legacy default); English version in SEO.description... actually both
-     legacy fields hold the Spanish copy. Real future-state: a translation
-     key. For now, prefer the about-me description from snippets when
-     available — gives a real English string for EN visitors. */
-  const description = computed(() => {
-    if (locale.value === 'es') {
-      return APP_DESCRIPTION;
-    }
-    return t('kyo-web.content-data.about-me.description')
-      .replace(/<[^>]+>/g, ''); /* strip the inline HTML tags */
-  });
+  const title       = computed(() => t('kyo-web.landing.meta.title'));
+  const description = computed(() => t('kyo-web.landing.meta.description'));
+  const ogTitle     = computed(() => t('kyo-web.landing.meta.og-title'));
+  const ogImageAlt  = computed(() => t('kyo-web.landing.meta.og-image-alt'));
+  const canonical   = computed(() => LOCALE_URL[locale.value] || LOCALE_URL.en);
+  const ogImageAbs  = computed(() => absoluteUrl(SEO.ogImage));
 
   useHead({
-    title: SITE_TITLE,
+    title,
+    htmlAttrs: {
+      lang: locale,
+    },
+    link: [
+      { rel: 'canonical', href: canonical },
+      ...HREFLANG_ALTERNATES.map((alt) => ({
+        rel: 'alternate', hreflang: alt.hreflang, href: alt.href,
+      })),
+    ],
     meta: [
       { name: 'description',          content: description },
       { name: 'keywords',             content: SEO.keywords.join(', ') },
       { name: 'author',               content: AUTHOR_INFO.name },
-      { name: 'theme-color',          content: THEME_SETTINGS.primaryColor },
-      { name: 'msapplication-TileColor',
-        content: THEME_SETTINGS.msApplicationTileColor },
+      { name: 'robots',               content: 'index,follow,max-image-preview:large,max-snippet:-1' },
+      { name: 'theme-color',          content: THEME_SETTINGS.themeColor },
+      { name: 'msapplication-TileColor', content: THEME_SETTINGS.msApplicationTileColor },
 
-      /* Open Graph */
-      { property: 'og:title',         content: SEO.ogTitle },
+      { property: 'og:type',          content: 'profile' },
+      { property: 'og:site_name',     content: 'Kyonax' },
+      { property: 'og:title',         content: ogTitle },
       { property: 'og:description',   content: description },
-      { property: 'og:image',         content: SEO.websiteBanner },
-      { property: 'og:url',           content: SITE_URL },
-      { property: 'og:type',          content: 'website' },
-      { property: 'og:locale',        content: locale },
+      { property: 'og:url',           content: canonical },
+      { property: 'og:image',         content: ogImageAbs },
+      { property: 'og:image:type',    content: SEO.ogImageType },
+      { property: 'og:image:width',   content: String(SEO.ogImageWidth) },
+      { property: 'og:image:height',  content: String(SEO.ogImageHeight) },
+      { property: 'og:image:alt',     content: ogImageAlt },
+      { property: 'og:locale',        content: computed(() => OG_LOCALE[locale.value] || OG_LOCALE.en) },
+      { property: 'og:locale:alternate', content: computed(() => OG_LOCALE[locale.value === 'en' ? 'es' : 'en']) },
+      { property: 'profile:first_name',  content: 'Cristian' },
+      { property: 'profile:last_name',   content: 'Moreno' },
+      { property: 'profile:username',    content: 'kyonax' },
 
-      /* Twitter Card */
       { name: 'twitter:card',         content: 'summary_large_image' },
-      { name: 'twitter:title',        content: SEO.twitterTitle },
+      { name: 'twitter:site',         content: AUTHOR_INFO.twitter },
+      { name: 'twitter:creator',      content: AUTHOR_INFO.twitter },
+      { name: 'twitter:title',        content: ogTitle },
       { name: 'twitter:description',  content: description },
-      { name: 'twitter:image',        content: SEO.websiteBanner },
+      { name: 'twitter:image',        content: ogImageAbs },
+      { name: 'twitter:image:alt',    content: ogImageAlt },
     ],
   });
 };

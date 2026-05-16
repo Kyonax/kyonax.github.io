@@ -4,7 +4,7 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import LanguageToggle from '@widgets/language-toggle.vue';
@@ -19,8 +19,8 @@ const NAV_LINKS = [
   { id: 'projects',   key: 'kyo-web.landing.nav.projects' },
 ];
 
-const GLYPH_MENU  = '';
-const GLYPH_CLOSE = '';
+const GLYPH_MENU  = '\uF0C9';
+const GLYPH_CLOSE = '\uF00D';
 
 const scrolled = ref(false);
 const mobile_open = ref(false);
@@ -43,9 +43,26 @@ const onScroll = () => {
 
 const closeMobile = () => { mobile_open.value = false; };
 const onAnchorClick = () => { closeMobile(); };
+const onKeydown = (event) => {
+  if (event.key === 'Escape' && mobile_open.value) closeMobile();
+};
+
+/* Mark the page chrome inert while the drawer is open so focus stays inside the
+   menu (Tab can't leak into hero/skills/footer content). Restored on close. */
+const INERT_TARGETS = ['main', '.site-footer'];
+watch(mobile_open, (open) => {
+  if (typeof document === 'undefined') return;
+  for (const selector of INERT_TARGETS) {
+    document.querySelectorAll(selector).forEach((el) => {
+      if (open) el.setAttribute('inert', '');
+      else el.removeAttribute('inert');
+    });
+  }
+});
 
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('keydown', onKeydown);
   onScroll();
 
   observer = new IntersectionObserver(
@@ -64,6 +81,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll);
+  window.removeEventListener('keydown', onKeydown);
   if (observer) observer.disconnect();
 });
 </script>
@@ -79,18 +97,24 @@ onBeforeUnmount(() => {
       <a
         href="#hero"
         class="hud-nav__brand"
-        :aria-label="t('kyo-web.landing.nav.hero')"
+        :aria-label="t('kyo-web.landing.nav.aria.brand')"
         @click="onAnchorClick">
-        <span class="hud-nav__brand-name" v-html="t('kyo-web.landing.nav.logo')" />
+        <span class="hud-nav__brand-name" aria-hidden="true" v-html="t('kyo-web.landing.nav.logo')" />
       </a>
 
-      <nav class="hud-nav__links" :class="{ 'is-open': mobile_open }" :aria-label="t('kyo-web.landing.nav.menu')">
+      <nav
+        id="hud-nav-menu"
+        class="hud-nav__links"
+        :class="{ 'is-open': mobile_open }"
+        :aria-label="t('kyo-web.landing.nav.menu')">
         <a
           v-for="link in NAV_LINKS"
           :key="link.id"
           :href="`#${link.id}`"
           class="hud-nav__link"
           :class="{ 'is-active': active_section === link.id }"
+          :aria-label="t(`kyo-web.landing.nav.aria.${link.id}`)"
+          :aria-current="active_section === link.id ? 'location' : undefined"
           @click="onAnchorClick">
           {{ t(link.key) }}
         </a>
@@ -102,10 +126,11 @@ onBeforeUnmount(() => {
           variant="ghost"
           size="md"
           class="hud-nav__menu-toggle"
+          aria-controls="hud-nav-menu"
           :aria-expanded="mobile_open"
           :aria-label="mobile_open ? t('kyo-web.landing.nav.close') : t('kyo-web.landing.nav.menu')"
           @click="mobile_open = !mobile_open">
-          <span class="icon-glyph icon-glyph--lg" aria-hidden="true">{{ mobile_open ? GLYPH_CLOSE : GLYPH_MENU }}</span>
+          <span class="icon-glyph icon-glyph--lg" :data-text="mobile_open ? GLYPH_CLOSE : GLYPH_MENU" aria-hidden="true" />
         </UiButton>
       </div>
     </div>
@@ -175,7 +200,6 @@ onBeforeUnmount(() => {
     &:hover,
     &:focus-visible {
       text-shadow: 0 0 10px color-mix(in srgb, var(--clr-primary-100) 55%, transparent);
-      outline: none;
     }
   }
 
@@ -214,7 +238,7 @@ onBeforeUnmount(() => {
       background: var(--clr-primary-100);
       transform: scaleX(0);
       transform-origin: left center;
-      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.35s var(--ease-standard);
     }
 
     &:hover::after,
@@ -225,7 +249,6 @@ onBeforeUnmount(() => {
     &:hover,
     &:focus-visible {
       color: var(--clr-primary-100);
-      outline: none;
     }
 
     &.is-active {

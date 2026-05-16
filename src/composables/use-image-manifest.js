@@ -6,21 +6,19 @@
 const VARIANT_PATTERN = /^(.+?)-(\d+)\.(jpg|jpeg|png|webp|avif)$/;
 const PLAIN_PATTERN   = /^(.+?)\.(jpg|jpeg|png|webp|avif)$/;
 
-const _is_image_path = (path) =>
+const _is_raster_path = (path) =>
   /\.(jpg|jpeg|png|webp|avif)$/.test(path);
 
 const _build_manifest = () => {
-  /* eager glob — Vite resolves URLs at build time. */
   const modules = import.meta.glob(
     '@assets/app/*.{jpg,jpeg,png,webp,avif}',
     { eager: true, query: '?url', import: 'default' },
   );
 
   const groups = {};
-  /* groups[base] = { jpg: [{url, width}], webp: [...], avif: [...], fallback: url } */
 
   for (const [path, url] of Object.entries(modules)) {
-    if (!_is_image_path(path)) {
+    if (!_is_raster_path(path)) {
       continue;
     }
 
@@ -43,19 +41,19 @@ const _build_manifest = () => {
     }
 
     if (!groups[base]) {
-      groups[base] = { jpg: [], webp: [], avif: [], fallback_src: null };
+      groups[base] = { raster: [], webp: [], avif: [], fallback_src: null };
     }
 
-    const ext_key = ext === 'jpeg' ? 'jpg' : (ext === 'png' ? 'jpg' : ext);
+    const is_raster = ext === 'jpg' || ext === 'jpeg' || ext === 'png';
+    const tier_key = is_raster ? 'raster' : ext;
 
     if (width > 0) {
-      groups[base][ext_key].push({ url, width });
-    } else if (ext_key === 'jpg' || ext_key === 'png') {
+      groups[base][tier_key].push({ url, width });
+    } else if (is_raster) {
       groups[base].fallback_src = url;
     }
   }
 
-  /* Compose the per-base manifest entries. */
   const manifest = {};
   for (const [base, group] of Object.entries(groups)) {
     const _to_srcset = (arr) =>
@@ -65,18 +63,16 @@ const _build_manifest = () => {
         .map((v) => `${v.url} ${v.width}w`)
         .join(', ');
 
-    const widths = group.jpg.map((v) => v.width);
+    const widths = group.raster.map((v) => v.width);
     const max_width = widths.length > 0 ? Math.max(...widths) : 0;
 
     manifest[base] = {
-      fallback_src: group.fallback_src
-        || (group.jpg.length > 0 ? group.jpg[group.jpg.length - 1].url : null),
-      jpg_srcset:   _to_srcset(group.jpg),
-      webp_srcset:  _to_srcset(group.webp),
-      avif_srcset:  _to_srcset(group.avif),
+      fallback_src:   group.fallback_src
+        || (group.raster.length > 0 ? group.raster[group.raster.length - 1].url : null),
+      raster_srcset:  _to_srcset(group.raster),
+      webp_srcset:    _to_srcset(group.webp),
+      avif_srcset:    _to_srcset(group.avif),
       width:  max_width,
-      /* height is unknown without sharp/imagetools metadata. Phase 7 may
-         hydrate this via vite-imagetools `?as=metadata` imports. */
       height: 0,
     };
   }
@@ -87,8 +83,8 @@ const _build_manifest = () => {
 const MANIFEST = _build_manifest();
 
 /**
- * @param {string} name — base filename (no extension, no variant suffix).
- * @returns {object|null}
+ * Get the precomputed `<picture>` manifest for an asset basename.
+ * @returns {{fallback_src,raster_srcset,webp_srcset,avif_srcset,width,height} | null}
  */
 export const useImageManifest = (name) => MANIFEST[name] || null;
 

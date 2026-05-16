@@ -26,7 +26,7 @@
 $breakpoints: (
   sm: 48em,      /* 768px  — Landscape phones */
   md: 64em,      /* 1024px — Tablets */
-  lg: 82.667em,  /* 1320px — Desktops */
+  lg: 75em,      /* 1200px — Desktops */
   xl: 100em,     /* 1600px — Wide displays */
 );
 
@@ -57,7 +57,7 @@ $colors: (
     50:  hsl(0, 0%, 95%),
     100: hsl(0, 0%, 85%),
     200: hsl(0, 0%, 65%),
-    300: hsl(0, 0%, 45%),
+    300: hsl(0, 0%, 48%),      /* bumped from 45% → 48% — clears 4.5:1 on neutral-500 bg per WCAG 1.4.3, visual delta < 3% lightness (invisible). See docs/changes/2026-05-15-neutral-300-contrast-bump.md to revert. */
     400: hsl(0, 0%, 25%),
     500: hsl(0, 0%, 0%),       /* #000000 — page background */
   ),

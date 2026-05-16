@@ -12,7 +12,7 @@ import useClickOutside from '@composables/use-click-outside';
 import useLanguage from '@composables/use-language';
 
 const { t } = useI18n();
-const { locale, supported_languages, setLanguage } = useLanguage();
+const { locale, supportedLanguages, setLanguage } = useLanguage();
 
 const open = ref(false);
 const root = ref(null);
@@ -32,10 +32,7 @@ const focusItem = (idx) => {
 const openMenu = async () => {
   open.value = true;
   await nextTick();
-  /* Focus the active option (or the first) when the menu opens. */
-  const idx = supported_languages.value
-    ? supported_languages.value.findIndex((c) => c === locale.value)
-    : -1;
+  const idx = supportedLanguages.findIndex((c) => c === locale.value);
   focusItem(idx > -1 ? idx : 0);
 };
 
@@ -63,35 +60,21 @@ const onTriggerKeydown = (event) => {
   }
 };
 
+const ITEM_KEY_HANDLERS = {
+  ArrowDown: (idx) => focusItem(idx + 1),
+  ArrowUp:   (idx) => focusItem(idx - 1),
+  Home:      ()    => focusItem(0),
+  End:       ()    => focusItem(item_refs.value.length - 1),
+  Escape:    ()    => closeMenu(),
+  // Tab intentionally lets focus leave naturally (no preventDefault).
+  Tab:       ()    => { open.value = false; },
+};
+
 const onItemKeydown = (event, idx) => {
-  switch (event.key) {
-    case 'ArrowDown':
-      event.preventDefault();
-      focusItem(idx + 1);
-      break;
-    case 'ArrowUp':
-      event.preventDefault();
-      focusItem(idx - 1);
-      break;
-    case 'Home':
-      event.preventDefault();
-      focusItem(0);
-      break;
-    case 'End':
-      event.preventDefault();
-      focusItem(item_refs.value.length - 1);
-      break;
-    case 'Escape':
-      event.preventDefault();
-      closeMenu();
-      break;
-    case 'Tab':
-      /* Allow natural Tab to close the menu without trapping focus. */
-      open.value = false;
-      break;
-    default:
-      break;
-  }
+  const handler = ITEM_KEY_HANDLERS[event.key];
+  if (!handler) return;
+  if (event.key !== 'Tab') event.preventDefault();
+  handler(idx);
 };
 
 const setItemRef = (el, idx) => {
@@ -111,7 +94,7 @@ const setItemRef = (el, idx) => {
       :aria-expanded="open"
       aria-haspopup="menu"
       aria-controls="language-toggle-menu"
-      :aria-label="t('kyo-web.widget.trans-lang.current')"
+      :aria-label="t('kyo-web.widget.trans-lang.button-aria')"
       @click="onTriggerClick"
       @keydown="onTriggerKeydown">
       <span class="language-toggle__current">
@@ -124,10 +107,9 @@ const setItemRef = (el, idx) => {
       v-show="open"
       id="language-toggle-menu"
       class="language-toggle__list"
-      role="menu"
-      :aria-activedescendant="`language-option-${locale}`">
+      role="menu">
       <li
-        v-for="(code, idx) in supported_languages"
+        v-for="(code, idx) in supportedLanguages"
         :key="code"
         role="none">
         <button
@@ -216,7 +198,6 @@ const setItemRef = (el, idx) => {
     &:focus-visible {
       color: var(--clr-neutral-50);
       background: color-mix(in srgb, var(--clr-primary-100) 15%, transparent);
-      outline: none;
     }
 
     &.is-active {

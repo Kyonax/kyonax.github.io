@@ -1,0 +1,70 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+
+#  ________ ______  __ _____   _  __________   ___
+# /_  __/ // / __/ / // / _ | / |/ / ___/ _ | / _ \
+#  / / / _  / _/  / _  / __ |/    / (_ / __ |/ , _/
+# /_/ /_//_/___/ /_//_/_/ |_/_/|_/\___/_/ |_/_/|_|
+#
+# deploy.yml — Hostinger deploy gate (main -> deploy branch)
+# 2026-05-14
+#
+# On every push to main: npm ci -> precheck -> build -> force-push
+# dist/ to the `deploy` branch as a single commit via JamesIves
+# action. Hostinger hPanel Git pulls `deploy` into /public_html/.
+# Atomic rollback via git revert on deploy.
+#
+#   Trigger: push to main + workflow_dispatch (manual)
+#   Concurrency: deploy-${{ github.ref }} (no cancel-in-progress)
+#   Steps: checkout -> node 20 -> npm ci -> precheck -> build -> push
+#
+# Guidelines:
+#   Never enable cancel-in-progress here — a half-pushed deploy
+#     branch is harder to recover than a slow run
+#   deploy branch is force-pushed every build (single-commit: true)
+#   ImageMagick available on runner; favicons regenerate here
+#   Cross-reference: SEO_MIGRATION.md §14 Hostinger runbook
+
+name: Build and push to deploy branch
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run precheck gate
+        run: npm run precheck
+
+      - name: Build site
+        run: npm run build
+
+      - name: Push dist/ to deploy branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
+          branch: deploy
+          single-commit: true
+          commit-message: "Build ${{ github.sha }}"
+          git-config-name: github-actions[bot]
+          git-config-email: 41898282+github-actions[bot]@users.noreply.github.com

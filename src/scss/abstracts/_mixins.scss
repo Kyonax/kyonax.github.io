@@ -128,3 +128,100 @@
    directly in abstracts/_theme.scss alongside its keyframes. The mixin
    pattern caused Sass's modern compiler to drop the ::before block in
    some contexts. Direct rules are deterministic. See _theme.scss. */
+
+/* kyo-chip — SpaceMono cap-tracked pill with currentColor border + 8% tint bg.
+   Two surfaces: the `.kyo-chip` global class (consumed by regular elements)
+   AND this mixin (consumed by pseudo-elements like ::before which can't carry
+   classes — e.g. the experience-modal bullet counter). The mixin does NOT
+   set `color`, `font-size`, or `padding` so callers control sizing + theme.
+   For default primary-yellow: prefer the class. For state-color chips:
+   set `color: var(--state-color)` and the border + bg follow via currentColor. */
+@mixin kyo-chip {
+  font-family: "SpaceMono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  border: 1px solid currentColor;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+/* tech-stack-item / tech-stack-icon / tech-stack-abbr — shared cyberpunk
+   chip + corner-cropped square abbreviation used by the project-modal AND
+   the experience-modal stack lists. The two scoped consumers held two
+   byte-identical copies of these blocks (~50 SLOC each); extracting as
+   mixins keeps the compiled CSS identical (mixins inline at call-site,
+   scoped attribute selectors are still emitted per SFC) but removes
+   the duplication from the source. */
+@mixin tech-stack-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--clr-border-100);
+  background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
+  color: var(--clr-neutral-100);
+  font-family: "SpaceMono", monospace;
+  font-size: var(--fs-200);
+  letter-spacing: 0.06em;
+
+  @include max-media-query(md) {
+    gap: 0.4rem;
+    padding: 0.35rem 0.5rem;
+    font-size: var(--fs-100);
+  }
+}
+
+@mixin tech-stack-icon {
+  color: var(--clr-primary-100);
+
+  @include max-media-query(md) {
+    &.brand-icon--lg { font-size: 1.05rem; }
+    &.icon-glyph--lg { font-size: 1.05rem; }
+  }
+}
+
+/* The abbr is the two-letter fallback when no brand-icon or glyph is
+   available. Corner pseudo-elements draw the cyberpunk frame brackets. */
+@mixin tech-stack-abbr {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-family: "SpaceMono", monospace;
+  font-size: var(--fs-100);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--clr-primary-100);
+  border: 1px solid var(--clr-primary-100);
+  background: color-mix(in srgb, var(--clr-primary-100) 6%, transparent);
+  position: relative;
+  flex-shrink: 0;
+
+  @include max-media-query(md) {
+    width: 1.1rem;
+    height: 1.1rem;
+    font-size: 0.7rem;
+  }
+
+  &::before, &::after {
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border: 1px solid var(--clr-primary-100);
+    pointer-events: none;
+  }
+  &::before {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+  }
+  &::after {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+  }
+}

@@ -42,8 +42,8 @@ const alt_text = computed(() => props.alt || props.img);
 
     <img
       :src="manifest.fallback_src"
-      :srcset="manifest.jpg_srcset || undefined"
-      :sizes="manifest.jpg_srcset ? sizes : undefined"
+      :srcset="manifest.raster_srcset || undefined"
+      :sizes="manifest.raster_srcset ? sizes : undefined"
       :width="manifest.width || undefined"
       :height="manifest.height || undefined"
       :alt="alt_text"

@@ -2,36 +2,20 @@
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
- *
- * convert-images.mjs — sharp-based image transcoder.
- *
- * Walks src/assets/app/*.{jpg,jpeg,png}, generates `.webp` (q=75) and
- * `.avif` (q=50) variants alongside each source. Idempotent — skips
- * outputs that are newer than the source. Wired as `npm run convert:images`
- * + chained into `prebuild` so production builds always have variants.
- *
- * Replaces the legacy webpack image-pipeline:
- *   - image-webpack-loader (mozjpeg + pngquant) — ran per-import
- *   - imagemin-webp                              — ran during minification
- *   - image-minimizer-webpack-plugin             — duplicate processing
- *
- * The result is the same: the dist/ folder ships AVIF + WebP + JPG variants
- * for every raster asset, picked up automatically by useImageManifest.
- *
- * Run:
- *   node scripts/convert-images.mjs            — process all assets
- *   node scripts/convert-images.mjs --force    — re-encode even if up to date
- *   node scripts/convert-images.mjs --quiet    — suppress per-file logs
  */
 
 import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { cpus } from 'node:os';
 
 import sharp from 'sharp';
 
-import { REPO_ROOT, head, ok, fail, walk, rel, c } from './_lib.mjs';
+import { REPO_ROOT, head, ok, fail, walk, rel, c, isOutdated } from './_lib.mjs';
 
-const SRC_DIR = join(REPO_ROOT, 'src/assets/app');
+const SRC_DIRS = [
+  join(REPO_ROOT, 'src/assets/app'),
+  join(REPO_ROOT, 'src/assets/projects'),
+];
 const SOURCE_EXTS = ['.jpg', '.jpeg', '.png'];
 const WEBP_QUALITY = 90;
 const AVIF_QUALITY = 75;
@@ -40,11 +24,8 @@ const args = process.argv.slice(2);
 const FORCE = args.includes('--force');
 const QUIET = args.includes('--quiet');
 
-const _is_outdated = (output_path, source_path) => {
-  if (FORCE) return true;
-  if (!existsSync(output_path)) return true;
-  return statSync(source_path).mtimeMs > statSync(output_path).mtimeMs;
-};
+const _is_outdated = (output_path, source_path) =>
+  isOutdated(source_path, output_path, { force: FORCE });
 
 const _bytes = (n) => {
   if (n >= 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)}MB`;
@@ -73,38 +54,60 @@ const _convert = async (source_path, target_ext, encoder) => {
   return { source_size: before, target_size: after };
 };
 
-if (!existsSync(SRC_DIR)) {
-  fail(`source dir not found: ${rel(SRC_DIR)}`);
-  process.exit(1);
-}
-
 head('convert-images — sharp-based transcoder');
 
-const sources = walk(SRC_DIR, { ext: SOURCE_EXTS });
-ok(`found ${sources.length} source raster${sources.length === 1 ? '' : 's'}`);
+const sources = SRC_DIRS
+  .filter((dir) => {
+    if (existsSync(dir)) return true;
+    if (!QUIET) console.log(`  ${c('dim', '·')} skip ${rel(dir)} (not present)`);
+    return false;
+  })
+  .flatMap((dir) => walk(dir, { ext: SOURCE_EXTS }));
+
+ok(`found ${sources.length} source raster${sources.length === 1 ? '' : 's'} across ${SRC_DIRS.length} dir(s)`);
+
+const CONCURRENCY = Math.max(1, cpus().length);
+
+const _run_pool = async (tasks, limit) => {
+  const results = new Array(tasks.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, tasks.length) }, async () => {
+    while (true) {
+      const i = next++;
+      if (i >= tasks.length) return;
+      try {
+        results[i] = await tasks[i]();
+      } catch (err) {
+        results[i] = { error: err };
+        fail(`task ${i} failed: ${err.message}`);
+      }
+    }
+  });
+  await Promise.all(workers);
+  return results;
+};
 
 let total_before = 0;
+for (const src of sources) total_before += statSync(src).size;
+
+const jobs = sources.flatMap((src) => [
+  { kind: 'webp', task: () => _convert(src, '.webp', (img) =>
+      img.webp({ quality: WEBP_QUALITY, effort: 4 })) },
+  { kind: 'avif', task: () => _convert(src, '.avif', (img) =>
+      img.avif({ quality: AVIF_QUALITY, effort: 4 })) },
+]);
+
+const results = await _run_pool(jobs.map((j) => j.task), CONCURRENCY);
+
 let total_webp = 0;
 let total_avif = 0;
 let webp_processed = 0;
 let avif_processed = 0;
-
-for (const src of sources) {
-  total_before += statSync(src).size;
-
-  const webp = await _convert(src, '.webp', (img) =>
-    img.webp({ quality: WEBP_QUALITY, effort: 4 }));
-  if (!webp.skipped) {
-    total_webp += webp.target_size;
-    webp_processed += 1;
-  }
-
-  const avif = await _convert(src, '.avif', (img) =>
-    img.avif({ quality: AVIF_QUALITY, effort: 4 }));
-  if (!avif.skipped) {
-    total_avif += avif.target_size;
-    avif_processed += 1;
-  }
+for (let i = 0; i < results.length; i += 1) {
+  const r = results[i];
+  if (!r || r.skipped || r.error) continue;
+  if (jobs[i].kind === 'webp') { total_webp += r.target_size; webp_processed += 1; }
+  else                         { total_avif += r.target_size; avif_processed += 1; }
 }
 
 console.log('');
@@ -117,4 +120,6 @@ ok(
   (total_avif ? `  (total ${_bytes(total_avif)})` : ''),
 );
 ok(`source raster total: ${_bytes(total_before)}`);
-process.exit(0);
+
+const errored = results.some((r) => r && r.error);
+process.exit(errored ? 1 : 0);

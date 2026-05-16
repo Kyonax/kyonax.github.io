@@ -85,7 +85,6 @@ const wrapper_class = computed(() => [
     overflow: hidden;
     background-color: var(--clr-neutral-400);
 
-    /* Breakpoint-aware width, driven by the --image-size-* custom props. */
     width: var(--image-size-sm, 140px);
 
     @include min-media-query(md) {
@@ -107,7 +106,6 @@ const wrapper_class = computed(() => [
     width: 100%;
     height: 100%;
 
-    /* The <img> inside <picture> needs the cropping treatment. */
     :deep(img) {
       width: 100%;
       height: 100%;

@@ -10,20 +10,12 @@ import { useI18n } from 'vue-i18n';
 import BrandIcon from '@ui/brand-icon.vue';
 import UiIcon from '@ui/icon.vue';
 import UiLink from '@ui/link.vue';
+import UiHudDeco from '@ui/hud-deco.vue';
+
+import logoKyonaxSvg from '@assets/app/LOGO_KYONAX.svg?raw';
 
 const { t, locale } = useI18n();
 
-/* ─── Signature manifest — decorative browser-state readout ─────────
- * Every value in this manifest comes from a real browser API. No
- * hand-curated brand strings ("CHANNEL", "STATUS", "BUILD") — the
- * point is that this card mirrors the visitor's actual environment,
- * not our marketing. Updates reactively as the viewport resizes or
- * the locale toggles.
- *
- * SSR/static-prerender note: `window` and `navigator` are undefined
- * server-side, so the refs start empty and hydrate in onMounted to
- * avoid hydration mismatch.
- * ───────────────────────────────────────────────────────────────── */
 const host         = ref('');
 const path         = ref('');
 const nav_language = ref('');
@@ -33,10 +25,15 @@ const onResize = () => {
   viewport.value = { w: window.innerWidth, h: window.innerHeight };
 };
 
+const resolved_tz = ref('—');
+
 onMounted(() => {
   host.value         = window.location.host     || '—';
   path.value         = window.location.pathname || '/';
   nav_language.value = navigator.language        || '—';
+  try {
+    resolved_tz.value = Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
+  } catch { /* Intl unavailable in some embedded WebViews */ }
   onResize();
   window.addEventListener('resize', onResize, { passive: true });
 });
@@ -45,37 +42,25 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize);
 });
 
-/* `Intl.DateTimeFormat().resolvedOptions().timeZone` returns the
-   IANA zone the browser is running in (e.g. "America/Bogota"). It's
-   safe to evaluate at module load — `Intl` is available everywhere
-   modern Vue runs. */
-const resolved_tz = (() => {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
-  } catch {
-    return '—';
-  }
-})();
-
 const manifest = computed(() => [
   { key: 'host',     label: 'HOST',     value: host.value || '—' },
   { key: 'path',     label: 'PATH',     value: path.value || '—' },
   { key: 'locale',   label: 'LOCALE',   value: locale.value.toUpperCase() },
   { key: 'lang',     label: 'LANG',     value: nav_language.value || '—' },
   { key: 'viewport', label: 'VIEWPORT', value: viewport.value.w ? `${viewport.value.w}×${viewport.value.h}` : '—' },
-  { key: 'tz',       label: 'TZ',       value: resolved_tz },
+  { key: 'tz',       label: 'TZ',       value: resolved_tz.value },
 ]);
 
 const SOCIALS = [
-  { id: 'github',    url: 'https://github.com/kyonax',             glyph: '', label: 'GitHub',    delay: '1s' },
-  { id: 'linkedin',  url: 'https://linkedin.com/in/kyonax',        glyph: '', label: 'LinkedIn',  delay: '2s' },
-  { id: 'x',         url: 'https://x.com/kyonax_on_tech',          brand: 'x',      label: 'X',        delay: '3s' },
-  { id: 'instagram', url: 'https://instagram.com/kyonax_on_tech',  glyph: '', label: 'Instagram', delay: '4s' },
-  { id: 'tiktok',    url: 'https://tiktok.com/@kyonax_on_tech',    brand: 'tiktok', label: 'TikTok',    delay: '5s' },
+  { id: 'github',    url: 'https://github.com/kyonax',             glyph: '', label: 'GitHub, @kyonax',    delay: '1s' },
+  { id: 'linkedin',  url: 'https://linkedin.com/in/kyonax',        glyph: '', label: 'LinkedIn profile, Cristian D. Moreno',  delay: '2s' },
+  { id: 'x',         url: 'https://x.com/kyonax_on_tech',          brand: 'x',      label: 'X (formerly Twitter), @kyonax_on_tech',        delay: '3s' },
+  { id: 'instagram', url: 'https://instagram.com/kyonax_on_tech',  glyph: '', label: 'Instagram, @kyonax_on_tech', delay: '4s' },
+  { id: 'tiktok',    url: 'https://tiktok.com/@kyonax_on_tech',    brand: 'tiktok', label: 'TikTok, @kyonax_on_tech',    delay: '5s' },
 ];
 
-const GLYPH_MAIL = '';
-const GLYPH_WSP  = '';
+const GLYPH_MAIL = '\uF0E0';
+const GLYPH_WSP  = '\uF232';
 
 const WHATSAPP_URL =
   'https://wa.me/573022539479?text=Hola!%20me%20gustar%C3%ADa%20saber%20m%C3%A1s%20de%20tus%20Servicios';
@@ -87,14 +72,14 @@ const WHATSAPP_URL =
     class="site-footer"
     role="contentinfo"
     :aria-label="t('kyo-web.landing.footer.tag')">
-    <span class="hud-deco hud-deco--tl" aria-hidden="true">// BEACON :: ON</span>
-    <span class="hud-deco hud-deco--tr site-footer__deco-channel" aria-hidden="true">// CHANNEL :: CCS // KYONAX // ZERONET</span>
+    <UiHudDeco variant="tl" text="// BEACON :: ON" />
+    <UiHudDeco variant="tr" text="// CHANNEL :: CCS // KYONAX // ZERONET" class="site-footer__deco-channel" />
     <div class="site-footer__top">
       <div class="site-footer__brand">
-        <UiIcon
+        <span
           class="site-footer__logo"
-          name="LOGO_KYONAX"
-          alt="Kyonax Logo" />
+          aria-hidden="true"
+          v-html="logoKyonaxSvg" />
         <div class="site-footer__signoff" aria-hidden="true">
           <span class="site-footer__signoff-tag">SYS // SIGNATURE</span>
           <p class="site-footer__signoff-text" v-html="t('kyo-web.landing.footer.signoff')" />
@@ -119,7 +104,7 @@ const WHATSAPP_URL =
             flare-delay="1s"
             class="site-footer__channel"
             external>
-            <span class="icon-glyph" aria-hidden="true">{{ GLYPH_MAIL }}</span>
+            <span class="icon-glyph" :data-text="GLYPH_MAIL" aria-hidden="true" />
             <span>{{ t('kyo-web.contact.contact-me') }}</span>
           </UiLink>
           <UiLink
@@ -128,7 +113,7 @@ const WHATSAPP_URL =
             flare-delay="2s"
             class="site-footer__channel"
             external>
-            <span class="icon-glyph" aria-hidden="true">{{ GLYPH_WSP }}</span>
+            <span class="icon-glyph" :data-text="GLYPH_WSP" aria-hidden="true" />
             <span>{{ t('kyo-web.contact.wsp') }}</span>
           </UiLink>
         </div>
@@ -152,7 +137,8 @@ const WHATSAPP_URL =
               <span
                 v-else
                 class="icon-glyph icon-glyph--lg site-footer__social-icon"
-                aria-hidden="true">{{ social.glyph }}</span>
+                :data-text="social.glyph"
+                aria-hidden="true" />
             </UiLink>
           </li>
         </ul>
@@ -223,20 +209,18 @@ const WHATSAPP_URL =
     }
   }
 
-  
+
   &__logo {
+    display: block;
     width: 100%;
     max-width: 480px;
-    height: auto;
-    filter:
-      brightness(0)
-      saturate(100%)
-      invert(83%)
-      sepia(58%)
-      saturate(580%)
-      hue-rotate(2deg)
-      brightness(98%)
-      contrast(95%);
+    color: var(--clr-primary-100);
+
+    :deep(svg) {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
 
     @include max-media-query(md) {
       max-width: none;
@@ -368,9 +352,7 @@ const WHATSAPP_URL =
 
   &__social-icon {
     font-size: 1.4rem;
-    /* Override the global .icon-glyph / .brand-icon baseline lift so social
-       icons sit visually centered inside the 44×44 cell (the lift is helpful
-       inline with text but reads as "floating high" inside a square box). */
+    /* Cancel the global glyph lift inside the 44x44 square cells. */
     transform: translateY(0);
   }
 

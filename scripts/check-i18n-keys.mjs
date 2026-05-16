@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
- * Mozilla Public License 2.0 — see LICENSE.
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
  * check-i18n-keys.mjs — verify every t('...') / $t('...') / <i18n-t keypath="...">
  * call in templates references a key that exists in messages.
@@ -11,9 +11,11 @@
 
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
 
-import { REPO_ROOT, head, ok, fail, walk, read, rel, exitWith, c } from './_lib.mjs';
+import {
+  REPO_ROOT, head, ok, walk, read, rel, exitWith, c,
+  flattenI18nKeys, loadTranslations,
+} from './_lib.mjs';
 
 const SRC = join(REPO_ROOT, 'src');
 if (!existsSync(SRC)) {
@@ -21,43 +23,18 @@ if (!existsSync(SRC)) {
   process.exit(0);
 }
 
-// Prefer the alias-free source (src/data/snippets.js). src/i18n/messages.js
-// re-exports it via @data/snippets, which Node can't resolve without Vite.
-const CANDIDATES = ['src/data/snippets.js', 'src/i18n/messages.js'];
-let messages = null;
-for (const r of CANDIDATES) {
-  const abs = join(REPO_ROOT, r);
-  if (!existsSync(abs)) continue;
-  try {
-    const mod = await import(pathToFileURL(abs).href);
-    messages = mod.default || mod.TRANSLATIONS || mod.messages;
-    if (messages) break;
-  } catch (e) {
-    if (!e.message.includes('Cannot find package')) throw e;
-    /* alias-using file — try next candidate */
-  }
-}
-if (!messages) {
+const loaded = await loadTranslations();
+if (!loaded) {
   ok('no messages source — skipping. (Run after Phase 3 setup.)');
   process.exit(0);
 }
-
-function flatten(obj, prefix = '') {
-  const set = new Set();
-  for (const [k, v] of Object.entries(obj)) {
-    const path = prefix ? `${prefix}.${k}` : k;
-    if (v && typeof v === 'object' && !Array.isArray(v)) {
-      for (const x of flatten(v, path)) set.add(x);
-    } else if (typeof v === 'string') set.add(path);
-  }
-  return set;
-}
+const messages = loaded.data;
 
 // Take the union across all locales — any locale providing the key is fine
 // (vue-i18n falls back per fallbackLocale).
 const allKeys = new Set();
 for (const locale of Object.keys(messages)) {
-  for (const k of flatten(messages[locale])) allKeys.add(k);
+  for (const k of flattenI18nKeys(messages[locale])) allKeys.add(k);
 }
 
 // Word-boundary anchored patterns. `t(` must be at a word start so we don't

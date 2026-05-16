@@ -2,27 +2,17 @@
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
- * Project deadline countdown worker. Rewritten vs legacy per
- * PERFORMANCE_MIGRATION.md §2.2:
+ * Project deadline countdown worker. Parses deadlines once on receipt
+ * (Intl.DateTimeFormat is ~50–500 µs per call), then ticks at 1 Hz
+ * (display precision is seconds). Accepts `{cmd: 'pause'|'resume'}` to
+ * suspend work explicitly when the host tab hides.
  *
- *   1. Parse-once: every deadline string is run through Intl.DateTimeFormat
- *      (the expensive part — ~50–500 µs per call) ONCE on receipt of
- *      `{projects, keys}`. Legacy re-parsed on every tick (~12 calls/sec
- *      for nothing).
- *   2. 1 Hz tick: was 4 Hz. Display precision is seconds, not milliseconds.
- *   3. Visibility-aware: accepts `{cmd: 'pause'|'resume'}` from the
- *      composable. Browser-throttling of background setInterval to 1 Hz
- *      already mitigates background work, but explicit pause is cleaner.
- *   4. Drops the `_NNNMS` suffix from the formatted output. Legacy displayed
- *      sub-second precision but updated only 4×/s — visual jitter.
- *
- * Wire-protocol (unchanged contract for the composable):
+ * Wire protocol:
  *   inbound:  {projects: Record<string, Project>, keys: string[]}
  *             {cmd: 'pause'|'resume'}
  *   outbound: Record<string, {label: string, countdown: string, utc_ts: number} | {}>
  *
- * The `_parse_colombia_time` helper preserves legacy semantics — date strings
- * are interpreted in America/Bogota timezone (UTC-5), then converted to UTC.
+ * Deadline strings are interpreted in America/Bogota (UTC-5) then converted to UTC.
  */
 
 const TICK_INTERVAL_MS = 1000;
@@ -37,12 +27,9 @@ const MONTH_MAP = {
   Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
 };
 
-let cached_deadlines = []; /* [{key, label, utc_ts}, …] — populated once */
+let cached_deadlines = [];
 let timer_id = null;
 
-/**
- * Parse "Mon DD HH:MM:SS YYYY" in America/Bogota timezone → UTC ms.
- */
 const _parse_colombia_time = (ts) => {
   const parts = ts.split(' ');
   if (parts.length !== 4) {
@@ -92,10 +79,6 @@ const _parse_colombia_time = (ts) => {
   return utc_guess + offset_ms;
 };
 
-/**
- * Render an ms diff as `DD_HHh_MMm_SSs`-style human countdown. Returns null
- * for past / negative diffs — composable formats those (localized "ENDED").
- */
 const _format_countdown = (diff) => {
   if (diff <= 0) {
     return null;
@@ -108,10 +91,6 @@ const _format_countdown = (diff) => {
   return `${days}D_${pad(hours)}H_${pad(minutes)}M_${pad(seconds)}S`;
 };
 
-/**
- * Build cached_deadlines from a {projects, keys} payload. For each key,
- * pick the earliest *future* deadline at this moment of receipt.
- */
 const _hydrate_cache = (projects, keys) => {
   const now = Date.now();
   cached_deadlines = [];
@@ -143,10 +122,6 @@ const _hydrate_cache = (projects, keys) => {
   }
 };
 
-/**
- * One tick: emit a snapshot of all cached deadlines as countdowns.
- * Cheap — no Intl calls, no parsing. Just subtractions and string formatting.
- */
 const _tick = () => {
   const now = Date.now();
   const out = {};

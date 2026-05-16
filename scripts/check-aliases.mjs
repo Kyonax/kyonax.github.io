@@ -32,7 +32,6 @@ head('check-aliases — Vite ↔ ESLint resolver');
 
 const viteSrc = read(VITE);
 
-// Locate the alias: { ... } block
 const aliasBlockMatch = viteSrc.match(/alias\s*:\s*\{([\s\S]*?)\n\s*\}/);
 if (!aliasBlockMatch) {
   fail('could not locate alias: { ... } block in vite.config.js');
@@ -40,10 +39,6 @@ if (!aliasBlockMatch) {
 }
 const aliasBlock = aliasBlockMatch[1];
 
-// Walk line by line, parsing one alias entry per line.
-// Each entry looks like:  '@app':  r('./src/app'),
-//                         '@app':  './src/app',
-//                         '@app':  path.resolve(__dirname, 'src/app'),
 const aliases = {};
 for (const rawLine of aliasBlock.split('\n')) {
   const line = rawLine.trim();
@@ -59,14 +54,12 @@ for (const rawLine of aliasBlock.split('\n')) {
   const tail = all[all.length - 1];
   if (!tail || tail === name) continue;
 
-  // Normalize: strip leading "./"
   aliases[name] = tail.replace(/^\.\//, '');
 }
 
 ok(`vite aliases: ${Object.keys(aliases).length}`);
 
 for (const [alias, target] of Object.entries(aliases)) {
-  // Resolve relative to repo root
   const abs = join(REPO_ROOT, target);
   if (!existsSync(abs)) {
     failures.push(`alias ${c('yellow', alias)} → ${target} does NOT exist`);
@@ -75,13 +68,7 @@ for (const [alias, target] of Object.entries(aliases)) {
 
 if (existsSync(ESLINT)) {
   const eslintSrc = read(ESLINT);
-  // ESLint cross-check: in the flat config we don't usually duplicate the
-  // alias map, but we DO want eslint to be aware of every alias name so
-  // import/no-unresolved can resolve them. Since the user's reckit-style
-  // setup uses simple-import-sort + Vite without an explicit eslint resolver,
-  // a name-presence check is enough for now: if any alias is referenced
-  // in source files, ESLint should at least not crash on it. We just verify
-  // the names look reachable. This rule may tighten later.
+  // Name-presence check only — Vite owns alias resolution; ESLint just needs to know the names exist.
   let referenced = 0;
   for (const alias of Object.keys(aliases)) {
     if (eslintSrc.includes(alias)) referenced += 1;

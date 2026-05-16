@@ -9,16 +9,13 @@ import { DEFAULT_LANGUAGE } from '@data/data';
 
 import messages from './messages';
 
-export const i18n = createI18n({
-  legacy: false,
-  locale: DEFAULT_LANGUAGE,
-  fallbackLocale: 'en',
-  messages,
-  warnHtmlMessage: false,
-  missingWarn:        import.meta.env.DEV,
-  fallbackWarn:       import.meta.env.DEV,
-  silentTranslationWarn:  !import.meta.env.DEV,
-  silentFallbackWarn:     !import.meta.env.DEV,
-});
-
-export default i18n;
+export const createI18nInstance = (initialLocale = DEFAULT_LANGUAGE) =>
+  createI18n({
+    legacy: false,
+    locale: initialLocale,
+    fallbackLocale: 'en',
+    messages,
+    warnHtmlMessage: false,
+    missingWarn:  import.meta.env.DEV,
+    fallbackWarn: import.meta.env.DEV,
+  });

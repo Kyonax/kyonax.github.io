@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
- * Mozilla Public License 2.0 — see LICENSE.
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
  * precheck.mjs — composite gate. Runs every always-on check in sequence.
- * Used as `prebuild` in package.json and as the CI pre-check job
- * (mirroring reckit's CI workflow — see CODE_STANDARDS_MIGRATION.md §7).
  *
  * Exit 0 → all checks passed.
- * Exit 1 → at least one failed (with the offending check's output already
- *          printed).
+ * Exit 1 → at least one failed.
  *
  * Run: node scripts/precheck.mjs
  *      node scripts/precheck.mjs --skip=color,licenses
@@ -31,6 +28,8 @@ const CHECKS = [
   { id: 'color',         script: 'scripts/check-color-usage.mjs',     label: 'color tokens / 60-30-10' },
   { id: 'aliases',       script: 'scripts/check-aliases.mjs',         label: 'vite ↔ eslint aliases' },
   { id: 'licenses',      script: 'scripts/check-license-headers.mjs', label: 'CCS license headers' },
+  { id: 'json-ld',       script: 'scripts/check-json-ld.mjs',         label: 'JSON-LD @graph integrity' },
+  { id: 'projects-media',script: 'scripts/check-projects-media.mjs',  label: 'PROJECTS[*].images integrity' },
 ];
 
 const results = [];

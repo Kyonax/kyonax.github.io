@@ -2,17 +2,9 @@
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
- * Theme — emits CSS at :root (color tokens + typography scale) and provides
- * the shared @keyframes / utility classes (.cyberpunk-glow, .element-flare,
- * ::selection).
- *
- * IMPORTANT: this file emits CSS rules. It is loaded ONCE via main.scss and is
- * deliberately NOT forwarded by abstracts/_index.scss. If it were, every
- * <style lang="scss"> block in every SFC would re-emit the entire :root block
- * (additionalData injects the abstracts entry into every block).
- *
- * Bug fix vs legacy: the `large` typography tier was defined in $typo-scale
- * but never emitted. The @each loop now handles all three tiers.
+ * Emits CSS at :root. NOT forwarded by abstracts/_index.scss — if it were,
+ * every <style lang="scss"> block in every SFC would re-emit the :root block
+ * because additionalData injects abstracts into every block.
  */
 
 @use "sass:map";
@@ -20,24 +12,20 @@
 @use "mixins" as *;
 
 :root {
-  /* ── Color tokens (43 total) ────────────────────────────────────────────── */
   @each $color, $shades in $colors {
     @each $shade, $value in $shades {
       --clr-#{$color}-#{$shade}: #{$value};
     }
   }
 
-  /* ── External brand colors ─────────────────────────────────────────────────
-   * Off-palette tokens for third-party brand badges that need their own
-   * brand-mandated colors (the ORCID iD chip, etc.). Keeping them as
-   * :root tokens means the hex literal lives in exactly one place and
-   * SFC <style> blocks reference them via var() — which keeps the
-   * color-usage gate happy.
-   * ──────────────────────────────────────────────────────────────────────── */
-  --clr-orcid-bg: #a6ce39;  /* official ORCID brand green */
-  --clr-orcid-fg: #ffffff;  /* white "iD" mark on the green chip */
+  --clr-orcid-bg: #a6ce39;
+  --clr-orcid-fg: #ffffff;
+  --clr-youtube-red: #ff0000;
 
-  /* ── Typography tokens (8 sizes × 3 breakpoint tiers) ───────────────────── */
+  /* Material-Design standard easing — used for all UI transitions.
+     Edit here to retune every hover/expand/animation in one place. */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
   @each $screen-size, $font-size in $typo-scale {
     @if $screen-size == small {
       @each $size, $value in $font-size {
@@ -47,7 +35,6 @@
   }
 }
 
-/* Medium tier — re-emits at min-md */
 @include min-media-query(md) {
   :root {
     @each $size, $value in map.get($typo-scale, medium) {
@@ -56,8 +43,6 @@
   }
 }
 
-/* Large tier — re-emits at min-lg.
-   Restored during migration; legacy never emitted this. */
 @include min-media-query(lg) {
   :root {
     @each $size, $value in map.get($typo-scale, large) {
@@ -66,9 +51,6 @@
   }
 }
 
-/* ────────────────────────────────────────────────────────────────────────────
- * Selection styling
- * ──────────────────────────────────────────────────────────────────────────── */
 ::selection {
   background-color: var(--clr-primary-100);
   color: var(--clr-neutral-500);
@@ -81,10 +63,6 @@
   -webkit-text-stroke-color: var(--clr-neutral-500);
 }
 
-/* ────────────────────────────────────────────────────────────────────────────
- * Shared keyframes — emitted ONCE here. The cyberpunk-glow mixin references
- * `kyo-glow-pulse` by name (legacy emitted a fresh keyframe per call-site).
- * ──────────────────────────────────────────────────────────────────────────── */
 @keyframes kyo-glow-pulse {
   0%, 100% {
     filter: drop-shadow(
@@ -98,23 +76,6 @@
   }
 }
 
-/* ────────────────────────────────────────────────────────────────────────────
- * .icon-glyph — utility for rendering Nerd Font glyphs consistently.
- *
- * Apply to any <span> wrapping a Nerd Font codepoint. Centers the glyph in
- * a square box, uses SymbolsNerdFontMono first (the actual icon font),
- * and exposes --icon-glyph-size for per-instance sizing.
- *
- * Usage:
- *   <span class="icon-glyph" aria-hidden="true">{{ glyph }}</span>
- *   <span class="icon-glyph icon-glyph--lg" aria-hidden="true">…</span>
- *   <span class="icon-glyph" style="--icon-glyph-size: 2rem">…</span>
- *
- * The element gets `display: inline-flex` + `align-items: center` so it
- * centers the glyph regardless of container — works inside buttons, links,
- * grid cells, anywhere. Without this, Nerd Fonts often render with off-
- * baseline alignment because their glyph metrics are inconsistent.
- * ──────────────────────────────────────────────────────────────────────────── */
 .icon-glyph {
   font-family: "SymbolsNerdFontMono", "SpaceMono", monospace;
   font-size: var(--icon-glyph-size, 1em);
@@ -128,29 +89,18 @@
   height: 1em;
   vertical-align: middle;
   flex-shrink: 0;
-  /* Many Nerd Font glyphs sit visually low inside their em box because the
-     font's metrics carry extra descender padding. Lift them so they align
-     with adjacent text x-height. SVG-based BrandIcon stays at -0.08em. */
+  /* Nerd Font glyphs sit low due to descender padding in their metrics. */
   transform: translateY(-0.18em);
 
   &--lg { --icon-glyph-size: 1.5rem; }
   &--xl { --icon-glyph-size: 2rem;   }
 }
 
-/* ────────────────────────────────────────────────────────────────────────────
- * .ccs-glyph — sizing utility for the CCS signature character (▣ U+25A3).
- *
- * The chosen glyph is visually small inside its em box compared to the
- * surrounding Latin/SpaceMono characters (a tiny inner square inside an
- * outer frame). Without compensation it reads as a footnote-sized dot
- * next to the rest of the label. This rule scales it up relative to the
- * parent font-size so it carries the same visual weight as adjacent
- * letters in every context (hero tag at --fs-200, visual-meta at
- * --fs-100, and any future placement).
- *
- * Usage:
- *   <span class="ccs-glyph">▣</span>
- * ──────────────────────────────────────────────────────────────────────────── */
+/* ▣ (U+25A3) reads smaller than surrounding chars; font-size bump scales
+   it back up. NOTE (2026-05-16): NOT safe inside <a> — even at 1.4em this
+   wrapper trips the WCAG 2.5.3 image-of-text heuristic some scanners run.
+   Only use in aria-hidden contexts. Current consumer: hero-visual.vue
+   meta-frame panel (whole __meta wrapper is aria-hidden="true"). */
 .ccs-glyph {
   font-size: 1.75em;
   line-height: 0;
@@ -158,34 +108,58 @@
   display: inline-block;
 }
 
-/* ────────────────────────────────────────────────────────────────────────────
- * .hud-deco — section-level cyberpunk ambience text.
- *
- * Sprinkled in section corners as low-opacity SpaceMono strings ("// FRAME
- * // KYO-001") plus large-format kanji watermarks behind headings. Pure
- * decoration: aria-hidden, pointer-events disabled, never animated.
- *
- * Variants:
- *   .hud-deco--tl/--tr/--bl/--br : corner anchor (1.25rem inset)
- *   .hud-deco--watermark         : large faint kanji behind section title
- *
- * Each section root needs `position: relative` for the absolute children
- * to anchor correctly. Sections that don't already have it must add it.
- * ──────────────────────────────────────────────────────────────────────── */
+/* Universal opt-in: any decorative element marked `aria-hidden="true"` with a
+   `data-text` attribute renders its text via CSS `content:`. Keeps the DOM
+   free of low-contrast text nodes so WCAG 1.4.3 doesn't apply. Used by
+   <UiHudDeco>, the icon-glyph spans inside aria-hidden contexts, and any
+   future decorative numbering / chrome. */
+[aria-hidden="true"][data-text]::before {
+  content: attr(data-text);
+}
+
+/* Decorative icon rendered as a CSS mask — the element has no text content,
+   so accessibility scanners treat it as an image, not visible text. Safe to
+   place inside an <a> without aria-label (WCAG 2.5.3 doesn't fire). Set
+   `--_icon-mask` to a `url(...)` value (typically an inline SVG data URI).
+   Icon inherits `currentColor` from its host. */
+.icon-mask {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-color: currentColor;
+  -webkit-mask: var(--_icon-mask) center / contain no-repeat;
+          mask: var(--_icon-mask) center / contain no-repeat;
+  vertical-align: -0.15em;
+  flex-shrink: 0;
+}
+
+/* Lucide `external-link` (24×24, stroke 2). The stroke color in the SVG is
+   irrelevant — the mask uses alpha; the visible color comes from
+   `background-color: currentColor` on `.icon-mask`. */
+.icon-mask--external {
+  --_icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 3h6v6'/%3E%3Cpath d='M10 14 21 3'/%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3C/svg%3E");
+}
+
+/* Section root needs position: relative for these absolutes to anchor. */
 .hud-deco {
   position: absolute;
   font-family: "SpaceMono", monospace;
   font-size: var(--fs-100);
   letter-spacing: 0.18em;
   color: var(--clr-neutral-100);
-  /* Slightly more visible than the original 0.16 — corner labels
-     are decorative but should be legible to anyone leaning in. The
-     watermark variant overrides this back down. */
   opacity: 0.32;
   pointer-events: none;
   text-transform: uppercase;
   white-space: nowrap;
   z-index: 0;
+
+  @include min-media-query(md) {
+    font-size: 0.95rem;
+  }
+
+  @include min-media-query(lg) {
+    font-size: 1rem;
+  }
 
   &--tl { top: 1.25rem; left:  1.25rem; }
   &--tr { top: 1.25rem; right: 1.25rem; }
@@ -199,8 +173,6 @@
     letter-spacing: 0;
     text-transform: none;
     color: var(--clr-primary-100);
-    /* Watermarks stay barely-there — they're meant to read as
-       atmospheric texture, not metadata. */
     opacity: 0.04;
     font-weight: 900;
 
@@ -210,25 +182,104 @@
   }
 }
 
-/* ────────────────────────────────────────────────────────────────────────────
- * .state-grid — 3×3 micro-loader primitive used in:
- *   - hero CCS-MEMBER tag (uses --clr-primary-100 by default)
- *   - now-shipping project status badge (overrides via --state-color)
- *
- * Performance choice: cells animate `opacity` (GPU-composited, no paint)
- * over a fixed background-color. The original implementation cycled the
- * `background` color through four shades — that's a paint property, and
- * with up to 6 cards × 9 cells = 54 simultaneous paint-property
- * animations on the now-shipping grid, the compositor was triggering
- * full-section repaints every frame on lower-end devices. Switching to
- * opacity keeps the staggered diagonal wave but stays entirely on the
- * compositor thread.
- *
- * `--state-color` is consumed both as the cell background and (via
- * color-mix on the resting cells, see the @keyframes) as the visual
- * reading. Stagger delays match the original implementation so the
- * diagonal wave reads identically.
- * ──────────────────────────────────────────────────────────────────────────── */
+/* Cyber chip — class form of the `@mixin kyo-chip` (see _mixins.scss).
+   Default primary-yellow. Consumers set their own font-size + padding;
+   override `color` for state-themed variants (border + bg follow via
+   currentColor). */
+.kyo-chip {
+  color: var(--clr-primary-100);
+  @include kyo-chip;
+}
+
+/* Section container shell shared by every landing section. Identical
+   shape repeated 4× (skills/experience/faq/now-projects) before extraction.
+   Consumers add the class to their `<section>`; per-section overrides
+   stay scoped. */
+.kyo-section {
+  position: relative;
+  padding: 5rem 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  overflow: hidden;
+
+  @include min-media-query(md) {
+    padding: 6rem 2rem;
+  }
+}
+
+/* Shared reading-style for rich-text body content (rendered via v-html
+   with inline <strong>). Single source for line-height, letter-spacing,
+   body color, and <strong> highlight. Consumers add the class to their
+   container; font-size + layout stays scoped per consumer. */
+.kyo-prose {
+  font-family: "Geomanist", sans-serif;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  word-spacing: 0.05em;
+  color: color-mix(in srgb, var(--clr-neutral-100) 88%, var(--clr-neutral-500));
+}
+
+.kyo-prose strong {
+  color: color-mix(in srgb, var(--clr-neutral-50) 90%, var(--clr-neutral-500));
+  font-weight: 700;
+  background: color-mix(in srgb, var(--clr-primary-100) 8%, transparent);
+  padding: 0.05rem 0.35rem;
+  border-radius: 2px;
+}
+
+.kyo-prose a {
+  color: var(--clr-primary-100);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: opacity 0.2s var(--ease-standard, ease);
+}
+
+.kyo-prose a:hover,
+.kyo-prose a:focus-visible {
+  opacity: 0.75;
+}
+
+.kyo-prose a strong {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* Inline code-like content — file extensions, identifiers, paths, package
+   names. Mirrors Org-mode's `~code~` / `=code=` rendering style with the
+   cyberpunk palette. Use the bare `<code>` tag inside `.kyo-prose` for
+   automatic styling, or reach for the standalone `.kyo-code` class on
+   non-prose surfaces.
+
+   Examples:
+       <code>.org</code>                  ← file extension
+       <code>hydrate.ts</code>            ← file name
+       <code>&#64;kyonax/org2html</code>  ← package identifier
+*/
+.kyo-prose code,
+.kyo-code {
+  font-family: "SpaceMono", monospace;
+  font-size: 0.88em;
+  color: var(--clr-primary-100);
+  background: color-mix(in srgb, var(--clr-border-100) 35%, transparent);
+  border: 1px solid var(--clr-border-100);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  letter-spacing: 0;
+}
+
+/* Drop the code chrome when nested inside a link or strong chip so the
+   parent emphasis carries through without competing surfaces. */
+.kyo-prose a code,
+.kyo-prose strong code {
+  background: transparent;
+  border-color: transparent;
+  color: inherit;
+}
+
+/* Animates opacity (compositor-only) instead of background, so 54+ cells
+   don't trigger paint-thread repaints per frame on lower-end devices. */
 .state-grid {
   display: inline-grid;
   grid-template-columns: repeat(3, 2px);
@@ -245,8 +296,6 @@
     animation: state-grid-pulse 1.6s ease-in-out infinite;
   }
 
-  /* Diagonal wave: delay = (row + col) × 100ms, identical to the
-     original ccs-grid-wave / state-grid-wave stagger. */
   > span:nth-child(1) { animation-delay: 0ms;   }
   > span:nth-child(2) { animation-delay: 100ms; }
   > span:nth-child(3) { animation-delay: 200ms; }
@@ -263,30 +312,8 @@
   50%      { opacity: 1;    }
 }
 
-/* ────────────────────────────────────────────────────────────────────────────
- * Utility classes — opt-in animations. Override the listed CSS custom
- * properties on any consuming element to customize without re-declaring.
- * ──────────────────────────────────────────────────────────────────────────── */
-/* ────────────────────────────────────────────────────────────────────────────
- * Element-flare — animated gradient halo via ::before pseudo-element.
- *
- * Directly emitted (not via @mixin) to avoid Sass modern-compiler edge
- * cases that drop nested rules. Tunable via CSS custom properties on the
- * element itself:
- *   --element-flare-color           default: var(--clr-border-100)
- *   --element-flare-speed           default: 24s   (gradient sweep)
- *   --element-flare-spread          default: 1px   (inset distance)
- *   --element-flare-breath-duration default: 6s    (opacity breath)
- *   --element-flare-opacity         default: 0.9   (peak opacity)
- *   --element-flare-delay           default: 0s    (animation start delay)
- *
- * Usage:
- *   <a class="element-flare" style="--element-flare-delay: 2s">…</a>
- * Or via UiLink/UiButton's `flareDelay` prop.
- *
- * The element receives `position: relative` so the absolutely-positioned
- * pseudo-element scopes correctly.
- * ──────────────────────────────────────────────────────────────────────────── */
+/* Directly emitted (not via @mixin) — Sass modern compiler drops nested
+   rules through some mixin paths. Tunable via --element-flare-* vars. */
 .element-flare {
   position: relative;
 }
@@ -309,10 +336,9 @@
   background-size: 200% 200%;
   filter: blur(4px);
   opacity: var(--element-flare-opacity, 0.45);
+  transition: opacity 0.28s ease-out;
   z-index: -1;
-  animation:
-    flare-breathe var(--element-flare-speed, 24s) linear infinite,
-    flare-opacity var(--element-flare-breath-duration, 6s) ease-in-out infinite;
+  animation: flare-breathe var(--element-flare-speed, 24s) linear infinite;
   animation-delay: var(--element-flare-delay, 0s);
   pointer-events: none;
 }
@@ -325,10 +351,26 @@
   100% { background-position: 100% 0;    }
 }
 
-@keyframes flare-opacity {
-  0%   { opacity: 0; }
-  50%  { opacity: var(--element-flare-opacity, 0.45); }
-  100% { opacity: 0; }
+/* Swapping to the twin keyframe restarts the sweep at t=0 on each
+   entry; the base `transition: opacity` makes both fade-in and
+   fade-out animate smoothly. */
+.element-flare:not(.is-static):hover::before,
+.element-flare:not(.is-static):focus-visible::before {
+  animation-name: flare-breathe-restart;
+  animation-delay: 0s;
+}
+
+.element-flare.is-static:hover::before,
+.element-flare.is-static:focus-visible::before {
+  opacity: 0;
+}
+
+@keyframes flare-breathe-restart {
+  0%   { background-position: 100% 0;    }
+  25%  { background-position: 0    100%; }
+  50%  { background-position: 100% 100%; }
+  75%  { background-position: 0    0;    }
+  100% { background-position: 100% 0;    }
 }
 
 .cyberpunk-glow {

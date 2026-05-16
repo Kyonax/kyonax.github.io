@@ -1,0 +1,23 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+
+#  ________ ______  ___________   __
+# /_  __/ // / __/ / __/ __/ _ | / /
+#  / / / _  / _/  _\ \/ _// __ |/ /__
+# /_/ /_//_/___/ /___/___/_/ |_/____/
+#
+# CODEOWNERS — Auto review-request routing
+# 2026-05-14
+#
+# GitHub auto-requests review from @Kyonax on every PR.
+# Filename MUST be CODEOWNERS with no extension (any
+# extension breaks detection entirely).
+#
+#   * @Kyonax  (catch-all)
+#
+# Guidelines:
+#   Never add an extension to this filename
+#   Branch-protection rules can require code-owner review
+#     even when not enforced today
+
+* @Kyonax

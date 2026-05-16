@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
- * Mozilla Public License 2.0 — see LICENSE.
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
  * check-trans-attrs.mjs — assert ZERO `[trans=` attributes remain in src/.
  * Phase 3.6 exit gate. Also flags dormant `kyo:language-changed` listeners

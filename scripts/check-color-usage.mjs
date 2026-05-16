@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
- * Mozilla Public License 2.0 — see LICENSE.
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
  * check-color-usage.mjs — per-SFC 60/30/10 color-tier audit.
  *
@@ -65,7 +65,6 @@ for (const f of files) {
   const accentPct  = total ? counts.accent  / total : 0;
   const neutralPct = total ? counts.neutral / total : 0;
 
-  // Hardcoded literals
   const literals = [...styleBlocks.matchAll(HARDCODED)].length;
   if (literals > 0) {
     failures.push(`${rel(f)}: ${c('yellow', `${literals} hardcoded color literal(s)`)} — use var(--clr-*) tokens`);
@@ -75,7 +74,7 @@ for (const f of files) {
     file: rel(f), counts, total, primaryPct, accentPct, neutralPct, literals,
   });
 
-  if (total === 0) continue; // no tokens used yet
+  if (total === 0) continue;
 
   if (primaryPct > MAX_PRIMARY_PCT) {
     failures.push(
