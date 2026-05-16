@@ -165,7 +165,7 @@ const _format_deadline_ms = (ms) => {
   /* es-CO Intl emits U+00A0 between "A." and "M." — SSR escapes it as
      &nbsp; while CSR emits the raw codepoint, producing a text-content
      hydration mismatch. Collapse to ASCII space at the boundary. */
-  return fmt.format(new Date(ms)).toUpperCase().replace(/ /g, ' ');
+  return fmt.format(new Date(ms)).toUpperCase().replace(/\u00A0/g, ' ');
 };
 
 const _format_deadline = (deadline_str) =>
@@ -433,7 +433,9 @@ const on_carousel_load = (card_key, idx, el) => {
   carousel_loaded.value = { ...carousel_loaded.value, [`${card_key}-${idx}`]: true };
   /* Pin the resolved URL so reopening this card's modal — or the
      lightbox the user clicks for this image — doesn't re-fetch. */
-  if (el?.currentSrc) retainImageUrl(el.currentSrc);
+  if (el?.currentSrc) {
+    retainImageUrl(el.currentSrc);
+  }
 };
 const is_carousel_loaded = (card_key, idx) =>
   Boolean(carousel_loaded.value[`${card_key}-${idx}`]);
@@ -542,7 +544,9 @@ const _warm_modal = (key) => {
             <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
           </div>
 
-          <p class="now-projects-section__milestone">// {{ card.label.toUpperCase() }}</p>
+          <p class="now-projects-section__milestone">
+            // {{ card.label.toUpperCase() }}
+          </p>
           <div v-if="card.is_working_on" class="now-projects-section__countdown">
             <div class="now-projects-section__countdown-head">
               <span class="now-projects-section__countdown-label">

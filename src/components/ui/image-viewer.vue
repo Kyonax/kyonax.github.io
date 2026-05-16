@@ -39,7 +39,9 @@ const on_loaded = (el) => {
      The directive passes the <img> element; BlastImage emits load
      without an arg, so we skip the pin step there (BlastImage already
      pins via its own `_on_load`). */
-  if (el?.currentSrc) retainImageUrl(el.currentSrc);
+  if (el?.currentSrc) {
+    retainImageUrl(el.currentSrc);
+  }
 };
 
 /* Reset every time the viewer opens a new source. Cached browser hits will
@@ -47,7 +49,9 @@ const on_loaded = (el) => {
    same tick, so the skeleton flashes only on cold network. */
 watch(
   () => [props.isOpen, props.img, props.picture?.fallback],
-  () => { loaded.value = false; },
+  () => {
+    loaded.value = false; 
+  },
 );
 
 const label = computed(() => {

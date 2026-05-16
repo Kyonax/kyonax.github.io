@@ -8,7 +8,9 @@ import BlastImage from '@components/blast-image.vue';
 import { computed, ref } from 'vue';
 
 const loaded = ref(false);
-const on_loaded = () => { loaded.value = true; };
+const on_loaded = () => {
+  loaded.value = true; 
+};
 
 const props = defineProps({
   img:      { type: String,  required: true },

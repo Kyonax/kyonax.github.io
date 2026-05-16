@@ -19,9 +19,13 @@ const _warmed_images = new Set();
 const _retained_images = [];
 
 const _makeChunkWarmer = (key, loader) => () => {
-  if (_warmed_chunks.has(key)) return;
+  if (_warmed_chunks.has(key)) {
+    return;
+  }
   _warmed_chunks.add(key);
-  loader().catch(() => { _warmed_chunks.delete(key); });
+  loader().catch(() => {
+    _warmed_chunks.delete(key); 
+  });
 };
 
 export const warmModal = _makeChunkWarmer('modal', () => import('@ui/modal.vue'));
@@ -33,8 +37,12 @@ export const warmYoutubeFacade = _makeChunkWarmer('youtube-facade', () => import
    page session, so subsequent <img src=same-url> mounts skip the network
    round-trip AND the decode step. Deduped. */
 export const retainImageUrl = (url) => {
-  if (typeof Image === 'undefined') return;
-  if (!url || _warmed_images.has(url)) return;
+  if (typeof Image === 'undefined') {
+    return;
+  }
+  if (!url || _warmed_images.has(url)) {
+    return;
+  }
   _warmed_images.add(url);
   const img = new Image();
   img.decoding = 'async';
@@ -43,9 +51,13 @@ export const retainImageUrl = (url) => {
 };
 
 export const warmImages = (media_list) => {
-  if (!Array.isArray(media_list)) return;
+  if (!Array.isArray(media_list)) {
+    return;
+  }
   for (const media of media_list) {
-    if (!media || media.kind === 'youtube') continue;
+    if (!media || media.kind === 'youtube') {
+      continue;
+    }
     retainImageUrl(media.avif || media.webp || media.fallback);
   }
 };
@@ -56,14 +68,21 @@ export const warmImages = (media_list) => {
 export const warmProjectCard = (card) => {
   warmModal();
   const media = card?.media_urls;
-  if (!media?.length) return;
+  if (!media?.length) {
+    return;
+  }
 
   let has_image = false;
   let has_youtube = false;
   for (const m of media) {
-    if (!m) continue;
-    if (m.kind === 'youtube') has_youtube = true;
-    else has_image = true;
+    if (!m) {
+      continue;
+    }
+    if (m.kind === 'youtube') {
+      has_youtube = true;
+    } else {
+      has_image = true;
+    }
   }
 
   if (has_image) {

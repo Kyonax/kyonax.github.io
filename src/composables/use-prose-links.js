@@ -15,17 +15,26 @@
  * it from `useI18n()` and the directive itself stays locale-agnostic.
  */
 
-const ABSOLUTE_HREF = /^(https?:)?\/\//i;
+const _is_absolute_href = (href) => {
+  const value = (href || '').toLowerCase();
+  return value.startsWith('http://') || value.startsWith('https://') || value.startsWith('//');
+};
 
 const decorate = (host, hint) => {
-  if (!host || typeof host.querySelectorAll !== 'function') return;
+  if (!host || typeof host.querySelectorAll !== 'function') {
+    return;
+  }
   const links = host.querySelectorAll('a');
   for (const a of links) {
     const href = a.getAttribute('href') || '';
-    const opens_new_tab = a.getAttribute('target') === '_blank' || ABSOLUTE_HREF.test(href);
-    if (!opens_new_tab) continue;
+    const opens_new_tab = a.getAttribute('target') === '_blank' || _is_absolute_href(href);
+    if (!opens_new_tab) {
+      continue;
+    }
 
-    if (a.getAttribute('target') !== '_blank') a.setAttribute('target', '_blank');
+    if (a.getAttribute('target') !== '_blank') {
+      a.setAttribute('target', '_blank');
+    }
     const rel = new Set((a.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
     rel.add('noopener');
     rel.add('noreferrer');
@@ -33,12 +42,18 @@ const decorate = (host, hint) => {
 
     if (!a.hasAttribute('aria-label')) {
       const text = (a.textContent || '').trim();
-      if (text && hint) a.setAttribute('aria-label', `${text} (${hint})`);
+      if (text && hint) {
+        a.setAttribute('aria-label', `${text} (${hint})`);
+      }
     }
   }
 };
 
 export const vProseLinks = {
-  mounted(el, binding) { decorate(el, binding.value); },
-  updated(el, binding) { decorate(el, binding.value); },
+  mounted(el, binding) {
+    decorate(el, binding.value); 
+  },
+  updated(el, binding) {
+    decorate(el, binding.value); 
+  },
 };
