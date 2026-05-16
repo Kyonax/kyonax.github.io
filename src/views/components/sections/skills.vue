@@ -120,9 +120,8 @@ const grouped = computed(() =>
             <span
               v-else
               class="skills__item-abbr"
-              :data-text="item.abbr"
               aria-hidden="true"
-            />
+            >{{ item.abbr }}</span>
             <span class="skills__item-name">{{ item.name }}</span>
           </li>
         </ul>

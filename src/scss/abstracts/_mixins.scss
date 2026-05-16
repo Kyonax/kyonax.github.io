@@ -37,15 +37,15 @@
  *   "all"              — no range restriction
  *   any string         — used verbatim as the unicode-range value
  *
- * Phase 2 generates WOFF2 via scripts/convert-fonts.sh; src chain prefers WOFF2,
- * falls back to TTF for any font we haven't converted yet.
+ * Phase 1 perf: WOFF2-only `src`. The es2020 build target excludes every
+ * browser that lacks WOFF2 support (97%+ global), so the TTF fallback was
+ * pure dead weight in dist/ (e.g. a 2.3 MB SymbolsNerdFontMono TTF that
+ * no client would ever load).
  * ──────────────────────────────────────────────────────────────────────────── */
 @mixin font-face($name, $path, $weight: normal, $style: normal, $range: "latin") {
   @font-face {
     font-family: "#{$name}";
-    src:
-      url("@fonts/#{$path}.woff2") format("woff2"),
-      url("@fonts/#{$path}.ttf")   format("truetype");
+    src: url("@fonts/#{$path}.woff2") format("woff2");
     font-weight: #{$weight};
     font-style:  #{$style};
     font-display: swap;
@@ -225,3 +225,68 @@
     border-top: none;
   }
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * media-skeleton — gray gradient pulse placeholder shown while an
+ * <img> / <picture> fetches. Compositor-thread only; respects
+ * prefers-reduced-motion.
+ *
+ * The host element OR an ancestor must establish a positioning context.
+ * Toggle visibility by adding `is-loaded` to a parent — the consumer
+ * pairs it with `@load` from <img> to flip a `loaded` ref.
+ * ──────────────────────────────────────────────────────────────────────── */
+@mixin media-skeleton($z-index: 1) {
+  position: absolute;
+  inset: 0;
+  z-index: $z-index;
+  pointer-events: none;
+  overflow: hidden;
+  /* Sonar-style radial ripples:
+     - Dark plate underneath keeps the box readable even between waves.
+     - Two ring pseudos pulse outward from the center, second offset by
+       half a cycle so a new wave is always rising as the previous one
+       fades. transform + opacity only → compositor-thread, GPU-cheap. */
+  background-color: color-mix(in srgb, var(--clr-border-100) 6%, var(--clr-neutral-500));
+  transition: opacity 0.4s ease;
+  opacity: 1;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Pseudo starts at 60% of parent width — bigger seed circle so the
+       wave reads as a substantial ring from the first frame instead of a
+       small spot expanding. */
+    width: 60%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    /* Wide soft ring so the wave-front reads as fatter; dimmer
+       highlight. */
+    background: radial-gradient(
+      circle,
+      transparent 18%,
+      color-mix(in srgb, var(--clr-border-100) 38%, transparent) 38%,
+      color-mix(in srgb, var(--clr-border-100) 22%, transparent) 58%,
+      transparent 82%
+    );
+    transform: translate(-50%, -50%) scale(0.35);
+    opacity: 0;
+    animation: media-skeleton-ripple 3.6s ease-out infinite;
+    will-change: transform, opacity;
+  }
+
+  &::after {
+    animation-delay: 1.8s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before, &::after {
+      animation: none;
+      opacity: 0.25;
+      transform: translate(-50%, -50%) scale(3);
+    }
+  }
+}
+

@@ -30,6 +30,7 @@ const CHECKS = [
   { id: 'licenses',      script: 'scripts/check-license-headers.mjs', label: 'CCS license headers' },
   { id: 'json-ld',       script: 'scripts/check-json-ld.mjs',         label: 'JSON-LD @graph integrity' },
   { id: 'projects-media',script: 'scripts/check-projects-media.mjs',  label: 'PROJECTS[*].images integrity' },
+  { id: 'nerd-glyphs',   script: 'scripts/check-nerd-glyphs.mjs',     label: 'Nerd Font subset list ↔ source' },
 ];
 
 const results = [];

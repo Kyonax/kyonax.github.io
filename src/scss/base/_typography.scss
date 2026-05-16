@@ -4,9 +4,17 @@
  *
  * Typography — font registrations + body type baseline.
  *
- * The @font-face mixin (abstracts/_mixins.scss) prefers WOFF2 src and falls
- * back to TTF. Run ./scripts/convert-fonts.sh --subset to generate the WOFF2
- * variants; until then the browser loads the TTF fallback.
+ * The @font-face mixin (abstracts/_mixins.scss) emits WOFF2-only src.
+ * Run ./scripts/convert-fonts.sh --subset (or `npm run nerd-glyphs --
+ * subset` for the Symbols font) to regenerate WOFF2 variants.
+ *
+ * Phase 2 dropped these unused variants/families — restore from git
+ * history if the design ever needs them:
+ *   SpaceMono Italic + BoldItalic   (zero `font-style: italic` usage)
+ *   Geomanist Italic                (same)
+ *   GlittherSyavina                 (accent script, zero refs)
+ *   PPmodwest + Ppneuebit           (pixel/retro display, zero refs)
+ *   Avallon                         (orphan TTF, never had @font-face)
  *
  * The bogus `body { font-display: swap }` line from legacy was dropped —
  * font-display only applies inside @font-face.
@@ -15,22 +23,12 @@
 @use "abstracts" as *;
 
 /* SpaceMono — primary monospace (cyberpunk display). */
-@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-Regular",   400, normal);
-@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-Bold",      700, normal);
-@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-Italic",    400, italic);
-@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-BoldItalic", 700, italic);
+@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-Regular", 400, normal);
+@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-Bold",    700, normal);
 
 /* Geomanist — display font for headlines. */
 @include font-face("Geomanist", "Geomanist/GeomanistRegular", 400, normal);
 @include font-face("Geomanist", "Geomanist/GeomanistBold",    700, normal);
-@include font-face("Geomanist", "Geomanist/GeomanistItalic",  400, italic);
-
-/* GlittherSyavina — accent script. */
-@include font-face("GlittherSyavina", "GlittherSyavina/GlittherSyavina", 400, normal);
-
-/* PPmodwest — pixel/retro display. */
-@include font-face("PPmodwest", "NeuebitFree/PpmodwestRegular", 400, normal);
-@include font-face("PPmodwest", "NeuebitFree/PpneuebitBold",    700, normal);
 
 /* SymbolsNerdFontMono — icon glyph font for TechStack et al.
    Range MUST be "icons" — the Nerd Font glyphs live in the Private Use Area
