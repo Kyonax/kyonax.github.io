@@ -5,7 +5,10 @@
  */
 
 import BlastImage from '@components/blast-image.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+
+const loaded = ref(false);
+const on_loaded = () => { loaded.value = true; };
 
 const props = defineProps({
   img:      { type: String,  required: true },
@@ -70,6 +73,7 @@ const frame_style = computed(() => {
 const wrapper_class = computed(() => [
   'ui-image',
   props.framed ? 'ui-image--framed' : null,
+  loaded.value ? 'is-loaded' : null,
 ]);
 </script>
 
@@ -85,7 +89,9 @@ const wrapper_class = computed(() => [
         :alt="alt || img"
         :eager="eager"
         :sizes="sizes"
+        @load="on_loaded"
       />
+      <div class="ui-image__skeleton" aria-hidden="true" />
     </div>
   </div>
 </template>
@@ -104,6 +110,11 @@ const wrapper_class = computed(() => [
 
     position: relative;
     overflow: hidden;
+    /* Local stacking context so the skeleton (z-index 1) and the picture
+       (z-index 2) stay contained inside UiImage — otherwise their indices
+       bubble up to the nearest positioned ancestor and outrank sibling
+       overlays like `.hero-visual__inner` (the cyberpunk scan flare). */
+    isolation: isolate;
     background-color: var(--clr-neutral-400);
     aspect-ratio: var(--image-aspect, 1 / 1);
 
@@ -127,6 +138,7 @@ const wrapper_class = computed(() => [
     inset: 0;
     width: 100%;
     height: 100%;
+    z-index: 2;
 
     :deep(img) {
       width: 100%;
@@ -135,7 +147,19 @@ const wrapper_class = computed(() => [
       object-position: var(--image-position, center);
       transform: scale(var(--image-scale, 1));
       transform-origin: var(--image-position, center);
+      opacity: 0;
+      transition: opacity 0.4s ease;
     }
+  }
+
+  &.is-loaded &__picture :deep(img) { opacity: 1; }
+
+  &__skeleton { @include media-skeleton; }
+  &.is-loaded &__skeleton { opacity: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__picture :deep(img),
+    &__skeleton { transition: none; }
   }
 }
 </style>

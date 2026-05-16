@@ -11,11 +11,21 @@ import { PROJECTS } from '@data/projects';
 import HeroVisual from '@sections/hero-visual.vue';
 import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
-import UiImageViewer from '@ui/image-viewer.vue';
+import ModalLoading from '@ui/modal-loading.vue';
 import UiLink from '@ui/link.vue';
 import UiStateGrid from '@ui/state-grid.vue';
-import { computed, onBeforeUnmount,onMounted, ref } from 'vue';
+import { computed, defineAsyncComponent, onBeforeUnmount,onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+/* UiImageViewer (modal + image-viewer chunk) loads on first portrait open.
+   `ModalLoading` ships eagerly so the click feels instantaneous even on
+   cold cache — the placeholder appears immediately, the real viewer
+   swaps in once the chunk arrives. */
+const UiImageViewer = defineAsyncComponent({
+  loader: () => import('@ui/image-viewer.vue'),
+  loadingComponent: ModalLoading,
+  delay: 0,
+});
 
 const { t, locale } = useI18n();
 
@@ -196,7 +206,8 @@ const GLYPH_ARROW = '\uF063';
     </a>
 
     <UiImageViewer
-      :is-open="portrait_viewer_open"
+      v-if="portrait_viewer_open"
+      :is-open="true"
       :close-label="t('kyo-web.landing.modal.close')"
       img="kyonax_portrait"
       alt="Cristian D. Moreno (Kyonax) portrait"

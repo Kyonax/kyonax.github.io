@@ -4,6 +4,7 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import { vProseLinks } from '@composables/use-prose-links';
 import UiHudDeco from '@ui/hud-deco.vue';
 import UiSectionHeader from '@ui/section-header.vue';
 import { ref } from 'vue';
@@ -69,6 +70,7 @@ const GLYPH_CHEVRON = '\uF054';
         >
           <div class="faq__panel-inner">
             <div
+              v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
               class="faq__answer kyo-prose"
               v-html="t(`kyo-web.landing.faq.items.${id}.answer`)"
             />

@@ -4,7 +4,10 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import { vImageReady } from '@composables/use-image-ready';
 import useProjectCountdowns from '@composables/use-project-countdowns';
+import { vProseLinks } from '@composables/use-prose-links';
+import { retainImageUrl, warmImageViewer, warmProjectCard } from '@composables/use-warm-modal';
 import { warmYoutube } from '@composables/use-youtube-warmup';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
 import { TECH_BY_ID } from '@data/data';
@@ -12,13 +15,28 @@ import { DEFAULT_FEATURED_STATUS,DEFAULT_NOW_STATUS, NOW_STATUS_PRIORITY, PROJEC
 import { normaliseMediaEntry } from '@data/youtube';
 import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
-import UiImageViewer from '@ui/image-viewer.vue';
-import UiModal from '@ui/modal.vue';
+import ModalLoading from '@ui/modal-loading.vue';
 import UiSectionHeader from '@ui/section-header.vue';
 import UiStateGrid from '@ui/state-grid.vue';
-import YoutubeFacade from '@ui/youtube-facade.vue';
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+/* Modal + image-viewer + youtube facade chunks load on first card-open
+   instead of shipping with the initial bundle. `ModalLoading` ships
+   eagerly so the click renders a placeholder instantly even when the
+   real chunk is still in flight (avoids the "click feels stuck" gap
+   on cold cache / slow network). */
+const UiModal = defineAsyncComponent({
+  loader: () => import('@ui/modal.vue'),
+  loadingComponent: ModalLoading,
+  delay: 0,
+});
+const UiImageViewer = defineAsyncComponent({
+  loader: () => import('@ui/image-viewer.vue'),
+  loadingComponent: ModalLoading,
+  delay: 0,
+});
+const YoutubeFacade = defineAsyncComponent(() => import('@ui/youtube-facade.vue'));
 
 const { t, te, locale } = useI18n();
 
@@ -301,7 +319,7 @@ const _card_root_class = (card) => ({
 });
 
 const _card_hit_label = (card) =>
-  `${card.name} — ${t('kyo-web.landing.projects.view-details')}`;
+  `${card.name}, ${t('kyo-web.landing.projects.view-details')}`;
 
 const buildFeaturedCard = (key) => {
   const project = PROJECTS[key];
@@ -347,6 +365,9 @@ const featured_cards = computed(() =>
 );
 
 const modal_cards = computed(() => main_cards.value.filter((c) => c.has_modal));
+const active_card = computed(() =>
+  active_id.value ? modal_cards.value.find((c) => c.key === active_id.value) : null,
+);
 
 const segments = (countdown) => {
   if (!countdown) {
@@ -402,6 +423,20 @@ const onModalKeydown = (event, total) => {
     event.preventDefault(); carousel_next(total); 
   }
 };
+
+/* Carousel image skeleton state. Keyed by `${cardKey}-${idx}` so each
+   project's carousel images track independently. Persists across modal
+   re-opens — cached browser hits re-emit `load` immediately, so the user
+   never sees the skeleton flash twice for the same image. */
+const carousel_loaded = ref({});
+const on_carousel_load = (card_key, idx, el) => {
+  carousel_loaded.value = { ...carousel_loaded.value, [`${card_key}-${idx}`]: true };
+  /* Pin the resolved URL so reopening this card's modal — or the
+     lightbox the user clicks for this image — doesn't re-fetch. */
+  if (el?.currentSrc) retainImageUrl(el.currentSrc);
+};
+const is_carousel_loaded = (card_key, idx) =>
+  Boolean(carousel_loaded.value[`${card_key}-${idx}`]);
 
 const facade_refs = ref({});
 const bind_facade_ref = (el, key, idx) => {
@@ -481,6 +516,8 @@ const _warm_modal = (key) => {
             '--state-color': `var(--clr-${card.status_color}-100)`,
             '--element-flare-delay': `${idx * 0.6}s`,
           }"
+          @pointerenter="card.has_modal && warmProjectCard(card)"
+          @focusin="card.has_modal && warmProjectCard(card)"
         >
           <button
             v-if="card.has_modal"
@@ -557,7 +594,7 @@ const _warm_modal = (key) => {
             target="_blank"
             rel="noopener noreferrer"
             class="now-projects-section__link is-corner"
-            :aria-label="`${t('kyo-web.landing.projects.view-repo')} — ${card.name}`"
+            :aria-label="`${t('kyo-web.landing.projects.view-repo')}, ${card.name}`"
           >
             <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
             <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
@@ -617,29 +654,30 @@ const _warm_modal = (key) => {
     </section>
 
     <UiModal
-      v-for="card in modal_cards"
-      :key="`modal-${card.key}`"
-      :is-open="active_id === card.key"
-      :title="card.name"
-      :subtitle="card.version ? `// ${card.version}` : ''"
+      v-if="active_card"
+      :is-open="true"
+      :title="active_card.name"
+      :subtitle="active_card.version ? `// ${active_card.version}` : ''"
       :close-label="t('kyo-web.landing.modal.close')"
       size="lg"
       @close="close_modal"
-      @keydown="onModalKeydown($event, card.media_urls.length)"
+      @keydown="onModalKeydown($event, active_card.media_urls.length)"
     >
       <div class="project-modal">
         <div
-          v-if="card.media_urls.length"
+          v-if="active_card.media_urls.length"
           class="project-modal__carousel"
-          :style="{ '--state-color': `var(--clr-${card.status_color}-100)` }"
+          :style="{ '--state-color': `var(--clr-${active_card.status_color}-100)` }"
         >
           <div class="project-modal__carousel-frame">
-            <template v-for="(media, i) in card.media_urls" :key="`${card.key}-${i}`">
+            <template v-for="(media, i) in active_card.media_urls" :key="`${active_card.key}-${i}`">
               <YoutubeFacade
                 v-if="media.kind === 'youtube'"
-                :ref="(el) => bind_facade_ref(el, card.key, i)"
+                :ref="(el) => bind_facade_ref(el, active_card.key, i)"
                 class="project-modal__carousel-image"
                 :class="{ 'is-active': carousel_idx === i }"
+                :aria-hidden="carousel_idx !== i || undefined"
+                :inert="carousel_idx !== i || undefined"
                 :video-id="media.id"
                 :title="media.title"
                 :poster="media"
@@ -650,35 +688,44 @@ const _warm_modal = (key) => {
                 v-else
                 type="button"
                 class="project-modal__carousel-image project-modal__carousel-image--btn"
-                :class="{ 'is-active': carousel_idx === i }"
+                :class="{
+                  'is-active': carousel_idx === i,
+                  'is-loaded': is_carousel_loaded(active_card.key, i),
+                }"
                 :tabindex="carousel_idx === i ? 0 : -1"
-                :aria-label="`${card.name} — ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`"
-                @click="open_image_viewer(media, `${card.name} — ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`)"
+                :aria-hidden="carousel_idx !== i || undefined"
+                :inert="carousel_idx !== i || undefined"
+                :aria-label="`${active_card.name}, ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`"
+                @click="open_image_viewer(media, `${active_card.name}, ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`)"
+                @pointerenter="warmImageViewer"
+                @focus="warmImageViewer"
               >
                 <picture class="project-modal__carousel-picture">
                   <source v-if="media.avif" :srcset="media.avif" type="image/avif" />
                   <source v-if="media.webp" :srcset="media.webp" type="image/webp" />
                   <img
+                    v-image-ready="(el) => on_carousel_load(active_card.key, i, el)"
                     :src="media.fallback"
-                    :alt="`${card.name} — ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`"
+                    :alt="`${active_card.name}, ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`"
                     loading="lazy"
                     decoding="async"
                   />
                 </picture>
+                <div class="project-modal__carousel-skeleton" aria-hidden="true" />
               </button>
             </template>
             <span class="project-modal__carousel-counter">
               {{ String(carousel_idx + 1).padStart(2, '0') }}
               /
-              {{ String(card.media_urls.length).padStart(2, '0') }}
+              {{ String(active_card.media_urls.length).padStart(2, '0') }}
             </span>
           </div>
-          <div v-if="card.media_urls.length > 1" class="project-modal__carousel-controls">
+          <div v-if="active_card.media_urls.length > 1" class="project-modal__carousel-controls">
             <button
               type="button"
               class="project-modal__carousel-nav"
               :aria-label="t('kyo-web.landing.projects.previous-image')"
-              @click="carousel_prev(card.media_urls.length)"
+              @click="carousel_prev(active_card.media_urls.length)"
             >
               <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_PREV" aria-hidden="true" />
             </button>
@@ -688,7 +735,7 @@ const _warm_modal = (key) => {
               :aria-label="t('kyo-web.landing.projects.previews-label')"
             >
               <button
-                v-for="(url, i) in card.media_urls"
+                v-for="(url, i) in active_card.media_urls"
                 :key="`dot-${i}`"
                 type="button"
                 class="project-modal__carousel-dot"
@@ -702,7 +749,7 @@ const _warm_modal = (key) => {
               type="button"
               class="project-modal__carousel-nav"
               :aria-label="t('kyo-web.landing.projects.next-image')"
-              @click="carousel_next(card.media_urls.length)"
+              @click="carousel_next(active_card.media_urls.length)"
             >
               <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_NEXT" aria-hidden="true" />
             </button>
@@ -713,16 +760,17 @@ const _warm_modal = (key) => {
           {{ t('kyo-web.landing.projects.description-label') }}
         </h2>
         <p
+          v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
           class="project-modal__description kyo-prose"
-          v-html="t(`kyo-web.content-data.projects.${card.key}.description`)"
+          v-html="t(`kyo-web.content-data.projects.${active_card.key}.description`)"
         />
 
-        <h2 v-if="card.stack.length" class="project-modal__section-title">
+        <h2 v-if="active_card.stack.length" class="project-modal__section-title">
           {{ t('kyo-web.landing.projects.stack-label') }}
         </h2>
-        <ul v-if="card.stack.length" class="project-modal__stack" role="list">
+        <ul v-if="active_card.stack.length" class="project-modal__stack" role="list">
           <li
-            v-for="tech in card.stack"
+            v-for="tech in active_card.stack"
             :key="tech.id"
             class="project-modal__stack-item"
           >
@@ -739,8 +787,8 @@ const _warm_modal = (key) => {
         </ul>
 
         <a
-          v-if="card.has_link"
-          :href="card.url"
+          v-if="active_card.has_link"
+          :href="active_card.url"
           target="_blank"
           rel="noopener noreferrer"
           class="project-modal__repo-cta"
@@ -753,7 +801,8 @@ const _warm_modal = (key) => {
     </UiModal>
 
     <UiImageViewer
-      :is-open="image_viewer !== null"
+      v-if="image_viewer !== null"
+      :is-open="true"
       :close-label="t('kyo-web.landing.modal.close')"
       :picture="image_viewer"
       :alt="image_viewer_alt"
@@ -1184,7 +1233,11 @@ const _warm_modal = (key) => {
       height: 100%;
       object-fit: cover;
       display: block;
+      opacity: 0;
+      transition: opacity 0.4s ease;
     }
+
+    &.is-loaded img { opacity: 1; }
 
     &--btn {
       padding: 0;
@@ -1206,7 +1259,15 @@ const _warm_modal = (key) => {
     display: block;
     width: 100%;
     height: 100%;
+    position: relative;
+    z-index: 2;
   }
+
+  /* Gray skeleton beneath each carousel image. Frame's 16:9 aspect-ratio
+     gives it shape immediately — no layout shift when the real image
+     paints in. Fades out via the parent's `is-loaded` class. */
+  &__carousel-skeleton { @include media-skeleton; }
+  &__carousel-image.is-loaded &__carousel-skeleton { opacity: 0; }
 
   &__carousel-counter {
     position: absolute;

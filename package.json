@@ -27,6 +27,7 @@
     "convert:fonts": "./scripts/convert-fonts.sh",
     "convert:fonts:subset": "./scripts/convert-fonts.sh --subset",
     "convert:fonts:symbols": "./scripts/convert-fonts.sh --subset --symbols-glyphs=scripts/_nerd-font-glyphs.txt --only=Symbols",
+    "convert:fonts:latin": "./scripts/convert-fonts.sh --subset --latin-subset=scripts/_latin-corpus.txt --only=Geomanist && ./scripts/convert-fonts.sh --subset --latin-subset=scripts/_latin-corpus.txt --only=SpaceMono",
     "nerd-glyphs": "node scripts/nerd-glyphs.mjs",
     "convert:ascii": "node scripts/ascii-to-image.mjs",
     "convert:ascii:force": "node scripts/ascii-to-image.mjs --force",

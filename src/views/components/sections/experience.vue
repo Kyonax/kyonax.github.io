@@ -5,14 +5,26 @@
  */
 
 import useClickableCard from '@composables/use-clickable-card';
+import { vProseLinks } from '@composables/use-prose-links';
+import { warmModal } from '@composables/use-warm-modal';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
 import { TECH_BY_ID } from '@data/data';
 import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
-import UiModal from '@ui/modal.vue';
+import ModalLoading from '@ui/modal-loading.vue';
 import UiSectionHeader from '@ui/section-header.vue';
-import { ref } from 'vue';
+import { computed, defineAsyncComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+/* UiModal chunk loads on first card-open instead of shipping with the
+   initial bundle. `ModalLoading` renders synchronously (eager import)
+   the instant the modal mounts so the click registers visually even
+   when the chunk is still arriving from network. delay:0 = no debounce. */
+const UiModal = defineAsyncComponent({
+  loader: () => import('@ui/modal.vue'),
+  loadingComponent: ModalLoading,
+  delay: 0,
+});
 
 const { t, locale } = useI18n();
 
@@ -99,6 +111,9 @@ const stack_chips_for = (entry_id) => {
 };
 
 const active_id = ref(null);
+const active_entry = computed(() =>
+  active_id.value ? ENTRIES.find((e) => e.id === active_id.value) : null,
+);
 
 const open_modal = (id) => {
   active_id.value = id;
@@ -146,18 +161,22 @@ const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
           :aria-label="`${t(`kyo-web.content-data.experience.${entry.id}.role`)} — ${t('kyo-web.landing.experience.read-more')}`"
           @click="open_modal(entry.id)"
           @keydown="onCardKeydown($event, entry.id)"
+          @pointerenter="warmModal"
+          @focusin="warmModal"
         >
           <header class="experience-section__card-header">
             <h3 class="experience-section__role">
               {{ t(`kyo-web.content-data.experience.${entry.id}.role`) }}
             </h3>
             <p
+              v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
               class="experience-section__specs"
               v-html="t(`kyo-web.content-data.experience.${entry.id}.specs`)"
             />
           </header>
 
           <p
+            v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
             class="experience-section__description kyo-prose"
             v-html="t(`kyo-web.content-data.experience.${entry.id}.description`)"
           />
@@ -170,11 +189,10 @@ const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
     </ol>
 
     <UiModal
-      v-for="entry in ENTRIES"
-      :key="`modal-${entry.id}`"
-      :is-open="active_id === entry.id"
-      :title="t(`kyo-web.content-data.experience.${entry.id}.role`)"
-      :subtitle="t(`kyo-web.content-data.experience.${entry.id}.specs`)"
+      v-if="active_entry"
+      :is-open="true"
+      :title="t(`kyo-web.content-data.experience.${active_entry.id}.role`)"
+      :subtitle="t(`kyo-web.content-data.experience.${active_entry.id}.specs`)"
       subtitle-html
       :close-label="t('kyo-web.landing.modal.close')"
       size="lg"
@@ -185,15 +203,16 @@ const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
           {{ t('kyo-web.landing.modal.highlights') }}
         </h2>
         <ul
+          v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
           class="experience-modal__bullets kyo-prose"
-          v-html="t(`kyo-web.content-data.experience.${entry.id}.bullets`)"
+          v-html="t(`kyo-web.content-data.experience.${active_entry.id}.bullets`)"
         />
         <h2 class="experience-modal__section-title">
           {{ t('kyo-web.landing.experience.tools-label') }}
         </h2>
         <ul class="experience-modal__stack" role="list">
           <li
-            v-for="chip in stack_chips_for(entry.id)"
+            v-for="chip in stack_chips_for(active_entry.id)"
             :key="chip.id"
             class="experience-modal__stack-item"
           >

@@ -156,6 +156,10 @@ export default defineConfig(({ mode }) => {
             lcpPreload: mode === 'production'
               ? '<!-- LCP-PRELOAD-PLACEHOLDER -->'
               : '',
+
+            fontPreload: mode === 'production'
+              ? '<!-- FONT-PRELOAD-PLACEHOLDER -->'
+              : '',
           },
         },
       }),
@@ -212,6 +216,48 @@ export default defineConfig(({ mode }) => {
         },
       },
 
+      /* Preload the 4 hero fonts (Geomanist Regular/Bold + SpaceMonoNerdFont
+         Regular/Bold) so the browser fetches them in parallel with the CSS
+         and JS rather than after the CSS parser hits @font-face. Kills the
+         FOIT on first paint. `crossorigin` is mandatory — without it, the
+         browser fetches the font twice (once for preload, once for the real
+         request) because @font-face is always credentialed. */
+      {
+        name: 'font-preload-injector',
+        apply: 'build',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html, ctx) {
+            const bundle = ctx.bundle || {};
+            const FONT_FAMILIES = [
+              'GeomanistRegular',
+              'GeomanistBold',
+              'SpaceMonoNerdFont-Regular',
+              'SpaceMonoNerdFont-Bold',
+            ];
+            const matches = FONT_FAMILIES
+              .map((family) => {
+                const re = new RegExp(`(^|/)${family}(-[\\w]+)?\\.woff2$`);
+                return Object.keys(bundle).find((name) => re.test(name));
+              })
+              .filter(Boolean);
+
+            if (matches.length === 0) {
+              return html.replace('<!-- FONT-PRELOAD-PLACEHOLDER -->', '');
+            }
+
+            const tags = matches
+              .map((name) =>
+                '<link rel="preload" as="font" type="font/woff2" crossorigin '
+                + `href="/${name}">`,
+              )
+              .join('\n    ');
+
+            return html.replace('<!-- FONT-PRELOAD-PLACEHOLDER -->', tags);
+          },
+        },
+      },
+
       // Inline pre-hydration redirect — runs synchronously before the module
       // bundle loads. Returning ES visitors land on /es directly; no flash.
       {
@@ -233,9 +279,15 @@ export default defineConfig(({ mode }) => {
       formatting: 'minify',
       mode: 'production',
       rootContainerId: 'root',
-      /* beasties (critical-CSS inliner) crashes under vite-ssg's JSDOM
-         renderer on :root custom-property blocks. Re-enable once upstream
-         resolves JSDOM serialization. */
+      /* Critical-CSS extraction (beasties / critters) is fundamentally
+         incompatible with full SSG prerender: it classifies a CSS rule as
+         critical iff a matching selector appears in the rendered HTML, but
+         vite-ssg renders every section upfront, so 100% of the stylesheet
+         is marked critical. With `pruneSource: true` the external file
+         drops to 0 bytes; without it, the entire sheet duplicates inline
+         + external, regressing total bytes. Would need a viewport-aware
+         render (headless Chrome) to be useful — negates the build-only
+         premise. Disabled. */
       beastiesOptions: false,
       /* Emit dist/<path>/index.html so /es and /es/ both resolve cleanly
          via Apache + DirectorySlash Off + strip-slash rule. */
@@ -249,6 +301,7 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_VIMEO_ENABLED': JSON.stringify(env.VITE_VIMEO_ENABLED ?? 'true'),
       'import.meta.env.VITE_VIMEO_PRECONNECT': JSON.stringify(env.VITE_VIMEO_PRECONNECT ?? 'true'),
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '0.0.0'),
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true',
     },
 
     resolve: {
@@ -299,7 +352,8 @@ export default defineConfig(({ mode }) => {
       /* Subset fonts (e.g. SymbolsNerdFontMono → 2.7 KB) would otherwise
          fall under Vite's 4 KB inline threshold and be embedded as
          data: URLs inside the render-blocking CSS. We need them as
-         separately-hashed cacheable assets so Phase 4 can preload them. */
+         separately-hashed cacheable assets so the font-preload pass
+         can target them. */
       assetsInlineLimit: (filePath) => filePath.endsWith('.woff2') ? false : undefined,
       rollupOptions: {
         output: {

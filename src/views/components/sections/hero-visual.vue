@@ -4,6 +4,7 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import { warmImageViewer } from '@composables/use-warm-modal';
 import UiImage from '@ui/image.vue';
 
 defineProps({
@@ -21,6 +22,8 @@ defineEmits(['open']);
       class="hero-visual__frame"
       :aria-label="ariaLabel"
       @click="$emit('open')"
+      @pointerenter="warmImageViewer"
+      @focus="warmImageViewer"
     >
       <UiImage
         img="kyonax_portrait"
@@ -36,7 +39,7 @@ defineEmits(['open']);
     </button>
     <div class="hero-visual__meta" aria-hidden="true">
       <span class="hero-visual__meta-frame">
-        <span class="ccs-glyph" aria-hidden="true">▣</span>
+        <span class="ccs-glyph">▣</span>
       </span>
       <span class="hero-visual__meta-handle" />
     </div>

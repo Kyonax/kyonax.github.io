@@ -3,19 +3,6 @@
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
- * Root component — single-page landing layout (post 2-col redesign).
- *
- * Composition:
- *   ┌─────────────────────────────────────────────────────────┐
- *   │  HudNav  (sticky, scroll-progress, anchored sections)    │
- *   ├─────────────────────────────────────────────────────────┤
- *   │  HeroSection            (#hero, 100svh)                  │
- *   │  SkillsSection          (#skills)                        │
- *   │  ExperienceSection      (#experience)                    │
- *   │  NowProjectsSection     (#projects)                      │
- *   │  SiteFooter             (#contact)                       │
- *   └─────────────────────────────────────────────────────────┘
- *
  * Vimeo widget is hidden via FEATURES.vimeo.enabled (defaults to false in
  * src/config/features.js — flip to true when a new video is ready).
  */
@@ -24,14 +11,22 @@ import CookieConsent from '@components/cookie-consent.vue';
 import useSeoHead       from '@composables/use-seo-head';
 import useStructuredData from '@composables/use-structured-data';
 import ExperienceSection from '@sections/experience.vue';
-import FaqSection from '@sections/faq.vue';
 import HeroSection from '@sections/hero.vue';
-import NowProjectsSection from '@sections/now-projects-section.vue';
 import SiteFooter from '@sections/site-footer.vue';
 import SkillsSection from '@sections/skills.vue';
 import IconSprite from '@ui/icon-sprite.vue';
 import HudNav from '@widgets/hud-nav.vue';
+import { defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+/* Below-fold sections code-split into their own chunks. <Suspense> wraps
+   each one so vite-ssg awaits the loader during prerender (full SEO
+   content stays in the HTML) and Vue 3's hydration engine also waits
+   for the chunk before swapping — handles the SSR-vs-CSR shape match
+   automatically. Fallback is an empty <section> with the same anchor
+   ID + min-height so layout doesn't shift while the chunk arrives. */
+const NowProjectsSection = defineAsyncComponent(() => import('@sections/now-projects-section.vue'));
+const FaqSection = defineAsyncComponent(() => import('@sections/faq.vue'));
 
 const { t } = useI18n();
 useSeoHead();
@@ -49,8 +44,18 @@ useStructuredData();
     <HeroSection />
     <SkillsSection />
     <ExperienceSection />
-    <NowProjectsSection />
-    <FaqSection />
+    <Suspense>
+      <NowProjectsSection />
+      <template #fallback>
+        <div id="projects" class="landing__lazy-fallback" aria-hidden="true" />
+      </template>
+    </Suspense>
+    <Suspense>
+      <FaqSection />
+      <template #fallback>
+        <div id="faq" class="landing__lazy-fallback" aria-hidden="true" />
+      </template>
+    </Suspense>
   </main>
 
   <SiteFooter />
@@ -63,6 +68,14 @@ useStructuredData();
   display: block;
   width: 100%;
   scroll-behavior: smooth;
+
+  &__lazy-fallback {
+    /* Reserves below-fold height so the Suspense fallback doesn't cause
+       a layout shift while the chunk arrives. Roughly matches the
+       NowProjects + FAQ sections at typical viewport sizes. */
+    min-height: 60vh;
+    display: block;
+  }
 }
 
 .skip-link {

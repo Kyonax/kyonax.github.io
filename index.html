@@ -16,12 +16,11 @@
       The only HTML file. Vite uses it as the entry template;
       vite-ssg prerenders it once per route (en / es / privacy /
       es/privacy) with vue-i18n setting locale-specific title,
-      meta, JSON-LD, OG. Hosts the AD-10 Google Consent Mode v2
-      default-deny gtag block above all other scripts so consent
-      state lands before any analytics event.
+      meta, JSON-LD, OG. gtag is consent-gated — cookie-consent.vue
+      owns the bootstrap and only injects gtag.js once the user
+      either accepts or declines the banner.
 
-        Consent Mode v2 default-deny gtag block
-        transformIndexHtml slots (lcpPreload, vimeoPreconnect)
+        transformIndexHtml slots (lcpPreload, fontPreload, vimeoPreconnect)
         Favicons (ico + png + apple-touch)
         Root mount target #root (NOT #app — vite-ssg rootContainer)
 
@@ -31,42 +30,14 @@
           the DOCTYPE put some browsers in quirks mode, which
           breaks inline-SVG sizing and inline-flex baselines
           (icon-glyph, brand-icon)
-        The gtag default-deny block MUST precede gtag.js src
         #root container stays empty in dev; vite-ssg fills it on build
     -->
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Must precede gtag.js so default-deny fires before any event
-         transmission. cookie-consent.vue flips this on user accept. -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      gtag('consent', 'default', {
-        'ad_storage':           'denied',
-        'ad_user_data':         'denied',
-        'ad_personalization':   'denied',
-        'analytics_storage':    'denied',
-        'functionality_storage':'granted',
-        'security_storage':     'granted',
-        'wait_for_update':      500
-      });
-      try {
-        var stored = localStorage.getItem('kyo:consent');
-        if (stored === 'granted') {
-          gtag('consent', 'update', {
-            ad_storage: 'granted', ad_user_data: 'granted',
-            ad_personalization: 'granted', analytics_storage: 'granted'
-          });
-        }
-      } catch (e) {}
-      gtag('js', new Date());
-      gtag('config', 'G-6M3P3M2HG5', { 'anonymize_ip': true });
-    </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6M3P3M2HG5"></script>
-
     <%- lcpPreload %>
+    <%- fontPreload %>
     <%- vimeoPreconnect %>
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />

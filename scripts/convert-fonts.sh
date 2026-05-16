@@ -3,8 +3,7 @@
 # Copyright (c) 2026 Cristian D. Moreno — @Kyonax
 # Mozilla Public License 2.0 — see LICENSE.
 #
-# convert-fonts.sh — Phase 2 helper. TTF → WOFF2 conversion + Latin Extended
-# subsetting for every font under src/fonts/ (or, pre-migration, kyo-web-online-old/src/app/fonts/).
+# convert-fonts.sh — TTF → WOFF2 conversion + optional unicode-range subsetting.
 #
 # Requires:
 #   - python3 + pip install fonttools brotli
@@ -15,10 +14,13 @@
 #   ./scripts/convert-fonts.sh src/fonts                       # explicit input
 #   ./scripts/convert-fonts.sh --subset                        # apply Latin Extended subset
 #   ./scripts/convert-fonts.sh --symbols-glyphs=FILE           # use FILE as Symbols Nerd glyph list
+#   ./scripts/convert-fonts.sh --latin-subset=FILE             # use FILE as Latin glyph list (non-Symbols fonts)
 #   ./scripts/convert-fonts.sh --only=PATTERN                  # process only fonts whose path matches PATTERN
 #
-# Phase 1 (Symbols subset only):
+# Examples:
 #   ./scripts/convert-fonts.sh --subset --symbols-glyphs=scripts/_nerd-font-glyphs.txt --only=Symbols
+#   ./scripts/convert-fonts.sh --subset --latin-subset=scripts/_latin-corpus.txt --only=Geomanist
+#   ./scripts/convert-fonts.sh --subset --latin-subset=scripts/_latin-corpus.txt --only=SpaceMono
 
 set -euo pipefail
 
@@ -28,11 +30,13 @@ INPUT="${REPO_ROOT}/src/fonts"
 
 SUBSET=false
 SYMBOLS_LIST=""
+LATIN_LIST=""
 ONLY_PATTERN=""
 for arg in "$@"; do
   case "$arg" in
     --subset)               SUBSET=true ;;
     --symbols-glyphs=*)     SYMBOLS_LIST="${arg#*=}" ;;
+    --latin-subset=*)       LATIN_LIST="${arg#*=}" ;;
     --only=*)               ONLY_PATTERN="${arg#*=}" ;;
     /*|src/*|../*)          INPUT="$arg" ;;
   esac
@@ -78,6 +82,12 @@ while IFS= read -r -d '' ttf; do
         --no-hinting \
         --notdef-outline \
         --symbol-cmap --legacy-cmap
+    elif [[ -n "$LATIN_LIST" ]]; then
+      pyftsubset "$ttf" \
+        --output-file="$woff2_out" \
+        --flavor=woff2 \
+        --unicodes-file="$LATIN_LIST" \
+        --layout-features='kern,liga,clig,calt'
     else
       pyftsubset "$ttf" \
         --output-file="$woff2_out" \
@@ -86,7 +96,6 @@ while IFS= read -r -d '' ttf; do
         --layout-features='kern,liga,clig,calt'
     fi
   else
-    # Plain WOFF2 conversion (no subset)
     pyftsubset "$ttf" \
       --output-file="$woff2_out" \
       --flavor=woff2 \
