@@ -1,25 +1,48 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+#
+# deploy-to-build-main.yml — Hostinger production deploy gate
+#
+# Trigger: push to main + manual workflow_dispatch.
+# Steps:   checkout -> node 20 -> npm ci -> precheck -> build -> push dist/
+#          to build-main branch via s0/git-publish-subdir-action.
+# Hostinger hPanel Git integration pulls build-main into /public_html/.
+# Concurrency group prevents overlapping runs (no half-pushed branch state).
+
 name: kyo-web-online - Build and Deploy to build-main
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-build-main-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     name: Build and Push
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Run precheck gate
+        run: npm run precheck
 
       - name: Build App
         run: npm run build
@@ -32,3 +55,4 @@ jobs:
           FOLDER: dist
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: "Build in Main Environment: ({sha}) {msg}"
+          SQUASH_HISTORY: true
