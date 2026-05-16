@@ -23,8 +23,12 @@ const heading_tag = computed(() => `h${props.level}`);
 <template>
   <header class="ui-section-header">
     <span class="ui-section-header__index">{{ tag }}</span>
-    <component :is="heading_tag" class="ui-section-header__title">{{ title }}</component>
-    <p v-if="subtitle" class="ui-section-header__subtitle">{{ subtitle }}</p>
+    <component :is="heading_tag" class="ui-section-header__title">
+      {{ title }}
+    </component>
+    <p v-if="subtitle" class="ui-section-header__subtitle">
+      {{ subtitle }}
+    </p>
   </header>
 </template>
 

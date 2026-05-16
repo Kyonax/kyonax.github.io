@@ -4,11 +4,10 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-
-import LanguageToggle from '@widgets/language-toggle.vue';
 import UiButton from '@ui/button.vue';
+import LanguageToggle from '@widgets/language-toggle.vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
@@ -41,22 +40,33 @@ const onScroll = () => {
   }
 };
 
-const closeMobile = () => { mobile_open.value = false; };
-const onAnchorClick = () => { closeMobile(); };
+const closeMobile = () => {
+  mobile_open.value = false; 
+};
+const onAnchorClick = () => {
+  closeMobile(); 
+};
 const onKeydown = (event) => {
-  if (event.key === 'Escape' && mobile_open.value) closeMobile();
+  if (event.key === 'Escape' && mobile_open.value) {
+    closeMobile();
+  }
 };
 
 /* Mark the page chrome inert while the drawer is open so focus stays inside the
    menu (Tab can't leak into hero/skills/footer content). Restored on close. */
 const INERT_TARGETS = ['main', '.site-footer'];
 watch(mobile_open, (open) => {
-  if (typeof document === 'undefined') return;
+  if (typeof document === 'undefined') {
+    return;
+  }
   for (const selector of INERT_TARGETS) {
-    document.querySelectorAll(selector).forEach((el) => {
-      if (open) el.setAttribute('inert', '');
-      else el.removeAttribute('inert');
-    });
+    for (const el of document.querySelectorAll(selector)) {
+      if (open) {
+        el.setAttribute('inert', '');
+      } else {
+        el.removeAttribute('inert');
+      }
+    }
   }
 });
 
@@ -67,22 +77,28 @@ onMounted(() => {
 
   observer = new IntersectionObserver(
     (entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) active_section.value = e.target.id;
-      });
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          active_section.value = e.target.id;
+        }
+      }
     },
     { rootMargin: '-45% 0px -45% 0px', threshold: 0 },
   );
-  NAV_LINKS.forEach((l) => {
-    const el = document.getElementById(l.id);
-    if (el) observer.observe(el);
-  });
+  for (const l of NAV_LINKS) {
+    const el = document.querySelector(`#${l.id}`);
+    if (el) {
+      observer.observe(el);
+    }
+  }
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll);
   window.removeEventListener('keydown', onKeydown);
-  if (observer) observer.disconnect();
+  if (observer) {
+    observer.disconnect();
+  }
 });
 </script>
 
@@ -90,7 +106,8 @@ onBeforeUnmount(() => {
   <header
     class="hud-nav"
     :class="{ 'hud-nav--scrolled': scrolled, 'hud-nav--open': mobile_open }"
-    role="banner">
+    role="banner"
+  >
     <div class="hud-nav__progress" :style="{ '--progress': scroll_progress }" aria-hidden="true" />
 
     <div class="hud-nav__bar">
@@ -98,7 +115,8 @@ onBeforeUnmount(() => {
         href="#hero"
         class="hud-nav__brand"
         :aria-label="t('kyo-web.landing.nav.aria.brand')"
-        @click="onAnchorClick">
+        @click="onAnchorClick"
+      >
         <span class="hud-nav__brand-name" aria-hidden="true" v-html="t('kyo-web.landing.nav.logo')" />
       </a>
 
@@ -106,7 +124,8 @@ onBeforeUnmount(() => {
         id="hud-nav-menu"
         class="hud-nav__links"
         :class="{ 'is-open': mobile_open }"
-        :aria-label="t('kyo-web.landing.nav.menu')">
+        :aria-label="t('kyo-web.landing.nav.menu')"
+      >
         <a
           v-for="link in NAV_LINKS"
           :key="link.id"
@@ -115,7 +134,8 @@ onBeforeUnmount(() => {
           :class="{ 'is-active': active_section === link.id }"
           :aria-label="t(`kyo-web.landing.nav.aria.${link.id}`)"
           :aria-current="active_section === link.id ? 'location' : undefined"
-          @click="onAnchorClick">
+          @click="onAnchorClick"
+        >
           {{ t(link.key) }}
         </a>
       </nav>
@@ -129,7 +149,8 @@ onBeforeUnmount(() => {
           aria-controls="hud-nav-menu"
           :aria-expanded="mobile_open"
           :aria-label="mobile_open ? t('kyo-web.landing.nav.close') : t('kyo-web.landing.nav.menu')"
-          @click="mobile_open = !mobile_open">
+          @click="mobile_open = !mobile_open"
+        >
           <span class="icon-glyph icon-glyph--lg" :data-text="mobile_open ? GLYPH_CLOSE : GLYPH_MENU" aria-hidden="true" />
         </UiButton>
       </div>

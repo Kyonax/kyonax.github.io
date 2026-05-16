@@ -4,7 +4,7 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { ref, onMounted, computed, nextTick, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
@@ -16,7 +16,9 @@ const open = ref(false);
 const decline_btn = ref(null);
 
 const _update = (granted) => {
-  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return;
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
+    return;
+  }
   const value = granted ? 'granted' : 'denied';
   window.gtag('consent', 'update', {
     ad_storage:         value,
@@ -27,13 +29,17 @@ const _update = (granted) => {
 };
 
 const accept = () => {
-  try { localStorage.setItem(STORAGE_KEY, 'granted'); } catch { /* private mode */ }
+  try {
+    localStorage.setItem(STORAGE_KEY, 'granted'); 
+  } catch { /* private mode */ }
   _update(true);
   open.value = false;
 };
 
 const decline = () => {
-  try { localStorage.setItem(STORAGE_KEY, 'denied'); } catch { /* private mode */ }
+  try {
+    localStorage.setItem(STORAGE_KEY, 'denied'); 
+  } catch { /* private mode */ }
   _update(false);
   open.value = false;
 };
@@ -46,7 +52,9 @@ const onKeydown = (event) => {
 };
 
 watch(open, async (is_open) => {
-  if (!is_open) return;
+  if (!is_open) {
+    return;
+  }
   await nextTick();
   if (decline_btn.value && typeof decline_btn.value.focus === 'function') {
     decline_btn.value.focus();
@@ -81,13 +89,15 @@ onMounted(() => {
         ref="decline_btn"
         type="button"
         class="cookie-consent__btn cookie-consent__btn--ghost"
-        @click="decline">
+        @click="decline"
+      >
         {{ t('kyo-web.landing.consent.decline') }}
       </button>
       <button
         type="button"
         class="cookie-consent__btn cookie-consent__btn--primary"
-        @click="accept">
+        @click="accept"
+      >
         {{ t('kyo-web.landing.consent.accept') }}
       </button>
     </div>

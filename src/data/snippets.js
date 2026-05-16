@@ -4,500 +4,500 @@
  */
 
 export const TRANSLATIONS = {
-  "en": {
-    "kyo-web": {
-      "contact": {
-        "contact-me": "CONTACT ME",
-        "wsp": "WHATSAPP"
+  'en': {
+    'kyo-web': {
+      'contact': {
+        'contact-me': 'CONTACT ME',
+        'wsp': 'WHATSAPP',
       },
-      "content-data": {
-        "about-me": {
-          "description": "Hello! I’m <strong>Cristian D. Moreno</strong>, also known as <strong>Kyonax<sup>京</sup></strong>. A Senior Full Stack Web Developer with 7+ years of experience, I specialize in building scalable, high-performance solutions with clean code and strong design patterns. I’m also the Full Stack Lead and Founder of <strong>Zeronet Labs</strong>, where we create innovative, AI-driven tools and automations with a futuristic, cyberpunk-inspired edge."
+      'content-data': {
+        'about-me': {
+          'description': 'Hello! I’m <strong>Cristian D. Moreno</strong>, also known as <strong>Kyonax<sup>京</sup></strong>. A Senior Full Stack Web Developer with 7+ years of experience, I specialize in building scalable, high-performance solutions with clean code and strong design patterns. I’m also the Full Stack Lead and Founder of <strong>Zeronet Labs</strong>, where we create innovative, AI-driven tools and automations with a futuristic, cyberpunk-inspired edge.',
         },
-        "download": {
-          "cv-en": "DOWNLOAD CV",
-          "cv-es": "DOWNLOAD CV"
+        'download': {
+          'cv-en': 'DOWNLOAD CV',
+          'cv-es': 'DOWNLOAD CV',
         },
-        "experience": {
-          "agile-engine": {
-            "role": "SENIOR SOFTWARE ENGINEER (FRONTEND WEB DEVELOPER)",
-            "specs": "2025-PRESENT <strong>AGILE-ENGINE</strong> // <strong>MADISON-REED</strong> REMOTE-BOGOTÁ-D.C///COLOMBIA",
-            "description": "Architected a CMS-driven <strong>Vue 3 e-commerce redesign</strong> with reusable components and third-party SDK integrations, blending <strong>SEO/AEO</strong> craft and an <strong>AI-assisted workflow</strong> to ship faster without sacrificing quality...",
-            "bullets": "<li>Drafted architecture decisions and extended ACs to cover edge cases on further implementations for a <strong>Vue 3 e-commerce redesign</strong>, wrote <strong>TDD</strong> unit tests with <strong>Vitest</strong> upfront, codified style rules in <strong>ESLint</strong>, and added <strong>Playwright</strong> e2e suites, keeping PR reviews focused on substance and avoiding rework from missed ACs or Code Quality.</li><li>Captured legacy-page behavior with <strong>Playwright</strong> before each redesign and reused it on the new implementation, so the team shipped each redesign across every key flow without breaking the user journey.</li><li>Designed an <strong>AI-assisted development workflow</strong> by abstracting repetitive patterns into custom skills, scripts, and tooling that automate the work accurately, picking <strong>Claude Code, GPTel (Emacs), GPT, Gemini, Grok,</strong> or <strong>LiteLLM</strong> per task by strengths and efficiency, so engineering time went into real design decisions instead of repetitive scaffolding.</li><li>Improved <strong>SEO</strong> and <strong>AEO (Answer Engine Optimization)</strong> by identifying the data carrying business value on each page and exposing it through <strong>JSON-LD</strong>, validated <strong>SSR</strong> output, and a semantic, <strong>ADA</strong>-compliant <strong>h1 → h2 → h3</strong> structure, so search bots and AI engines parse intent fast and accurately, improving rich-result eligibility, AI-engine citations, and conversion.</li><li>Built reusable <strong>Vue 3</strong> components and <strong>Pug</strong> templates with <strong>Stylus</strong> styling driven by CMS configuration on the <strong>Express SSR + MongoDB-backed CMS</strong> stack (<strong>Vite</strong> with legacy <strong>Webpack 4</strong>) and documented them in <strong>Storybook</strong>, so routine page tuning and content updates shipped through CMS without engineering tickets, while the same blocks scaled to new pages with minimal rework.</li><li>Integrated third-party SDKs (<strong>Birdeye</strong> location reviews, <strong>Dynamic Yield</strong> A/B testing, <strong>Dash Hudson</strong> UGC, <strong>Google Auth / FedCM</strong> SSO, <strong>Segment</strong> analytics), wrapping each in CMS-driven abstraction layers so A/B experiments, feature rollouts, and integration tuning ran through configuration instead of a new PR per change.</li><li>Made performance an objective on every redesign, capturing <strong>Lighthouse</strong> and <strong>Core Web Vitals</strong> baselines and validating the new implementation beat them before merging, fixing bottlenecks in the same ticket so each release shipped with measurable gains over the previous design.</li>",
-            "tools": "<strong>vue3 - pug - stylus - vite - vitest - playwright - eslint - express - mongodb - storybook - json-ld - lighthouse - claude-code - gptel - litellm - birdeye - dynamic-yield - dash-hudson - segment - fedcm</strong>"
+        'experience': {
+          'agile-engine': {
+            'role': 'SENIOR SOFTWARE ENGINEER (FRONTEND WEB DEVELOPER)',
+            'specs': '2025-PRESENT <strong>AGILE-ENGINE</strong> // <strong>MADISON-REED</strong> REMOTE-BOGOTÁ-D.C///COLOMBIA',
+            'description': 'Architected a CMS-driven <strong>Vue 3 e-commerce redesign</strong> with reusable components and third-party SDK integrations, blending <strong>SEO/AEO</strong> craft and an <strong>AI-assisted workflow</strong> to ship faster without sacrificing quality...',
+            'bullets': '<li>Drafted architecture decisions and extended ACs to cover edge cases on further implementations for a <strong>Vue 3 e-commerce redesign</strong>, wrote <strong>TDD</strong> unit tests with <strong>Vitest</strong> upfront, codified style rules in <strong>ESLint</strong>, and added <strong>Playwright</strong> e2e suites, keeping PR reviews focused on substance and avoiding rework from missed ACs or Code Quality.</li><li>Captured legacy-page behavior with <strong>Playwright</strong> before each redesign and reused it on the new implementation, so the team shipped each redesign across every key flow without breaking the user journey.</li><li>Designed an <strong>AI-assisted development workflow</strong> by abstracting repetitive patterns into custom skills, scripts, and tooling that automate the work accurately, picking <strong>Claude Code, GPTel (Emacs), GPT, Gemini, Grok,</strong> or <strong>LiteLLM</strong> per task by strengths and efficiency, so engineering time went into real design decisions instead of repetitive scaffolding.</li><li>Improved <strong>SEO</strong> and <strong>AEO (Answer Engine Optimization)</strong> by identifying the data carrying business value on each page and exposing it through <strong>JSON-LD</strong>, validated <strong>SSR</strong> output, and a semantic, <strong>ADA</strong>-compliant <strong>h1 → h2 → h3</strong> structure, so search bots and AI engines parse intent fast and accurately, improving rich-result eligibility, AI-engine citations, and conversion.</li><li>Built reusable <strong>Vue 3</strong> components and <strong>Pug</strong> templates with <strong>Stylus</strong> styling driven by CMS configuration on the <strong>Express SSR + MongoDB-backed CMS</strong> stack (<strong>Vite</strong> with legacy <strong>Webpack 4</strong>) and documented them in <strong>Storybook</strong>, so routine page tuning and content updates shipped through CMS without engineering tickets, while the same blocks scaled to new pages with minimal rework.</li><li>Integrated third-party SDKs (<strong>Birdeye</strong> location reviews, <strong>Dynamic Yield</strong> A/B testing, <strong>Dash Hudson</strong> UGC, <strong>Google Auth / FedCM</strong> SSO, <strong>Segment</strong> analytics), wrapping each in CMS-driven abstraction layers so A/B experiments, feature rollouts, and integration tuning ran through configuration instead of a new PR per change.</li><li>Made performance an objective on every redesign, capturing <strong>Lighthouse</strong> and <strong>Core Web Vitals</strong> baselines and validating the new implementation beat them before merging, fixing bottlenecks in the same ticket so each release shipped with measurable gains over the previous design.</li>',
+            'tools': '<strong>vue3 - pug - stylus - vite - vitest - playwright - eslint - express - mongodb - storybook - json-ld - lighthouse - claude-code - gptel - litellm - birdeye - dynamic-yield - dash-hudson - segment - fedcm</strong>',
           },
-          "zeronet": {
-            "role": "FOUNDER & LEAD FULL STACK ENGINEER",
-            "specs": "2017-PRESENT <strong>ZERØNET-LABS</strong> REMOTE-VILLAVICENCIO///COLOMBIA",
-            "description": "Founded <strong>Zerønet Labs</strong> delivering full-stack solutions across diverse client stacks, from reusable <strong>npm packages</strong> and UI libraries to backend systems and operational automation...",
-            "bullets": "<li>Delivered frontend solutions for multiple startups and medium companies, adapting to each client's stack (<strong>React.js, Next.js, Vue.js, Webpack, Vite, Gulp.js, Grunt.js,</strong> or <strong>Vanilla JS (HTML5, SASS/SCSS, ES6+)</strong>) so every project ran on the platform that best fit the client's team and constraints instead of forcing a single template.</li><li>Built reusable <strong>npm packages</strong> and <strong>UI libraries</strong> across <strong>React, Vue,</strong> and <strong>Next.js</strong> using component-composition patterns, with publishing automated through <strong>semantic-release</strong> and <strong>GitHub Actions</strong>, raising dev velocity, keeping visual consistency project-to-project, and avoiding component duplication in long-term maintenance.</li><li>Built custom libraries targeting recurring frontend performance bottlenecks (image-heavy rendering, asset loading, repetitive setup work), cutting load times across client sites and removing the need to re-solve the same problems.</li><li>Designed modular project architectures and <strong>SASS/SCSS</strong> styling systems built on design patterns and naming conventions, so codebases stayed maintainable through feature growth and refactors didn't require ripping out foundational decisions.</li><li>Containerized development environments with <strong>Docker</strong> and <strong>docker-compose</strong> and configured CI pipelines for production / dev / staging, so onboarding new collaborators or client teams took one command and every environment matched regardless of OS or local toolchain.</li>",
-            "tools": "<strong>reactjs - nextjs - vuejs - vite - webpack - symfony - nestjs - express - nodejs - python - typescript - postgresql - mariadb - mysql - docker - graphql - rest - semantic-release - github-actions - sass/scss</strong>"
+          'zeronet': {
+            'role': 'FOUNDER & LEAD FULL STACK ENGINEER',
+            'specs': '2017-PRESENT <strong>ZERØNET-LABS</strong> REMOTE-VILLAVICENCIO///COLOMBIA',
+            'description': 'Founded <strong>Zerønet Labs</strong> delivering full-stack solutions across diverse client stacks, from reusable <strong>npm packages</strong> and UI libraries to backend systems and operational automation...',
+            'bullets': "<li>Delivered frontend solutions for multiple startups and medium companies, adapting to each client's stack (<strong>React.js, Next.js, Vue.js, Webpack, Vite, Gulp.js, Grunt.js,</strong> or <strong>Vanilla JS (HTML5, SASS/SCSS, ES6+)</strong>) so every project ran on the platform that best fit the client's team and constraints instead of forcing a single template.</li><li>Built reusable <strong>npm packages</strong> and <strong>UI libraries</strong> across <strong>React, Vue,</strong> and <strong>Next.js</strong> using component-composition patterns, with publishing automated through <strong>semantic-release</strong> and <strong>GitHub Actions</strong>, raising dev velocity, keeping visual consistency project-to-project, and avoiding component duplication in long-term maintenance.</li><li>Built custom libraries targeting recurring frontend performance bottlenecks (image-heavy rendering, asset loading, repetitive setup work), cutting load times across client sites and removing the need to re-solve the same problems.</li><li>Designed modular project architectures and <strong>SASS/SCSS</strong> styling systems built on design patterns and naming conventions, so codebases stayed maintainable through feature growth and refactors didn't require ripping out foundational decisions.</li><li>Containerized development environments with <strong>Docker</strong> and <strong>docker-compose</strong> and configured CI pipelines for production / dev / staging, so onboarding new collaborators or client teams took one command and every environment matched regardless of OS or local toolchain.</li>",
+            'tools': '<strong>reactjs - nextjs - vuejs - vite - webpack - symfony - nestjs - express - nodejs - python - typescript - postgresql - mariadb - mysql - docker - graphql - rest - semantic-release - github-actions - sass/scss</strong>',
           },
-          "softtek": {
-            "role": "SENIOR SOFTWARE ENGINEER (FULL STACK WEB DEVELOPER)",
-            "specs": "2023-2025 <strong>SOFTTEK</strong> REMOTE-BOGOTÁ-D.C///COLOMBIA",
-            "description": "Migrated an internal admin platform into a full <strong>Shopware e-commerce</strong> site, owning code quality through <strong>Pull Request</strong> reviews and team onboarding while shipping fully automated purchase flows...",
-            "bullets": "<li>Migrated an internal admin platform into an e-commerce site on <strong>Shopware (Symfony + Vue.js)</strong>, planning the architecture and mapping every requirement and implication before cutover, so the customer purchase flow shipped fully automated and no business operation was lost.</li><li>Designed a <strong>SASS/SCSS</strong> pattern library, mixin set, and modular architecture across the e-commerce storefront, with <strong>PostCSS</strong> covering cross-browser inconsistencies, so styling stayed performant and maintainable as the storefront grew and design changes propagated across every theme without manual rework.</li><li>Engineered custom frontend solutions inside <strong>Shopware</strong>'s OOB template system, rebuilding template logic alongside the Shopware core team where needed, so the client's design and UX requirements shipped with full fidelity instead of being cut to platform defaults.</li><li>Refined sprint planning and work distribution on <strong>Azure DevOps</strong> under <strong>Agile</strong> methodology, structuring initiatives into well-scoped, parallelizable units so the team kept steady velocity even when scope shifted mid-sprint.</li><li>Led onboarding through walkthroughs of the <strong>frontend architecture, design patterns, code guidelines,</strong> and <strong>custom plugins</strong> I authored, plus a documentation set that became the team's shared reference, so joiners ramped up to productivity without constant 1:1 time.</li><li>Owned daily <strong>Pull Request</strong> reviews across the team and enforced <strong>Unit Testing</strong>, code-style consistency, and design-pattern fidelity, catching performance issues, excessive nesting, and architectural drift before they reached production.</li><li>Containerized development with <strong>Dockware</strong> (Shopware-tuned Docker images) and <strong>docker-compose</strong>, and configured <strong>Azure DevOps</strong> CI pipelines for production, dev, and staging with automated PR-validation, so the team spun up identical Shopware environments in one command and merges only happened after the gate ran clean.</li><li>Partnered with backend teams to define <strong>REST</strong> and <strong>GraphQL</strong> endpoint contracts before implementation, aligning frontend and backend on shape, naming, and error handling so integration sprints didn't stall on contract mismatches.</li>",
-            "tools": "<strong>shopware - symfony - vuejs - sass/scss - postcss - docker - dockware - azure-devops - graphql - rest - mysql - javascript - php - bash - jest</strong>"
+          'softtek': {
+            'role': 'SENIOR SOFTWARE ENGINEER (FULL STACK WEB DEVELOPER)',
+            'specs': '2023-2025 <strong>SOFTTEK</strong> REMOTE-BOGOTÁ-D.C///COLOMBIA',
+            'description': 'Migrated an internal admin platform into a full <strong>Shopware e-commerce</strong> site, owning code quality through <strong>Pull Request</strong> reviews and team onboarding while shipping fully automated purchase flows...',
+            'bullets': "<li>Migrated an internal admin platform into an e-commerce site on <strong>Shopware (Symfony + Vue.js)</strong>, planning the architecture and mapping every requirement and implication before cutover, so the customer purchase flow shipped fully automated and no business operation was lost.</li><li>Designed a <strong>SASS/SCSS</strong> pattern library, mixin set, and modular architecture across the e-commerce storefront, with <strong>PostCSS</strong> covering cross-browser inconsistencies, so styling stayed performant and maintainable as the storefront grew and design changes propagated across every theme without manual rework.</li><li>Engineered custom frontend solutions inside <strong>Shopware</strong>'s OOB template system, rebuilding template logic alongside the Shopware core team where needed, so the client's design and UX requirements shipped with full fidelity instead of being cut to platform defaults.</li><li>Refined sprint planning and work distribution on <strong>Azure DevOps</strong> under <strong>Agile</strong> methodology, structuring initiatives into well-scoped, parallelizable units so the team kept steady velocity even when scope shifted mid-sprint.</li><li>Led onboarding through walkthroughs of the <strong>frontend architecture, design patterns, code guidelines,</strong> and <strong>custom plugins</strong> I authored, plus a documentation set that became the team's shared reference, so joiners ramped up to productivity without constant 1:1 time.</li><li>Owned daily <strong>Pull Request</strong> reviews across the team and enforced <strong>Unit Testing</strong>, code-style consistency, and design-pattern fidelity, catching performance issues, excessive nesting, and architectural drift before they reached production.</li><li>Containerized development with <strong>Dockware</strong> (Shopware-tuned Docker images) and <strong>docker-compose</strong>, and configured <strong>Azure DevOps</strong> CI pipelines for production, dev, and staging with automated PR-validation, so the team spun up identical Shopware environments in one command and merges only happened after the gate ran clean.</li><li>Partnered with backend teams to define <strong>REST</strong> and <strong>GraphQL</strong> endpoint contracts before implementation, aligning frontend and backend on shape, naming, and error handling so integration sprints didn't stall on contract mismatches.</li>",
+            'tools': '<strong>shopware - symfony - vuejs - sass/scss - postcss - docker - dockware - azure-devops - graphql - rest - mysql - javascript - php - bash - jest</strong>',
           },
-          "cr-senior-fullstack": {
-            "role": "SENIOR FULL STACK WEB DEVELOPER",
-            "specs": "2021-2023 <strong>CABEZA-ROTA</strong> REMOTE-VILLAVICENCIO///COLOMBIA",
-            "description": "Delivered <strong>full-stack</strong> e-commerce sites, landing pages, and microservices for multiple clients, building <strong>GraphQL/REST APIs</strong> with auth, caching, and analytics-driven UI/UX...",
-            "bullets": "<li>Developed high-performance <strong>landing pages, e-commerce sites</strong> and <strong>microservices</strong> for multiple clients using <strong>Next.js, React.js, Vue.js, Nest.js, Node.js, Redux, AntDesign,</strong> and <strong>SASS/SCSS</strong>. Applied SSR/SSG/ISR patterns in Next.js, GraphQL - Apollo for data-driven pages, and <strong>WebSockets</strong> for real-time features when required.</li><li>Improved digital brand presence with robust <strong>UI/UX</strong> implementations validated through <strong>A/B testing</strong> used analytics <strong>(GA4, Hotjar) and funnels/heatmaps</strong> to iterate on design and increase engagement.</li><li>Led and Collaborated with multiple teams, adapting to various Agile Methodologies like <strong>Agile and SCRUM</strong>, while ensuring adherence to project specific <strong>Code Guidelines</strong>, doing <strong>Pull Request - PRs</strong>, and mentoring developers. Enforced PR review standards, and introduced testing with <strong>Jest</strong>.</li><li>Translated <strong>UI/UX</strong> mockups, templates into dynamic, responsive, and user focus frontend implementations, aligning with the expected business goals.</li>",
-            "tools": "<strong>nextjs - reactjs - vuejs - nestjs - symfony - docker - postgresql - mysql - mongodb - graphql - apollo - rest - jwt - websockets - jest - rspec - github-actions - ga4 - hotjar</strong>"
+          'cr-senior-fullstack': {
+            'role': 'SENIOR FULL STACK WEB DEVELOPER',
+            'specs': '2021-2023 <strong>CABEZA-ROTA</strong> REMOTE-VILLAVICENCIO///COLOMBIA',
+            'description': 'Delivered <strong>full-stack</strong> e-commerce sites, landing pages, and microservices for multiple clients, building <strong>GraphQL/REST APIs</strong> with auth, caching, and analytics-driven UI/UX...',
+            'bullets': '<li>Developed high-performance <strong>landing pages, e-commerce sites</strong> and <strong>microservices</strong> for multiple clients using <strong>Next.js, React.js, Vue.js, Nest.js, Node.js, Redux, AntDesign,</strong> and <strong>SASS/SCSS</strong>. Applied SSR/SSG/ISR patterns in Next.js, GraphQL - Apollo for data-driven pages, and <strong>WebSockets</strong> for real-time features when required.</li><li>Improved digital brand presence with robust <strong>UI/UX</strong> implementations validated through <strong>A/B testing</strong> used analytics <strong>(GA4, Hotjar) and funnels/heatmaps</strong> to iterate on design and increase engagement.</li><li>Led and Collaborated with multiple teams, adapting to various Agile Methodologies like <strong>Agile and SCRUM</strong>, while ensuring adherence to project specific <strong>Code Guidelines</strong>, doing <strong>Pull Request - PRs</strong>, and mentoring developers. Enforced PR review standards, and introduced testing with <strong>Jest</strong>.</li><li>Translated <strong>UI/UX</strong> mockups, templates into dynamic, responsive, and user focus frontend implementations, aligning with the expected business goals.</li>',
+            'tools': '<strong>nextjs - reactjs - vuejs - nestjs - symfony - docker - postgresql - mysql - mongodb - graphql - apollo - rest - jwt - websockets - jest - rspec - github-actions - ga4 - hotjar</strong>',
           },
-          "cr-web-dev": {
-            "role": "DIGITAL MARKETING & WEB DEVELOPER",
-            "specs": "2021-2021 <strong>CABEZA-ROTA</strong> REMOTE-VILLAVICENCIO///COLOMBIA",
-            "description": "Built a <strong>data-driven design loop</strong> with <strong>A/B Testing</strong> and analytics, delivering marketing websites and landing pages tuned to each agency client's brand...",
-            "bullets": "<li>Built a <strong>data-driven design loop</strong> using <strong>A/B Testing</strong> with <strong>GA4</strong> and <strong>Hotjar</strong>, refining website components and flows from real user signals so design changes shipped with measurable engagement and conversion gains, not guesswork.</li><li>Built marketing websites and landing pages for agency clients in <strong>Next.js, React.js, Vue.js, Nest.js, Redux, SASS/SCSS, Tailwind, Bootstrap,</strong> or <strong>Wordpress</strong>, matching the stack to each client's brand and constraints so launches shipped fast without sacrificing scalability.</li><li>Designed reusable <strong>custom components</strong> tailored to each project's requirements, design system, and tech stack, so features shipped faster and patterns stayed consistent as the codebase grew.</li>",
-            "tools": "<strong>nextjs - reactjs - vuejs - nestjs - redux - tailwind - bootstrap - wordpress - sass/scss - ga4 - hotjar - a/b-testing</strong>"
+          'cr-web-dev': {
+            'role': 'DIGITAL MARKETING & WEB DEVELOPER',
+            'specs': '2021-2021 <strong>CABEZA-ROTA</strong> REMOTE-VILLAVICENCIO///COLOMBIA',
+            'description': "Built a <strong>data-driven design loop</strong> with <strong>A/B Testing</strong> and analytics, delivering marketing websites and landing pages tuned to each agency client's brand...",
+            'bullets': "<li>Built a <strong>data-driven design loop</strong> using <strong>A/B Testing</strong> with <strong>GA4</strong> and <strong>Hotjar</strong>, refining website components and flows from real user signals so design changes shipped with measurable engagement and conversion gains, not guesswork.</li><li>Built marketing websites and landing pages for agency clients in <strong>Next.js, React.js, Vue.js, Nest.js, Redux, SASS/SCSS, Tailwind, Bootstrap,</strong> or <strong>Wordpress</strong>, matching the stack to each client's brand and constraints so launches shipped fast without sacrificing scalability.</li><li>Designed reusable <strong>custom components</strong> tailored to each project's requirements, design system, and tech stack, so features shipped faster and patterns stayed consistent as the codebase grew.</li>",
+            'tools': '<strong>nextjs - reactjs - vuejs - nestjs - redux - tailwind - bootstrap - wordpress - sass/scss - ga4 - hotjar - a/b-testing</strong>',
           },
-          "cr-growth": {
-            "role": "GROWTH MARKETER & WEB DEVELOPER",
-            "specs": "2020-2021 <strong>CABEZA-ROTA</strong> REMOTE-VILLAVICENCIO///COLOMBIA",
-            "description": "Drove <strong>brand awareness</strong> across social platforms while deploying <strong>VPS environments</strong> on <strong>AWS</strong> and integrating payment services to power backend applications end-to-end...",
-            "bullets": "<li>Drove brand awareness and engagement on <strong>Twitter, Instagram, Discord</strong> and <strong>YouTube</strong> by executing targeted growth strategies increasing online presence, follower engagement, and customer acquisition.</li><li>Leveraged analytics to refine content strategies, boosting brand loyalty and optimizing campaign performance.</li><li>Contributed to brand websites and landing pages using <strong>React.js, Vue.js, Node.js, AWS, Typescript,</strong> and <strong>SASS/SCSS</strong>, ensuring scalable and high performing products.</li><li>Optimized user flows by implementing <strong>custom components, custom elements, and custom hooks</strong>, to improve website's functionalities, to deliver faster rendering websites.</li>",
-            "tools": "<strong>aws - ec2 - apache - mysql - php - reactjs - nodejs - typescript - sass - twitter - youtube - discord - payu - cybersource</strong>"
-          }
+          'cr-growth': {
+            'role': 'GROWTH MARKETER & WEB DEVELOPER',
+            'specs': '2020-2021 <strong>CABEZA-ROTA</strong> REMOTE-VILLAVICENCIO///COLOMBIA',
+            'description': 'Drove <strong>brand awareness</strong> across social platforms while deploying <strong>VPS environments</strong> on <strong>AWS</strong> and integrating payment services to power backend applications end-to-end...',
+            'bullets': "<li>Drove brand awareness and engagement on <strong>Twitter, Instagram, Discord</strong> and <strong>YouTube</strong> by executing targeted growth strategies increasing online presence, follower engagement, and customer acquisition.</li><li>Leveraged analytics to refine content strategies, boosting brand loyalty and optimizing campaign performance.</li><li>Contributed to brand websites and landing pages using <strong>React.js, Vue.js, Node.js, AWS, Typescript,</strong> and <strong>SASS/SCSS</strong>, ensuring scalable and high performing products.</li><li>Optimized user flows by implementing <strong>custom components, custom elements, and custom hooks</strong>, to improve website's functionalities, to deliver faster rendering websites.</li>",
+            'tools': '<strong>aws - ec2 - apache - mysql - php - reactjs - nodejs - typescript - sass - twitter - youtube - discord - payu - cybersource</strong>',
+          },
         },
-        "projects": {
-          "webcam2ascii": {
-            "description": "My recording windows land mostly at night, after remote work and parenting wrap up, and the room rarely has the lighting a normal face-on-camera setup would want. The deeper reason this project exists is more personal though. There are moments where I simply do not want to put my face on a clip, and this tool ends up helping me move past that hesitation. I also genuinely like the aesthetic vibe it gives my videos, and recording through it keeps me inspired while I work on the clip.<br><br><strong>webcam2ascii</strong> is the tool I built exactly for that. It is a real-time filter that turns the webcam feed into ASCII art with edge detection baked in. It plugs into <strong>OBS</strong> as a live filter, so the recorded output already carries the cyberpunk and sci-fi look without any postproduction, and matches the visual language shared across the rest of the Kyonax channels.<br><br>The whole pipeline runs on the GPU in <strong>Rust</strong> with <strong>wgpu</strong> compute shaders, capturing frames through <strong>GStreamer</strong>. Each frame is downscaled 8 times so every <strong>8×8 pixel block</strong> maps to one character. A <strong>Difference of Gaussians</strong> pass followed by a <strong>Sobel</strong> filter extracts edge angles, and 64 threads per tile vote on the dominant direction to pick one of five contour glyphs (<strong>/ \\ | - _</strong>). Tiles without a clear edge fall back to a <strong>10-step luminance ramp</strong> indexed from a glyph atlas, and the whole image is composited as classic green-on-black terminal output.<br><br>Currently at <strong>v0.1.0</strong> and in progress, with the main release of <strong>v0.1.0</strong> lined up next."
+        'projects': {
+          'webcam2ascii': {
+            'description': 'My recording windows land mostly at night, after remote work and parenting wrap up, and the room rarely has the lighting a normal face-on-camera setup would want. The deeper reason this project exists is more personal though. There are moments where I simply do not want to put my face on a clip, and this tool ends up helping me move past that hesitation. I also genuinely like the aesthetic vibe it gives my videos, and recording through it keeps me inspired while I work on the clip.<br><br><strong>webcam2ascii</strong> is the tool I built exactly for that. It is a real-time filter that turns the webcam feed into ASCII art with edge detection baked in. It plugs into <strong>OBS</strong> as a live filter, so the recorded output already carries the cyberpunk and sci-fi look without any postproduction, and matches the visual language shared across the rest of the Kyonax channels.<br><br>The whole pipeline runs on the GPU in <strong>Rust</strong> with <strong>wgpu</strong> compute shaders, capturing frames through <strong>GStreamer</strong>. Each frame is downscaled 8 times so every <strong>8×8 pixel block</strong> maps to one character. A <strong>Difference of Gaussians</strong> pass followed by a <strong>Sobel</strong> filter extracts edge angles, and 64 threads per tile vote on the dominant direction to pick one of five contour glyphs (<strong>/ \\ | - _</strong>). Tiles without a clear edge fall back to a <strong>10-step luminance ramp</strong> indexed from a glyph atlas, and the whole image is composited as classic green-on-black terminal output.<br><br>Currently at <strong>v0.1.0</strong> and in progress, with the main release of <strong>v0.1.0</strong> lined up next.',
           },
-          "reckit": {
-            "description": "Recording technical content for streaming or video usually means hours of post-production work after the fact. Cuts, overlays, color, scene transitions, all pile up and slow down the publishing cadence.<br><br><strong>RECKIT</strong> is built to do that editing at the moment of capture instead of in post. The name stands for <strong>R</strong>ealtime <strong>E</strong>dit-free <strong>C</strong>apture <strong>K</strong>yonax <strong>I</strong>ntegrated <strong>T</strong>oolkit <em>(and no, it does not mean Record-Kit, wth)</em>, and it is the toolkit behind every Kyonax content creation identity (&#64;kyonax_on_tech, &#64;is.kyonax, and any future channel under the Kyonax umbrella, plus the <a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong></a> community). Each brand keeps its own folder of overlays, scene presets, and automation, fully isolated from the others.<br><br>The app sits on top of <strong>OBS Studio</strong> as a single-page <strong>Vue 3</strong> project on <strong>Vite</strong> with 11 aliases enforcing kind-folder scoped imports, plain <strong>JavaScript</strong> over <strong>SCSS</strong> styling, and a brand-loader composable that auto-discovers brand folders dropped into the root. Each brand exposes HUD overlays as <strong>HTML/CSS/JS</strong> browser sources, plus <strong>OBS WebSocket</strong> automation scripts that drive scene transitions, recording state, and live-data overlays. Quality gates run through <strong>ESLint</strong> with Vue, security, and import-sort plugins, and CCS code standards are enforced repo-wide.<br><br>Currently at <strong>v0.3.0</strong>, with <strong>v0.4.0</strong> in development but on hold while attention rotates to other parts of the ecosystem. A dev release of <strong>v0.4.0</strong> is lined up next and the main release shortly after."
+          'reckit': {
+            'description': "Recording technical content for streaming or video usually means hours of post-production work after the fact. Cuts, overlays, color, scene transitions, all pile up and slow down the publishing cadence.<br><br><strong>RECKIT</strong> is built to do that editing at the moment of capture instead of in post. The name stands for <strong>R</strong>ealtime <strong>E</strong>dit-free <strong>C</strong>apture <strong>K</strong>yonax <strong>I</strong>ntegrated <strong>T</strong>oolkit <em>(and no, it does not mean Record-Kit, wth)</em>, and it is the toolkit behind every Kyonax content creation identity (&#64;kyonax_on_tech, &#64;is.kyonax, and any future channel under the Kyonax umbrella, plus the <a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong></a> community). Each brand keeps its own folder of overlays, scene presets, and automation, fully isolated from the others.<br><br>The app sits on top of <strong>OBS Studio</strong> as a single-page <strong>Vue 3</strong> project on <strong>Vite</strong> with 11 aliases enforcing kind-folder scoped imports, plain <strong>JavaScript</strong> over <strong>SCSS</strong> styling, and a brand-loader composable that auto-discovers brand folders dropped into the root. Each brand exposes HUD overlays as <strong>HTML/CSS/JS</strong> browser sources, plus <strong>OBS WebSocket</strong> automation scripts that drive scene transitions, recording state, and live-data overlays. Quality gates run through <strong>ESLint</strong> with Vue, security, and import-sort plugins, and CCS code standards are enforced repo-wide.<br><br>Currently at <strong>v0.3.0</strong>, with <strong>v0.4.0</strong> in development but on hold while attention rotates to other parts of the ecosystem. A dev release of <strong>v0.4.0</strong> is lined up next and the main release shortly after.",
           },
-          "org2html": {
-            "description": "Running a blog usually comes down to picking a heavy platform like <strong>WordPress</strong> with its dashboard, database, and matching learning curve, or building something custom from scratch with a dashboard and editor that take longer to make than the actual blog. Neither path fits someone who already writes everything in <strong>Org-mode</strong> with a large body of <code>.org</code> files and wants direct control over the SEO and performance of every page that ships.<br><br><strong>org2html</strong> is a CLI that turns a folder of <strong>Emacs Org-mode</strong> files into a full static site or a tree of <strong>Vue 3</strong> components, aimed at blogs and entire sites generated straight from <code>.org</code> sources. Published on <a href='https://www.npmjs.com/package/&#64;kyonax/org2html' target='_blank' rel='noopener'><strong>npm</strong></a> as <strong>&#64;kyonax/org2html</strong>, it lets you keep writing in Org-mode and produce a publishable site from the same flow, with the source notes staying as the canonical version.<br><br>Built in <strong>TypeScript</strong> with <strong>tsup</strong> and <strong>Vitest</strong>, the pipeline is AST-based. A <strong>lexer</strong> tokenizes the file, a <strong>parser</strong> builds the syntax tree, and a metadata extractor lifts titles, tags and dates into a per-page <strong>SEO</strong> surface. A plugin layer handles syntax highlighting via <strong>Shiki</strong>, table of contents, shortcodes and asset probing. <strong>jsdom</strong> and <strong>DOMPurify</strong> sanitize the output against XSS, and a companion <strong>hydrate.ts</strong> script wires the rendered components back into Vue's runtime for interactive islands. Exposed through a <strong>Commander</strong> and <strong>Chokidar</strong> build-and-watch CLI, and architected so future renderers can target <strong>React</strong>, <strong>Svelte</strong> or any modern frontend stack.<br><br>Currently at <strong>v0.1.0</strong> and in progress, with the public reveal of <strong>v0.1.0</strong> lined up next."
+          'org2html': {
+            'description': "Running a blog usually comes down to picking a heavy platform like <strong>WordPress</strong> with its dashboard, database, and matching learning curve, or building something custom from scratch with a dashboard and editor that take longer to make than the actual blog. Neither path fits someone who already writes everything in <strong>Org-mode</strong> with a large body of <code>.org</code> files and wants direct control over the SEO and performance of every page that ships.<br><br><strong>org2html</strong> is a CLI that turns a folder of <strong>Emacs Org-mode</strong> files into a full static site or a tree of <strong>Vue 3</strong> components, aimed at blogs and entire sites generated straight from <code>.org</code> sources. Published on <a href='https://www.npmjs.com/package/&#64;kyonax/org2html' target='_blank' rel='noopener'><strong>npm</strong></a> as <strong>&#64;kyonax/org2html</strong>, it lets you keep writing in Org-mode and produce a publishable site from the same flow, with the source notes staying as the canonical version.<br><br>Built in <strong>TypeScript</strong> with <strong>tsup</strong> and <strong>Vitest</strong>, the pipeline is AST-based. A <strong>lexer</strong> tokenizes the file, a <strong>parser</strong> builds the syntax tree, and a metadata extractor lifts titles, tags and dates into a per-page <strong>SEO</strong> surface. A plugin layer handles syntax highlighting via <strong>Shiki</strong>, table of contents, shortcodes and asset probing. <strong>jsdom</strong> and <strong>DOMPurify</strong> sanitize the output against XSS, and a companion <strong>hydrate.ts</strong> script wires the rendered components back into Vue's runtime for interactive islands. Exposed through a <strong>Commander</strong> and <strong>Chokidar</strong> build-and-watch CLI, and architected so future renderers can target <strong>React</strong>, <strong>Svelte</strong> or any modern frontend stack.<br><br>Currently at <strong>v0.1.0</strong> and in progress, with the public reveal of <strong>v0.1.0</strong> lined up next.",
           },
-          "kyo-website": {
-            "description": "<strong>Kyonax</strong> is the identity behind a body of work that spans frontend and full-stack engineering, content creation, and personal tooling. The signature shows up across every piece through cyberpunk aesthetics, monospace typography, careful attention to performance, and every detail built by hand instead of pulled from a template.<br><br><strong>kyo-website</strong> is the home for that identity. It carries the current job, professional experience, featured projects, and any data useful to anyone curious about the work, without aiming to be an exhaustive portfolio. Down the line, a more elaborate portfolio extension and a blog will grow on top of the <a href='https://www.npmjs.com/package/&#64;kyonax/org2html' target='_blank' rel='noopener'><strong>org2html</strong></a> package, keeping this site as the lightweight index that surfaces the rest.<br><br>Built as a single-page <strong>Vue 3</strong> app powered by <strong>Vite</strong>, with <strong>vite-ssg</strong> producing static <strong>EN</strong> and <strong>ES</strong> locales, <strong>vue-i18n</strong> driving the runtime locale switch, <strong>vue-router</strong> wiring the navigation, and <strong>Unhead</strong> generating the per-route SEO meta and JSON-LD graph. The codebase is plain <strong>JavaScript</strong> over <strong>SCSS</strong> on a trimmed 7-1 architecture, with <strong>Sharp</strong> driving an in-house image pipeline that emits AVIF and WebP variants for every JPG, a Sharp-based <strong>ASCII to image</strong> generator for project logos, and a custom <strong>Vite</strong> plugin injecting the LCP preload tag. Quality gates run through <strong>ESLint</strong> with Vue, security, jsdoc and import-sort plugins, <strong>Vitest</strong> with <strong>happy-dom</strong> for component tests, and a <strong>GitHub Actions</strong> CI pipeline running precheck, license-header, i18n parity, color usage and trans-attr validators on every push, with deployment landing on <strong>Hostinger</strong> via a build-branch workflow.<br><br>Currently at <strong>v0.3.0</strong> and in progress, with the <strong>kyo-blog</strong> extension powered by org2html lined up next."
+          'kyo-website': {
+            'description': "<strong>Kyonax</strong> is the identity behind a body of work that spans frontend and full-stack engineering, content creation, and personal tooling. The signature shows up across every piece through cyberpunk aesthetics, monospace typography, careful attention to performance, and every detail built by hand instead of pulled from a template.<br><br><strong>kyo-website</strong> is the home for that identity. It carries the current job, professional experience, featured projects, and any data useful to anyone curious about the work, without aiming to be an exhaustive portfolio. Down the line, a more elaborate portfolio extension and a blog will grow on top of the <a href='https://www.npmjs.com/package/&#64;kyonax/org2html' target='_blank' rel='noopener'><strong>org2html</strong></a> package, keeping this site as the lightweight index that surfaces the rest.<br><br>Built as a single-page <strong>Vue 3</strong> app powered by <strong>Vite</strong>, with <strong>vite-ssg</strong> producing static <strong>EN</strong> and <strong>ES</strong> locales, <strong>vue-i18n</strong> driving the runtime locale switch, <strong>vue-router</strong> wiring the navigation, and <strong>Unhead</strong> generating the per-route SEO meta and JSON-LD graph. The codebase is plain <strong>JavaScript</strong> over <strong>SCSS</strong> on a trimmed 7-1 architecture, with <strong>Sharp</strong> driving an in-house image pipeline that emits AVIF and WebP variants for every JPG, a Sharp-based <strong>ASCII to image</strong> generator for project logos, and a custom <strong>Vite</strong> plugin injecting the LCP preload tag. Quality gates run through <strong>ESLint</strong> with Vue, security, jsdoc and import-sort plugins, <strong>Vitest</strong> with <strong>happy-dom</strong> for component tests, and a <strong>GitHub Actions</strong> CI pipeline running precheck, license-header, i18n parity, color usage and trans-attr validators on every push, with deployment landing on <strong>Hostinger</strong> via a build-branch workflow.<br><br>Currently at <strong>v0.3.0</strong> and in progress, with the <strong>kyo-blog</strong> extension powered by org2html lined up next.",
           },
-          "zeronet-labs-website": {
-            "description": "<a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'><strong>Zerønet Labs</strong></a> is the commercial side of the Kyonax ecosystem, a studio focused on building accurate and performant software for companies of any size. The product line includes <strong>UI libraries</strong> primarily for Vue.js, <strong>npm packages</strong> for Vue, React and Next.js, plus <strong>AI-powered automations</strong> and supporting tooling for startup and mid-size clients. The brand pitch is short and direct, solve real business problems with automation and performant engineering.<br><br><strong>zeronet-labs-website</strong> is the public face of the brand and the launch surface for every product it ships. The site carries the company manifest, the active product line, case studies, and a direct contact funnel. Pitched as the deliberate counterpart to the open-source <strong>Cyber Code Syndicate</strong> side of the Kyonax ecosystem, where Zerønet sells commercial work to fund the rest of the operation.<br><br>Built around the <strong>Zerønet</strong> tagline (zero heavy networks, zero slowdowns, zero wasted cycles), with <strong>performance</strong> and <strong>SEO</strong> treated as first-class concerns over visual flourish, since commercial landings live or die by <strong>Core Web Vitals</strong>, search visibility, and how fast a visitor reaches the call to action. Implementation parallels the <strong>kyo-website</strong> stack (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> for static locales, plain <strong>JavaScript</strong> over <strong>SCSS</strong> styling) with brand-specific theming layered on top.<br><br>Currently at <strong>v0.1.0</strong> and on hold while the commercial side is being scoped, with active development scheduled to resume in mid-2026."
+          'zeronet-labs-website': {
+            'description': "<a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'><strong>Zerønet Labs</strong></a> is the commercial side of the Kyonax ecosystem, a studio focused on building accurate and performant software for companies of any size. The product line includes <strong>UI libraries</strong> primarily for Vue.js, <strong>npm packages</strong> for Vue, React and Next.js, plus <strong>AI-powered automations</strong> and supporting tooling for startup and mid-size clients. The brand pitch is short and direct, solve real business problems with automation and performant engineering.<br><br><strong>zeronet-labs-website</strong> is the public face of the brand and the launch surface for every product it ships. The site carries the company manifest, the active product line, case studies, and a direct contact funnel. Pitched as the deliberate counterpart to the open-source <strong>Cyber Code Syndicate</strong> side of the Kyonax ecosystem, where Zerønet sells commercial work to fund the rest of the operation.<br><br>Built around the <strong>Zerønet</strong> tagline (zero heavy networks, zero slowdowns, zero wasted cycles), with <strong>performance</strong> and <strong>SEO</strong> treated as first-class concerns over visual flourish, since commercial landings live or die by <strong>Core Web Vitals</strong>, search visibility, and how fast a visitor reaches the call to action. Implementation parallels the <strong>kyo-website</strong> stack (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> for static locales, plain <strong>JavaScript</strong> over <strong>SCSS</strong> styling) with brand-specific theming layered on top.<br><br>Currently at <strong>v0.1.0</strong> and on hold while the commercial side is being scoped, with active development scheduled to resume in mid-2026.",
           },
-          "cyber-code-syndicate": {
-            "description": "<a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong> (<strong>CCS</strong>)</a> is the free and open-source side of the Kyonax ecosystem, a community built around shared <strong>guidelines</strong>, <strong>principles</strong>, and <strong>architectures</strong> for every project it backs. It holds shared <strong>code standards</strong>, <strong>teaching methodologies</strong> for newcomers entering software development, curated guidance on <strong>responsible AI usage</strong>, and an official community paper at <a href='https://doi.org/10.5281/zenodo.17994539' target='_blank' rel='noopener'><strong>Zenodo DOI 10.5281/zenodo.17994539</strong></a> that develops the conceptual framework. CCS is grounded in <strong>ethical software practices</strong>, <strong>privacy by default</strong>, <strong>transparency</strong>, and <strong>autonomy</strong>, and exists to bring real value to the community without selling anything in return.<br><br><strong>cyber-code-syndicate</strong> is the community landing for the organization, the main entry point for anyone who wants to know what the community is about and how to join. The site holds the public-facing surface of the guidelines and principles, the active project list, the mentorship and workshop channels, and the path for new members to onboard. Pitched as the deliberate counterpart to the commercial <strong>Zerønet Labs</strong> side of the Kyonax ecosystem.<br><br>Built as a multilingual landing with Spanish as the primary language and English as a secondary surface to match the community's audience, styled with the same <strong>cyberpunk</strong> aesthetic shared across the rest of the Kyonax ecosystem. The build is performance-aware from the start, with <strong>performance</strong> and <strong>SEO</strong> treated as first-class concerns since the site doubles as the community's public face and onboarding funnel for new members. Implementation parallels the <strong>kyo-website</strong> stack (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> for static EN and ES locales, plain <strong>JavaScript</strong> over <strong>SCSS</strong> styling) with brand-specific theming layered on top.<br><br>Currently at <strong>v0.1.0</strong> and on hold while the community side is being scoped, with active development scheduled to resume in mid-2026."
-          }
-        }
+          'cyber-code-syndicate': {
+            'description': "<a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong> (<strong>CCS</strong>)</a> is the free and open-source side of the Kyonax ecosystem, a community built around shared <strong>guidelines</strong>, <strong>principles</strong>, and <strong>architectures</strong> for every project it backs. It holds shared <strong>code standards</strong>, <strong>teaching methodologies</strong> for newcomers entering software development, curated guidance on <strong>responsible AI usage</strong>, and an official community paper at <a href='https://doi.org/10.5281/zenodo.17994539' target='_blank' rel='noopener'><strong>Zenodo DOI 10.5281/zenodo.17994539</strong></a> that develops the conceptual framework. CCS is grounded in <strong>ethical software practices</strong>, <strong>privacy by default</strong>, <strong>transparency</strong>, and <strong>autonomy</strong>, and exists to bring real value to the community without selling anything in return.<br><br><strong>cyber-code-syndicate</strong> is the community landing for the organization, the main entry point for anyone who wants to know what the community is about and how to join. The site holds the public-facing surface of the guidelines and principles, the active project list, the mentorship and workshop channels, and the path for new members to onboard. Pitched as the deliberate counterpart to the commercial <strong>Zerønet Labs</strong> side of the Kyonax ecosystem.<br><br>Built as a multilingual landing with Spanish as the primary language and English as a secondary surface to match the community's audience, styled with the same <strong>cyberpunk</strong> aesthetic shared across the rest of the Kyonax ecosystem. The build is performance-aware from the start, with <strong>performance</strong> and <strong>SEO</strong> treated as first-class concerns since the site doubles as the community's public face and onboarding funnel for new members. Implementation parallels the <strong>kyo-website</strong> stack (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> for static EN and ES locales, plain <strong>JavaScript</strong> over <strong>SCSS</strong> styling) with brand-specific theming layered on top.<br><br>Currently at <strong>v0.1.0</strong> and on hold while the community side is being scoped, with active development scheduled to resume in mid-2026.",
+          },
+        },
       },
-      "persistent-data": {
-        "name": "CRISTIAN D. MORENO"
+      'persistent-data': {
+        'name': 'CRISTIAN D. MORENO',
       },
-      "widget": {
-        "trans-lang": {
-          "current": "EN",
-          "en": "ENGLISH",
-          "es": "ESPAÑOL",
-          "button-aria": "EN, open language menu"
-        }
+      'widget': {
+        'trans-lang': {
+          'current': 'EN',
+          'en': 'ENGLISH',
+          'es': 'ESPAÑOL',
+          'button-aria': 'EN, open language menu',
+        },
       },
-      "landing": {
-        "meta": {
-          "title": "Cristian D. Moreno — Software Engineer (Full-Stack Web Developer)",
-          "description": "8 years building scalable, performant web apps. Currently Frontend Engineer at AgileEngine for Madison Reed. Founder of Zerønet Labs. Available for remote work.",
-          "og-title": "Cristian D. Moreno — Software Engineer (Full-Stack Web Developer)",
-          "og-image-alt": "Cristian D. Moreno (Kyonax), Full-Stack Web Engineer based in Colombia, portrait with cyberpunk HUD overlay.",
-          "role": "Software Engineer"
+      'landing': {
+        'meta': {
+          'title': 'Cristian D. Moreno — Software Engineer (Full-Stack Web Developer)',
+          'description': '8 years building scalable, performant web apps. Currently Frontend Engineer at AgileEngine for Madison Reed. Founder of Zerønet Labs. Available for remote work.',
+          'og-title': 'Cristian D. Moreno — Software Engineer (Full-Stack Web Developer)',
+          'og-image-alt': 'Cristian D. Moreno (Kyonax), Full-Stack Web Engineer based in Colombia, portrait with cyberpunk HUD overlay.',
+          'role': 'Software Engineer',
         },
-        "consent": {
-          "aria": "Cookie consent",
-          "copy": "We use cookies to understand site usage and improve your experience.",
-          "privacy": "Read our privacy policy",
-          "accept": "Accept",
-          "decline": "Decline"
+        'consent': {
+          'aria': 'Cookie consent',
+          'copy': 'We use cookies to understand site usage and improve your experience.',
+          'privacy': 'Read our privacy policy',
+          'accept': 'Accept',
+          'decline': 'Decline',
         },
-        "nav": {
-          "logo": "京",
-          "hero": "HOME",
-          "skills": "STACK",
-          "experience": "EXP",
-          "projects": "NOW",
-          "contact": "CONTACT",
-          "cv": "DOWNLOAD CV",
-          "menu": "MENU",
-          "close": "CLOSE",
-          "skip-to-content": "Skip to content",
-          "aria": {
-            "hero": "HOME, top of page",
-            "skills": "STACK, skills and technology",
-            "experience": "EXP, professional experience",
-            "projects": "NOW, current projects",
-            "contact": "CONTACT, channels in the footer",
-            "brand": "京, Kyonax home"
-          }
+        'nav': {
+          'logo': '京',
+          'hero': 'HOME',
+          'skills': 'STACK',
+          'experience': 'EXP',
+          'projects': 'NOW',
+          'contact': 'CONTACT',
+          'cv': 'DOWNLOAD CV',
+          'menu': 'MENU',
+          'close': 'CLOSE',
+          'skip-to-content': 'Skip to content',
+          'aria': {
+            'hero': 'HOME, top of page',
+            'skills': 'STACK, skills and technology',
+            'experience': 'EXP, professional experience',
+            'projects': 'NOW, current projects',
+            'contact': 'CONTACT, channels in the footer',
+            'brand': '京, Kyonax home',
+          },
         },
-        "hero": {
-          "tag": "CCS MEMBER :: ID-001",
-          "orcid-aria": "ORCID profile",
-          "open-portrait": "Open portrait",
-          "portrait-alt": "Cristian D. Moreno (Kyonax) portrait",
-          "available": "AVAILABLE FOR REMOTE WORK",
-          "summary": "8 years delivering <strong>scalable, adaptable, and high-performance</strong> web solutions for national and international clients. Currently Frontend Engineer at <strong>AgileEngine</strong> for <strong>Madison Reed</strong>, Founder & Lead Engineer at <strong>Zerønet Labs</strong>.",
-          "primary-cta": "VIEW EXPERIENCE",
-          "secondary-cta": "CONTACT ME",
-          "scroll-hint": "SCROLL // EXPLORE",
-          "location-label": "LOCATION",
-          "location-value": "VILLAVICENCIO / COLOMBIA 🇨🇴",
-          "role-label": "ROLE",
-          "role-value": "SENIOR FULL STACK WEB DEVELOPER",
-          "stats": {
-            "years-label": "EXPERIENCE OF",
-            "years-value": "8",
-            "stack-label": "TECH SKILLS",
-            "stack-value": "17+",
-            "projects-label": "PROJECTS",
-            "languages-label": "FLUENT IN",
-            "languages-value": "EN / ES"
-          }
+        'hero': {
+          'tag': 'CCS MEMBER :: ID-001',
+          'orcid-aria': 'ORCID profile',
+          'open-portrait': 'Open portrait',
+          'portrait-alt': 'Cristian D. Moreno (Kyonax) portrait',
+          'available': 'AVAILABLE FOR REMOTE WORK',
+          'summary': '8 years delivering <strong>scalable, adaptable, and high-performance</strong> web solutions for national and international clients. Currently Frontend Engineer at <strong>AgileEngine</strong> for <strong>Madison Reed</strong>, Founder & Lead Engineer at <strong>Zerønet Labs</strong>.',
+          'primary-cta': 'VIEW EXPERIENCE',
+          'secondary-cta': 'CONTACT ME',
+          'scroll-hint': 'SCROLL // EXPLORE',
+          'location-label': 'LOCATION',
+          'location-value': 'VILLAVICENCIO / COLOMBIA 🇨🇴',
+          'role-label': 'ROLE',
+          'role-value': 'SENIOR FULL STACK WEB DEVELOPER',
+          'stats': {
+            'years-label': 'EXPERIENCE OF',
+            'years-value': '8',
+            'stack-label': 'TECH SKILLS',
+            'stack-value': '17+',
+            'projects-label': 'PROJECTS',
+            'languages-label': 'FLUENT IN',
+            'languages-value': 'EN / ES',
+          },
         },
-        "skills": {
-          "label": "STACK // TOOLS",
-          "subtitle": "Battle-tested technologies powering production systems",
-          "categories": {
-            "frontend": "FRONTEND",
-            "backend": "BACKEND",
-            "devops": "DEVOPS // INFRA",
-            "ai": "AI // TOOLING",
-            "language": "LANGUAGES"
-          }
+        'skills': {
+          'label': 'STACK // TOOLS',
+          'subtitle': 'Battle-tested technologies powering production systems',
+          'categories': {
+            'frontend': 'FRONTEND',
+            'backend': 'BACKEND',
+            'devops': 'DEVOPS // INFRA',
+            'ai': 'AI // TOOLING',
+            'language': 'LANGUAGES',
+          },
         },
-        "experience": {
-          "label": "EXPERIENCE // TIMELINE",
-          "subtitle": "From growth marketing to leading engineering, 8 years of building.",
-          "tools-label": "STACK",
-          "read-more": "READ FULL DETAILS"
+        'experience': {
+          'label': 'EXPERIENCE // TIMELINE',
+          'subtitle': 'From growth marketing to leading engineering, 8 years of building.',
+          'tools-label': 'STACK',
+          'read-more': 'READ FULL DETAILS',
         },
-        "modal": {
-          "close": "Close",
-          "highlights": "Key Highlights"
+        'modal': {
+          'close': 'Close',
+          'highlights': 'Key Highlights',
         },
-        "projects": {
-          "label": "NOW // WORKING ON",
-          "subtitle": "Live deadlines, real countdowns. What I'm building right now.",
-          "view-repo": "VIEW REPO",
-          "featured-label": "FEATURED // PORTFOLIO",
-          "ends-in-prefix": "ENDS IN",
-          "started-in-prefix": "STARTED IN",
-          "ended-state": "ENDED",
-          "no-link": "// ENDPOINT :: CLASSIFIED",
-          "timezone-label": "// BOGOTA // GMT-05",
-          "view-details": "VIEW DETAILS",
-          "view-more": "VIEW MORE",
-          "stack-label": "STACK",
-          "description-label": "DESCRIPTION",
-          "previews-label": "PREVIEWS",
-          "previous-image": "Previous image",
-          "next-image": "Next image",
-          "preview-alt": "preview",
-          "play-video-label": "Play video {title} on YouTube",
-          "youtube-source": "YouTube",
-          "youtube-consent-title": "Load this video from YouTube",
-          "youtube-consent-body": "Playing loads content from youtube-nocookie.com, which may store data on your device under Google's privacy policy.",
-          "youtube-consent-accept": "Load video",
-          "youtube-consent-decline": "Cancel",
-          "status": {
-            "working-on": "WORKING ON",
-            "done": "DELIVERED",
-            "in-progress": "IN PROGRESS",
-            "on-hold": "ON HOLD",
-            "on-todo": "PLANNED",
-            "live": "LIVE",
-            "deprecated": "DEPRECATED",
-            "updating": "UPDATING",
-            "release": "RELEASE"
-          }
+        'projects': {
+          'label': 'NOW // WORKING ON',
+          'subtitle': "Live deadlines, real countdowns. What I'm building right now.",
+          'view-repo': 'VIEW REPO',
+          'featured-label': 'FEATURED // PORTFOLIO',
+          'ends-in-prefix': 'ENDS IN',
+          'started-in-prefix': 'STARTED IN',
+          'ended-state': 'ENDED',
+          'no-link': '// ENDPOINT :: CLASSIFIED',
+          'timezone-label': '// BOGOTA // GMT-05',
+          'view-details': 'VIEW DETAILS',
+          'view-more': 'VIEW MORE',
+          'stack-label': 'STACK',
+          'description-label': 'DESCRIPTION',
+          'previews-label': 'PREVIEWS',
+          'previous-image': 'Previous image',
+          'next-image': 'Next image',
+          'preview-alt': 'preview',
+          'play-video-label': 'Play video {title} on YouTube',
+          'youtube-source': 'YouTube',
+          'youtube-consent-title': 'Load this video from YouTube',
+          'youtube-consent-body': "Playing loads content from youtube-nocookie.com, which may store data on your device under Google's privacy policy.",
+          'youtube-consent-accept': 'Load video',
+          'youtube-consent-decline': 'Cancel',
+          'status': {
+            'working-on': 'WORKING ON',
+            'done': 'DELIVERED',
+            'in-progress': 'IN PROGRESS',
+            'on-hold': 'ON HOLD',
+            'on-todo': 'PLANNED',
+            'live': 'LIVE',
+            'deprecated': 'DEPRECATED',
+            'updating': 'UPDATING',
+            'release': 'RELEASE',
+          },
         },
-        "faq": {
-          "tag": "// 05",
-          "title": "FAQ // QUERIES",
-          "subtitle": "Quick answers to the questions I get asked most often.",
-          "section-aria": "Frequently asked questions",
-          "items": {
-            "location": {
-              "question": "Are you a Software Engineer based in Colombia?",
-              "answer": "Yes. I'm based in <strong>Villavicencio, Colombia</strong>, with over <strong>8 years</strong> of experience as a software engineer. I work remotely with teams in the US and other countries, and my hours overlap with US Eastern and Central time. I speak English and Spanish at a professional level."
+        'faq': {
+          'tag': '// 05',
+          'title': 'FAQ // QUERIES',
+          'subtitle': 'Quick answers to the questions I get asked most often.',
+          'section-aria': 'Frequently asked questions',
+          'items': {
+            'location': {
+              'question': 'Are you a Software Engineer based in Colombia?',
+              'answer': "Yes. I'm based in <strong>Villavicencio, Colombia</strong>, with over <strong>8 years</strong> of experience as a software engineer. I work remotely with teams in the US and other countries, and my hours overlap with US Eastern and Central time. I speak English and Spanish at a professional level.",
             },
-            "availability": {
-              "question": "Are you available for freelance or new projects?",
-              "answer": "For <strong>small projects and landing pages</strong>, yes, I can work on those alongside my current role. For <strong>larger or long-term projects</strong>, I would need to leave my current position first, which I am open to for the right opportunity. The best way to start is to contact me with details about the project so we can review it together."
+            'availability': {
+              'question': 'Are you available for freelance or new projects?',
+              'answer': 'For <strong>small projects and landing pages</strong>, yes, I can work on those alongside my current role. For <strong>larger or long-term projects</strong>, I would need to leave my current position first, which I am open to for the right opportunity. The best way to start is to contact me with details about the project so we can review it together.',
             },
-            "work": {
-              "question": "What kind of work do you do as a Full-Stack Engineer?",
-              "answer": "I build complete web products, from the user interface to the server side. My work covers custom web applications, landing pages, <strong>performance improvements</strong>, <strong>accessibility compliance</strong>, and migrating older codebases to modern stacks. I cover both <strong>frontend and backend</strong> so projects can move forward without needing a separate team for each layer."
+            'work': {
+              'question': 'What kind of work do you do as a Full-Stack Engineer?',
+              'answer': 'I build complete web products, from the user interface to the server side. My work covers custom web applications, landing pages, <strong>performance improvements</strong>, <strong>accessibility compliance</strong>, and migrating older codebases to modern stacks. I cover both <strong>frontend and backend</strong> so projects can move forward without needing a separate team for each layer.',
             },
-            "current-role": {
-              "question": "Who do you currently work with?",
-              "answer": "I am currently <strong>Senior Frontend Engineer at AgileEngine</strong>, working with <strong>Madison Reed</strong>, a US e-commerce company in the beauty and haircare industry. I also run <strong>Zerønet Labs</strong>, a small studio for personal projects and tooling."
+            'current-role': {
+              'question': 'Who do you currently work with?',
+              'answer': 'I am currently <strong>Senior Frontend Engineer at AgileEngine</strong>, working with <strong>Madison Reed</strong>, a US e-commerce company in the beauty and haircare industry. I also run <strong>Zerønet Labs</strong>, a small studio for personal projects and tooling.',
             },
-            "different": {
-              "question": "What makes your work different from other Full-Stack engineers?",
-              "answer": "I focus on <strong>performance and accessibility</strong> from the start of every project, which saves time later. I use AI tools like <strong>Claude, GPT, and n8n</strong> to speed up the parts of the work that benefit from automation, while keeping quality high. My main strengths are <strong>code migrations and architecture improvements</strong>."
+            'different': {
+              'question': 'What makes your work different from other Full-Stack engineers?',
+              'answer': 'I focus on <strong>performance and accessibility</strong> from the start of every project, which saves time later. I use AI tools like <strong>Claude, GPT, and n8n</strong> to speed up the parts of the work that benefit from automation, while keeping quality high. My main strengths are <strong>code migrations and architecture improvements</strong>.',
             },
-            "contact": {
-              "question": "How can recruiters or clients reach out?",
-              "answer": "The fastest way is email at <strong>support&#64;kyonax.com</strong>. You can also reach me on <strong>GitHub (&#64;Kyonax)</strong>, <strong>LinkedIn</strong>, and <strong>X</strong>. I reply within 24 hours on weekdays. If you are contacting me for project work, please include the scope and timeline in your message."
-            }
-          }
+            'contact': {
+              'question': 'How can recruiters or clients reach out?',
+              'answer': 'The fastest way is email at <strong>support&#64;kyonax.com</strong>. You can also reach me on <strong>GitHub (&#64;Kyonax)</strong>, <strong>LinkedIn</strong>, and <strong>X</strong>. I reply within 24 hours on weekdays. If you are contacting me for project work, please include the scope and timeline in your message.',
+            },
+          },
         },
-        "footer": {
-          "tag": "END OF TRANSMISSION",
-          "signoff": "Built with Vue 3 + Vite SSG + vue-router + vue-i18n + Unhead + JSON-LD + SCSS + Sharp + Web Workers. MADE WITH LOVE.",
-          "rights": "© 2025 Kyonax, All rights reserved on original work.",
-          "made-by": "DESIGNED & BUILT BY CRISTIAN D. MORENO"
-        }
-      }
-    }
+        'footer': {
+          'tag': 'END OF TRANSMISSION',
+          'signoff': 'Built with Vue 3 + Vite SSG + vue-router + vue-i18n + Unhead + JSON-LD + SCSS + Sharp + Web Workers. MADE WITH LOVE.',
+          'rights': '© 2025 Kyonax, All rights reserved on original work.',
+          'made-by': 'DESIGNED & BUILT BY CRISTIAN D. MORENO',
+        },
+      },
+    },
   },
-  "es": {
-    "kyo-web": {
-      "contact": {
-        "contact-me": "CONTÁCTAME",
-        "wsp": "WHATSAPP"
+  'es': {
+    'kyo-web': {
+      'contact': {
+        'contact-me': 'CONTÁCTAME',
+        'wsp': 'WHATSAPP',
       },
-      "content-data": {
-        "about-me": {
-          "description": "¡Hola! Soy <strong>Cristian D. Moreno</strong>, también conocido como <strong>Kyonax<sup>京</sup></strong>. Senior Full Stack Web Developer con más de 7 años de experiencia, especializado en crear soluciones escalables y de alto rendimiento, aplicando clean code y strong design patterns. Además, soy Full Stack Lead y Fundador de <strong>Zeronet Labs</strong>, donde desarrollamos herramientas y automatizaciones impulsadas por AI con una estética futurista inspirada en el cyberpunk."
+      'content-data': {
+        'about-me': {
+          'description': '¡Hola! Soy <strong>Cristian D. Moreno</strong>, también conocido como <strong>Kyonax<sup>京</sup></strong>. Senior Full Stack Web Developer con más de 7 años de experiencia, especializado en crear soluciones escalables y de alto rendimiento, aplicando clean code y strong design patterns. Además, soy Full Stack Lead y Fundador de <strong>Zeronet Labs</strong>, donde desarrollamos herramientas y automatizaciones impulsadas por AI con una estética futurista inspirada en el cyberpunk.',
         },
-        "download": {
-          "cv-en": "DESCARGAR CV",
-          "cv-es": "DESCARGAR CV"
+        'download': {
+          'cv-en': 'DESCARGAR CV',
+          'cv-es': 'DESCARGAR CV',
         },
-        "experience": {
-          "agile-engine": {
-            "role": "SENIOR SOFTWARE ENGINEER (FRONTEND WEB DEVELOPER)",
-            "specs": "2025-PRESENTE <strong>AGILE-ENGINE</strong> // <strong>MADISON-REED</strong> REMOTO-BOGOTÁ-D.C///COLOMBIA",
-            "description": "Diseñé arquitecturas para un <strong>rediseño e-commerce en Vue 3</strong> guiado por CMS con componentes reutilizables e integraciones de SDKs, combinando <strong>SEO/AEO</strong> y un <strong>flujo asistido por IA</strong> para entregar más rápido sin sacrificar calidad...",
-            "bullets": "<li>Redacté decisiones de arquitectura y extendí ACs para cubrir casos límite en futuras implementaciones de un <strong>rediseño e-commerce</strong> en <strong>Vue 3</strong>, escribí pruebas unitarias <strong>TDD</strong> con <strong>Vitest</strong> desde el inicio, codifiqué reglas de estilo en <strong>ESLint</strong>, y agregué suites <strong>e2e</strong> con <strong>Playwright</strong>, manteniendo las revisiones de PRs enfocadas en lo sustancial y evitando retrabajo por ACs incumplidos o problemas de calidad de código.</li><li>Capturé el comportamiento de páginas heredadas con <strong>Playwright</strong> antes de cada rediseño y lo reutilicé en la nueva implementación, para que el equipo entregara cada rediseño en cada flujo crítico sin romper el recorrido del usuario.</li><li>Diseñé un <strong>flujo de desarrollo asistido por IA</strong> abstrayendo patrones repetitivos en skills personalizados, scripts y herramientas que automatizan el trabajo con precisión, eligiendo <strong>Claude Code, GPTel (Emacs), GPT, Gemini, Grok</strong> o <strong>LiteLLM</strong> por tarea según fortalezas y eficiencia, para que el tiempo de ingeniería se dedicara a decisiones reales de diseño en lugar de scaffolding repetitivo.</li><li>Mejoré <strong>SEO</strong> y <strong>AEO (Answer Engine Optimization)</strong> identificando los datos con valor de negocio en cada página y exponiéndolos a través de <strong>JSON-LD</strong>, salida <strong>SSR</strong> validada, y una estructura <strong>h1 → h2 → h3</strong> semántica con cumplimiento <strong>ADA</strong>, para que los bots de búsqueda y motores de IA interpretaran la intención de manera rápida y precisa, mejorando elegibilidad para rich results, citaciones de motores de IA y conversión.</li><li>Construí componentes <strong>Vue 3</strong> reutilizables y templates <strong>Pug</strong> con estilos <strong>Stylus</strong> gobernados por configuración CMS sobre el stack <strong>Express SSR + CMS basado en MongoDB</strong> (<strong>Vite</strong> con <strong>Webpack 4</strong> legacy), documentados en <strong>Storybook</strong>, para que ajustes rutinarios de página y actualizaciones de contenido se entregaran a través del CMS sin tickets de ingeniería, mientras los mismos bloques escalaban a nuevas páginas con mínimo retrabajo.</li><li>Integré SDKs de terceros (<strong>Birdeye</strong> reseñas de ubicaciones, <strong>Dynamic Yield</strong> A/B testing, <strong>Dash Hudson</strong> UGC, <strong>Google Auth / FedCM</strong> SSO, <strong>Segment</strong> analytics), envolviendo cada uno en capas de abstracción gobernadas por CMS para que experimentos A/B, despliegues de funcionalidades y ajustes de integración corrieran por configuración en lugar de un PR nuevo por cambio.</li><li>Hice del rendimiento un objetivo en cada rediseño, capturando líneas base de <strong>Lighthouse</strong> y <strong>Core Web Vitals</strong> y validando que la nueva implementación las superara antes del merge, corrigiendo cuellos de botella en el mismo ticket para que cada release se entregara con mejoras medibles sobre el diseño anterior.</li>",
-            "tools": "<strong>vue3 - pug - stylus - vite - vitest - playwright - eslint - express - mongodb - storybook - json-ld - lighthouse - claude-code - gptel - litellm - birdeye - dynamic-yield - dash-hudson - segment - fedcm</strong>"
+        'experience': {
+          'agile-engine': {
+            'role': 'SENIOR SOFTWARE ENGINEER (FRONTEND WEB DEVELOPER)',
+            'specs': '2025-PRESENTE <strong>AGILE-ENGINE</strong> // <strong>MADISON-REED</strong> REMOTO-BOGOTÁ-D.C///COLOMBIA',
+            'description': 'Diseñé arquitecturas para un <strong>rediseño e-commerce en Vue 3</strong> guiado por CMS con componentes reutilizables e integraciones de SDKs, combinando <strong>SEO/AEO</strong> y un <strong>flujo asistido por IA</strong> para entregar más rápido sin sacrificar calidad...',
+            'bullets': '<li>Redacté decisiones de arquitectura y extendí ACs para cubrir casos límite en futuras implementaciones de un <strong>rediseño e-commerce</strong> en <strong>Vue 3</strong>, escribí pruebas unitarias <strong>TDD</strong> con <strong>Vitest</strong> desde el inicio, codifiqué reglas de estilo en <strong>ESLint</strong>, y agregué suites <strong>e2e</strong> con <strong>Playwright</strong>, manteniendo las revisiones de PRs enfocadas en lo sustancial y evitando retrabajo por ACs incumplidos o problemas de calidad de código.</li><li>Capturé el comportamiento de páginas heredadas con <strong>Playwright</strong> antes de cada rediseño y lo reutilicé en la nueva implementación, para que el equipo entregara cada rediseño en cada flujo crítico sin romper el recorrido del usuario.</li><li>Diseñé un <strong>flujo de desarrollo asistido por IA</strong> abstrayendo patrones repetitivos en skills personalizados, scripts y herramientas que automatizan el trabajo con precisión, eligiendo <strong>Claude Code, GPTel (Emacs), GPT, Gemini, Grok</strong> o <strong>LiteLLM</strong> por tarea según fortalezas y eficiencia, para que el tiempo de ingeniería se dedicara a decisiones reales de diseño en lugar de scaffolding repetitivo.</li><li>Mejoré <strong>SEO</strong> y <strong>AEO (Answer Engine Optimization)</strong> identificando los datos con valor de negocio en cada página y exponiéndolos a través de <strong>JSON-LD</strong>, salida <strong>SSR</strong> validada, y una estructura <strong>h1 → h2 → h3</strong> semántica con cumplimiento <strong>ADA</strong>, para que los bots de búsqueda y motores de IA interpretaran la intención de manera rápida y precisa, mejorando elegibilidad para rich results, citaciones de motores de IA y conversión.</li><li>Construí componentes <strong>Vue 3</strong> reutilizables y templates <strong>Pug</strong> con estilos <strong>Stylus</strong> gobernados por configuración CMS sobre el stack <strong>Express SSR + CMS basado en MongoDB</strong> (<strong>Vite</strong> con <strong>Webpack 4</strong> legacy), documentados en <strong>Storybook</strong>, para que ajustes rutinarios de página y actualizaciones de contenido se entregaran a través del CMS sin tickets de ingeniería, mientras los mismos bloques escalaban a nuevas páginas con mínimo retrabajo.</li><li>Integré SDKs de terceros (<strong>Birdeye</strong> reseñas de ubicaciones, <strong>Dynamic Yield</strong> A/B testing, <strong>Dash Hudson</strong> UGC, <strong>Google Auth / FedCM</strong> SSO, <strong>Segment</strong> analytics), envolviendo cada uno en capas de abstracción gobernadas por CMS para que experimentos A/B, despliegues de funcionalidades y ajustes de integración corrieran por configuración en lugar de un PR nuevo por cambio.</li><li>Hice del rendimiento un objetivo en cada rediseño, capturando líneas base de <strong>Lighthouse</strong> y <strong>Core Web Vitals</strong> y validando que la nueva implementación las superara antes del merge, corrigiendo cuellos de botella en el mismo ticket para que cada release se entregara con mejoras medibles sobre el diseño anterior.</li>',
+            'tools': '<strong>vue3 - pug - stylus - vite - vitest - playwright - eslint - express - mongodb - storybook - json-ld - lighthouse - claude-code - gptel - litellm - birdeye - dynamic-yield - dash-hudson - segment - fedcm</strong>',
           },
-          "zeronet": {
-            "role": "FUNDADOR & LEAD FULL STACK ENGINEER",
-            "specs": "2017-PRESENTE <strong>ZERØNET-LABS</strong> REMOTO-VILLAVICENCIO///COLOMBIA",
-            "description": "Fundé <strong>Zerønet Labs</strong> entregando soluciones full-stack para diversos stacks de cliente, desde <strong>paquetes npm</strong> y librerías UI reutilizables hasta sistemas backend y automatización operativa...",
-            "bullets": "<li>Entregué soluciones full stack para múltiples startups y medianas empresas, adaptándome al stack de cada cliente (<strong>React.js, Next.js, Vue.js, Webpack, Vite, Gulp.js, Grunt.js,</strong> o <strong>Vanilla JS (HTML5, SASS/SCSS, ES6+)</strong> en frontend; <strong>Node.js, Express, Nest.js, Symfony (PHP)</strong> en backend) para que cada proyecto corriera en la plataforma que mejor se ajustara al equipo y restricciones del cliente, en lugar de forzar una plantilla única.</li><li>Construí <strong>paquetes npm y librerías UI</strong> reutilizables en <strong>React, Vue,</strong> y <strong>Next.js</strong> usando patrones de composición de componentes, con publicación automatizada vía <strong>semantic-release</strong> y <strong>GitHub Actions</strong>, aumentando la velocidad de desarrollo, manteniendo consistencia visual entre proyectos, y evitando duplicación de componentes en mantenimiento de largo plazo.</li><li>Diseñé <strong>sistemas backend, APIs REST/GraphQL y microservicios</strong> con <strong>Node.js, Express, Nest.js, Symfony (PHP), TypeScript</strong> y <strong>Python</strong> sobre <strong>PostgreSQL, MySQL</strong> o <strong>MariaDB</strong>, aplicando estrategias de <strong>caché, replicación de bases de datos y rate limiting</strong> para mantener estabilidad bajo alta carga.</li><li>Construí librerías personalizadas para cuellos de botella recurrentes de rendimiento frontend (renderizado con muchas imágenes, carga de assets, tareas repetitivas de setup), reduciendo tiempos de carga en sitios de cliente y eliminando la necesidad de resolver los mismos problemas en cada nueva entrega.</li><li>Diseñé arquitecturas modulares de proyecto y sistemas de estilos en <strong>SASS/SCSS</strong> basados en patrones de diseño y convenciones de nombres, para que las bases de código se mantuvieran sostenibles a través del crecimiento de funcionalidades y los refactors no requirieran arrancar las decisiones fundamentales.</li><li>Configuré entornos de desarrollo en contenedores <strong>Docker</strong> y <strong>docker-compose</strong>, además de pipelines CI para <strong>producción / dev / staging</strong>, para que la incorporación de nuevos colaboradores o equipos de cliente tomara un solo comando y cada entorno coincidiera independientemente del SO o stack local.</li>",
-            "tools": "<strong>reactjs - nextjs - vuejs - vite - webpack - symfony - nestjs - express - nodejs - python - typescript - postgresql - mariadb - mysql - docker - graphql - rest - semantic-release - github-actions - sass/scss</strong>"
+          'zeronet': {
+            'role': 'FUNDADOR & LEAD FULL STACK ENGINEER',
+            'specs': '2017-PRESENTE <strong>ZERØNET-LABS</strong> REMOTO-VILLAVICENCIO///COLOMBIA',
+            'description': 'Fundé <strong>Zerønet Labs</strong> entregando soluciones full-stack para diversos stacks de cliente, desde <strong>paquetes npm</strong> y librerías UI reutilizables hasta sistemas backend y automatización operativa...',
+            'bullets': '<li>Entregué soluciones full stack para múltiples startups y medianas empresas, adaptándome al stack de cada cliente (<strong>React.js, Next.js, Vue.js, Webpack, Vite, Gulp.js, Grunt.js,</strong> o <strong>Vanilla JS (HTML5, SASS/SCSS, ES6+)</strong> en frontend; <strong>Node.js, Express, Nest.js, Symfony (PHP)</strong> en backend) para que cada proyecto corriera en la plataforma que mejor se ajustara al equipo y restricciones del cliente, en lugar de forzar una plantilla única.</li><li>Construí <strong>paquetes npm y librerías UI</strong> reutilizables en <strong>React, Vue,</strong> y <strong>Next.js</strong> usando patrones de composición de componentes, con publicación automatizada vía <strong>semantic-release</strong> y <strong>GitHub Actions</strong>, aumentando la velocidad de desarrollo, manteniendo consistencia visual entre proyectos, y evitando duplicación de componentes en mantenimiento de largo plazo.</li><li>Diseñé <strong>sistemas backend, APIs REST/GraphQL y microservicios</strong> con <strong>Node.js, Express, Nest.js, Symfony (PHP), TypeScript</strong> y <strong>Python</strong> sobre <strong>PostgreSQL, MySQL</strong> o <strong>MariaDB</strong>, aplicando estrategias de <strong>caché, replicación de bases de datos y rate limiting</strong> para mantener estabilidad bajo alta carga.</li><li>Construí librerías personalizadas para cuellos de botella recurrentes de rendimiento frontend (renderizado con muchas imágenes, carga de assets, tareas repetitivas de setup), reduciendo tiempos de carga en sitios de cliente y eliminando la necesidad de resolver los mismos problemas en cada nueva entrega.</li><li>Diseñé arquitecturas modulares de proyecto y sistemas de estilos en <strong>SASS/SCSS</strong> basados en patrones de diseño y convenciones de nombres, para que las bases de código se mantuvieran sostenibles a través del crecimiento de funcionalidades y los refactors no requirieran arrancar las decisiones fundamentales.</li><li>Configuré entornos de desarrollo en contenedores <strong>Docker</strong> y <strong>docker-compose</strong>, además de pipelines CI para <strong>producción / dev / staging</strong>, para que la incorporación de nuevos colaboradores o equipos de cliente tomara un solo comando y cada entorno coincidiera independientemente del SO o stack local.</li>',
+            'tools': '<strong>reactjs - nextjs - vuejs - vite - webpack - symfony - nestjs - express - nodejs - python - typescript - postgresql - mariadb - mysql - docker - graphql - rest - semantic-release - github-actions - sass/scss</strong>',
           },
-          "softtek": {
-            "role": "SENIOR SOFTWARE ENGINEER (FULL STACK WEB DEVELOPER)",
-            "specs": "2023-2025 <strong>SOFTTEK</strong> REMOTO-BOGOTÁ-D.C///COLOMBIA",
-            "description": "Migré una plataforma administrativa interna a un <strong>e-commerce completo en Shopware</strong>, asegurando calidad mediante revisiones de <strong>Pull Request</strong> y onboarding del equipo mientras entregaba flujos de compra totalmente automatizados...",
-            "bullets": "<li>Migré una plataforma interna de administración a un sitio <strong>e-commerce</strong> en <strong>Shopware (Symfony + Vue.js)</strong>, planeando la arquitectura y mapeando cada requerimiento e implicación antes del cutover, para que el flujo de compra del cliente se entregara totalmente automatizado y ninguna operación de negocio se perdiera.</li><li>Diseñé una librería de patrones <strong>SASS/SCSS</strong>, conjunto de mixins y arquitectura modular en toda la tienda <strong>e-commerce</strong>, con <strong>PostCSS</strong> cubriendo inconsistencias entre navegadores, para que el sistema de estilos se mantuviera rápido y sostenible a medida que crecía la tienda y los cambios de diseño se propagaran por cada tema sin retrabajo manual.</li><li>Diseñé soluciones frontend personalizadas dentro del sistema de templates OOB de <strong>Shopware</strong>, reconstruyendo la lógica de templates junto al equipo core de Shopware donde fuera necesario, para que los requerimientos de diseño y UX del cliente se entregaran con fidelidad completa en lugar de ser recortados a los defaults de la plataforma.</li><li>Refiné la planeación de sprints y la distribución de trabajo en <strong>Azure DevOps</strong> bajo metodología <strong>Agile</strong>, estructurando iniciativas en unidades bien delimitadas y paralelizables para que el equipo mantuviera velocidad estable incluso cuando el alcance cambiaba a mitad del sprint.</li><li>Lideré el onboarding mediante walkthroughs de la <strong>arquitectura frontend, patrones de diseño, lineamientos de código,</strong> y <strong>plugins personalizados</strong> que escribí, junto con un set de documentación que se convirtió en la referencia compartida del equipo, para que los nuevos miembros llegaran a productividad sin tiempo 1:1 constante.</li><li>Tomé responsabilidad de las revisiones diarias de <strong>Pull Requests</strong> del equipo y exigí <strong>Unit Testing</strong>, consistencia de estilo de código, y fidelidad a los patrones de diseño, capturando problemas de rendimiento, anidamiento excesivo, y deriva arquitectónica antes de que llegaran a producción.</li><li>Configuré el desarrollo en contenedores <strong>Dockware</strong> (imágenes Docker afinadas para Shopware) y <strong>docker-compose</strong>, además de pipelines CI en <strong>Azure DevOps</strong> para producción, dev y staging con validación automática de PRs, para que el equipo levantara entornos Shopware idénticos con un solo comando y los merges solo ocurrieran tras pasar el gate.</li><li>Trabajé con equipos backend para definir contratos de endpoints <strong>REST</strong> y <strong>GraphQL</strong> antes de la implementación, alineando frontend y backend en estructura, naming, y manejo de errores para que los sprints de integración no se trabaran por desajustes de contrato.</li>",
-            "tools": "<strong>shopware - symfony - vuejs - sass/scss - postcss - docker - dockware - azure-devops - graphql - rest - mysql - javascript - php - bash - jest</strong>"
+          'softtek': {
+            'role': 'SENIOR SOFTWARE ENGINEER (FULL STACK WEB DEVELOPER)',
+            'specs': '2023-2025 <strong>SOFTTEK</strong> REMOTO-BOGOTÁ-D.C///COLOMBIA',
+            'description': 'Migré una plataforma administrativa interna a un <strong>e-commerce completo en Shopware</strong>, asegurando calidad mediante revisiones de <strong>Pull Request</strong> y onboarding del equipo mientras entregaba flujos de compra totalmente automatizados...',
+            'bullets': '<li>Migré una plataforma interna de administración a un sitio <strong>e-commerce</strong> en <strong>Shopware (Symfony + Vue.js)</strong>, planeando la arquitectura y mapeando cada requerimiento e implicación antes del cutover, para que el flujo de compra del cliente se entregara totalmente automatizado y ninguna operación de negocio se perdiera.</li><li>Diseñé una librería de patrones <strong>SASS/SCSS</strong>, conjunto de mixins y arquitectura modular en toda la tienda <strong>e-commerce</strong>, con <strong>PostCSS</strong> cubriendo inconsistencias entre navegadores, para que el sistema de estilos se mantuviera rápido y sostenible a medida que crecía la tienda y los cambios de diseño se propagaran por cada tema sin retrabajo manual.</li><li>Diseñé soluciones frontend personalizadas dentro del sistema de templates OOB de <strong>Shopware</strong>, reconstruyendo la lógica de templates junto al equipo core de Shopware donde fuera necesario, para que los requerimientos de diseño y UX del cliente se entregaran con fidelidad completa en lugar de ser recortados a los defaults de la plataforma.</li><li>Refiné la planeación de sprints y la distribución de trabajo en <strong>Azure DevOps</strong> bajo metodología <strong>Agile</strong>, estructurando iniciativas en unidades bien delimitadas y paralelizables para que el equipo mantuviera velocidad estable incluso cuando el alcance cambiaba a mitad del sprint.</li><li>Lideré el onboarding mediante walkthroughs de la <strong>arquitectura frontend, patrones de diseño, lineamientos de código,</strong> y <strong>plugins personalizados</strong> que escribí, junto con un set de documentación que se convirtió en la referencia compartida del equipo, para que los nuevos miembros llegaran a productividad sin tiempo 1:1 constante.</li><li>Tomé responsabilidad de las revisiones diarias de <strong>Pull Requests</strong> del equipo y exigí <strong>Unit Testing</strong>, consistencia de estilo de código, y fidelidad a los patrones de diseño, capturando problemas de rendimiento, anidamiento excesivo, y deriva arquitectónica antes de que llegaran a producción.</li><li>Configuré el desarrollo en contenedores <strong>Dockware</strong> (imágenes Docker afinadas para Shopware) y <strong>docker-compose</strong>, además de pipelines CI en <strong>Azure DevOps</strong> para producción, dev y staging con validación automática de PRs, para que el equipo levantara entornos Shopware idénticos con un solo comando y los merges solo ocurrieran tras pasar el gate.</li><li>Trabajé con equipos backend para definir contratos de endpoints <strong>REST</strong> y <strong>GraphQL</strong> antes de la implementación, alineando frontend y backend en estructura, naming, y manejo de errores para que los sprints de integración no se trabaran por desajustes de contrato.</li>',
+            'tools': '<strong>shopware - symfony - vuejs - sass/scss - postcss - docker - dockware - azure-devops - graphql - rest - mysql - javascript - php - bash - jest</strong>',
           },
-          "cr-senior-fullstack": {
-            "role": "SENIOR FULL STACK WEB DEVELOPER",
-            "specs": "2021-2023 <strong>CABEZA-ROTA</strong> REMOTO-VILLAVICENCIO///COLOMBIA",
-            "description": "Entregué <strong>full-stack</strong> sitios e-commerce, landing pages y microservicios para múltiples clientes, construyendo <strong>APIs GraphQL/REST</strong> con autenticación, caché y UI/UX guiada por datos...",
-            "bullets": "<li>Entregué <strong>e-commerce, landing pages y microservicios</strong> para múltiples clientes alternando <strong>Next.js, React.js, Vue.js, Node.js, Nest.js</strong> y <strong>Symfony (PHP)</strong> con patrones <strong>SSR/SSG/ISR</strong> y <strong>WebSockets</strong> en tiempo real, ajustando el stack a las necesidades de cada proyecto en lugar de forzar una sola arquitectura.</li><li>Construí servicios backend con <strong>GraphQL/Apollo</strong> y <strong>APIs REST</strong> conectados a <strong>PostgreSQL, MySQL,</strong> y <strong>MongoDB</strong>, implementando flujos de autenticación <strong>JWT</strong>, capas de caché y optimización de queries para asegurar tiempos de respuesta rápidos bajo carga.</li><li>Fortalecí la presencia digital de marcas con implementaciones sólidas de <strong>UI/UX</strong> validadas por <strong>A/B testing</strong>, analíticas (<strong>GA4, Hotjar</strong>) y funnels/heatmaps, iterando diseños desde señales reales de usuarios para incrementar interacción y conversión.</li><li>Establecí pipelines <strong>CI/CD</strong> con <strong>Docker</strong> y <strong>GitHub Actions</strong>, integré <strong>unit/integration testing (Jest, RSpec)</strong> y apliqué estándares de revisión de PRs, capturando regresiones antes del merge y manteniendo cobertura estable a medida que el código crecía.</li>",
-            "tools": "<strong>nextjs - reactjs - vuejs - nestjs - symfony - docker - postgresql - mysql - mongodb - graphql - apollo - rest - jwt - websockets - jest - rspec - github-actions - ga4 - hotjar</strong>"
+          'cr-senior-fullstack': {
+            'role': 'SENIOR FULL STACK WEB DEVELOPER',
+            'specs': '2021-2023 <strong>CABEZA-ROTA</strong> REMOTO-VILLAVICENCIO///COLOMBIA',
+            'description': 'Entregué <strong>full-stack</strong> sitios e-commerce, landing pages y microservicios para múltiples clientes, construyendo <strong>APIs GraphQL/REST</strong> con autenticación, caché y UI/UX guiada por datos...',
+            'bullets': '<li>Entregué <strong>e-commerce, landing pages y microservicios</strong> para múltiples clientes alternando <strong>Next.js, React.js, Vue.js, Node.js, Nest.js</strong> y <strong>Symfony (PHP)</strong> con patrones <strong>SSR/SSG/ISR</strong> y <strong>WebSockets</strong> en tiempo real, ajustando el stack a las necesidades de cada proyecto en lugar de forzar una sola arquitectura.</li><li>Construí servicios backend con <strong>GraphQL/Apollo</strong> y <strong>APIs REST</strong> conectados a <strong>PostgreSQL, MySQL,</strong> y <strong>MongoDB</strong>, implementando flujos de autenticación <strong>JWT</strong>, capas de caché y optimización de queries para asegurar tiempos de respuesta rápidos bajo carga.</li><li>Fortalecí la presencia digital de marcas con implementaciones sólidas de <strong>UI/UX</strong> validadas por <strong>A/B testing</strong>, analíticas (<strong>GA4, Hotjar</strong>) y funnels/heatmaps, iterando diseños desde señales reales de usuarios para incrementar interacción y conversión.</li><li>Establecí pipelines <strong>CI/CD</strong> con <strong>Docker</strong> y <strong>GitHub Actions</strong>, integré <strong>unit/integration testing (Jest, RSpec)</strong> y apliqué estándares de revisión de PRs, capturando regresiones antes del merge y manteniendo cobertura estable a medida que el código crecía.</li>',
+            'tools': '<strong>nextjs - reactjs - vuejs - nestjs - symfony - docker - postgresql - mysql - mongodb - graphql - apollo - rest - jwt - websockets - jest - rspec - github-actions - ga4 - hotjar</strong>',
           },
-          "cr-web-dev": {
-            "role": "DESARROLLADOR WEB Y MARKETING DIGITAL",
-            "specs": "2021-2021 <strong>CABEZA-ROTA</strong> REMOTO-VILLAVICENCIO///COLOMBIA",
-            "description": "Construí un <strong>ciclo de diseño basado en datos</strong> con <strong>A/B Testing</strong> y analíticas, entregando sitios web de marketing y landing pages alineados a la marca de cada cliente de agencia...",
-            "bullets": "<li>Construí un <strong>ciclo de diseño basado en datos</strong> usando <strong>A/B Testing</strong> con <strong>GA4</strong> y <strong>Hotjar</strong>, refinando componentes web y flujos a partir de señales reales de usuarios para que los cambios de diseño se entregaran con ganancias medibles de interacción y conversión, no por suposición.</li><li>Construí sitios web de marketing y landing pages para clientes de la agencia en <strong>Next.js, React.js, Vue.js, Nest.js, Redux, SASS/SCSS, Tailwind, Bootstrap</strong> o <strong>Wordpress</strong>, ajustando el stack a la marca y restricciones de cada cliente para que los lanzamientos se entregaran rápido sin sacrificar escalabilidad.</li><li>Diseñé <strong>componentes personalizados</strong> reutilizables ajustados a los requerimientos, sistema de diseño y stack tecnológico de cada proyecto, para que las funcionalidades se entregaran más rápido y los patrones se mantuvieran consistentes a medida que crecía la base de código.</li>",
-            "tools": "<strong>nextjs - reactjs - vuejs - nestjs - redux - tailwind - bootstrap - wordpress - sass/scss - ga4 - hotjar - a/b-testing</strong>"
+          'cr-web-dev': {
+            'role': 'DESARROLLADOR WEB Y MARKETING DIGITAL',
+            'specs': '2021-2021 <strong>CABEZA-ROTA</strong> REMOTO-VILLAVICENCIO///COLOMBIA',
+            'description': 'Construí un <strong>ciclo de diseño basado en datos</strong> con <strong>A/B Testing</strong> y analíticas, entregando sitios web de marketing y landing pages alineados a la marca de cada cliente de agencia...',
+            'bullets': '<li>Construí un <strong>ciclo de diseño basado en datos</strong> usando <strong>A/B Testing</strong> con <strong>GA4</strong> y <strong>Hotjar</strong>, refinando componentes web y flujos a partir de señales reales de usuarios para que los cambios de diseño se entregaran con ganancias medibles de interacción y conversión, no por suposición.</li><li>Construí sitios web de marketing y landing pages para clientes de la agencia en <strong>Next.js, React.js, Vue.js, Nest.js, Redux, SASS/SCSS, Tailwind, Bootstrap</strong> o <strong>Wordpress</strong>, ajustando el stack a la marca y restricciones de cada cliente para que los lanzamientos se entregaran rápido sin sacrificar escalabilidad.</li><li>Diseñé <strong>componentes personalizados</strong> reutilizables ajustados a los requerimientos, sistema de diseño y stack tecnológico de cada proyecto, para que las funcionalidades se entregaran más rápido y los patrones se mantuvieran consistentes a medida que crecía la base de código.</li>',
+            'tools': '<strong>nextjs - reactjs - vuejs - nestjs - redux - tailwind - bootstrap - wordpress - sass/scss - ga4 - hotjar - a/b-testing</strong>',
           },
-          "cr-growth": {
-            "role": "GROWTH MARKETER & WEB DEVELOPER",
-            "specs": "2020-2021 <strong>CABEZA-ROTA</strong> REMOTO-VILLAVICENCIO///COLOMBIA",
-            "description": "Impulsé el <strong>reconocimiento de marca</strong> en redes sociales mientras desplegaba <strong>entornos VPS</strong> en <strong>AWS</strong> e integraba servicios de pago para potenciar aplicaciones backend de extremo a extremo...",
-            "bullets": "<li>Impulsé el reconocimiento de marca y la interacción en <strong>Twitter, Instagram, Discord</strong> y <strong>YouTube</strong> ejecutando estrategias de crecimiento dirigidas, incrementando presencia digital, engagement de seguidores y adquisición de clientes.</li><li>Diseñé y desplegué entornos <strong>VPS</strong> sobre instancias <strong>AWS EC2</strong>, configurando servidores <strong>Linux (Ubuntu/CentOS)</strong> con <strong>Apache, PHP</strong> y <strong>MySQL</strong> para alojar aplicaciones backend, asegurando despliegues estables y sostenibles en producción.</li><li>Integré servicios de pago <strong>Cybersource</strong> y <strong>PayU</strong>, automatizando flujos de pedido y checkout para que los clientes finales pudieran completar compras sin fricción.</li><li>Optimicé flujos de usuario implementando <strong>componentes personalizados, elementos y hooks</strong> para mejorar las funcionalidades de cada sitio y reducir tiempos de renderizado.</li><li>Optimicé el rendimiento de bases de datos mediante optimización de queries, esquemas de datos y caché, asegurando tiempos de respuesta estables a medida que el tráfico crecía.</li>",
-            "tools": "<strong>aws - ec2 - apache - mysql - php - reactjs - nodejs - typescript - sass - twitter - youtube - discord - payu - cybersource</strong>"
-          }
+          'cr-growth': {
+            'role': 'GROWTH MARKETER & WEB DEVELOPER',
+            'specs': '2020-2021 <strong>CABEZA-ROTA</strong> REMOTO-VILLAVICENCIO///COLOMBIA',
+            'description': 'Impulsé el <strong>reconocimiento de marca</strong> en redes sociales mientras desplegaba <strong>entornos VPS</strong> en <strong>AWS</strong> e integraba servicios de pago para potenciar aplicaciones backend de extremo a extremo...',
+            'bullets': '<li>Impulsé el reconocimiento de marca y la interacción en <strong>Twitter, Instagram, Discord</strong> y <strong>YouTube</strong> ejecutando estrategias de crecimiento dirigidas, incrementando presencia digital, engagement de seguidores y adquisición de clientes.</li><li>Diseñé y desplegué entornos <strong>VPS</strong> sobre instancias <strong>AWS EC2</strong>, configurando servidores <strong>Linux (Ubuntu/CentOS)</strong> con <strong>Apache, PHP</strong> y <strong>MySQL</strong> para alojar aplicaciones backend, asegurando despliegues estables y sostenibles en producción.</li><li>Integré servicios de pago <strong>Cybersource</strong> y <strong>PayU</strong>, automatizando flujos de pedido y checkout para que los clientes finales pudieran completar compras sin fricción.</li><li>Optimicé flujos de usuario implementando <strong>componentes personalizados, elementos y hooks</strong> para mejorar las funcionalidades de cada sitio y reducir tiempos de renderizado.</li><li>Optimicé el rendimiento de bases de datos mediante optimización de queries, esquemas de datos y caché, asegurando tiempos de respuesta estables a medida que el tráfico crecía.</li>',
+            'tools': '<strong>aws - ec2 - apache - mysql - php - reactjs - nodejs - typescript - sass - twitter - youtube - discord - payu - cybersource</strong>',
+          },
         },
-        "projects": {
-          "webcam2ascii": {
-            "description": "Mis ventanas para grabar caen casi siempre de noche, después de que el trabajo remoto y la crianza terminan, y el cuarto rara vez tiene la iluminación que un setup normal con la cara en cámara necesitaría. La razón más profunda de este proyecto es más personal. Hay momentos en los que simplemente no quiero mostrar mi cara en un clip, y esta herramienta termina ayudándome a perder esa incomodidad. También me gusta mucho el aire estético que le da a mis videos, y grabar a través de ella me mantiene inspirado mientras trabajo en el clip.<br><br><strong>webcam2ascii</strong> es la herramienta que construí justo para eso. Es un filtro en tiempo real que convierte la imagen de la webcam en arte ASCII con detección de bordes integrada. Se conecta a <strong>OBS</strong> como filtro en vivo, así que la grabación queda con ese aire cyberpunk y sci-fi sin postproducción, y mantiene el lenguaje visual compartido con el resto de los canales de Kyonax.<br><br>Todo el pipeline corre en la GPU con <strong>Rust</strong> y shaders de cómputo <strong>wgpu</strong>, capturando los fotogramas mediante <strong>GStreamer</strong>. Cada fotograma se reduce 8 veces para que cada <strong>bloque de 8×8 píxeles</strong> se traduzca en un carácter. Un pase de <strong>Difference of Gaussians</strong> seguido de un filtro <strong>Sobel</strong> extrae los ángulos de los bordes, y 64 hilos por celda votan la dirección dominante para elegir uno de cinco glifos de contorno (<strong>/ \\ | - _</strong>). Las celdas sin un borde claro recurren a una <strong>rampa de luminancia de 10 niveles</strong> indexada en un atlas de glifos, y el resultado se compone como una clásica salida de terminal verde sobre negro.<br><br>Actualmente en <strong>v0.1.0</strong> y en progreso, con el lanzamiento principal de <strong>v0.1.0</strong> programado próximamente."
+        'projects': {
+          'webcam2ascii': {
+            'description': 'Mis ventanas para grabar caen casi siempre de noche, después de que el trabajo remoto y la crianza terminan, y el cuarto rara vez tiene la iluminación que un setup normal con la cara en cámara necesitaría. La razón más profunda de este proyecto es más personal. Hay momentos en los que simplemente no quiero mostrar mi cara en un clip, y esta herramienta termina ayudándome a perder esa incomodidad. También me gusta mucho el aire estético que le da a mis videos, y grabar a través de ella me mantiene inspirado mientras trabajo en el clip.<br><br><strong>webcam2ascii</strong> es la herramienta que construí justo para eso. Es un filtro en tiempo real que convierte la imagen de la webcam en arte ASCII con detección de bordes integrada. Se conecta a <strong>OBS</strong> como filtro en vivo, así que la grabación queda con ese aire cyberpunk y sci-fi sin postproducción, y mantiene el lenguaje visual compartido con el resto de los canales de Kyonax.<br><br>Todo el pipeline corre en la GPU con <strong>Rust</strong> y shaders de cómputo <strong>wgpu</strong>, capturando los fotogramas mediante <strong>GStreamer</strong>. Cada fotograma se reduce 8 veces para que cada <strong>bloque de 8×8 píxeles</strong> se traduzca en un carácter. Un pase de <strong>Difference of Gaussians</strong> seguido de un filtro <strong>Sobel</strong> extrae los ángulos de los bordes, y 64 hilos por celda votan la dirección dominante para elegir uno de cinco glifos de contorno (<strong>/ \\ | - _</strong>). Las celdas sin un borde claro recurren a una <strong>rampa de luminancia de 10 niveles</strong> indexada en un atlas de glifos, y el resultado se compone como una clásica salida de terminal verde sobre negro.<br><br>Actualmente en <strong>v0.1.0</strong> y en progreso, con el lanzamiento principal de <strong>v0.1.0</strong> programado próximamente.',
           },
-          "reckit": {
-            "description": "Grabar contenido técnico para streaming o video casi siempre implica horas de trabajo de postproducción. Cortes, overlays, color, transiciones de escena, todo se acumula y ralentiza el ritmo de publicación.<br><br><strong>RECKIT</strong> está pensado para hacer esa edición en el momento de captura en lugar de en postproducción. El nombre significa <strong>R</strong>ealtime <strong>E</strong>dit-free <strong>C</strong>apture <strong>K</strong>yonax <strong>I</strong>ntegrated <strong>T</strong>oolkit <em>(y no, no significa Record-Kit, wtf)</em>, y es el toolkit detrás de cada identidad de creación de contenido bajo Kyonax (&#64;kyonax_on_tech, &#64;is.kyonax y cualquier canal futuro dentro del paraguas Kyonax, además de la comunidad <a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong></a>). Cada marca mantiene su propia carpeta de overlays, presets de escena y automatizaciones, completamente aislada del resto.<br><br>La aplicación se monta sobre <strong>OBS Studio</strong> como un proyecto de una sola página en <strong>Vue 3</strong> sobre <strong>Vite</strong> con 11 alias que imponen imports organizados por tipo de carpeta, <strong>JavaScript</strong> plano sobre estilos <strong>SCSS</strong>, y un brand-loader que descubre automáticamente las carpetas de marca colocadas en la raíz. Cada marca expone sus overlays HUD como fuentes de navegador en <strong>HTML/CSS/JS</strong>, además de scripts de automatización por <strong>OBS WebSocket</strong> que controlan transiciones de escena, estado de grabación y overlays con datos en vivo. Las verificaciones de calidad corren por <strong>ESLint</strong> con plugins de Vue, seguridad y orden de imports, y los estándares de código de CCS están aplicados en todo el repo.<br><br>Actualmente en <strong>v0.3.0</strong>, con <strong>v0.4.0</strong> en desarrollo pero en pausa mientras la atención rota a otras partes del ecosistema. Un release de desarrollo de <strong>v0.4.0</strong> está programado próximamente y el release principal poco después."
+          'reckit': {
+            'description': "Grabar contenido técnico para streaming o video casi siempre implica horas de trabajo de postproducción. Cortes, overlays, color, transiciones de escena, todo se acumula y ralentiza el ritmo de publicación.<br><br><strong>RECKIT</strong> está pensado para hacer esa edición en el momento de captura en lugar de en postproducción. El nombre significa <strong>R</strong>ealtime <strong>E</strong>dit-free <strong>C</strong>apture <strong>K</strong>yonax <strong>I</strong>ntegrated <strong>T</strong>oolkit <em>(y no, no significa Record-Kit, wtf)</em>, y es el toolkit detrás de cada identidad de creación de contenido bajo Kyonax (&#64;kyonax_on_tech, &#64;is.kyonax y cualquier canal futuro dentro del paraguas Kyonax, además de la comunidad <a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong></a>). Cada marca mantiene su propia carpeta de overlays, presets de escena y automatizaciones, completamente aislada del resto.<br><br>La aplicación se monta sobre <strong>OBS Studio</strong> como un proyecto de una sola página en <strong>Vue 3</strong> sobre <strong>Vite</strong> con 11 alias que imponen imports organizados por tipo de carpeta, <strong>JavaScript</strong> plano sobre estilos <strong>SCSS</strong>, y un brand-loader que descubre automáticamente las carpetas de marca colocadas en la raíz. Cada marca expone sus overlays HUD como fuentes de navegador en <strong>HTML/CSS/JS</strong>, además de scripts de automatización por <strong>OBS WebSocket</strong> que controlan transiciones de escena, estado de grabación y overlays con datos en vivo. Las verificaciones de calidad corren por <strong>ESLint</strong> con plugins de Vue, seguridad y orden de imports, y los estándares de código de CCS están aplicados en todo el repo.<br><br>Actualmente en <strong>v0.3.0</strong>, con <strong>v0.4.0</strong> en desarrollo pero en pausa mientras la atención rota a otras partes del ecosistema. Un release de desarrollo de <strong>v0.4.0</strong> está programado próximamente y el release principal poco después.",
           },
-          "org2html": {
-            "description": "Mantener un blog suele reducirse a elegir entre una plataforma pesada como <strong>WordPress</strong> con su dashboard, base de datos y curva de aprendizaje propia, o construir algo a medida desde cero con un dashboard y un editor que toman más tiempo que el blog en sí. Ninguno de los dos caminos encaja con alguien que ya escribe todo en <strong>Org-mode</strong>, acumula una gran cantidad de archivos <code>.org</code> y necesita control directo sobre el SEO y el rendimiento de cada página que se publica.<br><br><strong>org2html</strong> es una CLI que convierte una carpeta de archivos <strong>Emacs Org-mode</strong> en un sitio estático completo o un árbol de componentes <strong>Vue 3</strong>, orientado a blogs y sitios enteros generados directamente desde fuentes <code>.org</code>. Publicado en <a href='https://www.npmjs.com/package/&#64;kyonax/org2html' target='_blank' rel='noopener'><strong>npm</strong></a> como <strong>&#64;kyonax/org2html</strong>, permite seguir escribiendo en Org-mode y obtener un sitio listo para publicar, con las notas fuente como versión canónica.<br><br>Construido en <strong>TypeScript</strong> con <strong>tsup</strong> y <strong>Vitest</strong>, el pipeline está basado en AST. Un <strong>lexer</strong> tokeniza el archivo, un <strong>parser</strong> construye el árbol sintáctico y un extractor de metadatos lleva títulos, tags y fechas a una superficie <strong>SEO</strong> por página. Una capa de plugins maneja el resaltado de sintaxis con <strong>Shiki</strong>, la tabla de contenidos, los shortcodes y la detección de assets. <strong>jsdom</strong> y <strong>DOMPurify</strong> sanean la salida contra XSS, y un script complementario <strong>hydrate.ts</strong> conecta los componentes renderizados al runtime de Vue para islas interactivas. Expuesto a través de una CLI <strong>Commander</strong> y <strong>Chokidar</strong> con modos build y watch, y arquitectado para que futuros renderers apunten a <strong>React</strong>, <strong>Svelte</strong> o cualquier stack frontend moderno.<br><br>Actualmente en <strong>v0.1.0</strong> y en progreso, con el reveal público de <strong>v0.1.0</strong> programado próximamente."
+          'org2html': {
+            'description': "Mantener un blog suele reducirse a elegir entre una plataforma pesada como <strong>WordPress</strong> con su dashboard, base de datos y curva de aprendizaje propia, o construir algo a medida desde cero con un dashboard y un editor que toman más tiempo que el blog en sí. Ninguno de los dos caminos encaja con alguien que ya escribe todo en <strong>Org-mode</strong>, acumula una gran cantidad de archivos <code>.org</code> y necesita control directo sobre el SEO y el rendimiento de cada página que se publica.<br><br><strong>org2html</strong> es una CLI que convierte una carpeta de archivos <strong>Emacs Org-mode</strong> en un sitio estático completo o un árbol de componentes <strong>Vue 3</strong>, orientado a blogs y sitios enteros generados directamente desde fuentes <code>.org</code>. Publicado en <a href='https://www.npmjs.com/package/&#64;kyonax/org2html' target='_blank' rel='noopener'><strong>npm</strong></a> como <strong>&#64;kyonax/org2html</strong>, permite seguir escribiendo en Org-mode y obtener un sitio listo para publicar, con las notas fuente como versión canónica.<br><br>Construido en <strong>TypeScript</strong> con <strong>tsup</strong> y <strong>Vitest</strong>, el pipeline está basado en AST. Un <strong>lexer</strong> tokeniza el archivo, un <strong>parser</strong> construye el árbol sintáctico y un extractor de metadatos lleva títulos, tags y fechas a una superficie <strong>SEO</strong> por página. Una capa de plugins maneja el resaltado de sintaxis con <strong>Shiki</strong>, la tabla de contenidos, los shortcodes y la detección de assets. <strong>jsdom</strong> y <strong>DOMPurify</strong> sanean la salida contra XSS, y un script complementario <strong>hydrate.ts</strong> conecta los componentes renderizados al runtime de Vue para islas interactivas. Expuesto a través de una CLI <strong>Commander</strong> y <strong>Chokidar</strong> con modos build y watch, y arquitectado para que futuros renderers apunten a <strong>React</strong>, <strong>Svelte</strong> o cualquier stack frontend moderno.<br><br>Actualmente en <strong>v0.1.0</strong> y en progreso, con el reveal público de <strong>v0.1.0</strong> programado próximamente.",
           },
-          "kyo-website": {
-            "description": "<strong>Kyonax</strong> es la identidad detrás de un cuerpo de trabajo que abarca ingeniería frontend y full-stack, creación de contenido y herramientas personales. La firma aparece en cada pieza a través de la estética cyberpunk, la tipografía monoespaciada, la atención cuidadosa al rendimiento, y cada detalle hecho a mano, sin plantillas de por medio.<br><br><strong>kyo-website</strong> es el hogar de esa identidad. Reúne el trabajo actual, la experiencia profesional, los proyectos destacados y cualquier dato útil para quien tenga curiosidad por el trabajo, sin pretender ser un portafolio exhaustivo. Más adelante, una extensión de portafolio más elaborada y un blog crecerán sobre el paquete <a href='https://www.npmjs.com/package/&#64;kyonax/org2html' target='_blank' rel='noopener'><strong>org2html</strong></a>, manteniendo este sitio como el índice ligero que conecta al resto.<br><br>Construido como una aplicación de una sola página en <strong>Vue 3</strong> sobre <strong>Vite</strong>, con <strong>vite-ssg</strong> generando los locales estáticos <strong>EN</strong> y <strong>ES</strong>, <strong>vue-i18n</strong> controlando el cambio de idioma en runtime, <strong>vue-router</strong> conectando la navegación, y <strong>Unhead</strong> produciendo la meta SEO por ruta y el grafo JSON-LD. El código es <strong>JavaScript</strong> plano sobre <strong>SCSS</strong> con una arquitectura 7-1 recortada, con <strong>Sharp</strong> impulsando un pipeline interno de imágenes que emite variantes AVIF y WebP para cada JPG, un generador <strong>ASCII a imagen</strong> basado en Sharp para los logos de proyectos, y un plugin <strong>Vite</strong> personalizado inyectando el tag de preload LCP. Las verificaciones de calidad corren por <strong>ESLint</strong> con plugins de Vue, seguridad, jsdoc y orden de imports, <strong>Vitest</strong> con <strong>happy-dom</strong> para tests de componentes, y un pipeline de CI en <strong>GitHub Actions</strong> ejecutando precheck, license-header, paridad de i18n, uso de color y validadores trans-attr en cada push, con despliegue en <strong>Hostinger</strong> mediante un workflow de build-branch.<br><br>Actualmente en <strong>v0.3.0</strong> y en progreso, con la extensión <strong>kyo-blog</strong> impulsada por org2html programada próximamente."
+          'kyo-website': {
+            'description': "<strong>Kyonax</strong> es la identidad detrás de un cuerpo de trabajo que abarca ingeniería frontend y full-stack, creación de contenido y herramientas personales. La firma aparece en cada pieza a través de la estética cyberpunk, la tipografía monoespaciada, la atención cuidadosa al rendimiento, y cada detalle hecho a mano, sin plantillas de por medio.<br><br><strong>kyo-website</strong> es el hogar de esa identidad. Reúne el trabajo actual, la experiencia profesional, los proyectos destacados y cualquier dato útil para quien tenga curiosidad por el trabajo, sin pretender ser un portafolio exhaustivo. Más adelante, una extensión de portafolio más elaborada y un blog crecerán sobre el paquete <a href='https://www.npmjs.com/package/&#64;kyonax/org2html' target='_blank' rel='noopener'><strong>org2html</strong></a>, manteniendo este sitio como el índice ligero que conecta al resto.<br><br>Construido como una aplicación de una sola página en <strong>Vue 3</strong> sobre <strong>Vite</strong>, con <strong>vite-ssg</strong> generando los locales estáticos <strong>EN</strong> y <strong>ES</strong>, <strong>vue-i18n</strong> controlando el cambio de idioma en runtime, <strong>vue-router</strong> conectando la navegación, y <strong>Unhead</strong> produciendo la meta SEO por ruta y el grafo JSON-LD. El código es <strong>JavaScript</strong> plano sobre <strong>SCSS</strong> con una arquitectura 7-1 recortada, con <strong>Sharp</strong> impulsando un pipeline interno de imágenes que emite variantes AVIF y WebP para cada JPG, un generador <strong>ASCII a imagen</strong> basado en Sharp para los logos de proyectos, y un plugin <strong>Vite</strong> personalizado inyectando el tag de preload LCP. Las verificaciones de calidad corren por <strong>ESLint</strong> con plugins de Vue, seguridad, jsdoc y orden de imports, <strong>Vitest</strong> con <strong>happy-dom</strong> para tests de componentes, y un pipeline de CI en <strong>GitHub Actions</strong> ejecutando precheck, license-header, paridad de i18n, uso de color y validadores trans-attr en cada push, con despliegue en <strong>Hostinger</strong> mediante un workflow de build-branch.<br><br>Actualmente en <strong>v0.3.0</strong> y en progreso, con la extensión <strong>kyo-blog</strong> impulsada por org2html programada próximamente.",
           },
-          "zeronet-labs-website": {
-            "description": "<a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'><strong>Zerønet Labs</strong></a> es el lado comercial del ecosistema Kyonax, un estudio enfocado en construir software preciso y de alto rendimiento para empresas de cualquier tamaño. La línea de productos incluye <strong>librerías UI</strong> principalmente para Vue.js, <strong>paquetes npm</strong> para Vue, React y Next.js, además de <strong>automatizaciones impulsadas por IA</strong> y herramientas de soporte para clientes startup y de tamaño medio. El pitch de marca es corto y directo, resolver problemas reales de negocio con automatización e ingeniería de alto rendimiento.<br><br><strong>zeronet-labs-website</strong> es el rostro público de la marca y la superficie de lanzamiento para cada producto que sale al mercado. El sitio lleva el manifiesto de la empresa, la línea activa de productos, casos de estudio y un funnel de contacto directo. Planteado como contraparte deliberada del lado open-source <strong>Cyber Code Syndicate</strong> del ecosistema Kyonax, donde Zerønet vende el trabajo comercial para financiar el resto de la operación.<br><br>Construido alrededor del eslogan <strong>Zerønet</strong> (zero heavy networks, zero slowdowns, zero wasted cycles), con <strong>rendimiento</strong> y <strong>SEO</strong> tratados como prioridades de primera clase por encima de los adornos visuales, ya que las landings comerciales viven o mueren por los <strong>Core Web Vitals</strong>, la visibilidad en buscadores y la rapidez con que un visitante llega al call to action. La implementación replica el stack de <strong>kyo-website</strong> (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> para locales estáticos, <strong>JavaScript</strong> plano sobre estilos <strong>SCSS</strong>) con un sistema de theming específico de la marca encima.<br><br>Actualmente en <strong>v0.1.0</strong> y en pausa mientras se afina el lado comercial, con el desarrollo activo programado para reanudar a mediados de 2026."
+          'zeronet-labs-website': {
+            'description': "<a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'><strong>Zerønet Labs</strong></a> es el lado comercial del ecosistema Kyonax, un estudio enfocado en construir software preciso y de alto rendimiento para empresas de cualquier tamaño. La línea de productos incluye <strong>librerías UI</strong> principalmente para Vue.js, <strong>paquetes npm</strong> para Vue, React y Next.js, además de <strong>automatizaciones impulsadas por IA</strong> y herramientas de soporte para clientes startup y de tamaño medio. El pitch de marca es corto y directo, resolver problemas reales de negocio con automatización e ingeniería de alto rendimiento.<br><br><strong>zeronet-labs-website</strong> es el rostro público de la marca y la superficie de lanzamiento para cada producto que sale al mercado. El sitio lleva el manifiesto de la empresa, la línea activa de productos, casos de estudio y un funnel de contacto directo. Planteado como contraparte deliberada del lado open-source <strong>Cyber Code Syndicate</strong> del ecosistema Kyonax, donde Zerønet vende el trabajo comercial para financiar el resto de la operación.<br><br>Construido alrededor del eslogan <strong>Zerønet</strong> (zero heavy networks, zero slowdowns, zero wasted cycles), con <strong>rendimiento</strong> y <strong>SEO</strong> tratados como prioridades de primera clase por encima de los adornos visuales, ya que las landings comerciales viven o mueren por los <strong>Core Web Vitals</strong>, la visibilidad en buscadores y la rapidez con que un visitante llega al call to action. La implementación replica el stack de <strong>kyo-website</strong> (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> para locales estáticos, <strong>JavaScript</strong> plano sobre estilos <strong>SCSS</strong>) con un sistema de theming específico de la marca encima.<br><br>Actualmente en <strong>v0.1.0</strong> y en pausa mientras se afina el lado comercial, con el desarrollo activo programado para reanudar a mediados de 2026.",
           },
-          "cyber-code-syndicate": {
-            "description": "<a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong> (<strong>CCS</strong>)</a> es el lado de software libre y código abierto del ecosistema Kyonax, una comunidad construida alrededor de <strong>lineamientos</strong>, <strong>principios</strong> y <strong>arquitecturas</strong> compartidos para cada proyecto que respalda. Aloja <strong>estándares de código</strong> compartidos, <strong>metodologías de enseñanza</strong> para quienes recién comienzan en el desarrollo de software, guías curadas sobre <strong>uso responsable de IA</strong>, y un paper oficial de la comunidad en <a href='https://doi.org/10.5281/zenodo.17994539' target='_blank' rel='noopener'><strong>Zenodo DOI 10.5281/zenodo.17994539</strong></a> que desarrolla el marco conceptual completo. CCS está arraigado en <strong>prácticas éticas de software</strong>, <strong>privacidad por defecto</strong>, <strong>transparencia</strong> y <strong>autonomía</strong>, y existe para llevar valor real a la comunidad sin vender nada a cambio.<br><br><strong>cyber-code-syndicate</strong> es el landing comunitario de la organización, el punto de entrada principal para cualquiera que quiera saber de qué se trata la comunidad y cómo unirse. El sitio aloja la superficie pública de los lineamientos y principios, la lista activa de proyectos, los canales de mentoría y talleres, y el camino para que nuevos miembros se incorporen. Planteado como contraparte deliberada del lado comercial <strong>Zerønet Labs</strong> del ecosistema Kyonax.<br><br>Construido como un landing multilingüe con español como idioma principal e inglés como superficie secundaria para igualar la audiencia de la comunidad, estilizado con la misma estética <strong>cyberpunk</strong> compartida a lo largo del resto del ecosistema Kyonax. La construcción está orientada a rendimiento desde el inicio, con <strong>rendimiento</strong> y <strong>SEO</strong> tratados como prioridades de primera clase, dado que el sitio funciona también como rostro público de la comunidad y embudo de onboarding para nuevos miembros. La implementación replica el stack de <strong>kyo-website</strong> (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> para locales estáticos EN y ES, <strong>JavaScript</strong> plano sobre estilos <strong>SCSS</strong>) con un sistema de theming específico de la marca encima.<br><br>Actualmente en <strong>v0.1.0</strong> y en pausa mientras se afina el lado comunitario, con el desarrollo activo programado para reanudar a mediados de 2026."
-          }
-        }
+          'cyber-code-syndicate': {
+            'description': "<a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong> (<strong>CCS</strong>)</a> es el lado de software libre y código abierto del ecosistema Kyonax, una comunidad construida alrededor de <strong>lineamientos</strong>, <strong>principios</strong> y <strong>arquitecturas</strong> compartidos para cada proyecto que respalda. Aloja <strong>estándares de código</strong> compartidos, <strong>metodologías de enseñanza</strong> para quienes recién comienzan en el desarrollo de software, guías curadas sobre <strong>uso responsable de IA</strong>, y un paper oficial de la comunidad en <a href='https://doi.org/10.5281/zenodo.17994539' target='_blank' rel='noopener'><strong>Zenodo DOI 10.5281/zenodo.17994539</strong></a> que desarrolla el marco conceptual completo. CCS está arraigado en <strong>prácticas éticas de software</strong>, <strong>privacidad por defecto</strong>, <strong>transparencia</strong> y <strong>autonomía</strong>, y existe para llevar valor real a la comunidad sin vender nada a cambio.<br><br><strong>cyber-code-syndicate</strong> es el landing comunitario de la organización, el punto de entrada principal para cualquiera que quiera saber de qué se trata la comunidad y cómo unirse. El sitio aloja la superficie pública de los lineamientos y principios, la lista activa de proyectos, los canales de mentoría y talleres, y el camino para que nuevos miembros se incorporen. Planteado como contraparte deliberada del lado comercial <strong>Zerønet Labs</strong> del ecosistema Kyonax.<br><br>Construido como un landing multilingüe con español como idioma principal e inglés como superficie secundaria para igualar la audiencia de la comunidad, estilizado con la misma estética <strong>cyberpunk</strong> compartida a lo largo del resto del ecosistema Kyonax. La construcción está orientada a rendimiento desde el inicio, con <strong>rendimiento</strong> y <strong>SEO</strong> tratados como prioridades de primera clase, dado que el sitio funciona también como rostro público de la comunidad y embudo de onboarding para nuevos miembros. La implementación replica el stack de <strong>kyo-website</strong> (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> para locales estáticos EN y ES, <strong>JavaScript</strong> plano sobre estilos <strong>SCSS</strong>) con un sistema de theming específico de la marca encima.<br><br>Actualmente en <strong>v0.1.0</strong> y en pausa mientras se afina el lado comunitario, con el desarrollo activo programado para reanudar a mediados de 2026.",
+          },
+        },
       },
-      "persistent-data": {
-        "name": "CRISTIAN D. MORENO"
+      'persistent-data': {
+        'name': 'CRISTIAN D. MORENO',
       },
-      "widget": {
-        "trans-lang": {
-          "current": "ES",
-          "en": "ENGLISH",
-          "es": "ESPAÑOL",
-          "button-aria": "ES, abrir menú de idioma"
-        }
+      'widget': {
+        'trans-lang': {
+          'current': 'ES',
+          'en': 'ENGLISH',
+          'es': 'ESPAÑOL',
+          'button-aria': 'ES, abrir menú de idioma',
+        },
       },
-      "landing": {
-        "meta": {
-          "title": "Cristian D. Moreno — Ingeniero de Software (Desarrollador Web Full-Stack)",
-          "description": "8 años creando aplicaciones web escalables y de alto rendimiento. Actualmente Frontend Engineer en AgileEngine para Madison Reed. Fundador de Zerønet Labs.",
-          "og-title": "Cristian D. Moreno — Ingeniero de Software (Desarrollador Web Full-Stack)",
-          "og-image-alt": "Cristian D. Moreno (Kyonax), Ingeniero Web Full-Stack radicado en Colombia, retrato con superposición HUD cyberpunk.",
-          "role": "Ingeniero de Software"
+      'landing': {
+        'meta': {
+          'title': 'Cristian D. Moreno — Ingeniero de Software (Desarrollador Web Full-Stack)',
+          'description': '8 años creando aplicaciones web escalables y de alto rendimiento. Actualmente Frontend Engineer en AgileEngine para Madison Reed. Fundador de Zerønet Labs.',
+          'og-title': 'Cristian D. Moreno — Ingeniero de Software (Desarrollador Web Full-Stack)',
+          'og-image-alt': 'Cristian D. Moreno (Kyonax), Ingeniero Web Full-Stack radicado en Colombia, retrato con superposición HUD cyberpunk.',
+          'role': 'Ingeniero de Software',
         },
-        "consent": {
-          "aria": "Consentimiento de cookies",
-          "copy": "Usamos cookies para entender el uso del sitio y mejorar tu experiencia.",
-          "privacy": "Lee nuestra política de privacidad",
-          "accept": "Aceptar",
-          "decline": "Rechazar"
+        'consent': {
+          'aria': 'Consentimiento de cookies',
+          'copy': 'Usamos cookies para entender el uso del sitio y mejorar tu experiencia.',
+          'privacy': 'Lee nuestra política de privacidad',
+          'accept': 'Aceptar',
+          'decline': 'Rechazar',
         },
-        "nav": {
-          "logo": "京",
-          "hero": "INICIO",
-          "skills": "STACK",
-          "experience": "EXP",
-          "projects": "AHORA",
-          "contact": "CONTACTO",
-          "cv": "DESCARGAR CV",
-          "menu": "MENU",
-          "close": "CERRAR",
-          "skip-to-content": "Saltar al contenido",
-          "aria": {
-            "hero": "INICIO, parte superior de la página",
-            "skills": "STACK, habilidades y tecnología",
-            "experience": "EXP, experiencia profesional",
-            "projects": "AHORA, proyectos actuales",
-            "contact": "CONTACTO, canales en el pie de página",
-            "brand": "京, Kyonax inicio"
-          }
+        'nav': {
+          'logo': '京',
+          'hero': 'INICIO',
+          'skills': 'STACK',
+          'experience': 'EXP',
+          'projects': 'AHORA',
+          'contact': 'CONTACTO',
+          'cv': 'DESCARGAR CV',
+          'menu': 'MENU',
+          'close': 'CERRAR',
+          'skip-to-content': 'Saltar al contenido',
+          'aria': {
+            'hero': 'INICIO, parte superior de la página',
+            'skills': 'STACK, habilidades y tecnología',
+            'experience': 'EXP, experiencia profesional',
+            'projects': 'AHORA, proyectos actuales',
+            'contact': 'CONTACTO, canales en el pie de página',
+            'brand': '京, Kyonax inicio',
+          },
         },
-        "hero": {
-          "tag": "CCS MEMBER :: ID-001",
-          "orcid-aria": "Perfil de ORCID",
-          "open-portrait": "Abrir retrato",
-          "portrait-alt": "Cristian D. Moreno (Kyonax) retrato",
-          "available": "DISPONIBLE PARA TRABAJO REMOTO",
-          "summary": "8 años entregando <strong>soluciones web escalables, adaptables y de alto rendimiento</strong> para clientes nacionales e internacionales. Actualmente Frontend Engineer en <strong>AgileEngine</strong> para <strong>Madison Reed</strong>, Fundador y Lead Engineer en <strong>Zerønet Labs</strong>.",
-          "primary-cta": "VER EXPERIENCIA",
-          "secondary-cta": "CONTACTAME",
-          "scroll-hint": "SCROLL // EXPLORA",
-          "location-label": "UBICACION",
-          "location-value": "VILLAVICENCIO / COLOMBIA 🇨🇴",
-          "role-label": "ROL",
-          "role-value": "SENIOR FULL STACK WEB DEVELOPER",
-          "stats": {
-            "years-label": "EXPERIENCIA DE",
-            "years-value": "8",
-            "stack-label": "TECH SKILLS",
-            "stack-value": "17+",
-            "projects-label": "PROYECTOS",
-            "languages-label": "IDIOMAS",
-            "languages-value": "EN / ES"
-          }
+        'hero': {
+          'tag': 'CCS MEMBER :: ID-001',
+          'orcid-aria': 'Perfil de ORCID',
+          'open-portrait': 'Abrir retrato',
+          'portrait-alt': 'Cristian D. Moreno (Kyonax) retrato',
+          'available': 'DISPONIBLE PARA TRABAJO REMOTO',
+          'summary': '8 años entregando <strong>soluciones web escalables, adaptables y de alto rendimiento</strong> para clientes nacionales e internacionales. Actualmente Frontend Engineer en <strong>AgileEngine</strong> para <strong>Madison Reed</strong>, Fundador y Lead Engineer en <strong>Zerønet Labs</strong>.',
+          'primary-cta': 'VER EXPERIENCIA',
+          'secondary-cta': 'CONTACTAME',
+          'scroll-hint': 'SCROLL // EXPLORA',
+          'location-label': 'UBICACION',
+          'location-value': 'VILLAVICENCIO / COLOMBIA 🇨🇴',
+          'role-label': 'ROL',
+          'role-value': 'SENIOR FULL STACK WEB DEVELOPER',
+          'stats': {
+            'years-label': 'EXPERIENCIA DE',
+            'years-value': '8',
+            'stack-label': 'TECH SKILLS',
+            'stack-value': '17+',
+            'projects-label': 'PROYECTOS',
+            'languages-label': 'IDIOMAS',
+            'languages-value': 'EN / ES',
+          },
         },
-        "skills": {
-          "label": "STACK // HERRAMIENTAS",
-          "subtitle": "Tecnologías probadas en entornos de producción",
-          "categories": {
-            "frontend": "FRONTEND",
-            "backend": "BACKEND",
-            "devops": "DEVOPS // INFRA",
-            "ai": "IA // AUTOMATIZACIÓN",
-            "language": "LENGUAJES"
-          }
+        'skills': {
+          'label': 'STACK // HERRAMIENTAS',
+          'subtitle': 'Tecnologías probadas en entornos de producción',
+          'categories': {
+            'frontend': 'FRONTEND',
+            'backend': 'BACKEND',
+            'devops': 'DEVOPS // INFRA',
+            'ai': 'IA // AUTOMATIZACIÓN',
+            'language': 'LENGUAJES',
+          },
         },
-        "experience": {
-          "label": "EXPERIENCIA // LÍNEA DE TIEMPO",
-          "subtitle": "De growth marketing a liderazgo en ingeniería, 8 años construyendo.",
-          "tools-label": "STACK",
-          "read-more": "VER DETALLE COMPLETO"
+        'experience': {
+          'label': 'EXPERIENCIA // LÍNEA DE TIEMPO',
+          'subtitle': 'De growth marketing a liderazgo en ingeniería, 8 años construyendo.',
+          'tools-label': 'STACK',
+          'read-more': 'VER DETALLE COMPLETO',
         },
-        "modal": {
-          "close": "Cerrar",
-          "highlights": "Puntos Clave"
+        'modal': {
+          'close': 'Cerrar',
+          'highlights': 'Puntos Clave',
         },
-        "projects": {
-          "label": "AHORA // TRABAJANDO EN",
-          "subtitle": "Deadlines en vivo, contadores reales. Lo que estoy construyendo ahora mismo.",
-          "view-repo": "VER REPO",
-          "featured-label": "DESTACADOS // PORTAFOLIO",
-          "ends-in-prefix": "TERMINA EN",
-          "started-in-prefix": "INICIO EN",
-          "ended-state": "FINALIZADO",
-          "no-link": "// ENDPOINT :: CLASIFICADO",
-          "timezone-label": "// BOGOTA // GMT-05",
-          "view-details": "VER DETALLES",
-          "view-more": "VER MÁS",
-          "stack-label": "STACK",
-          "description-label": "DESCRIPCIÓN",
-          "previews-label": "PREVIEWS",
-          "previous-image": "Imagen anterior",
-          "next-image": "Imagen siguiente",
-          "preview-alt": "vista previa",
-          "play-video-label": "Reproducir video {title} en YouTube",
-          "youtube-source": "YouTube",
-          "youtube-consent-title": "Cargar este video desde YouTube",
-          "youtube-consent-body": "Al reproducir se carga contenido desde youtube-nocookie.com, que puede guardar datos en tu dispositivo bajo la política de privacidad de Google.",
-          "youtube-consent-accept": "Cargar video",
-          "youtube-consent-decline": "Cancelar",
-          "status": {
-            "working-on": "TRABAJANDO EN",
-            "done": "ENTREGADO",
-            "in-progress": "EN PROGRESO",
-            "on-hold": "EN PAUSA",
-            "on-todo": "PLANEADO",
-            "live": "EN VIVO",
-            "deprecated": "DESCONTINUADO",
-            "updating": "ACTUALIZANDO",
-            "release": "LANZAMIENTO"
-          }
+        'projects': {
+          'label': 'AHORA // TRABAJANDO EN',
+          'subtitle': 'Deadlines en vivo, contadores reales. Lo que estoy construyendo ahora mismo.',
+          'view-repo': 'VER REPO',
+          'featured-label': 'DESTACADOS // PORTAFOLIO',
+          'ends-in-prefix': 'TERMINA EN',
+          'started-in-prefix': 'INICIO EN',
+          'ended-state': 'FINALIZADO',
+          'no-link': '// ENDPOINT :: CLASIFICADO',
+          'timezone-label': '// BOGOTA // GMT-05',
+          'view-details': 'VER DETALLES',
+          'view-more': 'VER MÁS',
+          'stack-label': 'STACK',
+          'description-label': 'DESCRIPCIÓN',
+          'previews-label': 'PREVIEWS',
+          'previous-image': 'Imagen anterior',
+          'next-image': 'Imagen siguiente',
+          'preview-alt': 'vista previa',
+          'play-video-label': 'Reproducir video {title} en YouTube',
+          'youtube-source': 'YouTube',
+          'youtube-consent-title': 'Cargar este video desde YouTube',
+          'youtube-consent-body': 'Al reproducir se carga contenido desde youtube-nocookie.com, que puede guardar datos en tu dispositivo bajo la política de privacidad de Google.',
+          'youtube-consent-accept': 'Cargar video',
+          'youtube-consent-decline': 'Cancelar',
+          'status': {
+            'working-on': 'TRABAJANDO EN',
+            'done': 'ENTREGADO',
+            'in-progress': 'EN PROGRESO',
+            'on-hold': 'EN PAUSA',
+            'on-todo': 'PLANEADO',
+            'live': 'EN VIVO',
+            'deprecated': 'DESCONTINUADO',
+            'updating': 'ACTUALIZANDO',
+            'release': 'LANZAMIENTO',
+          },
         },
-        "faq": {
-          "tag": "// 05",
-          "title": "FAQ // CONSULTAS",
-          "subtitle": "Respuestas rápidas a las preguntas que me hacen con más frecuencia.",
-          "section-aria": "Preguntas frecuentes",
-          "items": {
-            "location": {
-              "question": "¿Eres un Ingeniero de Software que trabaja desde Colombia?",
-              "answer": "Sí. Trabajo desde <strong>Villavicencio, Colombia</strong>, con más de <strong>8 años</strong> de experiencia como ingeniero de software. Colaboro de forma remota con equipos en Estados Unidos y otros países, y mis horas coinciden con el horario US Eastern y Central. Hablo inglés y español a nivel profesional."
+        'faq': {
+          'tag': '// 05',
+          'title': 'FAQ // CONSULTAS',
+          'subtitle': 'Respuestas rápidas a las preguntas que me hacen con más frecuencia.',
+          'section-aria': 'Preguntas frecuentes',
+          'items': {
+            'location': {
+              'question': '¿Eres un Ingeniero de Software que trabaja desde Colombia?',
+              'answer': 'Sí. Trabajo desde <strong>Villavicencio, Colombia</strong>, con más de <strong>8 años</strong> de experiencia como ingeniero de software. Colaboro de forma remota con equipos en Estados Unidos y otros países, y mis horas coinciden con el horario US Eastern y Central. Hablo inglés y español a nivel profesional.',
             },
-            "availability": {
-              "question": "¿Estás disponible para proyectos freelance o nuevos trabajos?",
-              "answer": "Para <strong>proyectos pequeños y landing pages</strong>, sí, puedo trabajar en esos junto con mi rol actual. Para <strong>proyectos más grandes o de largo plazo</strong>, necesitaría dejar mi posición actual primero, lo cual estoy dispuesto a considerar para la oportunidad correcta. La mejor forma de empezar es contactarme con los detalles del proyecto para revisarlos juntos."
+            'availability': {
+              'question': '¿Estás disponible para proyectos freelance o nuevos trabajos?',
+              'answer': 'Para <strong>proyectos pequeños y landing pages</strong>, sí, puedo trabajar en esos junto con mi rol actual. Para <strong>proyectos más grandes o de largo plazo</strong>, necesitaría dejar mi posición actual primero, lo cual estoy dispuesto a considerar para la oportunidad correcta. La mejor forma de empezar es contactarme con los detalles del proyecto para revisarlos juntos.',
             },
-            "work": {
-              "question": "¿Qué tipo de trabajo realizas como Ingeniero Full-Stack?",
-              "answer": "Construyo productos web completos, desde la interfaz de usuario hasta el lado del servidor. Mi trabajo cubre aplicaciones web personalizadas, landing pages, <strong>mejoras de rendimiento</strong>, <strong>cumplimiento de accesibilidad</strong>, y migración de bases de código antiguas a stacks modernos. Cubro tanto <strong>frontend como backend</strong>, así los proyectos pueden avanzar sin necesidad de un equipo separado para cada capa."
+            'work': {
+              'question': '¿Qué tipo de trabajo realizas como Ingeniero Full-Stack?',
+              'answer': 'Construyo productos web completos, desde la interfaz de usuario hasta el lado del servidor. Mi trabajo cubre aplicaciones web personalizadas, landing pages, <strong>mejoras de rendimiento</strong>, <strong>cumplimiento de accesibilidad</strong>, y migración de bases de código antiguas a stacks modernos. Cubro tanto <strong>frontend como backend</strong>, así los proyectos pueden avanzar sin necesidad de un equipo separado para cada capa.',
             },
-            "current-role": {
-              "question": "¿Con quién trabajas actualmente?",
-              "answer": "Actualmente soy <strong>Senior Frontend Engineer en AgileEngine</strong>, trabajando con <strong>Madison Reed</strong>, una empresa de e-commerce en Estados Unidos del sector de belleza y cuidado del cabello. También dirijo <strong>Zerønet Labs</strong>, un pequeño estudio para proyectos personales y herramientas."
+            'current-role': {
+              'question': '¿Con quién trabajas actualmente?',
+              'answer': 'Actualmente soy <strong>Senior Frontend Engineer en AgileEngine</strong>, trabajando con <strong>Madison Reed</strong>, una empresa de e-commerce en Estados Unidos del sector de belleza y cuidado del cabello. También dirijo <strong>Zerønet Labs</strong>, un pequeño estudio para proyectos personales y herramientas.',
             },
-            "different": {
-              "question": "¿Qué hace diferente tu trabajo del de otros ingenieros Full-Stack?",
-              "answer": "Me enfoco en <strong>rendimiento y accesibilidad</strong> desde el inicio de cada proyecto, lo que ahorra tiempo después. Uso herramientas de IA como <strong>Claude, GPT y n8n</strong> para acelerar las partes del trabajo que se benefician de la automatización, manteniendo la calidad alta. Mis principales fortalezas son las <strong>migraciones de código y las mejoras de arquitectura</strong>."
+            'different': {
+              'question': '¿Qué hace diferente tu trabajo del de otros ingenieros Full-Stack?',
+              'answer': 'Me enfoco en <strong>rendimiento y accesibilidad</strong> desde el inicio de cada proyecto, lo que ahorra tiempo después. Uso herramientas de IA como <strong>Claude, GPT y n8n</strong> para acelerar las partes del trabajo que se benefician de la automatización, manteniendo la calidad alta. Mis principales fortalezas son las <strong>migraciones de código y las mejoras de arquitectura</strong>.',
             },
-            "contact": {
-              "question": "¿Cómo pueden contactarte reclutadores o clientes?",
-              "answer": "La forma más rápida es por correo a <strong>support&#64;kyonax.com</strong>. También puedes encontrarme en <strong>GitHub (&#64;Kyonax)</strong>, <strong>LinkedIn</strong> y <strong>X</strong>. Respondo en 24 horas en días laborales. Si me contactas por trabajo de proyecto, por favor incluye el alcance y los plazos en tu mensaje."
-            }
-          }
+            'contact': {
+              'question': '¿Cómo pueden contactarte reclutadores o clientes?',
+              'answer': 'La forma más rápida es por correo a <strong>support&#64;kyonax.com</strong>. También puedes encontrarme en <strong>GitHub (&#64;Kyonax)</strong>, <strong>LinkedIn</strong> y <strong>X</strong>. Respondo en 24 horas en días laborales. Si me contactas por trabajo de proyecto, por favor incluye el alcance y los plazos en tu mensaje.',
+            },
+          },
         },
-        "footer": {
-          "tag": "FIN DE LA TRANSMISIÓN",
-          "signoff": "Construido con Vue 3 + Vite SSG + vue-router + vue-i18n + Unhead + JSON-LD + SCSS + Sharp + Web Workers. MADE WITH LOVE.",
-          "rights": "© 2025 Kyonax, Todos los derechos reservados sobre trabajos originales.",
-          "made-by": "DISEÑADO Y CONSTRUIDO POR CRISTIAN D. MORENO"
-        }
-      }
-    }
-  }
+        'footer': {
+          'tag': 'FIN DE LA TRANSMISIÓN',
+          'signoff': 'Construido con Vue 3 + Vite SSG + vue-router + vue-i18n + Unhead + JSON-LD + SCSS + Sharp + Web Workers. MADE WITH LOVE.',
+          'rights': '© 2025 Kyonax, Todos los derechos reservados sobre trabajos originales.',
+          'made-by': 'DISEÑADO Y CONSTRUIDO POR CRISTIAN D. MORENO',
+        },
+      },
+    },
+  },
 };
 
 export default TRANSLATIONS;

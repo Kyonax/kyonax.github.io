@@ -3,10 +3,9 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { onBeforeUnmount, onMounted, reactive } from 'vue';
-
 import { PROJECTS } from '@data/projects';
 import NowProjectWorker from '@workers/now-project.worker.js?worker';
+import { onBeforeUnmount, onMounted, reactive } from 'vue';
 
 /**
  * Reactive countdown map for the given project keys.

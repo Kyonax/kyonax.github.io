@@ -32,9 +32,9 @@
  *   SCSS additionalData injects @scss/abstracts globally
  */
 
-import { fileURLToPath, URL } from 'node:url';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
+import { fileURLToPath, URL } from 'node:url';
 
 import vue from '@vitejs/plugin-vue';
 import { defineConfig, loadEnv } from 'vite';
@@ -71,10 +71,12 @@ const resolveDirIndex = (rootDir) => (req, res, next) => {
   const qIdx = raw.indexOf('?');
   const path = qIdx === -1 ? raw : raw.slice(0, qIdx);
   const query = qIdx === -1 ? '' : raw.slice(qIdx);
-  if (path === '/' || /\.[a-z0-9]+$/i.test(path)) return next();
-  const candidate = resolvePath(rootDir, '.' + path, 'index.html');
+  if (path === '/' || /\.[a-z0-9]+$/i.test(path)) {
+    return next();
+  }
+  const candidate = resolvePath(rootDir, `.${  path}`, 'index.html');
   if (existsSync(candidate)) {
-    req.url = path + '/index.html' + query;
+    req.url = `${path  }/index.html${  query}`;
   }
   next();
 };
@@ -90,8 +92,10 @@ const servePublicHtmlInDev = (publicDir) => (req, res, next) => {
   const raw = req.url || '/';
   const qIdx = raw.indexOf('?');
   const path = qIdx === -1 ? raw : raw.slice(0, qIdx);
-  if (path === '/' || /\.[a-z0-9]+$/i.test(path)) return next();
-  const candidate = resolvePath(publicDir, '.' + path, 'index.html');
+  if (path === '/' || /\.[a-z0-9]+$/i.test(path)) {
+    return next();
+  }
+  const candidate = resolvePath(publicDir, `.${  path}`, 'index.html');
   if (existsSync(candidate)) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache');
@@ -165,13 +169,20 @@ export default defineConfig(({ mode }) => {
           order: 'post',
           handler(html, ctx) {
             const bundle = ctx.bundle || {};
+            const PORTRAIT_EXT = /\.(jpg|jpeg|webp|avif)$/;
+            const PORTRAIT_WIDTH = /^kyonax_portrait-(\d+)-/;
             const portrait = Object.keys(bundle)
-              .filter((name) =>
-                /kyonax_portrait(?:-\d+)?-[A-Za-z0-9_-]+\.(?:jpg|jpeg|webp|avif)$/
-                  .test(name))
+              .filter((name) => {
+                if (!PORTRAIT_EXT.test(name)) {
+                  return false;
+                }
+                const base = name.split('/').pop();
+                return base.startsWith('kyonax_portrait');
+              })
               .map((name) => {
-                const m = name.match(/kyonax_portrait-(\d+)-/);
-                return { name, width: m ? parseInt(m[1], 10) : 0 };
+                const base = name.split('/').pop();
+                const m = base.match(PORTRAIT_WIDTH);
+                return { name, width: m ? Number.parseInt(m[1], 10) : 0 };
               })
               .sort((a, b) => a.width - b.width);
 
@@ -187,14 +198,14 @@ export default defineConfig(({ mode }) => {
               .join(', ');
 
             const tag = sized.length > 0
-              ? `<link rel="preload" as="image" `
+              ? '<link rel="preload" as="image" '
                 + `href="/${fallback.name}" `
                 + `imagesrcset="${srcset}" `
-                + `imagesizes="(max-width: 768px) 300px, (max-width: 1200px) 600px, 900px" `
-                + `fetchpriority="high">`
-              : `<link rel="preload" as="image" `
+                + 'imagesizes="(max-width: 768px) 300px, (max-width: 1200px) 600px, 900px" '
+                + 'fetchpriority="high">'
+              : '<link rel="preload" as="image" '
                 + `href="/${fallback.name}" `
-                + `fetchpriority="high">`;
+                + 'fetchpriority="high">';
 
             return html.replace('<!-- LCP-PRELOAD-PLACEHOLDER -->', tag);
           },
@@ -209,7 +220,7 @@ export default defineConfig(({ mode }) => {
         transformIndexHtml: {
           order: 'post',
           handler(html) {
-            const snippet = `<script>(function(){var p=location.pathname,e=new URLSearchParams(location.search).get("language");if(p==="/"||p===""){var s=null;try{s=localStorage.getItem("kyo:lang")}catch(x){}var n=(navigator.language||"").slice(0,2).toLowerCase(),k=e||s||n;if(k==="es")location.replace("/es"+location.hash)}else if(p==="/es"){if(e==="en")location.replace("/"+location.hash)}})();</script>`;
+            const snippet = '<script>(function(){var p=location.pathname,e=new URLSearchParams(location.search).get("language");if(p==="/"||p===""){var s=null;try{s=localStorage.getItem("kyo:lang")}catch(x){}var n=(navigator.language||"").slice(0,2).toLowerCase(),k=e||s||n;if(k==="es")location.replace("/es"+location.hash)}else if(p==="/es"){if(e==="en")location.replace("/"+location.hash)}})();</script>';
             return html.replace(/<meta name="viewport"[^>]*>/, (m) => m + snippet);
           },
         },
@@ -297,6 +308,7 @@ export default defineConfig(({ mode }) => {
     test: {
       environment: 'happy-dom',
       globals: true,
+      passWithNoTests: true,
       include: ['src/**/*.{test,spec}.{js,mjs}'],
       coverage: {
         provider: 'v8',

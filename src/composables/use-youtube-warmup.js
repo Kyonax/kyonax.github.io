@@ -16,16 +16,22 @@ const _warmed = new Set();
  * Deduped by `key`; `null` (default) acts as a single-shot global.
  */
 export const warmYoutube = (key = null) => {
-  if (typeof document === 'undefined') return;
+  if (typeof document === 'undefined') {
+    return;
+  }
   const cache_key = key === null ? '__global__' : key;
-  if (_warmed.has(cache_key)) return;
+  if (_warmed.has(cache_key)) {
+    return;
+  }
   _warmed.add(cache_key);
   for (const [rel, href] of HINTS) {
     const link = document.createElement('link');
     link.rel = rel;
     link.href = href;
-    if (rel === 'preconnect') link.crossOrigin = '';
-    document.head.appendChild(link);
+    if (rel === 'preconnect') {
+      link.crossOrigin = '';
+    }
+    document.head.append(link);
   }
 };
 

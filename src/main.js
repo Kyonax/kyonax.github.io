@@ -3,13 +3,14 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import '@scss/main.scss';
+
+import { createI18nInstance } from '@i18n';
+import { localeFromRoute } from '@i18n/locale-from-route';
 import { ViteSSG } from 'vite-ssg';
 
 import App from './App.vue';
-import { createI18nInstance } from '@i18n';
-import { localeFromRoute } from '@i18n/locale-from-route';
 import { ROUTES } from './router';
-import '@scss/main.scss';
 
 export const createApp = ViteSSG(
   App,

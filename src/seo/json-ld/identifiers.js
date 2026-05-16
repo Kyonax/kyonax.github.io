@@ -8,7 +8,7 @@
  * share an @id without colliding entities in Google's graph.
  */
 
-import { SITE_ORIGIN, LOCALE_URL } from '@data/data';
+import { LOCALE_URL,SITE_ORIGIN } from '@data/data';
 
 export const WEBSITE_ID = `${SITE_ORIGIN}/#website`;
 export const PERSON_ID  = `${SITE_ORIGIN}/#person`;

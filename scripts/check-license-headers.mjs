@@ -12,7 +12,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { REPO_ROOT, head, ok, fail, walk, read, rel, exitWith, hasCcsHeader } from './_lib.mjs';
+import { exitWith, fail, hasCcsHeader,head, ok, read, rel, REPO_ROOT, walk } from './_lib.mjs';
 
 const ROOTS = ['src', 'scripts'].map((r) => join(REPO_ROOT, r)).filter(existsSync);
 if (ROOTS.length === 0) {
@@ -35,6 +35,8 @@ for (const f of files) {
 
 if (failures.length) {
   console.log('');
-  for (const f of failures) fail(f);
+  for (const f of failures) {
+    fail(f);
+  }
 }
 exitWith({ failures, name: 'check-license-headers' });

@@ -3,7 +3,7 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { TECHNOLOGIES, AUTHOR_INFO, SEO, LOCALE_URL, SITE_ORIGIN } from '@data/data';
+import { AUTHOR_INFO, LOCALE_URL, SEO, SITE_ORIGIN,TECHNOLOGIES } from '@data/data';
 import { TRANSLATIONS } from '@data/snippets';
 
 import { PERSON_ID } from './identifiers';
@@ -42,7 +42,9 @@ const _knows_about = (locale) => {
 const _i18n = (locale, path) => {
   const parts = path.split('.');
   let v = TRANSLATIONS?.[locale]?.['kyo-web'];
-  for (const p of parts) v = v?.[p];
+  for (const p of parts) {
+    v = v?.[p];
+  }
   return typeof v === 'string' ? v : '';
 };
 

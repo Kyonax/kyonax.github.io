@@ -22,7 +22,7 @@ import { extractJsonLdBlocks, listSchemaTypes }
 import { findBlockOfType, validateBreadcrumbList }
   from '/Volumes/dev-partition/local-projects/seo-analyzer/jsonld-check/validators.mjs';
 
-import { REPO_ROOT, c } from './_lib.mjs';
+import { c,REPO_ROOT } from './_lib.mjs';
 
 const ROUTES = [
   { path: '/',           expectedTypes: ['WebSite', 'Person', 'ProfilePage', 'FAQPage'] },
@@ -36,7 +36,9 @@ const args = new Set(process.argv.slice(2));
 const SHOW_RAW = args.has('--show-raw');
 const REPORT_PATH = (() => {
   const arg = process.argv.find((a) => a.startsWith('--report='));
-  if (arg) return resolve(REPO_ROOT, arg.slice('--report='.length));
+  if (arg) {
+    return resolve(REPO_ROOT, arg.slice('--report='.length));
+  }
   return resolve(REPO_ROOT, 'reports/seo-audit.md');
 })();
 
@@ -48,7 +50,9 @@ const _fetch = async (url) => {
 const _explode_graph = (blocks) => {
   const out = [];
   for (const b of blocks) {
-    if (!b.parsed) { out.push(b); continue; }
+    if (!b.parsed) {
+      out.push(b); continue; 
+    }
     if (Array.isArray(b.parsed['@graph'])) {
       for (const node of b.parsed['@graph']) {
         out.push({ ...b, parsed: { '@context': b.parsed['@context'], ...node } });
@@ -160,9 +164,12 @@ for (const route of ROUTES) {
   for (const t of meta_tests) {
     checks.push(t);
     const icon = t.pass ? _green('✓') : _red('✗');
-    console.log(`  ${icon} ${t.name} ${_dim('→ ' + t.detail)}`);
-    if (t.pass) { total_pass += 1; route_pass += 1; }
-    else        { total_fail += 1; route_fail += 1; }
+    console.log(`  ${icon} ${t.name} ${_dim(`→ ${  t.detail}`)}`);
+    if (t.pass) {
+      total_pass += 1; route_pass += 1; 
+    } else        {
+      total_fail += 1; route_fail += 1; 
+    }
   }
 
   const raw_blocks = extractJsonLdBlocks(fetched.html);
@@ -240,7 +247,7 @@ for (const route of ROUTES) {
 
 console.log('');
 console.log(_bold('━━ Summary'));
-console.log(`  ${_green(total_pass + ' pass')}, ${total_fail === 0 ? '0 fail' : _red(total_fail + ' fail')}`);
+console.log(`  ${_green(`${total_pass  } pass`)}, ${total_fail === 0 ? '0 fail' : _red(`${total_fail  } fail`)}`);
 
 const md = [];
 md.push('# SEO Audit Report');
@@ -263,7 +270,7 @@ for (const s of reportSections) {
   md.push(`## ${s.url}`);
   md.push('');
   if (s.error) {
-    md.push(`**Status:** FETCH ERROR`);
+    md.push('**Status:** FETCH ERROR');
     md.push('');
     md.push('```');
     md.push(s.error);
@@ -326,7 +333,7 @@ for (const s of reportSections) {
 
 mkdirSync(resolve(REPORT_PATH, '..'), { recursive: true });
 writeFileSync(REPORT_PATH, md.join('\n'), 'utf8');
-const rel = REPORT_PATH.replace(REPO_ROOT + '/', '');
+const rel = REPORT_PATH.replace(`${REPO_ROOT  }/`, '');
 console.log(`  ${_dim('report:')} ${rel}`);
 
 process.exit(total_fail === 0 ? 0 : 1);

@@ -33,7 +33,7 @@ const _build_manifest = () => {
 
     if (variant_match) {
       [, base, , ext] = variant_match;
-      width = parseInt(variant_match[2], 10);
+      width = Number.parseInt(variant_match[2], 10);
     } else if (plain_match) {
       [, base, ext] = plain_match;
     } else {

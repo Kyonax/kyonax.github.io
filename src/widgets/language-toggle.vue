@@ -4,12 +4,11 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { ref, nextTick } from 'vue';
-import { useI18n } from 'vue-i18n';
-
-import UiButton from '@ui/button.vue';
 import useClickOutside from '@composables/use-click-outside';
 import useLanguage from '@composables/use-language';
+import UiButton from '@ui/button.vue';
+import { nextTick,ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const { locale, supportedLanguages, setLanguage } = useLanguage();
@@ -19,14 +18,20 @@ const root = ref(null);
 const trigger = ref(null);
 const item_refs = ref([]);
 
-useClickOutside(root, () => { open.value = false; });
+useClickOutside(root, () => {
+  open.value = false; 
+});
 
 const focusItem = (idx) => {
   const els = item_refs.value;
-  if (!els.length) return;
+  if (!els.length) {
+    return;
+  }
   const wrapped = (idx + els.length) % els.length;
   const target = els[wrapped];
-  if (target && typeof target.focus === 'function') target.focus();
+  if (target && typeof target.focus === 'function') {
+    target.focus();
+  }
 };
 
 const openMenu = async () => {
@@ -44,8 +49,11 @@ const closeMenu = (returnFocus = true) => {
 };
 
 const onTriggerClick = () => {
-  if (open.value) closeMenu(false);
-  else openMenu();
+  if (open.value) {
+    closeMenu(false);
+  } else {
+    openMenu();
+  }
 };
 
 const select = (code) => {
@@ -67,18 +75,26 @@ const ITEM_KEY_HANDLERS = {
   End:       ()    => focusItem(item_refs.value.length - 1),
   Escape:    ()    => closeMenu(),
   // Tab intentionally lets focus leave naturally (no preventDefault).
-  Tab:       ()    => { open.value = false; },
+  Tab:       ()    => {
+    open.value = false; 
+  },
 };
 
 const onItemKeydown = (event, idx) => {
   const handler = ITEM_KEY_HANDLERS[event.key];
-  if (!handler) return;
-  if (event.key !== 'Tab') event.preventDefault();
+  if (!handler) {
+    return;
+  }
+  if (event.key !== 'Tab') {
+    event.preventDefault();
+  }
   handler(idx);
 };
 
 const setItemRef = (el, idx) => {
-  if (!el) return;
+  if (!el) {
+    return;
+  }
   item_refs.value[idx] = el;
 };
 </script>
@@ -96,22 +112,25 @@ const setItemRef = (el, idx) => {
       aria-controls="language-toggle-menu"
       :aria-label="t('kyo-web.widget.trans-lang.button-aria')"
       @click="onTriggerClick"
-      @keydown="onTriggerKeydown">
+      @keydown="onTriggerKeydown"
+    >
       <span class="language-toggle__current">
         {{ t('kyo-web.widget.trans-lang.current') }}
       </span>
-      <span class="language-toggle__chevron" aria-hidden="true"></span>
+      <span class="language-toggle__chevron" aria-hidden="true" />
     </UiButton>
 
     <ul
       v-show="open"
       id="language-toggle-menu"
       class="language-toggle__list"
-      role="menu">
+      role="menu"
+    >
       <li
         v-for="(code, idx) in supportedLanguages"
         :key="code"
-        role="none">
+        role="none"
+      >
         <button
           :id="`language-option-${code}`"
           :ref="(el) => setItemRef(el, idx)"
@@ -122,7 +141,8 @@ const setItemRef = (el, idx) => {
           class="language-toggle__item"
           :class="{ 'is-active': locale === code }"
           @click="select(code)"
-          @keydown="onItemKeydown($event, idx)">
+          @keydown="onItemKeydown($event, idx)"
+        >
           {{ t(`kyo-web.widget.trans-lang.${code}`) }}
         </button>
       </li>

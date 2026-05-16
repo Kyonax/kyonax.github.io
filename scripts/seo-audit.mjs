@@ -4,11 +4,10 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { readFileSync, existsSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-import { REPO_ROOT, head, ok, fail, exitWith, c } from './_lib.mjs';
+import { c, exitWith, fail, head, ok, REPO_ROOT } from './_lib.mjs';
 
 const DIST = resolve(REPO_ROOT, 'dist');
 
@@ -26,7 +25,9 @@ const failures = [];
 head('seo-audit — checking built HTML');
 
 const _assert = (cond, msg) => {
-  if (!cond) failures.push(msg);
+  if (!cond) {
+    failures.push(msg);
+  }
 };
 
 for (const t of TARGETS) {
@@ -79,7 +80,9 @@ for (const t of TARGETS) {
     ok(`${t.path}: passed`);
   } else {
     fail(`${t.path}: ${local.length} issue(s)`);
-    for (const m of local) console.log(`    ${c('red', '-')} ${m}`);
+    for (const m of local) {
+      console.log(`    ${c('red', '-')} ${m}`);
+    }
   }
 }
 

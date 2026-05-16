@@ -3,9 +3,8 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { createI18n } from 'vue-i18n';
-
 import { DEFAULT_LANGUAGE } from '@data/data';
+import { createI18n } from 'vue-i18n';
 
 import messages from './messages';
 

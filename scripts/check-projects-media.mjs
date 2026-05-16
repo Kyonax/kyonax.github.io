@@ -22,7 +22,7 @@ import { existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { REPO_ROOT, head, ok, fail, exitWith, c } from './_lib.mjs';
+import { c, exitWith, head, ok, REPO_ROOT } from './_lib.mjs';
 
 const PROJECTS_PATH = resolve(REPO_ROOT, 'src/data/projects.js');
 const YOUTUBE_PATH  = resolve(REPO_ROOT, 'src/data/youtube.js');
@@ -36,7 +36,9 @@ const { classifyMediaEntry } = await import(pathToFileURL(YOUTUBE_PATH).href);
 
 const _local_files = new Set();
 if (existsSync(ASSETS_DIR)) {
-  for (const f of readdirSync(ASSETS_DIR)) _local_files.add(f);
+  for (const f of readdirSync(ASSETS_DIR)) {
+    _local_files.add(f);
+  }
 }
 
 const _basename = (filename) => filename.replace(/\.[^.]+$/, '');
@@ -53,11 +55,14 @@ for (const [key, project] of Object.entries(PROJECTS)) {
     const classified = classifyMediaEntry(entry);
 
     if (!classified) {
-      const raw = entry && typeof entry === 'object' && entry.kind === 'youtube'
-        ? `object kind=youtube has invalid id "${entry.id}"`
-        : typeof entry === 'string' && /youtu(\.be|be\.com)/i.test(entry)
-          ? `cannot extract YouTube ID from "${entry}"`
-          : `unsupported entry shape (typeof ${typeof entry})`;
+      let raw;
+      if (entry && typeof entry === 'object' && entry.kind === 'youtube') {
+        raw = `object kind=youtube has invalid id "${entry.id}"`;
+      } else if (typeof entry === 'string' && /youtu(\.be|be\.com)/i.test(entry)) {
+        raw = `cannot extract YouTube ID from "${entry}"`;
+      } else {
+        raw = `unsupported entry shape (typeof ${typeof entry})`;
+      }
       failures.push(`${key}.images[${i}]: ${raw}`);
       continue;
     }
@@ -95,8 +100,12 @@ for (const [key, project] of Object.entries(PROJECTS)) {
       continue;
     }
     const base = _basename(filename);
-    if (!_local_files.has(`${base}.webp`)) failures.push(`${key}.images[${i}]: derived WebP "${base}.webp" missing (run convert-images)`);
-    if (!_local_files.has(`${base}.avif`)) failures.push(`${key}.images[${i}]: derived AVIF "${base}.avif" missing (run convert-images)`);
+    if (!_local_files.has(`${base}.webp`)) {
+      failures.push(`${key}.images[${i}]: derived WebP "${base}.webp" missing (run convert-images)`);
+    }
+    if (!_local_files.has(`${base}.avif`)) {
+      failures.push(`${key}.images[${i}]: derived AVIF "${base}.avif" missing (run convert-images)`);
+    }
   }
 }
 

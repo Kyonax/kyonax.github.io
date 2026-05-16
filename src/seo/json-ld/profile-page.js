@@ -3,8 +3,9 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { SITE_ORIGIN, SEO, LOCALE_URL } from '@data/data';
-import { profilePageId, PERSON_ID, WEBSITE_ID, today } from './identifiers';
+import { LOCALE_URL,SEO, SITE_ORIGIN } from '@data/data';
+
+import { PERSON_ID, profilePageId, today,WEBSITE_ID } from './identifiers';
 
 const BUILD_DATE = today();
 

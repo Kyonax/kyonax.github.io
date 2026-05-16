@@ -9,12 +9,11 @@
  * youtube-nocookie.com unconditionally.
  */
 
+import { warmYoutube } from '@composables/use-youtube-warmup';
+import { buildYoutubeThumbnails } from '@data/youtube';
+import BrandIcon from '@ui/brand-icon.vue';
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-import BrandIcon from '@ui/brand-icon.vue';
-import { buildYoutubeThumbnails } from '@data/youtube';
-import { warmYoutube } from '@composables/use-youtube-warmup';
 
 const props = defineProps({
   videoId:   { type: String, required: true },
@@ -35,8 +34,12 @@ const _consent_prompt_open = ref(false);
 const _iframe_ref = ref(null);
 
 const _origin = computed(() => {
-  if (props.origin) return props.origin;
-  if (typeof window !== 'undefined') return window.location.origin;
+  if (props.origin) {
+    return props.origin;
+  }
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
   return 'https://kyonax.com';
 });
 
@@ -67,14 +70,23 @@ const channel_name = computed(() => props.channel?.name || '');
 const _show_channel = computed(() => props.showChannel && Boolean(channel_name.value));
 
 const _has_consent = () => {
-  if (typeof localStorage === 'undefined') return false;
-  try { return localStorage.getItem('kyo:consent') === 'granted'; }
-  catch { return false; }
+  if (typeof localStorage === 'undefined') {
+    return false;
+  }
+  try {
+    return localStorage.getItem('kyo:consent') === 'granted'; 
+  } catch {
+    return false; 
+  }
 };
 
 const _persist_consent = () => {
-  if (typeof localStorage === 'undefined') return;
-  try { localStorage.setItem('kyo:consent', 'granted'); } catch { /* private mode */ }
+  if (typeof localStorage === 'undefined') {
+    return;
+  }
+  try {
+    localStorage.setItem('kyo:consent', 'granted'); 
+  } catch { /* private mode */ }
   if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
     window.gtag('consent', 'update', {
       ad_storage:         'granted',
@@ -99,8 +111,12 @@ const _mount_iframe = async () => {
 };
 
 const activate = () => {
-  if (_activated.value) return;
-  if (_has_consent()) { _mount_iframe(); return; }
+  if (_activated.value) {
+    return;
+  }
+  if (_has_consent()) {
+    _mount_iframe(); return; 
+  }
   _consent_prompt_open.value = true;
 };
 
@@ -115,7 +131,9 @@ const decline_consent = () => {
 
 const pause = () => {
   const f = _iframe_ref.value;
-  if (!f || !f.contentWindow) return;
+  if (!f || !f.contentWindow) {
+    return;
+  }
   try {
     f.contentWindow.postMessage(
       JSON.stringify({ event: 'command', func: 'pauseVideo', args: [] }),
@@ -132,7 +150,8 @@ onBeforeUnmount(pause);
 <template>
   <div
     class="youtube-facade"
-    :class="{ 'is-activated': _activated }">
+    :class="{ 'is-activated': _activated }"
+  >
     <iframe
       v-if="_activated"
       ref="_iframe_ref"
@@ -142,7 +161,8 @@ onBeforeUnmount(pause);
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       allowfullscreen
       referrerpolicy="strict-origin-when-cross-origin"
-      loading="lazy" />
+      loading="lazy"
+    />
 
     <button
       v-else
@@ -151,10 +171,11 @@ onBeforeUnmount(pause);
       :aria-label="play_label"
       @click="activate"
       @pointerover="_warm"
-      @focus="_warm">
+      @focus="_warm"
+    >
       <picture class="youtube-facade__poster">
-        <source v-if="poster_avif" :srcset="poster_avif" type="image/avif">
-        <source :srcset="poster_webp" type="image/webp">
+        <source v-if="poster_avif" :srcset="poster_avif" type="image/avif" />
+        <source :srcset="poster_webp" type="image/webp" />
         <img
           class="youtube-facade__poster-img"
           :src="poster_fallback"
@@ -162,7 +183,8 @@ onBeforeUnmount(pause);
           alt=""
           loading="lazy"
           decoding="async"
-          @error="(e) => { if (e.target.src !== poster_alt_low) e.target.src = poster_alt_low; }">
+          @error="(e) => { if (e.target.src !== poster_alt_low) e.target.src = poster_alt_low; }"
+        />
       </picture>
 
       <span class="youtube-facade__play" aria-hidden="true">
@@ -185,7 +207,8 @@ onBeforeUnmount(pause);
       role="dialog"
       aria-modal="false"
       :aria-labelledby="`yt-consent-title-${videoId}`"
-      :aria-describedby="`yt-consent-body-${videoId}`">
+      :aria-describedby="`yt-consent-body-${videoId}`"
+    >
       <div class="youtube-facade__consent-card">
         <h4 :id="`yt-consent-title-${videoId}`" class="youtube-facade__consent-title">
           {{ t('kyo-web.landing.projects.youtube-consent-title') }}
@@ -197,13 +220,15 @@ onBeforeUnmount(pause);
           <button
             type="button"
             class="youtube-facade__consent-decline"
-            @click="decline_consent">
+            @click="decline_consent"
+          >
             {{ t('kyo-web.landing.projects.youtube-consent-decline') }}
           </button>
           <button
             type="button"
             class="youtube-facade__consent-accept"
-            @click="accept_consent">
+            @click="accept_consent"
+          >
             {{ t('kyo-web.landing.projects.youtube-consent-accept') }}
           </button>
         </div>

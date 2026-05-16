@@ -4,14 +4,13 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import { BRAND_ICON_IDS } from '@data/brand-icons';
+import { TECH_BY_ID } from '@data/data';
+import BrandIcon from '@ui/brand-icon.vue';
+import UiHudDeco from '@ui/hud-deco.vue';
+import UiSectionHeader from '@ui/section-header.vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-import BrandIcon from '@ui/brand-icon.vue';
-import UiSectionHeader from '@ui/section-header.vue';
-import UiHudDeco from '@ui/hud-deco.vue';
-import { TECHNOLOGIES, TECH_BY_ID } from '@data/data';
-import { BRAND_ICON_IDS } from '@data/brand-icons';
 
 const { t, locale } = useI18n();
 
@@ -75,23 +74,28 @@ const grouped = computed(() =>
   <section
     id="skills"
     class="skills kyo-section"
-    :aria-label="t('kyo-web.landing.skills.label')">
+    :aria-label="t('kyo-web.landing.skills.label')"
+  >
     <UiHudDeco variant="tr" text="// SYNC :: 31 NODES" />
     <UiHudDeco variant="bl" text="// デベロッパー" />
     <UiHudDeco variant="watermark" text="開発者" class="skills__watermark" />
     <UiSectionHeader
       tag="// 02"
       :title="t('kyo-web.landing.skills.label')"
-      :subtitle="t('kyo-web.landing.skills.subtitle')" />
+      :subtitle="t('kyo-web.landing.skills.subtitle')"
+    />
 
     <div class="skills__categories">
       <article
         v-for="cat in grouped"
         :key="cat.id"
-        class="skills__category">
+        class="skills__category"
+      >
         <header class="skills__category-header">
           <span class="icon-glyph icon-glyph--lg" :data-text="cat.glyph" aria-hidden="true" />
-          <h3 class="skills__category-label">{{ cat.label }}</h3>
+          <h3 class="skills__category-label">
+            {{ cat.label }}
+          </h3>
           <span class="skills__category-count">{{ String(cat.items.length).padStart(2, '0') }}</span>
         </header>
 
@@ -100,21 +104,25 @@ const grouped = computed(() =>
             v-for="item in cat.items"
             :key="item.id"
             class="skills__item element-flare"
-            :style="{ '--element-flare-delay': item.delay }">
+            :style="{ '--element-flare-delay': item.delay }"
+          >
             <BrandIcon
               v-if="item.brand"
               class="skills__item-icon brand-icon--xl"
-              :name="item.brand" />
+              :name="item.brand"
+            />
             <span
               v-else-if="item.glyph"
               class="icon-glyph icon-glyph--xl skills__item-icon"
               :data-text="item.glyph"
-              aria-hidden="true" />
+              aria-hidden="true"
+            />
             <span
               v-else
               class="skills__item-abbr"
               :data-text="item.abbr"
-              aria-hidden="true" />
+              aria-hidden="true"
+            />
             <span class="skills__item-name">{{ item.name }}</span>
           </li>
         </ul>

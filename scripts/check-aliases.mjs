@@ -17,7 +17,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { REPO_ROOT, head, ok, fail, read, exitWith, c } from './_lib.mjs';
+import { c,exitWith, fail, head, ok, read, REPO_ROOT } from './_lib.mjs';
 
 const VITE = join(REPO_ROOT, 'vite.config.js');
 const ESLINT = join(REPO_ROOT, 'eslint.config.mjs');
@@ -42,17 +42,23 @@ const aliasBlock = aliasBlockMatch[1];
 const aliases = {};
 for (const rawLine of aliasBlock.split('\n')) {
   const line = rawLine.trim();
-  if (!line || line.startsWith('//') || line.startsWith('/*')) continue;
+  if (!line || line.startsWith('//') || line.startsWith('/*')) {
+    continue;
+  }
 
   const head = line.match(/^['"](@[\w-]+)['"]\s*:/);
-  if (!head) continue;
+  if (!head) {
+    continue;
+  }
   const name = head[1];
 
   // Find the LAST quoted string on the line — that's the path argument
   // regardless of whether it's wrapped in r(), path.resolve(), or bare.
   const all = [...line.matchAll(/['"]([^'"]+)['"]/g)].map((m) => m[1]);
   const tail = all[all.length - 1];
-  if (!tail || tail === name) continue;
+  if (!tail || tail === name) {
+    continue;
+  }
 
   aliases[name] = tail.replace(/^\.\//, '');
 }
@@ -71,7 +77,9 @@ if (existsSync(ESLINT)) {
   // Name-presence check only — Vite owns alias resolution; ESLint just needs to know the names exist.
   let referenced = 0;
   for (const alias of Object.keys(aliases)) {
-    if (eslintSrc.includes(alias)) referenced += 1;
+    if (eslintSrc.includes(alias)) {
+      referenced += 1;
+    }
   }
   ok(`eslint.config.mjs found (${referenced}/${Object.keys(aliases).length} aliases mentioned by name)`);
 } else {
@@ -80,6 +88,8 @@ if (existsSync(ESLINT)) {
 
 if (failures.length) {
   console.log('');
-  for (const f of failures) fail(f);
+  for (const f of failures) {
+    fail(f);
+  }
 }
 exitWith({ failures, name: 'check-aliases' });

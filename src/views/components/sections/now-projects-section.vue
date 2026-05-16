@@ -4,22 +4,21 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-
-import { PROJECTS, PROJECT_STATUS, NOW_STATUS_PRIORITY, DEFAULT_NOW_STATUS, DEFAULT_FEATURED_STATUS } from '@data/projects';
-import { TECH_BY_ID } from '@data/data';
-import { BRAND_ICON_IDS } from '@data/brand-icons';
-import { normaliseMediaEntry } from '@data/youtube';
 import useProjectCountdowns from '@composables/use-project-countdowns';
 import { warmYoutube } from '@composables/use-youtube-warmup';
-import UiModal from '@ui/modal.vue';
+import { BRAND_ICON_IDS } from '@data/brand-icons';
+import { TECH_BY_ID } from '@data/data';
+import { DEFAULT_FEATURED_STATUS,DEFAULT_NOW_STATUS, NOW_STATUS_PRIORITY, PROJECT_STATUS, PROJECTS } from '@data/projects';
+import { normaliseMediaEntry } from '@data/youtube';
+import BrandIcon from '@ui/brand-icon.vue';
+import UiHudDeco from '@ui/hud-deco.vue';
 import UiImageViewer from '@ui/image-viewer.vue';
+import UiModal from '@ui/modal.vue';
 import UiSectionHeader from '@ui/section-header.vue';
 import UiStateGrid from '@ui/state-grid.vue';
-import UiHudDeco from '@ui/hud-deco.vue';
-import BrandIcon from '@ui/brand-icon.vue';
 import YoutubeFacade from '@ui/youtube-facade.vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const { t, te, locale } = useI18n();
 
@@ -45,7 +44,9 @@ const _resolve_image = (filename) => {
   const ext_match = filename.match(/\.([^.]+)$/);
   const ext = ext_match ? ext_match[1] : '';
   const fallback = _image_url_map[filename];
-  if (!fallback) return null;
+  if (!fallback) {
+    return null;
+  }
   return {
     name: base,
     ext,
@@ -62,18 +63,27 @@ const _now_ms = ref(0);
 let _tick_id = null;
 
 const _start_tick = () => {
-  if (_tick_id) return;
+  if (_tick_id) {
+    return;
+  }
   _now_ms.value = Date.now();
-  _tick_id = setInterval(() => { _now_ms.value = Date.now(); }, 1000);
+  _tick_id = setInterval(() => {
+    _now_ms.value = Date.now(); 
+  }, 1000);
 };
 const _stop_tick = () => {
-  if (!_tick_id) return;
+  if (!_tick_id) {
+    return;
+  }
   clearInterval(_tick_id);
   _tick_id = null;
 };
 const _on_visibility = () => {
-  if (document.hidden) _stop_tick();
-  else _start_tick();
+  if (document.hidden) {
+    _stop_tick();
+  } else {
+    _start_tick();
+  }
 };
 
 onMounted(() => {
@@ -86,7 +96,9 @@ onBeforeUnmount(() => {
 });
 
 const _format_elapsed_segments = (started_ms, now_ms) => {
-  if (!Number.isFinite(started_ms)) return [];
+  if (!Number.isFinite(started_ms)) {
+    return [];
+  }
   const diff_ms = Math.max(0, now_ms - started_ms);
   const sec = Math.floor(diff_ms / 1000) % 60;
   const min = Math.floor(diff_ms / 60000) % 60;
@@ -114,17 +126,23 @@ const _deadline_fmt = {
 };
 
 const _parse_bogota = (s) => {
-  if (!s) return null;
+  if (!s) {
+    return null;
+  }
   const ms = Date.parse(`${s} GMT-0500`);
   if (!Number.isFinite(ms)) {
-    if (import.meta.env.DEV) console.warn(`[projects] unparseable timestamp: ${s}`);
+    if (import.meta.env.DEV) {
+      console.warn(`[projects] unparseable timestamp: ${s}`);
+    }
     return null;
   }
   return ms;
 };
 
 const _format_deadline_ms = (ms) => {
-  if (ms == null || !Number.isFinite(ms)) return null;
+  if (ms === null || ms === undefined || !Number.isFinite(ms)) {
+    return null;
+  }
   const fmt = locale.value === 'es' ? _deadline_fmt.es : _deadline_fmt.en;
   return fmt.format(new Date(ms)).toUpperCase();
 };
@@ -133,13 +151,19 @@ const _format_deadline = (deadline_str) =>
   _format_deadline_ms(_parse_bogota(deadline_str));
 
 const _next_future_deadline = (project) => {
-  if (!project.deadlines) return null;
+  if (!project.deadlines) {
+    return null;
+  }
   const now = Date.now();
   let best = null;
   for (const [label, ts] of Object.entries(project.deadlines)) {
     const ms = _parse_bogota(ts);
-    if (ms == null || ms <= now) continue;
-    if (!best || ms < best.ms) best = { label, ms };
+    if (ms === null || ms === undefined || ms <= now) {
+      continue;
+    }
+    if (!best || ms < best.ms) {
+      best = { label, ms };
+    }
   }
   return best;
 };
@@ -171,7 +195,9 @@ const _status_label_key = (status_id) =>
 const _media_cache = new Map();
 const _resolve_media = (key, entries = []) => {
   const cache_key = `${key}:${locale.value}`;
-  if (_media_cache.has(cache_key)) return _media_cache.get(cache_key);
+  if (_media_cache.has(cache_key)) {
+    return _media_cache.get(cache_key);
+  }
   const items = entries
     .map((e) => normaliseMediaEntry(e, locale.value, _resolve_image))
     .filter(Boolean);
@@ -182,7 +208,9 @@ const _resolve_media = (key, entries = []) => {
 const _stack_cache = new Map();
 const _resolve_stack = (key, ids = []) => {
   const cache_key = `${key}:${locale.value}`;
-  if (_stack_cache.has(cache_key)) return _stack_cache.get(cache_key);
+  if (_stack_cache.has(cache_key)) {
+    return _stack_cache.get(cache_key);
+  }
   const resolved = ids.map((id) => {
     const tech = TECH_BY_ID[id];
     return {
@@ -241,8 +269,12 @@ const _card_root_tag = (card) =>
   card.has_modal || !card.has_link ? 'div' : 'a';
 
 const _card_root_attrs = (card) => {
-  if (card.has_modal) return {};
-  if (card.has_link)  return { href: card.url, target: '_blank', rel: 'noopener noreferrer' };
+  if (card.has_modal) {
+    return {};
+  }
+  if (card.has_link)  {
+    return { href: card.url, target: '_blank', rel: 'noopener noreferrer' };
+  }
   return {};
 };
 
@@ -283,7 +315,9 @@ const main_cards = computed(() => {
     .sort((a, b) => {
       const pa = NOW_STATUS_PRIORITY[a.status_id] ?? 99;
       const pb = NOW_STATUS_PRIORITY[b.status_id] ?? 99;
-      if (pa !== pb) return pa - pb;
+      if (pa !== pb) {
+        return pa - pb;
+      }
       return _deadline_ms(PROJECTS[a.key]) - _deadline_ms(PROJECTS[b.key]);
     })
     .slice(0, NOW_MAX);
@@ -299,7 +333,9 @@ const featured_cards = computed(() =>
 const modal_cards = computed(() => main_cards.value.filter((c) => c.has_modal));
 
 const segments = (countdown) => {
-  if (!countdown) return [];
+  if (!countdown) {
+    return [];
+  }
   return countdown.split('_').filter(Boolean);
 };
 
@@ -340,41 +376,61 @@ const carousel_goto = (idx) => {
 };
 
 const onModalKeydown = (event, total) => {
-  if (!total || total < 2) return;
-  if (event.key === 'ArrowLeft')  { event.preventDefault(); carousel_prev(total); }
-  if (event.key === 'ArrowRight') { event.preventDefault(); carousel_next(total); }
+  if (!total || total < 2) {
+    return;
+  }
+  if (event.key === 'ArrowLeft')  {
+    event.preventDefault(); carousel_prev(total); 
+  }
+  if (event.key === 'ArrowRight') {
+    event.preventDefault(); carousel_next(total); 
+  }
 };
 
 const facade_refs = ref({});
 const bind_facade_ref = (el, key, idx) => {
-  if (!facade_refs.value[key]) facade_refs.value[key] = [];
+  if (!facade_refs.value[key]) {
+    facade_refs.value[key] = [];
+  }
   facade_refs.value[key][idx] = el;
 };
 const _pause_all_facades = (key) => {
   const list = facade_refs.value[key] || [];
   for (const f of list) {
-    if (f && typeof f.pause === 'function') f.pause();
+    if (f && typeof f.pause === 'function') {
+      f.pause();
+    }
   }
 };
 
 watch(carousel_idx, () => {
-  if (!active_id.value) return;
+  if (!active_id.value) {
+    return;
+  }
   _pause_all_facades(active_id.value);
 });
 
 watch(active_id, (next, prev) => {
-  if (prev) _pause_all_facades(prev);
-  if (next) _warm_modal(next);
+  if (prev) {
+    _pause_all_facades(prev);
+  }
+  if (next) {
+    _warm_modal(next);
+  }
 });
 
 const _modal_has_youtube = (key) => {
   const card = modal_cards.value.find((c) => c.key === key);
-  if (!card) return false;
+  if (!card) {
+    return false;
+  }
   return card.media_urls.some((m) => m.kind === 'youtube');
 };
 
 const _warm_modal = (key) => {
-  if (!_modal_has_youtube(key)) return;
+  if (!_modal_has_youtube(key)) {
+    return;
+  }
   warmYoutube(`modal:${key}`);
 };
 </script>
@@ -383,20 +439,23 @@ const _warm_modal = (key) => {
   <section
     id="projects"
     class="now-projects-section kyo-section"
-    :aria-label="t('kyo-web.landing.projects.label')">
+    :aria-label="t('kyo-web.landing.projects.label')"
+  >
     <UiHudDeco variant="tr" text="// PIPELINE :: OPEN" />
     <UiHudDeco variant="bl" text="// 未来" />
     <UiHudDeco variant="watermark" text="未来" class="now-projects-section__watermark" />
     <UiSectionHeader
       tag="// 04"
       :title="t('kyo-web.landing.projects.label')"
-      :subtitle="t('kyo-web.landing.projects.subtitle')" />
+      :subtitle="t('kyo-web.landing.projects.subtitle')"
+    />
 
     <ul class="now-projects-section__cards" role="list">
       <li
         v-for="(card, idx) in main_cards"
         :key="card.key"
-        class="now-projects-section__card-wrap">
+        class="now-projects-section__card-wrap"
+      >
         <component
           :is="_card_root_tag(card)"
           v-bind="_card_root_attrs(card)"
@@ -405,13 +464,15 @@ const _warm_modal = (key) => {
           :style="{
             '--state-color': `var(--clr-${card.status_color}-100)`,
             '--element-flare-delay': `${idx * 0.6}s`,
-          }">
+          }"
+        >
           <button
             v-if="card.has_modal"
             type="button"
             class="now-projects-section__card-hit-area"
             :aria-label="_card_hit_label(card)"
-            @click="open_modal(card.key)" />
+            @click="open_modal(card.key)"
+          />
 
           <header class="now-projects-section__card-header">
             <span class="now-projects-section__status">
@@ -422,7 +483,9 @@ const _warm_modal = (key) => {
           </header>
 
           <div class="now-projects-section__name-block">
-            <h3 class="now-projects-section__name">{{ card.name }}</h3>
+            <h3 class="now-projects-section__name">
+              {{ card.name }}
+            </h3>
             <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
           </div>
 
@@ -442,7 +505,8 @@ const _warm_modal = (key) => {
               <span
                 v-for="seg in elapsed_segments(card.started_ms)"
                 :key="seg"
-                class="now-projects-section__segment">{{ seg }}</span>
+                class="now-projects-section__segment"
+              >{{ seg }}</span>
             </div>
             <span class="now-projects-section__countdown-tz">
               {{ t('kyo-web.landing.projects.timezone-label') }}
@@ -461,7 +525,8 @@ const _warm_modal = (key) => {
               <span
                 v-for="seg in segments(card.countdown)"
                 :key="seg"
-                class="now-projects-section__segment">{{ seg }}</span>
+                class="now-projects-section__segment"
+              >{{ seg }}</span>
             </div>
             <span class="now-projects-section__countdown-tz">
               {{ t('kyo-web.landing.projects.timezone-label') }}
@@ -478,7 +543,8 @@ const _warm_modal = (key) => {
             target="_blank"
             rel="noopener noreferrer"
             class="now-projects-section__link is-corner"
-            :aria-label="`${t('kyo-web.landing.projects.view-repo')} — ${card.name}`">
+            :aria-label="`${t('kyo-web.landing.projects.view-repo')} — ${card.name}`"
+          >
             <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
             <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
             <span class="icon-glyph now-projects-section__link-external" :data-text="GLYPH_LINK" aria-hidden="true" />
@@ -496,7 +562,7 @@ const _warm_modal = (key) => {
     </ul>
 
     <section class="now-projects-section__featured" aria-labelledby="now-projects-featured-label">
-      <h3 class="now-projects-section__featured-label" id="now-projects-featured-label">
+      <h3 id="now-projects-featured-label" class="now-projects-section__featured-label">
         <span class="icon-glyph" :data-text="GLYPH_FEATURED" aria-hidden="true" />
         {{ t('kyo-web.landing.projects.featured-label') }}
       </h3>
@@ -509,10 +575,11 @@ const _warm_modal = (key) => {
           :style="{
             '--state-color': `var(--clr-${card.status_color}-100)`,
             '--element-flare-delay': `${idx * 0.4 + 1}s`,
-          }">
+          }"
+        >
           <div class="now-projects-section__featured-head">
             <span class="now-projects-section__status">
-              <span class="state-square" aria-hidden="true"></span>
+              <span class="state-square" aria-hidden="true" />
               {{ card.status_label }}
             </span>
             <span v-if="!card.has_link" class="now-projects-section__featured-no-link">
@@ -529,7 +596,8 @@ const _warm_modal = (key) => {
             target="_blank"
             rel="noopener noreferrer"
             :aria-label="card.aria_label"
-            class="now-projects-section__featured-hit" />
+            class="now-projects-section__featured-hit"
+          />
         </div>
       </div>
     </section>
@@ -543,12 +611,14 @@ const _warm_modal = (key) => {
       :close-label="t('kyo-web.landing.modal.close')"
       size="lg"
       @close="close_modal"
-      @keydown="onModalKeydown($event, card.media_urls.length)">
+      @keydown="onModalKeydown($event, card.media_urls.length)"
+    >
       <div class="project-modal">
         <div
           v-if="card.media_urls.length"
           class="project-modal__carousel"
-          :style="{ '--state-color': `var(--clr-${card.status_color}-100)` }">
+          :style="{ '--state-color': `var(--clr-${card.status_color}-100)` }"
+        >
           <div class="project-modal__carousel-frame">
             <template v-for="(media, i) in card.media_urls" :key="`${card.key}-${i}`">
               <YoutubeFacade
@@ -560,7 +630,8 @@ const _warm_modal = (key) => {
                 :title="media.title"
                 :poster="media"
                 :channel="media.channel"
-                :show-channel="media.showChannel" />
+                :show-channel="media.showChannel"
+              />
               <button
                 v-else
                 type="button"
@@ -568,15 +639,17 @@ const _warm_modal = (key) => {
                 :class="{ 'is-active': carousel_idx === i }"
                 :tabindex="carousel_idx === i ? 0 : -1"
                 :aria-label="`${card.name} — ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`"
-                @click="open_image_viewer(media, `${card.name} — ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`)">
+                @click="open_image_viewer(media, `${card.name} — ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`)"
+              >
                 <picture class="project-modal__carousel-picture">
-                  <source v-if="media.avif" :srcset="media.avif" type="image/avif">
-                  <source v-if="media.webp" :srcset="media.webp" type="image/webp">
+                  <source v-if="media.avif" :srcset="media.avif" type="image/avif" />
+                  <source v-if="media.webp" :srcset="media.webp" type="image/webp" />
                   <img
                     :src="media.fallback"
                     :alt="`${card.name} — ${t('kyo-web.landing.projects.preview-alt')} ${i + 1}`"
                     loading="lazy"
-                    decoding="async">
+                    decoding="async"
+                  />
                 </picture>
               </button>
             </template>
@@ -591,13 +664,15 @@ const _warm_modal = (key) => {
               type="button"
               class="project-modal__carousel-nav"
               :aria-label="t('kyo-web.landing.projects.previous-image')"
-              @click="carousel_prev(card.media_urls.length)">
+              @click="carousel_prev(card.media_urls.length)"
+            >
               <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_PREV" aria-hidden="true" />
             </button>
             <div
               class="project-modal__carousel-dots"
               role="group"
-              :aria-label="t('kyo-web.landing.projects.previews-label')">
+              :aria-label="t('kyo-web.landing.projects.previews-label')"
+            >
               <button
                 v-for="(url, i) in card.media_urls"
                 :key="`dot-${i}`"
@@ -606,13 +681,15 @@ const _warm_modal = (key) => {
                 :class="{ 'is-active': carousel_idx === i }"
                 :aria-current="carousel_idx === i ? 'true' : undefined"
                 :aria-label="`${t('kyo-web.landing.projects.previews-label')} ${i + 1}`"
-                @click="carousel_goto(i)" />
+                @click="carousel_goto(i)"
+              />
             </div>
             <button
               type="button"
               class="project-modal__carousel-nav"
               :aria-label="t('kyo-web.landing.projects.next-image')"
-              @click="carousel_next(card.media_urls.length)">
+              @click="carousel_next(card.media_urls.length)"
+            >
               <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_NEXT" aria-hidden="true" />
             </button>
           </div>
@@ -623,7 +700,8 @@ const _warm_modal = (key) => {
         </h2>
         <p
           class="project-modal__description kyo-prose"
-          v-html="t(`kyo-web.content-data.projects.${card.key}.description`)" />
+          v-html="t(`kyo-web.content-data.projects.${card.key}.description`)"
+        />
 
         <h2 v-if="card.stack.length" class="project-modal__section-title">
           {{ t('kyo-web.landing.projects.stack-label') }}
@@ -632,11 +710,13 @@ const _warm_modal = (key) => {
           <li
             v-for="tech in card.stack"
             :key="tech.id"
-            class="project-modal__stack-item">
+            class="project-modal__stack-item"
+          >
             <BrandIcon
               v-if="tech.brand"
               class="project-modal__stack-icon brand-icon--lg"
-              :name="tech.brand" />
+              :name="tech.brand"
+            />
             <span v-else class="project-modal__stack-abbr">
               {{ tech.id.slice(0, 2).toUpperCase() }}
             </span>
@@ -649,7 +729,8 @@ const _warm_modal = (key) => {
           :href="card.url"
           target="_blank"
           rel="noopener noreferrer"
-          class="project-modal__repo-cta">
+          class="project-modal__repo-cta"
+        >
           <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
           <span>{{ t('kyo-web.landing.projects.view-repo') }}</span>
           <span class="icon-glyph project-modal__repo-cta-external" :data-text="GLYPH_LINK" aria-hidden="true" />
@@ -662,7 +743,8 @@ const _warm_modal = (key) => {
       :close-label="t('kyo-web.landing.modal.close')"
       :picture="image_viewer"
       :alt="image_viewer_alt"
-      @close="close_image_viewer" />
+      @close="close_image_viewer"
+    />
   </section>
 </template>
 

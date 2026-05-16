@@ -4,11 +4,10 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { computed } from 'vue';
-
-import UiModal from '@ui/modal.vue';
 import BlastImage from '@components/blast-image.vue';
+import UiModal from '@ui/modal.vue';
 import YoutubeFacade from '@ui/youtube-facade.vue';
+import { computed } from 'vue';
 
 const props = defineProps({
   isOpen: { type: Boolean, required: true },
@@ -55,7 +54,8 @@ const dialog_label = computed(() =>
     chromeless
     :aria-label="dialog_label"
     :close-label="closeLabel"
-    @close="$emit('close')">
+    @close="$emit('close')"
+  >
     <div class="image-viewer" :class="{ 'image-viewer--video': is_youtube }">
       <YoutubeFacade
         v-if="is_youtube"
@@ -65,23 +65,26 @@ const dialog_label = computed(() =>
         :poster="picture"
         :channel="picture.channel"
         :show-channel="picture.showChannel"
-        auto-load />
+        auto-load
+      />
       <BlastImage
         v-else-if="img"
         class="image-viewer__picture"
         :img="img"
         :alt="alt"
         sizes="95vw"
-        eager />
+        eager
+      />
       <picture v-else-if="picture" class="image-viewer__picture">
-        <source v-if="picture.avif" :srcset="picture.avif" type="image/avif">
-        <source v-if="picture.webp" :srcset="picture.webp" type="image/webp">
+        <source v-if="picture.avif" :srcset="picture.avif" type="image/avif" />
+        <source v-if="picture.webp" :srcset="picture.webp" type="image/webp" />
         <img
           :src="picture.fallback"
           :alt="alt"
           class="image-viewer__img"
           loading="eager"
-          decoding="async">
+          decoding="async"
+        />
       </picture>
       <span v-if="label" class="image-viewer__name" aria-hidden="true">
         {{ label }}

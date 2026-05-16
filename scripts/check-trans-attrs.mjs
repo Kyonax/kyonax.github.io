@@ -13,7 +13,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { REPO_ROOT, head, ok, fail, walk, read, rel, exitWith, c } from './_lib.mjs';
+import { c,exitWith, fail, head, ok, read, rel, REPO_ROOT, walk } from './_lib.mjs';
 
 const SRC = join(REPO_ROOT, 'src');
 if (!existsSync(SRC)) {
@@ -41,7 +41,9 @@ head(`check-trans-attrs — ${files.length} files`);
 // HTML comments (`<!--`), and block-comment openers (`/`+`*`).
 const _is_comment_line = (line) => {
   const t = line.trim();
-  if (!t) return false;
+  if (!t) {
+    return false;
+  }
   return (
     t.startsWith('*') ||
     t.startsWith('//') ||
@@ -60,7 +62,9 @@ for (const f of files) {
     while ((m = pattern.exec(src)) !== null) {
       const lineNum = src.slice(0, m.index).split('\n').length;
       const line = lines[lineNum - 1] || '';
-      if (_is_comment_line(line)) continue;
+      if (_is_comment_line(line)) {
+        continue;
+      }
       failures.push(`${rel(f)}:${lineNum}: ${c('yellow', label)} → ${remedy}`);
     }
   }
@@ -69,6 +73,8 @@ for (const f of files) {
 ok(`scanned ${scanned} files`);
 if (failures.length) {
   console.log('');
-  for (const f of failures) fail(f);
+  for (const f of failures) {
+    fail(f);
+  }
 }
 exitWith({ failures, name: 'check-trans-attrs' });

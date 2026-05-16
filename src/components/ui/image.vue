@@ -4,9 +4,8 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { computed } from 'vue';
-
 import BlastImage from '@components/blast-image.vue';
+import { computed } from 'vue';
 
 const props = defineProps({
   img:      { type: String,  required: true },
@@ -39,10 +38,18 @@ const frame_style = computed(() => {
     style.width = `${props.size}px`;
   } else {
     
-    if (props.size.sm !== undefined) style['--image-size-sm'] = `${props.size.sm}px`;
-    if (props.size.md !== undefined) style['--image-size-md'] = `${props.size.md}px`;
-    if (props.size.lg !== undefined) style['--image-size-lg'] = `${props.size.lg}px`;
-    if (props.size.xl !== undefined) style['--image-size-xl'] = `${props.size.xl}px`;
+    if (props.size.sm !== undefined) {
+      style['--image-size-sm'] = `${props.size.sm}px`;
+    }
+    if (props.size.md !== undefined) {
+      style['--image-size-md'] = `${props.size.md}px`;
+    }
+    if (props.size.lg !== undefined) {
+      style['--image-size-lg'] = `${props.size.lg}px`;
+    }
+    if (props.size.xl !== undefined) {
+      style['--image-size-xl'] = `${props.size.xl}px`;
+    }
   }
 
   return style;
@@ -58,13 +65,15 @@ const wrapper_class = computed(() => [
   <div :class="wrapper_class">
     <div
       class="ui-image__frame"
-      :style="frame_style">
+      :style="frame_style"
+    >
       <BlastImage
         class="ui-image__picture"
         :img="img"
         :alt="alt || img"
         :eager="eager"
-        :sizes="sizes" />
+        :sizes="sizes"
+      />
     </div>
   </div>
 </template>

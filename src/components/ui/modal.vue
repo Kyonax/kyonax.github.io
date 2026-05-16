@@ -10,7 +10,9 @@ const ModalLockRegistry = (() => {
   let count = 0;
   return {
     set(locked) {
-      if (typeof document === 'undefined') return;
+      if (typeof document === 'undefined') {
+        return;
+      }
       count = Math.max(0, count + (locked ? 1 : -1));
       document.body.style.overflow = count > 0 ? 'hidden' : '';
     },
@@ -44,7 +46,9 @@ const FOCUSABLE = [
 ].join(',');
 
 const _trap_tab = (event) => {
-  if (!dialog_ref.value) return;
+  if (!dialog_ref.value) {
+    return;
+  }
   const items = dialog_ref.value.querySelectorAll(FOCUSABLE);
   if (!items.length) {
     event.preventDefault();
@@ -69,7 +73,9 @@ const onDialogKeydown = (event) => {
     emit('close');
     return;
   }
-  if (event.key === 'Tab') _trap_tab(event);
+  if (event.key === 'Tab') {
+    _trap_tab(event);
+  }
   emit('keydown', event);
 };
 
@@ -78,8 +84,12 @@ const onDialogKeydown = (event) => {
 let _holds_lock = false;
 
 const _set_body_lock = (locked) => {
-  if (typeof document === 'undefined') return;
-  if (locked === _holds_lock) return;
+  if (typeof document === 'undefined') {
+    return;
+  }
+  if (locked === _holds_lock) {
+    return;
+  }
   _holds_lock = locked;
   ModalLockRegistry.set(locked);
 };
@@ -100,7 +110,9 @@ watch(
 );
 
 onBeforeUnmount(() => {
-  if (_holds_lock) _set_body_lock(false);
+  if (_holds_lock) {
+    _set_body_lock(false);
+  }
 });
 
 const GLYPH_CLOSE = '\uF00D';
@@ -111,7 +123,8 @@ const GLYPH_CLOSE = '\uF00D';
     <div
       v-if="isOpen"
       class="ui-modal__backdrop"
-      @click.self="emit('close')">
+      @click.self="emit('close')"
+    >
       <div
         ref="dialog_ref"
         class="ui-modal__dialog"
@@ -120,21 +133,28 @@ const GLYPH_CLOSE = '\uF00D';
         aria-modal="true"
         :aria-label="ariaLabel || title"
         tabindex="-1"
-        @keydown="onDialogKeydown">
+        @keydown="onDialogKeydown"
+      >
         <header v-if="!chromeless" class="ui-modal__header">
           <div class="ui-modal__titles">
-            <h1 v-if="title" class="ui-modal__title">{{ title }}</h1>
+            <h1 v-if="title" class="ui-modal__title">
+              {{ title }}
+            </h1>
             <p
               v-if="subtitle && subtitleHtml"
               class="ui-modal__subtitle"
-              v-html="subtitle" />
-            <p v-else-if="subtitle" class="ui-modal__subtitle">{{ subtitle }}</p>
+              v-html="subtitle"
+            />
+            <p v-else-if="subtitle" class="ui-modal__subtitle">
+              {{ subtitle }}
+            </p>
           </div>
           <button
             type="button"
             class="ui-modal__close"
             :aria-label="closeLabel"
-            @click="emit('close')">
+            @click="emit('close')"
+          >
             <span class="icon-glyph" :data-text="GLYPH_CLOSE" aria-hidden="true" />
           </button>
         </header>
@@ -144,7 +164,8 @@ const GLYPH_CLOSE = '\uF00D';
           type="button"
           class="ui-modal__close ui-modal__close--floating"
           :aria-label="closeLabel"
-          @click="emit('close')">
+          @click="emit('close')"
+        >
           <span class="icon-glyph" :data-text="GLYPH_CLOSE" aria-hidden="true" />
         </button>
 

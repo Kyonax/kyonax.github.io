@@ -3,18 +3,16 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useHead } from '@unhead/vue';
-
 import {
   AUTHOR_INFO,
+  LOCALE_URL,
   SEO,
   THEME_SETTINGS,
-  LOCALE_URL,
 } from '@data/data';
-
-import { HREFLANG_ALTERNATES, absoluteUrl } from '@seo/routes';
+import { absoluteUrl,HREFLANG_ALTERNATES } from '@seo/routes';
+import { useHead } from '@unhead/vue';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const OG_LOCALE = { en: 'en_US', es: 'es_CO' };
 

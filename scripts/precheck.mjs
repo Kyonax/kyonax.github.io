@@ -16,7 +16,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { REPO_ROOT, head, ok, fail, c } from './_lib.mjs';
+import { c, head, ok, REPO_ROOT } from './_lib.mjs';
 
 const skipFlag = process.argv.find((a) => a.startsWith('--skip='));
 const skip = new Set(skipFlag ? skipFlag.split('=')[1].split(',') : []);
@@ -55,6 +55,8 @@ let allPass = true;
 for (const r of results) {
   const tag = r.code === 0 ? c('green', 'PASS') : c('red', 'FAIL');
   console.log(`  ${tag}  ${r.id}`);
-  if (r.code !== 0) allPass = false;
+  if (r.code !== 0) {
+    allPass = false;
+  }
 }
 process.exit(allPass ? 0 : 1);

@@ -42,8 +42,8 @@ import security from 'eslint-plugin-security';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unicorn from 'eslint-plugin-unicorn';
 import vue from 'eslint-plugin-vue';
-import vueParser from 'vue-eslint-parser';
 import globals from 'globals';
+import vueParser from 'vue-eslint-parser';
 
 const ccsBaseRules = {
   // ── Import ordering ─────────────────────────────────────
@@ -54,7 +54,10 @@ const ccsBaseRules = {
   'import/no-duplicates': 'error',
 
   // ── Filenames ──────────────────────────────────────────
-  'unicorn/filename-case': ['error', { case: 'kebabCase' }],
+  'unicorn/filename-case': ['error', {
+    case: 'kebabCase',
+    ignore: ['^App\\.vue$'],
+  }],
 
   // ── Code quality ───────────────────────────────────────
   'no-console': 'warn',
@@ -214,7 +217,11 @@ export default [
 
       // ── Vue-specific ────────────────────────────────────
       'vue/multi-word-component-names': ['error', {
-        ignores: ['App', 'Home', 'Index', 'Default'],
+        ignores: [
+          'App', 'Home', 'Index', 'Default',
+          'button', 'card', 'icon', 'image', 'link', 'modal',
+          'experience', 'faq', 'hero', 'skills',
+        ],
       }],
       'vue/component-name-in-template-casing': ['error', 'PascalCase', {
         registeredComponentsOnly: false,

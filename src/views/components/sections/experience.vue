@@ -4,16 +4,15 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-
+import useClickableCard from '@composables/use-clickable-card';
+import { BRAND_ICON_IDS } from '@data/brand-icons';
+import { TECH_BY_ID } from '@data/data';
+import BrandIcon from '@ui/brand-icon.vue';
+import UiHudDeco from '@ui/hud-deco.vue';
 import UiModal from '@ui/modal.vue';
 import UiSectionHeader from '@ui/section-header.vue';
-import UiHudDeco from '@ui/hud-deco.vue';
-import BrandIcon from '@ui/brand-icon.vue';
-import { TECH_BY_ID } from '@data/data';
-import { BRAND_ICON_IDS } from '@data/brand-icons';
-import useClickableCard from '@composables/use-clickable-card';
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
 
@@ -62,7 +61,9 @@ const _format_label = (raw) =>
 /* Split only on " - " (whitespace BOTH sides) so internal hyphens
    in tokens like `json-ld`, `claude-code`, `a/b-testing` survive. */
 const _parse_tools_string = (html) => {
-  if (!html) return [];
+  if (!html) {
+    return [];
+  }
   return html
     .replace(/<[^>]+>/g, '')
     .split(/\s+-\s+/)
@@ -70,6 +71,7 @@ const _parse_tools_string = (html) => {
     .filter(Boolean);
 };
 
+const _tech_abbr = (id) => (id.length >= 2 ? id.slice(0, 2).toUpperCase() : id.toUpperCase());
 const _token_to_chip = (raw_token) => {
   const normalized = raw_token.toLowerCase().trim();
   const id = TOKEN_ALIASES[normalized] || normalized;
@@ -80,14 +82,16 @@ const _token_to_chip = (raw_token) => {
     label: tech ? (tech.name[locale.value] || tech.name.en) : (TOKEN_DISPLAY[normalized] || _format_label(raw_token)),
     brand: BRAND_ICON_IDS.has(id) ? id : null,
     glyph: tech?.iconGlyph || '',
-    abbr:  tech ? (id.length >= 2 ? id.slice(0, 2).toUpperCase() : id.toUpperCase()) : fallback_abbr,
+    abbr:  tech ? _tech_abbr(id) : fallback_abbr,
   };
 };
 
 const _chip_cache = new Map();
 const stack_chips_for = (entry_id) => {
   const cache_key = `${entry_id}:${locale.value}`;
-  if (_chip_cache.has(cache_key)) return _chip_cache.get(cache_key);
+  if (_chip_cache.has(cache_key)) {
+    return _chip_cache.get(cache_key);
+  }
   const tools = t(`kyo-web.content-data.experience.${entry_id}.tools`);
   const chips = _parse_tools_string(tools).map(_token_to_chip);
   _chip_cache.set(cache_key, chips);
@@ -111,21 +115,24 @@ const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
   <section
     id="experience"
     class="experience-section kyo-section"
-    :aria-label="t('kyo-web.landing.experience.label')">
+    :aria-label="t('kyo-web.landing.experience.label')"
+  >
     <UiHudDeco variant="tr" text="// LOG :: VERIFIED" />
     <UiHudDeco variant="bl" text="// 進化" />
     <UiHudDeco variant="watermark" text="過去" class="experience-section__watermark" />
     <UiSectionHeader
       tag="// 03"
       :title="t('kyo-web.landing.experience.label')"
-      :subtitle="t('kyo-web.landing.experience.subtitle')" />
+      :subtitle="t('kyo-web.landing.experience.subtitle')"
+    />
 
     <ol class="experience-section__timeline">
       <li
         v-for="(entry, idx) in ENTRIES"
         :key="entry.id"
         class="experience-section__node"
-        :class="`experience-section__node--${entry.tone}`">
+        :class="`experience-section__node--${entry.tone}`"
+      >
         <div class="experience-section__rail" aria-hidden="true">
           <span class="experience-section__dot" />
           <span v-if="idx < ENTRIES.length - 1" class="experience-section__line" />
@@ -138,19 +145,22 @@ const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
           tabindex="0"
           :aria-label="`${t(`kyo-web.content-data.experience.${entry.id}.role`)} — ${t('kyo-web.landing.experience.read-more')}`"
           @click="open_modal(entry.id)"
-          @keydown="onCardKeydown($event, entry.id)">
+          @keydown="onCardKeydown($event, entry.id)"
+        >
           <header class="experience-section__card-header">
             <h3 class="experience-section__role">
               {{ t(`kyo-web.content-data.experience.${entry.id}.role`) }}
             </h3>
             <p
               class="experience-section__specs"
-              v-html="t(`kyo-web.content-data.experience.${entry.id}.specs`)" />
+              v-html="t(`kyo-web.content-data.experience.${entry.id}.specs`)"
+            />
           </header>
 
           <p
             class="experience-section__description kyo-prose"
-            v-html="t(`kyo-web.content-data.experience.${entry.id}.description`)" />
+            v-html="t(`kyo-web.content-data.experience.${entry.id}.description`)"
+          />
           <span class="experience-section__view-more" aria-hidden="true">
             {{ t('kyo-web.landing.experience.read-more') }}
             <span class="experience-section__view-more-glyph">›</span>
@@ -168,14 +178,16 @@ const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
       subtitle-html
       :close-label="t('kyo-web.landing.modal.close')"
       size="lg"
-      @close="close_modal">
+      @close="close_modal"
+    >
       <div class="experience-modal">
         <h2 class="experience-modal__section-title">
           {{ t('kyo-web.landing.modal.highlights') }}
         </h2>
         <ul
           class="experience-modal__bullets kyo-prose"
-          v-html="t(`kyo-web.content-data.experience.${entry.id}.bullets`)" />
+          v-html="t(`kyo-web.content-data.experience.${entry.id}.bullets`)"
+        />
         <h2 class="experience-modal__section-title">
           {{ t('kyo-web.landing.experience.tools-label') }}
         </h2>
@@ -183,15 +195,19 @@ const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
           <li
             v-for="chip in stack_chips_for(entry.id)"
             :key="chip.id"
-            class="experience-modal__stack-item">
+            class="experience-modal__stack-item"
+          >
             <BrandIcon
               v-if="chip.brand"
               class="experience-modal__stack-icon brand-icon--lg"
-              :name="chip.brand" />
+              :name="chip.brand"
+            />
             <span
               v-else-if="chip.glyph"
               class="icon-glyph icon-glyph--lg experience-modal__stack-icon"
-              :data-text="chip.glyph" aria-hidden="true" />
+              :data-text="chip.glyph"
+              aria-hidden="true"
+            />
             <span v-else class="experience-modal__stack-abbr">
               {{ chip.abbr }}
             </span>

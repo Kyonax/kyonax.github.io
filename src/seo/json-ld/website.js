@@ -4,7 +4,8 @@
  */
 
 import { SITE_ORIGIN } from '@data/data';
-import { WEBSITE_ID, PERSON_ID } from './identifiers';
+
+import { PERSON_ID,WEBSITE_ID } from './identifiers';
 
 export const buildWebSiteJsonLd = () => ({
   '@type': 'WebSite',

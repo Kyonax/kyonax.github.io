@@ -20,20 +20,18 @@
  * src/config/features.js — flip to true when a new video is ready).
  */
 
-import { useI18n } from 'vue-i18n';
-
-import HudNav from '@widgets/hud-nav.vue';
-import HeroSection from '@sections/hero.vue';
-import SkillsSection from '@sections/skills.vue';
-import ExperienceSection from '@sections/experience.vue';
-import NowProjectsSection from '@sections/now-projects-section.vue';
-import FaqSection from '@sections/faq.vue';
-import SiteFooter from '@sections/site-footer.vue';
-import IconSprite from '@ui/icon-sprite.vue';
 import CookieConsent from '@components/cookie-consent.vue';
-
 import useSeoHead       from '@composables/use-seo-head';
 import useStructuredData from '@composables/use-structured-data';
+import ExperienceSection from '@sections/experience.vue';
+import FaqSection from '@sections/faq.vue';
+import HeroSection from '@sections/hero.vue';
+import NowProjectsSection from '@sections/now-projects-section.vue';
+import SiteFooter from '@sections/site-footer.vue';
+import SkillsSection from '@sections/skills.vue';
+import IconSprite from '@ui/icon-sprite.vue';
+import HudNav from '@widgets/hud-nav.vue';
+import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 useSeoHead();
@@ -47,7 +45,7 @@ useStructuredData();
 
   <HudNav />
 
-  <main class="landing" id="main">
+  <main id="main" class="landing">
     <HeroSection />
     <SkillsSection />
     <ExperienceSection />

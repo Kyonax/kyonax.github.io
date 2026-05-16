@@ -37,13 +37,13 @@ const _parse_colombia_time = (ts) => {
   }
 
   const month = MONTH_MAP[parts[0]];
-  const day = parseInt(parts[1], 10);
+  const day = Number.parseInt(parts[1], 10);
   const time_parts = parts[2].split(':');
-  const year = parseInt(parts[3], 10);
+  const year = Number.parseInt(parts[3], 10);
 
-  const hours   = parseInt(time_parts[0], 10);
-  const minutes = parseInt(time_parts[1], 10);
-  const seconds = parseInt(time_parts[2], 10);
+  const hours   = Number.parseInt(time_parts[0], 10);
+  const minutes = Number.parseInt(time_parts[1], 10);
+  const seconds = Number.parseInt(time_parts[2], 10);
 
   const utc_guess = Date.UTC(year, month, day, hours, minutes, seconds);
 
@@ -62,7 +62,7 @@ const _parse_colombia_time = (ts) => {
   const date_parts = {};
   for (const part of parts_local) {
     if (part.type !== 'literal') {
-      date_parts[part.type] = parseInt(part.value, 10);
+      date_parts[part.type] = Number.parseInt(part.value, 10);
     }
   }
 

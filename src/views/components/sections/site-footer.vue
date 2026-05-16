@@ -4,15 +4,12 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import logoKyonaxSvg from '@assets/app/LOGO_KYONAX.svg?raw';
+import BrandIcon from '@ui/brand-icon.vue';
+import UiHudDeco from '@ui/hud-deco.vue';
+import UiLink from '@ui/link.vue';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-import BrandIcon from '@ui/brand-icon.vue';
-import UiIcon from '@ui/icon.vue';
-import UiLink from '@ui/link.vue';
-import UiHudDeco from '@ui/hud-deco.vue';
-
-import logoKyonaxSvg from '@assets/app/LOGO_KYONAX.svg?raw';
 
 const { t, locale } = useI18n();
 
@@ -71,7 +68,8 @@ const WHATSAPP_URL =
     id="contact"
     class="site-footer"
     role="contentinfo"
-    :aria-label="t('kyo-web.landing.footer.tag')">
+    :aria-label="t('kyo-web.landing.footer.tag')"
+  >
     <UiHudDeco variant="tl" text="// BEACON :: ON" />
     <UiHudDeco variant="tr" text="// CHANNEL :: CCS // KYONAX // ZERONET" class="site-footer__deco-channel" />
     <div class="site-footer__top">
@@ -79,7 +77,8 @@ const WHATSAPP_URL =
         <span
           class="site-footer__logo"
           aria-hidden="true"
-          v-html="logoKyonaxSvg" />
+          v-html="logoKyonaxSvg"
+        />
         <div class="site-footer__signoff" aria-hidden="true">
           <span class="site-footer__signoff-tag">SYS // SIGNATURE</span>
           <p class="site-footer__signoff-text" v-html="t('kyo-web.landing.footer.signoff')" />
@@ -87,9 +86,14 @@ const WHATSAPP_URL =
             <div
               v-for="entry in manifest"
               :key="entry.key"
-              class="site-footer__manifest-row">
-              <dt class="site-footer__manifest-key">{{ entry.label }}</dt>
-              <dd class="site-footer__manifest-value">{{ entry.value }}</dd>
+              class="site-footer__manifest-row"
+            >
+              <dt class="site-footer__manifest-key">
+                {{ entry.label }}
+              </dt>
+              <dd class="site-footer__manifest-value">
+                {{ entry.value }}
+              </dd>
             </div>
           </dl>
         </div>
@@ -103,7 +107,8 @@ const WHATSAPP_URL =
             variant="primary"
             flare-delay="1s"
             class="site-footer__channel"
-            external>
+            external
+          >
             <span class="icon-glyph" :data-text="GLYPH_MAIL" aria-hidden="true" />
             <span>{{ t('kyo-web.contact.contact-me') }}</span>
           </UiLink>
@@ -112,7 +117,8 @@ const WHATSAPP_URL =
             variant="primary"
             flare-delay="2s"
             class="site-footer__channel"
-            external>
+            external
+          >
             <span class="icon-glyph" :data-text="GLYPH_WSP" aria-hidden="true" />
             <span>{{ t('kyo-web.contact.wsp') }}</span>
           </UiLink>
@@ -129,16 +135,19 @@ const WHATSAPP_URL =
               :flare-delay="social.delay"
               class="site-footer__social"
               external
-              :aria-label="social.label">
+              :aria-label="social.label"
+            >
               <BrandIcon
                 v-if="social.brand"
                 class="site-footer__social-icon brand-icon--lg"
-                :name="social.brand" />
+                :name="social.brand"
+              />
               <span
                 v-else
                 class="icon-glyph icon-glyph--lg site-footer__social-icon"
                 :data-text="social.glyph"
-                aria-hidden="true" />
+                aria-hidden="true"
+              />
             </UiLink>
           </li>
         </ul>

@@ -30,7 +30,8 @@ const SPRITE_MARKUP = (() => {
     height="0"
     aria-hidden="true"
     focusable="false"
-    v-html="SPRITE_MARKUP" />
+    v-html="SPRITE_MARKUP"
+  />
 </template>
 
 <style lang="scss" scoped>

@@ -3,7 +3,7 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { SITE_ORIGIN, LOCALE_URL, X_DEFAULT_URL } from '@data/data';
+import { LOCALE_URL, SITE_ORIGIN, X_DEFAULT_URL } from '@data/data';
 
 export const ROUTE_BY_LOCALE = Object.freeze({
   en: '/',
@@ -17,9 +17,13 @@ export const HREFLANG_ALTERNATES = Object.freeze([
 ]);
 
 export const absoluteUrl = (path = '/') => {
-  if (!path) return SITE_ORIGIN + '/';
-  if (path.startsWith('http')) return path;
-  return SITE_ORIGIN + (path.startsWith('/') ? path : '/' + path);
+  if (!path) {
+    return `${SITE_ORIGIN  }/`;
+  }
+  if (path.startsWith('http')) {
+    return path;
+  }
+  return SITE_ORIGIN + (path.startsWith('/') ? path : `/${  path}`);
 };
 
 export default ROUTE_BY_LOCALE;

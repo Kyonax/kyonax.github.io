@@ -23,7 +23,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { REPO_ROOT, head, ok, warn, fail, walk, read, rel, exitWith, c } from './_lib.mjs';
+import { c,exitWith, fail, head, ok, read, rel, REPO_ROOT, walk, warn } from './_lib.mjs';
 
 const STRICT = process.argv.includes('--strict');
 const MAX_PRIMARY_PCT = 0.50;
@@ -53,7 +53,9 @@ head(`check-color-usage — ${files.length} SFCs`);
 for (const f of files) {
   const src = read(f);
   const styleBlocks = [...src.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m => m[1]).join('\n');
-  if (!styleBlocks.trim()) continue;
+  if (!styleBlocks.trim()) {
+    continue;
+  }
 
   const counts = { neutral: 0, primary: 0, border: 0, accent: 0 };
   for (const [tier, pat] of Object.entries(TIER_PATTERNS)) {
@@ -74,7 +76,9 @@ for (const f of files) {
     file: rel(f), counts, total, primaryPct, accentPct, neutralPct, literals,
   });
 
-  if (total === 0) continue;
+  if (total === 0) {
+    continue;
+  }
 
   if (primaryPct > MAX_PRIMARY_PCT) {
     failures.push(
@@ -94,7 +98,9 @@ console.log('');
 console.log(c('bold', '  Per-SFC distribution (excluding borders):'));
 console.log(c('dim', '  file                                          neutral primary accent  literals'));
 for (const s of summary) {
-  if (s.total === 0 && s.literals === 0) continue;
+  if (s.total === 0 && s.literals === 0) {
+    continue;
+  }
   const n = `${(s.neutralPct*100).toFixed(0)}%`.padStart(7);
   const p = `${(s.primaryPct*100).toFixed(0)}%`.padStart(7);
   const a = `${(s.accentPct *100).toFixed(0)}%`.padStart(6);
@@ -103,12 +109,16 @@ for (const s of summary) {
 }
 console.log('');
 
-if (!STRICT && failures.length === 0) ok('all SFCs within distribution thresholds');
+if (!STRICT && failures.length === 0) {
+  ok('all SFCs within distribution thresholds');
+}
 if (STRICT) {
   exitWith({ failures, name: 'check-color-usage --strict' });
 } else {
   // non-strict: warn only on distribution; literals always fail
   const literalFailures = failures.filter(f => /hardcoded color literal/.test(f));
-  for (const f of failures) (literalFailures.includes(f) ? fail : warn)(f);
+  for (const f of failures) {
+    (literalFailures.includes(f) ? fail : warn)(f);
+  }
   exitWith({ failures: literalFailures, name: 'check-color-usage' });
 }

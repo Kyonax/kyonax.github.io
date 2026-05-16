@@ -21,7 +21,8 @@ const href = computed(() => `#brand-${props.name}`);
     :role="alt ? 'img' : null"
     :aria-label="alt ? aria_label : null"
     :aria-hidden="alt ? null : 'true'"
-    focusable="false">
+    focusable="false"
+  >
     <use :href="href" />
   </svg>
 </template>

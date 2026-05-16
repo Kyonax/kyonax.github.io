@@ -39,5 +39,6 @@ const alt_text = computed(() => props.alt || props.name);
     :src="resolved"
     :alt="alt_text"
     v-bind="attrs"
-    decoding="async" />
+    decoding="async"
+  />
 </template>

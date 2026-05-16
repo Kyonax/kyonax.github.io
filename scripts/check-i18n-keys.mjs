@@ -13,9 +13,9 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
-  REPO_ROOT, head, ok, walk, read, rel, exitWith, c,
-  flattenI18nKeys, loadTranslations,
-} from './_lib.mjs';
+  c,
+  exitWith, fail, flattenI18nKeys, head, loadTranslations,
+  ok, read, rel,   REPO_ROOT, walk } from './_lib.mjs';
 
 const SRC = join(REPO_ROOT, 'src');
 if (!existsSync(SRC)) {
@@ -34,7 +34,9 @@ const messages = loaded.data;
 // (vue-i18n falls back per fallbackLocale).
 const allKeys = new Set();
 for (const locale of Object.keys(messages)) {
-  for (const k of flattenI18nKeys(messages[locale])) allKeys.add(k);
+  for (const k of flattenI18nKeys(messages[locale])) {
+    allKeys.add(k);
+  }
 }
 
 // Word-boundary anchored patterns. `t(` must be at a word start so we don't
@@ -69,7 +71,9 @@ for (const f of files) {
       // Consumers using dynamic keys must ensure their key SET is fully
       // covered by another mechanism (e.g. enumerating SUPPORTED_LANGUAGES
       // for trans-lang.* keys). Out of scope for this static check.
-      if (key.includes('${')) continue;
+      if (key.includes('${')) {
+        continue;
+      }
 
       if (!allKeys.has(key)) {
         failures.push(`${rel(f)}: missing key ${c('yellow', key)}`);
@@ -81,6 +85,8 @@ for (const f of files) {
 ok(`scanned ${totalCalls} t() / keypath references`);
 if (failures.length) {
   console.log('');
-  for (const f of failures) fail(f);
+  for (const f of failures) {
+    fail(f);
+  }
 }
 exitWith({ failures, name: 'check-i18n-keys' });

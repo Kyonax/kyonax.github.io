@@ -37,12 +37,12 @@
  *   left-alignment: -29    → overrides ASCII_CENTER_OFFSET_X for this art
  */
 
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 import sharp from 'sharp';
 
-import { exitWith, fail, head, ok, REPO_ROOT, isOutdated } from './_lib.mjs';
+import { exitWith, fail, head, isOutdated,ok, REPO_ROOT } from './_lib.mjs';
 
 const FORCE = process.argv.includes('--force');
 
@@ -102,7 +102,9 @@ const DIRECTIVE_RE = /^([a-z][a-z-]*):\s*(.+?)\s*$/;
 const DIRECTIVE_APPLIERS = {
   'left-alignment': (value, config) => {
     const n = Number(value);
-    if (Number.isFinite(n)) config.center_offset_x = n;
+    if (Number.isFinite(n)) {
+      config.center_offset_x = n;
+    }
   },
 };
 
@@ -110,7 +112,9 @@ const _parse_source = (raw) => {
   const directives = {};
   const ascii_lines = [];
   for (const line of raw.split('\n')) {
-    if (line.length === 0) continue;
+    if (line.length === 0) {
+      continue;
+    }
     const m = line.match(DIRECTIVE_RE);
     if (m) {
       directives[m[1]] = m[2];
@@ -126,8 +130,11 @@ const _apply_directives = (directives) => {
   const unknown = [];
   for (const [key, value] of Object.entries(directives)) {
     const applier = DIRECTIVE_APPLIERS[key];
-    if (applier) applier(value, config);
-    else unknown.push(key);
+    if (applier) {
+      applier(value, config);
+    } else {
+      unknown.push(key);
+    }
   }
   return { config, unknown };
 };

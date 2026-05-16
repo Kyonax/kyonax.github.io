@@ -21,10 +21,18 @@ export const isYoutubeUrl = (s) =>
 
 /** Extract the 11-char video ID from a YouTube URL or raw ID. Returns `null` on miss. */
 export const extractYoutubeId = (input) => {
-  if (!input) return null;
-  if (YOUTUBE_ID_RE.test(input)) return input;
+  if (!input) {
+    return null;
+  }
+  if (YOUTUBE_ID_RE.test(input)) {
+    return input;
+  }
   let u;
-  try { u = new URL(input); } catch { return null; }
+  try {
+    u = new URL(input); 
+  } catch {
+    return null; 
+  }
   const host = u.hostname.replace(/^www\.|^m\./, '');
   if (host === 'youtu.be') {
     const id = u.pathname.replace(/^\//, '').split('/')[0];
@@ -32,9 +40,13 @@ export const extractYoutubeId = (input) => {
   }
   if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
     const v = u.searchParams.get('v');
-    if (v && YOUTUBE_ID_RE.test(v)) return v;
+    if (v && YOUTUBE_ID_RE.test(v)) {
+      return v;
+    }
     const m = u.pathname.match(/^\/(?:embed|shorts|live|v)\/([A-Za-z0-9_-]{11})/);
-    if (m) return m[1];
+    if (m) {
+      return m[1];
+    }
   }
   return null;
 };
@@ -50,7 +62,9 @@ export const buildYoutubeThumbnails = (id) => ({
  * Fallback order: locale → en → es → `fallback` → ''.
  */
 export const resolveLocalizedTitle = (title, locale, fallback = '') => {
-  if (typeof title === 'string' && title.trim()) return title;
+  if (typeof title === 'string' && title.trim()) {
+    return title;
+  }
   if (title && typeof title === 'object') {
     return title[locale] || title.en || title.es || fallback;
   }
@@ -65,7 +79,9 @@ const _resolve_title = (title, locale) => resolveLocalizedTitle(title, locale, '
  */
 export const classifyMediaEntry = (entry) => {
   if (entry && typeof entry === 'object' && entry.kind === 'youtube') {
-    if (!entry.id || !YOUTUBE_ID_RE.test(entry.id)) return null;
+    if (!entry.id || !YOUTUBE_ID_RE.test(entry.id)) {
+      return null;
+    }
     return { kind: 'youtube', id: entry.id, raw: entry };
   }
   if (typeof entry === 'string' && isYoutubeUrl(entry)) {
@@ -81,7 +97,9 @@ export const classifyMediaEntry = (entry) => {
 /* Output shape mirrors `_resolve_image` (name/ext/fallback/webp) so the carousel template treats both kinds uniformly. */
 export const buildYoutubeDescriptor = (entry, locale = 'en', resolvePoster = null) => {
   const id = entry.id || extractYoutubeId(entry.url || '');
-  if (!id || !YOUTUBE_ID_RE.test(id)) return null;
+  if (!id || !YOUTUBE_ID_RE.test(id)) {
+    return null;
+  }
   const poster_local = entry.poster && typeof resolvePoster === 'function'
     ? resolvePoster(entry.poster)
     : null;
@@ -111,12 +129,16 @@ export const normaliseMediaEntry = (entry, locale = 'en', resolveLocal = null) =
   }
   if (typeof entry === 'string' && isYoutubeUrl(entry)) {
     const id = extractYoutubeId(entry);
-    if (!id) return null;
+    if (!id) {
+      return null;
+    }
     return buildYoutubeDescriptor({ kind: 'youtube', id }, locale, resolveLocal);
   }
   if (typeof entry === 'string' && resolveLocal) {
     const img = resolveLocal(entry);
-    if (!img) return null;
+    if (!img) {
+      return null;
+    }
     return { kind: 'image', ...img };
   }
   return null;

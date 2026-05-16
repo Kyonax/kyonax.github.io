@@ -11,7 +11,7 @@
 import { LOCALE_URL, SITE_ORIGIN } from '@data/data';
 import { TRANSLATIONS } from '@data/snippets';
 
-import { WEBSITE_ID, faqPageId, faqQuestionId, today } from './identifiers';
+import { faqPageId, faqQuestionId, today,WEBSITE_ID } from './identifiers';
 import { stripHtml } from './sanitize';
 
 const ITEM_IDS = ['location', 'availability', 'work', 'current-role', 'different', 'contact'];

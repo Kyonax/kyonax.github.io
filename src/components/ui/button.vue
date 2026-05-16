@@ -47,7 +47,8 @@ const inline_style = computed(() =>
     :class="class_list"
     :style="inline_style"
     v-bind="attrs"
-    @click="$emit('click', $event)">
+    @click="$emit('click', $event)"
+  >
     <slot />
   </button>
 </template>

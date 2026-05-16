@@ -6,8 +6,12 @@
 import { DEFAULT_LANGUAGE } from '@data/data';
 
 export const localeFromRoute = (pathname) => {
-  if (!pathname) return DEFAULT_LANGUAGE;
-  if (pathname === '/es' || pathname.startsWith('/es/')) return 'es';
+  if (!pathname) {
+    return DEFAULT_LANGUAGE;
+  }
+  if (pathname === '/es' || pathname.startsWith('/es/')) {
+    return 'es';
+  }
   return DEFAULT_LANGUAGE;
 };
 

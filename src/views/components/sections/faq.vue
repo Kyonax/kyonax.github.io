@@ -4,11 +4,10 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import UiHudDeco from '@ui/hud-deco.vue';
+import UiSectionHeader from '@ui/section-header.vue';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-import UiSectionHeader from '@ui/section-header.vue';
-import UiHudDeco from '@ui/hud-deco.vue';
 
 const { t } = useI18n();
 
@@ -27,7 +26,8 @@ const GLYPH_CHEVRON = '\uF054';
   <section
     id="faq"
     class="faq kyo-section"
-    :aria-label="t('kyo-web.landing.faq.section-aria')">
+    :aria-label="t('kyo-web.landing.faq.section-aria')"
+  >
     <UiHudDeco variant="tr" text="// DIALOG :: ACTIVE" />
     <UiHudDeco variant="bl" text="// 質問" />
     <UiHudDeco variant="watermark" text="応答" class="faq__watermark" />
@@ -35,38 +35,43 @@ const GLYPH_CHEVRON = '\uF054';
     <UiSectionHeader
       :tag="t('kyo-web.landing.faq.tag')"
       :title="t('kyo-web.landing.faq.title')"
-      :subtitle="t('kyo-web.landing.faq.subtitle')" />
+      :subtitle="t('kyo-web.landing.faq.subtitle')"
+    />
 
     <ul class="faq__list" role="list">
       <li
         v-for="(id, i) in ITEM_IDS"
         :key="id"
         class="faq__item element-flare"
-        :class="{ 'faq__item--open': active_id === id }">
+        :class="{ 'faq__item--open': active_id === id }"
+      >
         <h3 class="faq__heading">
           <button
+            :id="`faq-question-${id}`"
             type="button"
             class="faq__summary"
             :aria-expanded="active_id === id"
             :aria-controls="`faq-answer-${id}`"
-            :id="`faq-question-${id}`"
-            @click="toggle(id)">
+            @click="toggle(id)"
+          >
             <span class="faq__num kyo-chip" :data-text="String(i + 1).padStart(2, '0')" aria-hidden="true" />
             <span class="faq__question">{{ t(`kyo-web.landing.faq.items.${id}.question`) }}</span>
             <span class="icon-glyph faq__chevron" :data-text="GLYPH_CHEVRON" aria-hidden="true" />
           </button>
         </h3>
         <div
+          :id="`faq-answer-${id}`"
           class="faq__panel"
           role="region"
-          :id="`faq-answer-${id}`"
           :aria-labelledby="`faq-question-${id}`"
           :aria-hidden="active_id !== id"
-          :inert="active_id !== id">
+          :inert="active_id !== id"
+        >
           <div class="faq__panel-inner">
             <div
               class="faq__answer kyo-prose"
-              v-html="t(`kyo-web.landing.faq.items.${id}.answer`)" />
+              v-html="t(`kyo-web.landing.faq.items.${id}.answer`)"
+            />
           </div>
         </div>
       </li>

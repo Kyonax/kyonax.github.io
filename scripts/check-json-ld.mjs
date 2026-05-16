@@ -8,10 +8,10 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync,writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { REPO_ROOT, head, ok, fail, exitWith, c } from './_lib.mjs';
+import { c,exitWith, fail, head, ok, REPO_ROOT } from './_lib.mjs';
 
 const SEO_INDEX = resolve(REPO_ROOT, 'src/seo/json-ld/index.js');
 if (!existsSync(SEO_INDEX)) {
@@ -52,7 +52,9 @@ const out = {
 process.stdout.write(JSON.stringify(out));
 `);
   const r = spawnSync(VITE_NODE, [entry], { encoding: 'utf8', cwd: REPO_ROOT });
-  try { rmSync(entry); } catch { /* noop */ }
+  try {
+    rmSync(entry); 
+  } catch { /* noop */ }
   if (r.status !== 0) {
     return { error: r.stderr.trim() || 'vite-node failed', stdout: r.stdout };
   }
@@ -70,18 +72,26 @@ for (const locale of SUPPORTED_LOCALES) {
   if (error) {
     failures.push(`builder failed for locale=${locale}: ${error}`);
     fail(`builder failed for ${locale} — see stderr above`);
-    if (stdout) console.error('stdout:', stdout.slice(0, 500));
+    if (stdout) {
+      console.error('stdout:', stdout.slice(0, 500));
+    }
     continue;
   }
 
   const ids = new Set();
   for (const node of graph['@graph'] || []) {
-    if (node['@id']) ids.add(node['@id']);
+    if (node['@id']) {
+      ids.add(node['@id']);
+    }
   }
   const _scan_refs = (node, path = '') => {
-    if (!node || typeof node !== 'object') return;
+    if (!node || typeof node !== 'object') {
+      return;
+    }
     if (Array.isArray(node)) {
-      node.forEach((v, i) => _scan_refs(v, `${path}[${i}]`));
+      for (const [i, v] of node.entries()) {
+        _scan_refs(v, `${path}[${i}]`);
+      }
       return;
     }
     for (const [k, v] of Object.entries(node)) {
@@ -94,7 +104,9 @@ for (const locale of SUPPORTED_LOCALES) {
     }
   };
   for (const node of graph['@graph'] || []) {
-    if (!node['@type']) continue;
+    if (!node['@type']) {
+      continue;
+    }
     _scan_refs(node, node['@type']);
   }
   ok(`${locale}: ${ids.size} entities, refs resolved`);
@@ -102,9 +114,11 @@ for (const locale of SUPPORTED_LOCALES) {
   for (const node of graph['@graph'] || []) {
     const t = node['@type'];
     const required = REQUIRED[t];
-    if (!required) continue;
+    if (!required) {
+      continue;
+    }
     for (const field of required) {
-      if (node[field] == null || node[field] === '') {
+      if (node[field] === null || node[field] === undefined || node[field] === '') {
         failures.push(`locale=${locale}: ${t} ${node['@id'] || '<no @id>'} missing required field "${field}"`);
       }
     }
@@ -113,8 +127,12 @@ for (const locale of SUPPORTED_LOCALES) {
 
   const URL_FIELDS = ['url', 'image', 'logo', 'item', 'primaryImageOfPage'];
   const _scan_urls = (node) => {
-    if (!node || typeof node !== 'object') return;
-    if (Array.isArray(node)) { node.forEach(_scan_urls); return; }
+    if (!node || typeof node !== 'object') {
+      return;
+    }
+    if (Array.isArray(node)) {
+      node.forEach(_scan_urls); return; 
+    }
     for (const [k, v] of Object.entries(node)) {
       if (URL_FIELDS.includes(k) && typeof v === 'string' && v && !v.startsWith('mailto:')) {
         if (!/^https:\/\//.test(v)) {
@@ -122,11 +140,11 @@ for (const locale of SUPPORTED_LOCALES) {
         }
       }
       if (k === 'sameAs' && Array.isArray(v)) {
-        v.forEach((u, i) => {
+        for (const [i, u] of v.entries()) {
           if (typeof u === 'string' && !/^https:\/\//.test(u)) {
             failures.push(`locale=${locale}: sameAs[${i}]="${u}" is not absolute HTTPS`);
           }
-        });
+        }
       }
       _scan_urls(v);
     }
@@ -140,7 +158,7 @@ for (const locale of SUPPORTED_LOCALES) {
     continue;
   }
   for (const field of REQUIRED.FAQPage) {
-    if (faq[field] == null || (Array.isArray(faq[field]) && faq[field].length === 0)) {
+    if (faq[field] === null || faq[field] === undefined || (Array.isArray(faq[field]) && faq[field].length === 0)) {
       failures.push(`locale=${locale}: FAQPage missing required field "${field}"`);
     }
   }
@@ -151,7 +169,7 @@ for (const locale of SUPPORTED_LOCALES) {
   if (items.length < 1) {
     failures.push(`locale=${locale}: FAQPage.mainEntity is empty`);
   }
-  items.forEach((q, i) => {
+  for (const [i, q] of items.entries()) {
     if (q['@type'] !== 'Question') {
       failures.push(`locale=${locale}: FAQPage.mainEntity[${i}].@type != "Question"`);
     }
@@ -165,7 +183,7 @@ for (const locale of SUPPORTED_LOCALES) {
     if (!ans || ans['@type'] !== 'Answer' || typeof ans.text !== 'string' || ans.text.trim() === '') {
       failures.push(`locale=${locale}: FAQPage.mainEntity[${i}].acceptedAnswer.text is empty or wrong shape`);
     }
-  });
+  }
   ok(`${locale}: FAQPage ${items.length} questions, fields valid`);
 }
 

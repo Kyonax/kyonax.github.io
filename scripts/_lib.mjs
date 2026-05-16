@@ -30,13 +30,20 @@ export function walk(dir, { ext = null, ignore = [] } = {}) {
   const skip = new Set(['node_modules', '.git', 'dist', 'build', '.cache', ...ignore]);
   const _walk = (d) => {
     let entries;
-    try { entries = readdirSync(d); } catch { return; }
+    try {
+      entries = readdirSync(d); 
+    } catch {
+      return; 
+    }
     for (const name of entries) {
-      if (skip.has(name)) continue;
+      if (skip.has(name)) {
+        continue;
+      }
       const p = join(d, name);
       const st = statSync(p);
-      if (st.isDirectory()) _walk(p);
-      else if (!ext || (Array.isArray(ext) ? ext.includes(extname(p)) : extname(p) === ext)) {
+      if (st.isDirectory()) {
+        _walk(p);
+      } else if (!ext || (Array.isArray(ext) ? ext.includes(extname(p)) : extname(p) === ext)) {
         out.push(p);
       }
     }
@@ -69,8 +76,11 @@ export function flattenI18nKeys(obj, prefix = '') {
   const out = [];
   for (const [k, v] of Object.entries(obj)) {
     const path = prefix ? `${prefix}.${k}` : k;
-    if (v && typeof v === 'object' && !Array.isArray(v)) out.push(...flattenI18nKeys(v, path));
-    else if (typeof v === 'string') out.push(path);
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      out.push(...flattenI18nKeys(v, path));
+    } else if (typeof v === 'string') {
+      out.push(path);
+    }
   }
   return out;
 }
@@ -83,14 +93,22 @@ export function flattenI18nKeys(obj, prefix = '') {
 export async function loadTranslations(candidates = ['src/data/snippets.js', 'src/i18n/messages.js']) {
   for (const rel_path of candidates) {
     const abs = join(REPO_ROOT, rel_path);
-    if (!existsSync(abs)) continue;
+    if (!existsSync(abs)) {
+      continue;
+    }
     try {
       const mod = await import(pathToFileURL(abs).href);
       let data = mod.TRANSLATIONS || mod.default || mod.messages;
-      if (data && typeof data === 'object' && data.TRANSLATIONS) data = data.TRANSLATIONS;
-      if (data && typeof data === 'object') return { data, file: rel_path };
+      if (data && typeof data === 'object' && data.TRANSLATIONS) {
+        data = data.TRANSLATIONS;
+      }
+      if (data && typeof data === 'object') {
+        return { data, file: rel_path };
+      }
     } catch (e) {
-      if (!e.message.includes('Cannot find package')) throw e;
+      if (!e.message.includes('Cannot find package')) {
+        throw e;
+      }
     }
   }
   return null;
@@ -101,8 +119,12 @@ export const today = () => new Date().toISOString().slice(0, 10);
 
 /** True when `dst_path` is missing, older than `src_path`, or `force` is set. */
 export function isOutdated(src_path, dst_path, { force = false } = {}) {
-  if (force) return true;
-  if (!existsSync(dst_path)) return true;
+  if (force) {
+    return true;
+  }
+  if (!existsSync(dst_path)) {
+    return true;
+  }
   const src_mtime = statSync(src_path).mtimeMs;
   const dst_mtime = statSync(dst_path).mtimeMs;
   return src_mtime > dst_mtime;

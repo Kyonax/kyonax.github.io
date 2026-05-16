@@ -10,14 +10,17 @@
 
 import { PROJECTS } from '@data/projects';
 import { classifyMediaEntry, resolveLocalizedTitle } from '@data/youtube';
-import { stripHtml } from './sanitize';
+
 import { WEBSITE_ID } from './identifiers';
+import { stripHtml } from './sanitize';
 
 const DEFAULT_UPLOAD_DATE = '2026-01-01';
 
 const _video_payload = (entry, locale, project) => {
   const classified = classifyMediaEntry(entry);
-  if (!classified || classified.kind !== 'youtube') return null;
+  if (!classified || classified.kind !== 'youtube') {
+    return null;
+  }
   const raw = classified.raw;
   const is_object = raw && typeof raw === 'object';
   return {
@@ -36,7 +39,9 @@ export const buildVideoObjectsJsonLd = ({ locale = 'en' } = {}) => {
     const arr = project.images || [];
     for (const entry of arr) {
       const v = _video_payload(entry, locale, project);
-      if (!v) continue;
+      if (!v) {
+        continue;
+      }
       items.push({
         '@type':       'VideoObject',
         '@id':         `${WEBSITE_ID.replace(/#website$/, '')}#video-${v.id}-${locale}`,

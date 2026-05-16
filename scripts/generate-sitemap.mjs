@@ -5,8 +5,8 @@
  */
 
 import { writeFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { today } from './_lib.mjs';
 
@@ -22,9 +22,9 @@ const X_DEFAULT = 'https://kyonax.com/';
 const lastmod = today();
 
 const alternates = URLS.map(
-  (u) => `        <xhtml:link rel="alternate" hreflang="${u.locale}" href="${u.loc}"/>`
+  (u) => `        <xhtml:link rel="alternate" hreflang="${u.locale}" href="${u.loc}"/>`,
 ).concat(`        <xhtml:link rel="alternate" hreflang="x-default" href="${X_DEFAULT}"/>`)
- .join('\n');
+  .join('\n');
 
 const entries = URLS.map((u) => `    <url>
         <loc>${u.loc}</loc>

@@ -30,7 +30,8 @@ const class_list = computed(() => [
 <template>
   <component
     :is="tag"
-    :class="class_list">
+    :class="class_list"
+  >
     <slot />
   </component>
 </template>

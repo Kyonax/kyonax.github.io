@@ -20,7 +20,8 @@ defineEmits(['open']);
       type="button"
       class="hero-visual__frame"
       :aria-label="ariaLabel"
-      @click="$emit('open')">
+      @click="$emit('open')"
+    >
       <UiImage
         img="kyonax_portrait"
         :alt="alt"
@@ -29,7 +30,8 @@ defineEmits(['open']);
         fit="cover"
         position="top center"
         sizes="(max-width: 768px) 70vw, 380px"
-        eager />
+        eager
+      />
       <div class="hero-visual__inner" aria-hidden="true" />
     </button>
     <div class="hero-visual__meta" aria-hidden="true">

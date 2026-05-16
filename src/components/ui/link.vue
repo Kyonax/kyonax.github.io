@@ -42,8 +42,12 @@ const target_attr = computed(() => (props.external ? '_blank' : null));
 const rel_attr    = computed(() => (props.external ? 'noopener' : null));
 
 const download_attr = computed(() => {
-  if (props.download === false) return null;
-  if (props.download === true) return '';
+  if (props.download === false) {
+    return null;
+  }
+  if (props.download === true) {
+    return '';
+  }
   return props.download;
 });
 </script>
@@ -56,7 +60,8 @@ const download_attr = computed(() => {
     :download="download_attr"
     :class="class_list"
     :style="inline_style"
-    v-bind="attrs">
+    v-bind="attrs"
+  >
     <slot />
   </a>
 </template>

@@ -18,8 +18,12 @@
 
 const env = (key, fallback) => {
   const val = import.meta.env?.[`VITE_${key}`];
-  if (val === undefined || val === null) return fallback;
-  if (typeof val === 'boolean') return val;
+  if (val === undefined || val === null) {
+    return fallback;
+  }
+  if (typeof val === 'boolean') {
+    return val;
+  }
   return val === 'true' || val === '1';
 };
 

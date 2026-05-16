@@ -3,11 +3,10 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import { buildFaqJsonLd,buildSiteJsonLd } from '@seo/json-ld';
+import { useHead } from '@unhead/vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useHead } from '@unhead/vue';
-
-import { buildSiteJsonLd, buildFaqJsonLd } from '@seo/json-ld';
 
 export const useStructuredData = () => {
   const { locale } = useI18n();

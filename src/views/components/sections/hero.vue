@@ -4,21 +4,18 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
-import { useI18n } from 'vue-i18n';
-
-import BrandIcon from '@ui/brand-icon.vue';
-import UiLink from '@ui/link.vue';
-import UiImageViewer from '@ui/image-viewer.vue';
-import UiStateGrid from '@ui/state-grid.vue';
-import UiHudDeco from '@ui/hud-deco.vue';
-import HeroVisual from '@sections/hero-visual.vue';
-
-import { PROJECTS } from '@data/projects';
-import { TECHNOLOGIES } from '@data/data';
-
 import cv_en_url from '@assets/cv/cv_cristian_d_moreno_en.pdf?url';
 import cv_es_url from '@assets/cv/cv_cristian_d_moreno_es.pdf?url';
+import { TECHNOLOGIES } from '@data/data';
+import { PROJECTS } from '@data/projects';
+import HeroVisual from '@sections/hero-visual.vue';
+import BrandIcon from '@ui/brand-icon.vue';
+import UiHudDeco from '@ui/hud-deco.vue';
+import UiImageViewer from '@ui/image-viewer.vue';
+import UiLink from '@ui/link.vue';
+import UiStateGrid from '@ui/state-grid.vue';
+import { computed, onBeforeUnmount,onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
 
@@ -38,8 +35,12 @@ const stack_count = computed(() => TECHNOLOGIES.length);
 const years_suffix = computed(() => locale.value === 'es' ? 'AÑOS' : 'YEARS');
 
 const portrait_viewer_open = ref(false);
-const open_portrait_viewer  = () => { portrait_viewer_open.value = true; };
-const close_portrait_viewer = () => { portrait_viewer_open.value = false; };
+const open_portrait_viewer  = () => {
+  portrait_viewer_open.value = true; 
+};
+const close_portrait_viewer = () => {
+  portrait_viewer_open.value = false; 
+};
 
 const portrait_aria = computed(() =>
   `${t('kyo-web.persistent-data.name')} — ${t('kyo-web.landing.hero.open-portrait')}`,
@@ -55,7 +56,9 @@ const _viewport_mq = typeof window !== 'undefined'
   ? window.matchMedia('(min-width: 1200px)')
   : null;
 const is_desktop = ref(_viewport_mq?.matches ?? false);
-const _on_viewport_change = (event) => { is_desktop.value = event.matches; };
+const _on_viewport_change = (event) => {
+  is_desktop.value = event.matches; 
+};
 
 onMounted(() => _viewport_mq?.addEventListener('change', _on_viewport_change));
 onBeforeUnmount(() => _viewport_mq?.removeEventListener('change', _on_viewport_change));
@@ -68,7 +71,8 @@ const GLYPH_ARROW = '\uF063';
   <section
     id="hero"
     class="hero"
-    :aria-label="t('kyo-web.landing.hero.tag')">
+    :aria-label="t('kyo-web.landing.hero.tag')"
+  >
     <UiHudDeco variant="tr" text="// HANDSHAKE :: VERIFIED" />
     <UiHudDeco variant="bl" text="// VECTOR :: KYO-001" />
     <div class="hero__inner">
@@ -77,7 +81,8 @@ const GLYPH_ARROW = '\uF063';
         class="hero__visual"
         :aria-label="portrait_aria"
         :alt="t('kyo-web.landing.hero.portrait-alt')"
-        @open="open_portrait_viewer" />
+        @open="open_portrait_viewer"
+      />
 
       <div class="hero__content">
         <div class="hero__tag-row">
@@ -85,7 +90,8 @@ const GLYPH_ARROW = '\uF063';
             class="hero__tag"
             href="https://github.com/ccs-devhub"
             target="_blank"
-            rel="noopener noreferrer">
+            rel="noopener noreferrer"
+          >
             <UiStateGrid />
             <span v-html="t('kyo-web.landing.hero.tag')" />
           </a>
@@ -94,7 +100,8 @@ const GLYPH_ARROW = '\uF063';
             href="https://orcid.org/0009-0006-4459-5538"
             target="_blank"
             rel="noopener noreferrer"
-            :aria-label="t('kyo-web.landing.hero.orcid-aria')">
+            :aria-label="t('kyo-web.landing.hero.orcid-aria')"
+          >
             <BrandIcon class="hero__orcid-icon" name="orcid" />
             <span class="hero__orcid-label">ORCID</span>
           </a>
@@ -150,14 +157,16 @@ const GLYPH_ARROW = '\uF063';
             :href="cv_href"
             variant="cyber"
             size="lg"
-            :download="cv_filename">
+            :download="cv_filename"
+          >
             {{ cv_label }}
           </UiLink>
           <UiLink
             href="mailto:kyonax.corp@gmail.com"
             variant="cyber-outline"
             size="lg"
-            external>
+            external
+          >
             {{ t('kyo-web.landing.hero.secondary-cta') }}
           </UiLink>
         </div>
@@ -168,7 +177,8 @@ const GLYPH_ARROW = '\uF063';
         class="hero__visual"
         :aria-label="portrait_aria"
         :alt="t('kyo-web.landing.hero.portrait-alt')"
-        @open="open_portrait_viewer" />
+        @open="open_portrait_viewer"
+      />
     </div>
 
     <a class="hero__scroll-hint" href="#skills" :aria-label="t('kyo-web.landing.hero.scroll-hint')">
@@ -181,7 +191,8 @@ const GLYPH_ARROW = '\uF063';
       :close-label="t('kyo-web.landing.modal.close')"
       img="kyonax_portrait"
       alt="Cristian D. Moreno (Kyonax) portrait"
-      @close="close_portrait_viewer" />
+      @close="close_portrait_viewer"
+    />
   </section>
 </template>
 

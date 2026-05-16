@@ -23,5 +23,6 @@ defineProps({
     class="hud-deco"
     :class="`hud-deco--${variant}`"
     :data-text="text"
-    aria-hidden="true" />
+    aria-hidden="true"
+  />
 </template>

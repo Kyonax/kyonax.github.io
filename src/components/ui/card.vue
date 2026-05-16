@@ -26,7 +26,8 @@ const class_list = computed(() => [
 <template>
   <component
     :is="as"
-    :class="class_list">
+    :class="class_list"
+  >
     <slot />
   </component>
 </template>

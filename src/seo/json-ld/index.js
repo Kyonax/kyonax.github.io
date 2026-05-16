@@ -8,10 +8,10 @@
  * and ~30% smaller in the emitted payload.
  */
 
-import buildWebSiteJsonLd     from './website';
-import buildProfilePageJsonLd from './profile-page';
 import buildPersonJsonLd      from './person';
+import buildProfilePageJsonLd from './profile-page';
 import buildVideoObjectsJsonLd from './videos';
+import buildWebSiteJsonLd     from './website';
 
 export { buildFaqJsonLd } from './faq-page';
 export { buildVideoObjectsJsonLd } from './videos';

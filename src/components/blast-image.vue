@@ -4,9 +4,8 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { computed } from 'vue';
-
 import useImageManifest from '@composables/use-image-manifest';
+import { computed } from 'vue';
 
 const props = defineProps({
   img:   { type: String, required: true },
@@ -32,13 +31,15 @@ const alt_text = computed(() => props.alt || props.img);
       v-if="has_avif"
       type="image/avif"
       :srcset="manifest.avif_srcset"
-      :sizes="sizes" />
+      :sizes="sizes"
+    />
 
     <source
       v-if="has_webp"
       type="image/webp"
       :srcset="manifest.webp_srcset"
-      :sizes="sizes" />
+      :sizes="sizes"
+    />
 
     <img
       :src="manifest.fallback_src"
@@ -49,6 +50,7 @@ const alt_text = computed(() => props.alt || props.img);
       :alt="alt_text"
       :loading="eager ? 'eager' : 'lazy'"
       :fetchpriority="eager ? 'high' : 'auto'"
-      decoding="async" />
+      decoding="async"
+    />
   </picture>
 </template>
