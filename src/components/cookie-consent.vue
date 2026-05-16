@@ -20,7 +20,9 @@ const decline_btn = ref(null);
    already has a decision) or from accept()/decline(). Users who never
    interact with the banner never trigger this — zero analytics payload. */
 const _inject_gtag = (granted) => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') {
+    return;
+  }
   if (window.__gtag_loaded) {
     _update(granted);
     return;
@@ -28,7 +30,9 @@ const _inject_gtag = (granted) => {
   window.__gtag_loaded = true;
 
   window.dataLayer = window.dataLayer || [];
-  function gtag() { window.dataLayer.push(arguments); }
+  function gtag() {
+    window.dataLayer.push(arguments); 
+  }
   window.gtag = gtag;
 
   const value = granted ? 'granted' : 'denied';
@@ -46,11 +50,13 @@ const _inject_gtag = (granted) => {
   const script = document.createElement('script');
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-  document.head.appendChild(script);
+  document.head.append(script);
 };
 
 const _update = (granted) => {
-  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return;
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
+    return;
+  }
   const value = granted ? 'granted' : 'denied';
   window.gtag('consent', 'update', {
     ad_storage:         value,

@@ -35,7 +35,9 @@ const _consent_prompt_open = ref(false);
 const _iframe_ref = ref(null);
 const _consent_decline_ref = ref(null);
 const poster_loaded = ref(false);
-const on_poster_load = () => { poster_loaded.value = true; };
+const on_poster_load = () => {
+  poster_loaded.value = true; 
+};
 
 const _on_consent_keydown = (event) => {
   if (event.key === 'Escape') {
@@ -45,7 +47,9 @@ const _on_consent_keydown = (event) => {
 };
 
 watch(_consent_prompt_open, async (is_open) => {
-  if (!is_open) return;
+  if (!is_open) {
+    return;
+  }
   await nextTick();
   _consent_decline_ref.value?.focus?.();
 });

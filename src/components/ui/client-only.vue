@@ -7,7 +7,9 @@
 import { onMounted, ref } from 'vue';
 
 const mounted = ref(false);
-onMounted(() => { mounted.value = true; });
+onMounted(() => {
+  mounted.value = true; 
+});
 </script>
 
 <template>

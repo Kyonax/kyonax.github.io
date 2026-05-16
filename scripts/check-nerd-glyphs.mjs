@@ -18,7 +18,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { c, exitWith, fail, head, ok, read, REPO_ROOT, warn, walk } from './_lib.mjs';
+import { c, exitWith, fail, head, ok, read, REPO_ROOT, walk,warn } from './_lib.mjs';
 
 const GLYPH_FILE = join(REPO_ROOT, 'scripts/_nerd-font-glyphs.txt');
 const SRC_DIR    = join(REPO_ROOT, 'src');

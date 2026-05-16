@@ -29,7 +29,9 @@ const has_webp = computed(() => Boolean(manifest.value?.webp_srcset));
 const _on_ready = (el) => {
   /* Pin the resolved currentSrc so the next <img src=same-url> mount
      finds the decoded bitmap still in memory instead of re-fetching. */
-  if (el?.currentSrc) retainImageUrl(el.currentSrc);
+  if (el?.currentSrc) {
+    retainImageUrl(el.currentSrc);
+  }
   emit('load');
 };
 </script>

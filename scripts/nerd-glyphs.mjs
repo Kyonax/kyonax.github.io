@@ -144,7 +144,7 @@ function runCheck() {
 
 function cmdList() {
   const sheet = readSheet();
-  head(`nerd-glyphs — sheet contents`);
+  head('nerd-glyphs — sheet contents');
   printList(sheet.codepoints);
 }
 

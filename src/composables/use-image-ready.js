@@ -14,7 +14,9 @@
 export const vImageReady = {
   mounted(el, binding) {
     const fire = () => {
-      try { binding.value?.(el); } catch { /* swallow — UI-only handler */ }
+      try {
+        binding.value?.(el); 
+      } catch { /* swallow — UI-only handler */ }
     };
     if (el.complete && el.naturalWidth > 0) {
       fire();
