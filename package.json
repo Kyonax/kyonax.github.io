@@ -1,14 +1,37 @@
 {
   "name": "kyo-web-online",
-  "version": "1.0.0",
-  "description": "Kyo's Personal Website",
-  "main": "index.js",
+  "version": "2.0.0-vue-migration",
+  "description": "Kyo's personal website — Vue 3 + Vite SSG, prerendered EN/ES landing with full SEO surface.",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode production",
-    "dev": "webpack-dev-server --mode development",
-    "generate-favicons": "grunt --force",
-    "build-all": "npm-run-all --sequential generate-favicons build"
+    "dev": "vite",
+    "build": "NODE_ENV=production vite-ssg build",
+    "build:csr": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:i18n-keys": "node scripts/check-i18n-keys.mjs",
+    "check:trans": "node scripts/check-trans-attrs.mjs",
+    "check:color": "node scripts/check-color-usage.mjs",
+    "check:aliases": "node scripts/check-aliases.mjs",
+    "check:licenses": "node scripts/check-license-headers.mjs",
+    "check:json-ld": "node scripts/check-json-ld.mjs",
+    "check:seo": "node scripts/seo-audit.mjs",
+    "precheck": "node scripts/precheck.mjs",
+    "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "convert:fonts": "./scripts/convert-fonts.sh",
+    "convert:fonts:subset": "./scripts/convert-fonts.sh --subset",
+    "convert:ascii": "node scripts/ascii-to-image.mjs",
+    "convert:ascii:force": "node scripts/ascii-to-image.mjs --force",
+    "convert:images": "node scripts/convert-images.mjs",
+    "convert:images:force": "node scripts/convert-images.mjs --force",
+    "predev": "npm run convert:ascii && npm run convert:images -- --quiet && npm run generate:sitemap",
+    "prebuild": "npm run convert:ascii && npm run convert:images && npm run generate:sitemap && npm run precheck",
+    "postbuild": "node scripts/seo-audit.mjs"
   },
   "repository": {
     "type": "git",
@@ -22,41 +45,50 @@
     "KYO-T",
     "京"
   ],
-  "author": "Cristian Moreno (Kyonax)",
+  "author": {
+    "name": "Cristian D. Moreno - Kyonax",
+    "url": "https://github.com/Kyonax"
+  },
+  "maintainers": [
+    {
+      "name": "Cristian D. Moreno - Kyonax",
+      "url": "https://orcid.org/0009-0006-4459-5538"
+    }
+  ],
   "license": "GPL-2.0-only",
   "bugs": {
     "url": "https://github.com/Kyonax/kyo-web-online/issues"
   },
-  "homepage": "https://github.com/Kyonax/kyo-web-online#readme",
-  "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/preset-env": "^7.26.0",
-    "autoprefixer": "^10.4.20",
-    "babel-loader": "^9.2.1",
-    "clean-webpack-plugin": "^4.0.0",
-    "css-loader": "^7.1.2",
-    "cssnano": "^7.0.6",
-    "file-loader": "^6.2.0",
-    "grunt": "^0.4.5",
-    "grunt-favicons": "^0.8.0",
-    "html-webpack-plugin": "^5.6.3",
-    "image-minimizer-webpack-plugin": "^4.1.1",
-    "image-webpack-loader": "^8.1.0",
-    "imagemin-webp": "^8.0.0",
-    "npm-run-all": "^4.1.5",
-    "postcss-loader": "^8.1.1",
-    "sass": "^1.81.0",
-    "sass-loader": "^16.0.3",
-    "style-loader": "^4.0.0",
-    "svgo-loader": "^4.0.0",
-    "webpack": "^5.96.1",
-    "webpack-bundle-analyzer": "^4.10.2",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.1.0",
-    "webpack-manifest-plugin": "^5.0.0"
+  "homepage": "https://kyonax.com/",
+  "engines": {
+    "node": ">=20.0.0"
   },
   "dependencies": {
-    "cheerio": "^1.0.0"
+    "@unhead/vue": "^2.1.15",
+    "vue": "^3.5.13",
+    "vue-i18n": "^9.14.2",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/test-utils": "^2.4.6",
+    "eslint": "^9.17.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsdoc": "^50.6.3",
+    "eslint-plugin-security": "^3.0.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unicorn": "^56.0.1",
+    "eslint-plugin-vue": "^9.32.0",
+    "globals": "^15.14.0",
+    "happy-dom": "^15.11.7",
+    "sass": "^1.81.0",
+    "sharp": "^0.34.5",
+    "vite": "^6.0.7",
+    "vite-plugin-html": "^3.2.2",
+    "vite-ssg": "^28.3.0",
+    "vitest": "^2.1.8",
+    "vue-eslint-parser": "^9.4.3"
   },
   "browserslist": [
     ">0.5%",

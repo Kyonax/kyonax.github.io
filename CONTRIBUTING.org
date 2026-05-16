@@ -1,0 +1,198 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+
+#  ________ ______  ___  ____     ______
+# /_  __/ // / __/ / _ \/ __ \__ / / __ \
+#  / / / _  / _/  / // / /_/ / // / /_/ /
+# /_/ /_//_/___/ /____/\____/\___/\____/
+#
+# CONTRIBUTING.org — How to set up, develop, and contribute
+# 2026-05-14
+#
+# Prerequisites, dev environment setup, code conventions,
+# branch workflow, CI pipeline, and PR process.
+#
+#   Prerequisites
+#   Setup
+#   Available scripts
+#   Code Conventions
+#   Branch Workflow
+#   CI Pipeline
+#   Pull Requests
+#   Licensing
+
+#+TITLE: kyo-web-online Contributing Guide
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+#+EMAIL: kyonax.corp@gmail.com
+#+DATE: May 14, 2026
+#+FILETAGS: :KYO:WEB:CONTRIBUTING:
+#+LAST_UPDATE: May 14, 2026
+#+OPTIONS: toc:nil num:nil H:3
+
+#+BEGIN_QUOTE
+*NOTE:* This is a personal portfolio. kyo-web-online ships the public face of a single author. It is not a community tool. Contributions are welcome for learning or personal use, but the roadmap and scope are driven by one person's needs.
+#+END_QUOTE
+
+* Prerequisites
+
+| Tool    | Version           | Check            |
+|---------+-------------------+------------------|
+| Node.js | =>=20.0.0=          | =node --version= |
+| npm     | ships with Node   | =npm --version=  |
+| Git     | any recent        | =git --version=  |
+| Python3 | for =pyfiglet=      | =python3 --version= |
+
+On macOS the system Node may be older than v20. Pin the Homebrew Node binary on =PATH= before any build:
+
+#+BEGIN_SRC bash
+export PATH="/opt/homebrew/opt/node/bin:$PATH"
+#+END_SRC
+
+* Setup
+
+#+BEGIN_SRC bash
+git clone https://github.com/Kyonax/kyo-web-online.git
+cd kyo-web-online
+npm ci
+#+END_SRC
+
+The site has no runtime env vars — feature flags live at =src/config/features.js= and are tree-shaken at build time. Skip the =.env= step.
+
+Start the dev server:
+
+#+BEGIN_SRC bash
+npm run dev
+#+END_SRC
+
+Open =http://localhost:5173/= for the EN landing, =http://localhost:5173/es= for ES.
+
+** Available scripts
+
+| Script         | Command                  | Purpose                                  |
+|----------------+--------------------------+------------------------------------------|
+| Dev server     | =npm run dev=              | Vite on port 5173 (no prerender)         |
+| Build          | =npm run build=            | Full SSG via vite-ssg                    |
+| Build (CSR)    | =npm run build:csr=        | Escape-hatch SPA build (debug only)      |
+| Preview        | =npm run preview=          | Serve =dist/= at :4173                     |
+| Lint           | =npm run lint=             | ESLint (errors + warnings)               |
+| Lint fix       | =npm run lint:fix=         | Auto-fix fixable issues                  |
+| Test           | =npm run test=             | Vitest                                   |
+| Coverage       | =npm run test:coverage=    | v8 coverage report                       |
+| Precheck       | =npm run precheck=         | 7-gate composite (i18n, color, ...)      |
+| SEO audit      | =npm run check:seo=        | Post-build SEO assertions                |
+| Image convert  | =npm run convert:images=   | Sharp WebP + AVIF beside JPGs/PNGs       |
+
+* Code Conventions
+Enforced by [[file:eslint.config.mjs][eslint.config.mjs]] and [[file:scripts/precheck.mjs][scripts/precheck.mjs]] ([[https://github.com/ccs-devhub][CCS]] standards).
+
+** Naming
+
+| Scope                 | Style      | Example           |
+|-----------------------+------------+-------------------|
+| Variables, parameters | =snake_case= | =overlay_timer=     |
+| Functions, methods    | =camelCase=  | =startOverlay()=    |
+| Constants             | =UPPER_CASE= | =MAX_RETRY=         |
+| Classes               | =PascalCase= | =HudController=     |
+| Filenames             | =kebab-case= | =scene-switcher.js= |
+| Vue component imports | =PascalCase= | =UiBrandIcon=       |
+
+** Vue 3
+
+- Composition API with =<script setup>= only, never Options API
+- =<style lang="scss" scoped>= on every SFC
+- Props use =snake_case= (not Vue's default camelCase)
+- Template references match the script variable name exactly
+- Imports use the 14 path aliases (=@views=, =@sections=, =@ui=, ...)
+- Zero relative parent imports (=../../=) anywhere in =src/=
+
+** SCSS
+
+- 7-1 trimmed to =abstracts/= + =base/=
+- Token consumption priority: =var(--clr-*)= first, then SCSS =map.get= compile-time, then mixins
+- Color split: ~60% neutral, ~30% primary, ~10% accent / state
+- No hardcoded hex / hsl in SFC =<style>= blocks (gate scans by text)
+
+** Translations (vue-i18n)
+
+- Source of truth: [[file:src/data/snippets.js][src/data/snippets.js]]
+- v-html keys must appear in [[file:src/i18n/raw-html-keys.js][src/i18n/raw-html-keys.js]]
+- No em-dashes in user-facing copy (titles excepted)
+
+** Formatting
+
+- 2-space indent, single quotes, semicolons
+- Trailing commas on multiline
+- Imports sorted by =simple-import-sort=
+
+** Security
+
+=BANNED= patterns (enforced by ESLint + CI security scan):
+
+- =eval()=, =Function()=, =innerHTML= assignment, =document.write=
+- =setTimeout= / =setInterval= with string arguments
+- Hardcoded tokens, secrets, API keys
+- =http://= URLs (XML namespace URIs allowed)
+
+See [[file:.github/SECURITY.md][SECURITY.md]] for the full list.
+
+* Branch Workflow
+
+#+BEGIN_EXAMPLE
+main              <- release branch (Hostinger deploy gates here)
+  vue-migration   <- current integration branch
+    feat-*        <- feature branches
+    fix-*         <- fix branches
+deploy            <- force-pushed dist/ (single commit, build artifact)
+#+END_EXAMPLE
+
+- Feature branches off =vue-migration=, PRs into =vue-migration=
+- =main= receives merges from =vue-migration= when a release is ready
+- Push to =main= triggers [[file:.github/workflows/deploy.yml][deploy.yml]] which force-pushes =dist/= to =deploy=
+- All changes require review from =@Kyonax= ([[file:.github/CODEOWNERS][CODEOWNERS]])
+
+* CI Pipeline
+Every PR runs 7 jobs ([[file:.github/workflows/ci.yml][ci.yml]]):
+
+| Job             | What it checks                                                |
+|-----------------+---------------------------------------------------------------|
+| ESLint          | =npm run lint= passes with 0 errors                             |
+| Migration gates | =npm run precheck= passes 7/7                                   |
+| Vitest          | =npm run test= passes                                           |
+| Production build | =npm run build= succeeds (vite-ssg prerender)                 |
+| Security Scan   | No banned patterns in any =.js / .mjs / .vue=                   |
+| Protected Files | Advisory comment when legal, governance, or CI files change   |
+| Pre-Check Label | Aggregates, toggles =Pre-Check Failed= label on the PR          |
+
+** Before opening a PR
+
+#+BEGIN_SRC bash
+npm run lint          # 0 errors
+npm run precheck      # 7/7 pass
+npm run test          # all passing
+npm run build         # clean build
+#+END_SRC
+
+* Pull Requests
+PRs follow standard GitHub PR composition. The =pr-scribe= skill (Claude Code) drafts kyo-branded PR text automatically — see the skill's brand routing for the convention.
+
+** Every new source file must have
+
+1. The CCS license header (first 5 lines):
+   =Copyright (c) 2026 Cristian D. Moreno — @Kyonax=
+   =Distributed under the terms of GPL-2.0-only — see LICENSE.=
+2. Naming that follows the conventions table above
+3. Imports sorted by =simple-import-sort=
+
+** Every new root config file must have
+
+A *Tier 1 file header* with a unique place name from the registry in [[file:LICENSING.org][LICENSING.org]]. Generate the figlet with:
+
+#+BEGIN_SRC sh
+python3 -c "from pyfiglet import Figlet; print(Figlet(font='smslant').renderText('THE X').rstrip())"
+#+END_SRC
+
+** CHANGELOG
+Every PR that ships user-facing changes should update [[file:CHANGELOG.org][CHANGELOG.org]]. Release entries follow: =* [vX.Y.Z] — YYYY-MM-DD :: Short Title=.
+
+* Licensing
+Single-license GPL-2.0-only. See [[file:LICENSING.org][LICENSING.org]] for the per-extension header templates and the Tier 1 file-header convention. The [[file:NOTICE][NOTICE]] file must be included in all redistributions.

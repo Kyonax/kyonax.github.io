@@ -1,0 +1,45 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+
+#  ________ ______  ___  __________ __
+# /_  __/ // / __/ / _ \/ __/ __/ //_/
+#  / / / _  / _/  / // / _/_\ \/ ,<
+# /_/ /_//_/___/ /____/___/___/_/|_|
+#
+# .editorconfig — Editor-agnostic formatting baseline
+# 2026-05-14
+#
+# Aligns every editor (VS Code, Emacs, Vim, JetBrains, ...) to
+# the project's whitespace and line-ending rules BEFORE ESLint
+# runs. Mirrors CCS / reckit conventions; lockstep with
+# eslint.config.mjs (indent: 2 spaces, quote: single, eol: lf).
+#
+#   Universal defaults
+#   .md / .org / .scss / .vue overrides
+#   Makefile tab override
+#
+# Guidelines:
+#   Changes here MUST be mirrored in eslint.config.mjs or
+#     ESLint will fight the editor on save
+#   max_line_length = 80 is the prose default; SCSS / Vue / org
+#     opt out via the per-extension override blocks
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 80
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{org,scss,vue}]
+max_line_length = off
+
+[Makefile]
+indent_style = tab

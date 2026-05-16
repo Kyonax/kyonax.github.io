@@ -1,6 +1,164 @@
-# environment variables
-.env
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
 
-# Proyect Folders
+#  ________ ______  _   ______  _______
+# /_  __/ // / __/ | | / / __ \/  _/ _ \
+#  / / / _  / _/   | |/ / /_/ // // // /
+# /_/ /_//_/___/   |___/\____/___/____/
+#
+# .gitignore — Files and directories Git must never track
+# 2026-05-14
+#
+# Single source of truth for everything excluded from version
+# control. Organized by concern so new patterns land in the
+# right section. Stack: Vue 3 + Vite + vite-ssg + Sharp +
+# vue-i18n + Vitest + ESLint.
+#
+#   Node / Vue / Vite / vite-ssg
+#   Build / cache
+#   Logs
+#   Test / coverage / reports
+#   Environment / secrets
+#   Editors / IDEs / AI agents
+#   OS junk
+#   Temp / backup
+#   Local-only contributor files
+#
+# Requirements:
+#   package-lock.json is COMMITTED — npm ci in CI needs it
+#   .env.example is the only tracked env file (when present)
+#   public/.htaccess, public/robots.txt, public/sitemap.xml
+#     are COMMITTED — Vite copies them into dist/ on build
+
+# ── Node / Vue / Vite / vite-ssg ─────────────────────────────
 node_modules/
 dist/
+dist-ssr/
+.vite/
+.vite-ssg-temp/
+*.local
+
+# ── Build / cache ────────────────────────────────────────────
+.cache/
+.parcel-cache/
+.turbo/
+.next/
+.nuxt/
+.svelte-kit/
+.output/
+.sass-cache/
+.eslintcache
+.stylelintcache
+.prettiercache
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ── Test / coverage / reports ────────────────────────────────
+coverage/
+.nyc_output/
+*.lcov
+reports/
+
+# ── Environment / secrets ────────────────────────────────────
+# Real values live only on the contributor's machine.
+.env
+.env.local
+.env.*.local
+.env.*
+# Tracked template (when present)
+!.env.example
+
+# Hard ban on common secret-file extensions — never commit
+# these even accidentally. Add a specific pattern here if
+# you ever need to intentionally commit an encrypted variant.
+*.pem
+*.key
+*.crt
+*.cert
+*.pfx
+*.p12
+*.gpg
+*.jks
+*.keystore
+*.token
+*.secret
+.htpasswd
+.npmrc
+.yarnrc
+id_rsa
+id_rsa.*
+id_dsa
+id_dsa.*
+id_ed25519
+id_ed25519.*
+known_hosts
+secrets/
+credentials/
+.secrets/
+.aws/
+.gcloud/
+.ssh/
+auth.json
+
+# Generic database / SQL dumps — should never live in the repo.
+*.sqlite
+*.db
+*.sql
+
+# ── Editors / IDEs / AI agents ───────────────────────────────
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+
+# AI coding agents — workspace state must stay local.
+.claude/
+.aider*
+.cursor/
+.continue/
+
+# ── OS junk ──────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.DocumentRevisions-V100
+.TemporaryItems
+.VolumeIcon.icns
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ── Temp / backup ────────────────────────────────────────────
+*.bak
+*.orig
+*.tmp
+*.temp
+tmp/
+temp/
+
+# ── Local-only contributor files ─────────────────────────────
+# Setup notes / scratchpad docs that live on the contributor's
+# machine only. Clipboard buffers for the most recent generated
+# commit / PR text — overwritten in place every time new text
+# is produced.
+.github/BRANCHES.org
+CLAUDE.md
+COMMIT.org
+PR.org
