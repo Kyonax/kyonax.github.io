@@ -1,0 +1,21 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ *
+ * Abstracts entry — re-exports tokens, maps, and mixins.
+ *
+ * IMPORTANT (SASS_THEMING_MIGRATION.md §3.2):
+ *   This module emits ZERO CSS. It only re-exports declarations
+ *   (variables + mixin definitions). It is auto-injected at the top of every
+ *   .scss file and every <style lang="scss"> block via the Vite config:
+ *     additionalData: '@use "@scss/abstracts" as *;\n'
+ *
+ *   _theme.scss is NOT forwarded here on purpose — it emits :root { ... }
+ *   plus utility classes (.cyberpunk-glow, .element-flare). Forwarding it
+ *   would duplicate those rules into every SFC's compiled output.
+ *
+ *   _theme.scss loads ONCE via main.scss instead.
+ */
+
+@forward "variables";
+@forward "mixins";

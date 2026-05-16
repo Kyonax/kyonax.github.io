@@ -1,31 +1,51 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+#
+# deploy-to-build-dev.yml — staging deploy gate (develop branch)
+#
+# Trigger: push to develop + manual workflow_dispatch.
+# Steps:   checkout -> node 20 -> npm ci -> precheck -> build -> push dist/
+#          to build-dev branch via s0/git-publish-subdir-action.
+# Staging environment can be paired with Hostinger subdomain or used for
+# preview-link sharing. Concurrency group prevents overlapping runs.
+
 name: kyo-web-online - Build and Deploy to build-dev
 
 on:
   push:
     branches:
       - develop
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-build-dev-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     name: Build and Push
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install Node Dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Install ImageMagick
-        run: sudo apt-get update && sudo apt-get install -y imagemagick
+      - name: Run precheck gate
+        run: npm run precheck
 
       - name: Build App
-        run: npm run build-all
+        run: npm run build
 
       - name: Push to build-dev
         uses: s0/git-publish-subdir-action@develop
@@ -35,3 +55,4 @@ jobs:
           FOLDER: dist
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: "Build in Dev Environment: ({sha}) {msg}"
+          SQUASH_HISTORY: true

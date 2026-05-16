@@ -1,0 +1,60 @@
+#+TITLE: KYO's WEBSITE
+#+SUBTITLE: Professional Background Landing Page
+#+AUTHOR: Cristian D. Moreno - Kyonax
+#+EMAIL: iam@kyo.wtf
+#+DATE: 2025-02-03
+#+auto_tangle: nil
+
+#+begin_quote
+📌 This document serves as the comprehensive guide for the Kyonax main site, crafted to display Cristian D. Moreno's career highlights. It includes an in-depth explanation of the site's structure, coding practices, design approaches, and file system organization. All these elements are meticulously detailed in the DOCs and integrated into the Code Documentation, providing a complete resource for anyone seeking to understand the intricacies of this project's development.
+#+end_quote
+
+The core directive of this website is to showcase my professional background, but it's also set up as an index for all the future projects I'm gonna dive into over this century. The interface screams ~cyberpunk/sci-fi~ inspiration, crafted to sync with my vision of what a futuristic UI should be.
+
+------
+
+* TABLE OF CONTENTs :toc:
+- [[#code-guidelines][CODE GUIDELINEs]]
+  - [[#naming-conventions][NAMING CONVENTIONS]]
+  - [[#file-structure][FILE STRUCTURE]]
+
+* CODE GUIDELINEs
+The code adheres to a rigorous structure and set of guidelines to ensure exceptional code consistency. Additionally, the mission is to tailor the code documentation in such a way that it becomes straightforward to recall and modify the code as needed in the future.
+
+This adheres strictly to my personal coding preferences and does not follow any global guidelines; it's tailored solely for my comprehension and also designed to facilitate learning for others.
+
+** NAMING CONVENTIONS
+Structured naming convention for files, file structures, and code across JavaScript, HTML, and SASS.
+
+- Use ~kebab-case~ for all files except constants files or configuration files.
+  - At the end of all the ~js~ files is necessary to identify what type of development is, for example if is an utility the name should be ~example.util.js~
+- ~PascalCase~ for constants files and other global Classes/Objects.
+- ~snake_case~ for all the variables inside a ~js~ file, for the constants the same but in ~UPPER_CASE~.
+- The private methods should always start with "_" example "_private_method()"; The public/protected are not necessary to add the underscore as prefix.
+- Names should be super specific and self-explanatory.
+- The Code Documentation is strictly obligatory, this with the mission to understand from anywhere what the functions/variables/clasess do and also if is necessary any kind of dependencie.
+
+** FILE STRUCTURE
+*** SASS
+TODO: Explain the File Structure of SASS
+
+#+begin_src sh
+./src/app/scss
+
+├── abstracts
+│   ├── _index.scss
+│   ├── _mixins.scss
+│   ├── _theme.scss
+│   └── _variables.scss
+├── base
+│   ├── _global.scss
+│   ├── _index.scss
+│   └── _typography.scss
+├── components
+│   ├── _index.scss
+│   └── _marquee.scss
+├── layout
+│   ├── _dev-info.scss
+│   └── _index.scss
+└── main.scss
+#+end_src

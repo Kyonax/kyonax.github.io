@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ *
+ * Typography — font registrations + body type baseline.
+ *
+ * The @font-face mixin (abstracts/_mixins.scss) prefers WOFF2 src and falls
+ * back to TTF. Run ./scripts/convert-fonts.sh --subset to generate the WOFF2
+ * variants; until then the browser loads the TTF fallback.
+ *
+ * The bogus `body { font-display: swap }` line from legacy was dropped —
+ * font-display only applies inside @font-face.
+ */
+
+@use "abstracts" as *;
+
+/* SpaceMono — primary monospace (cyberpunk display). */
+@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-Regular",   400, normal);
+@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-Bold",      700, normal);
+@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-Italic",    400, italic);
+@include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-BoldItalic", 700, italic);
+
+/* Geomanist — display font for headlines. */
+@include font-face("Geomanist", "Geomanist/GeomanistRegular", 400, normal);
+@include font-face("Geomanist", "Geomanist/GeomanistBold",    700, normal);
+@include font-face("Geomanist", "Geomanist/GeomanistItalic",  400, italic);
+
+/* GlittherSyavina — accent script. */
+@include font-face("GlittherSyavina", "GlittherSyavina/GlittherSyavina", 400, normal);
+
+/* PPmodwest — pixel/retro display. */
+@include font-face("PPmodwest", "NeuebitFree/PpmodwestRegular", 400, normal);
+@include font-face("PPmodwest", "NeuebitFree/PpneuebitBold",    700, normal);
+
+/* SymbolsNerdFontMono — icon glyph font for TechStack et al.
+   Range MUST be "icons" — the Nerd Font glyphs live in the Private Use Area
+   (U+E000–U+F8FF, etc.). The default Latin range would silently exclude
+   them, leaving every icon as tofu. */
+@include font-face(
+  "SymbolsNerdFontMono",
+  "SymbolsNerdFonts/SymbolsNerdFontMono-Regular",
+  400,
+  normal,
+  $range: "icons"
+);
+
+/* Document base. */
+html {
+  font-size: 12px;
+}
+
+body {
+  font-family: "SpaceMono", "Roboto Mono", "Courier New", Courier, monospace;
+  font-size: var(--fs-300);
+  /* Unitless line-height (1.6) so it scales with whatever font-size
+     the descendant inherits, instead of locking to fs-500's px value.
+     Descriptions and subtitles feel more breathable on mobile where
+     the body would otherwise inherit a tighter ratio. */
+  line-height: 1.6;
+  letter-spacing: -0.03rem;
+}

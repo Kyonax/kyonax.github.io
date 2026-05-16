@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ *
+ * Global SCSS entry. Loaded ONCE via src/main.js. _theme.scss is the
+ * only abstracts module that emits CSS — it lives outside the
+ * auto-injected `@use "@scss/abstracts" as *` so SFCs don't re-emit
+ * :root tokens per scope.
+ */
+
+@use "abstracts/variables";
+@use "abstracts/mixins";
+@use "abstracts/theme";
+@use "base";

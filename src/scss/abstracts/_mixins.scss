@@ -1,0 +1,227 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ *
+ * Mixins — reusable building blocks for components and global styles.
+ *
+ * Two mixins were upgraded during the migration vs. legacy:
+ *   - font-face   — adds WOFF2 src + TTF fallback + font-display: swap + unicode-range
+ *                   (PERFORMANCE_MIGRATION.md §4 F1).
+ *   - cyberpunk-glow — uses filter: drop-shadow (GPU-composited, was box-shadow)
+ *                   AND a single shared @keyframes "kyo-glow-pulse" emitted once
+ *                   in _theme.scss (legacy emitted a fresh keyframe per call-site
+ *                   via math.random() — CSS bloat). Token surface preserved.
+ *
+ * The element-flare mixin and the media-query mixins are verbatim.
+ */
+
+@use "sass:map";
+
+@use "variables" as *;
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * font-face — register a custom font.
+ *
+ * Usage:
+ *   @include font-face("SpaceMono", "SpaceMono/SpaceMonoNerdFont-Regular", 400, normal);
+ *   @include font-face("SymbolsNerdFontMono",
+ *                      "SymbolsNerdFonts/SymbolsNerdFontMono-Regular",
+ *                      400, normal,
+ *                      $range: "icons");   // → PUA + icon ranges
+ *
+ * The optional `$range` argument controls `unicode-range`:
+ *   "latin"  (default) — Latin Extended (U+0020–U+024F + symbols)
+ *                        Trims unused glyph data for text-only fonts.
+ *   "icons"            — Private Use Area + Nerd Font supplemental ranges
+ *                        (icon glyphs live here — Latin range would block them)
+ *   "all"              — no range restriction
+ *   any string         — used verbatim as the unicode-range value
+ *
+ * Phase 2 generates WOFF2 via scripts/convert-fonts.sh; src chain prefers WOFF2,
+ * falls back to TTF for any font we haven't converted yet.
+ * ──────────────────────────────────────────────────────────────────────────── */
+@mixin font-face($name, $path, $weight: normal, $style: normal, $range: "latin") {
+  @font-face {
+    font-family: "#{$name}";
+    src:
+      url("@fonts/#{$path}.woff2") format("woff2"),
+      url("@fonts/#{$path}.ttf")   format("truetype");
+    font-weight: #{$weight};
+    font-style:  #{$style};
+    font-display: swap;
+
+    @if $range == "latin" {
+      /* Latin Extended (covers EN/ES/FR + most Western European special chars).
+         Trims unused glyph data when the browser sees only Latin text. */
+      unicode-range: U+0020-024F, U+2000-206F, U+2122, U+00A9, U+00AE;
+    } @else if $range == "icons" {
+      /* Private Use Area + Nerd Font supplemental ranges. Covers Powerline,
+         Font Awesome, Devicons, MDI, Octicons, etc. CRITICAL — without this
+         the browser won't use the font for icon codepoints if any other
+         font with a narrower range is loaded for the same family slot. */
+      unicode-range:
+        U+E000-F8FF,        /* Private Use Area (most Nerd Font icons) */
+        U+F0000-FFFFD,      /* MDI extended PUA */
+        U+10000-10FFFF;     /* Plane 15/16 PUA */
+    } @else if $range == "all" {
+      /* explicit no-restriction — font loads for any character */
+    } @else {
+      unicode-range: #{$range};
+    }
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Media-query mixins — read $breakpoints map.
+ * ──────────────────────────────────────────────────────────────────────────── */
+@mixin min-media-query($key) {
+  $size: map.get($breakpoints, $key);
+  @media only screen and (min-width: $size) {
+    @content;
+  }
+}
+
+@mixin max-media-query($key) {
+  $size: map.get($breakpoints, $key);
+  @media only screen and (max-width: $size) {
+    @content;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * cyberpunk-glow — animated halo around an element.
+ *
+ * Why this differs from legacy:
+ *   - Legacy animated `box-shadow` (paint on every frame — GPU-incompatible).
+ *     New uses `filter: drop-shadow` which composites on the GPU on Chromium/WebKit.
+ *   - Legacy emitted a unique @keyframes block per call-site via math.random()
+ *     IDs (~20 lines × N call-sites of redundant CSS). New refers to a single
+ *     shared @keyframes "kyo-glow-pulse" emitted once in _theme.scss.
+ *   - Token surface preserved: the .cyberpunk-glow utility class still respects
+ *     --cyberpunk-glow-{color,blur,spread,speed} for per-element override.
+ *
+ * Args are just defaults — call sites are expected to use the utility class
+ * (.cyberpunk-glow) for parametric overrides via CSS custom properties.
+ * ──────────────────────────────────────────────────────────────────────────── */
+@mixin cyberpunk-glow(
+  $glow-color: var(--clr-primary-100),
+  $blur: 1px,
+  $spread: 9px,
+  $animated: true,
+  $speed: 1.5s
+) {
+  /* Static halo. Element classed `.cyberpunk-glow` (or any consumer applying
+     this mixin) renders this drop-shadow as the baseline. The keyframe in
+     _theme.scss animates it via the same custom properties. */
+  --_glow-color:  #{$glow-color};
+  --_glow-blur:   #{$blur};
+  --_glow-spread: #{$spread};
+
+  filter: drop-shadow(0 0 var(--_glow-spread) var(--_glow-color));
+
+  @if $animated {
+    animation: kyo-glow-pulse $speed ease-in-out infinite alternate;
+  }
+}
+
+/* element-flare is no longer a mixin. It's a global utility class declared
+   directly in abstracts/_theme.scss alongside its keyframes. The mixin
+   pattern caused Sass's modern compiler to drop the ::before block in
+   some contexts. Direct rules are deterministic. See _theme.scss. */
+
+/* kyo-chip — SpaceMono cap-tracked pill with currentColor border + 8% tint bg.
+   Two surfaces: the `.kyo-chip` global class (consumed by regular elements)
+   AND this mixin (consumed by pseudo-elements like ::before which can't carry
+   classes — e.g. the experience-modal bullet counter). The mixin does NOT
+   set `color`, `font-size`, or `padding` so callers control sizing + theme.
+   For default primary-yellow: prefer the class. For state-color chips:
+   set `color: var(--state-color)` and the border + bg follow via currentColor. */
+@mixin kyo-chip {
+  font-family: "SpaceMono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  border: 1px solid currentColor;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+/* tech-stack-item / tech-stack-icon / tech-stack-abbr — shared cyberpunk
+   chip + corner-cropped square abbreviation used by the project-modal AND
+   the experience-modal stack lists. The two scoped consumers held two
+   byte-identical copies of these blocks (~50 SLOC each); extracting as
+   mixins keeps the compiled CSS identical (mixins inline at call-site,
+   scoped attribute selectors are still emitted per SFC) but removes
+   the duplication from the source. */
+@mixin tech-stack-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--clr-border-100);
+  background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
+  color: var(--clr-neutral-100);
+  font-family: "SpaceMono", monospace;
+  font-size: var(--fs-200);
+  letter-spacing: 0.06em;
+
+  @include max-media-query(md) {
+    gap: 0.4rem;
+    padding: 0.35rem 0.5rem;
+    font-size: var(--fs-100);
+  }
+}
+
+@mixin tech-stack-icon {
+  color: var(--clr-primary-100);
+
+  @include max-media-query(md) {
+    &.brand-icon--lg { font-size: 1.05rem; }
+    &.icon-glyph--lg { font-size: 1.05rem; }
+  }
+}
+
+/* The abbr is the two-letter fallback when no brand-icon or glyph is
+   available. Corner pseudo-elements draw the cyberpunk frame brackets. */
+@mixin tech-stack-abbr {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-family: "SpaceMono", monospace;
+  font-size: var(--fs-100);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--clr-primary-100);
+  border: 1px solid var(--clr-primary-100);
+  background: color-mix(in srgb, var(--clr-primary-100) 6%, transparent);
+  position: relative;
+  flex-shrink: 0;
+
+  @include max-media-query(md) {
+    width: 1.1rem;
+    height: 1.1rem;
+    font-size: 0.7rem;
+  }
+
+  &::before, &::after {
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border: 1px solid var(--clr-primary-100);
+    pointer-events: none;
+  }
+  &::before {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+  }
+  &::after {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+  }
+}

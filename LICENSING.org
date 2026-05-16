@@ -1,0 +1,166 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+
+#  ________ ______  ___  ___  ___________
+# /_  __/ // / __/ / _ \/ _ |/ ___/_  __/
+#  / / / _  / _/  / ___/ __ / /__  / /
+# /_/ /_//_/___/ /_/  /_/ |_\___/ /_/
+#
+# LICENSING.org — Single-license guide and header conventions
+# 2026-05-14
+#
+# Explains the GPL-2.0-only posture, the per-extension header
+# templates, and the Tier 1 file-header convention used across
+# every root config / governance / release-tracking file.
+#
+#   How it works
+#   License summary
+#   File headers (per file type)
+#   No header? (default applies)
+#   Third-party code
+#   Tier 1 file headers (root config only)
+#
+# Guidelines:
+#   Single-license posture is non-negotiable (no Apache fallback)
+#   scripts/check-license-headers.mjs gates this on every PR
+#   New root config files MUST get a Tier 1 header + place name
+
+#+TITLE: kyo-web-online Licensing Guide
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+
+* How it works
+Every file in this project is licensed under *GPL-2.0-only*, declared
+by its header. The project is single-license: there is no permissive
+escape hatch. Modifications and derivative works must be released
+under the same license and must preserve attribution to
+=Cristian D. Moreno — @Kyonax=.
+
+* License summary
+| Property              | Value                                |
+|-----------------------+--------------------------------------|
+| SPDX identifier       | =GPL-2.0-only=                         |
+| Copyleft              | Yes (strong)                         |
+| Distribution license  | Same (GPL-2.0-only)                  |
+| Patent grant          | Implicit (GPLv2 §7)                  |
+| Attribution required  | Yes                                  |
+| Source disclosure     | Required for any distributed binary  |
+
+Full license text lives at =LICENSE=. Attribution lives at =NOTICE=.
+
+* File headers
+Every committed =.js=, =.mjs=, =.vue=, =.html=, =.css=, =.scss= file
+must carry the header below in its first five lines. The CI gate
+=scripts/check-license-headers.mjs= asserts this on every PR.
+
+** JavaScript / Vue / Vite config / ESLint config
+Add at the top of the file:
+
+#+BEGIN_EXAMPLE
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ */
+#+END_EXAMPLE
+
+** HTML
+Add at the top of the file (after the doctype is allowed too):
+
+#+BEGIN_EXAMPLE
+<!--
+  Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+  Distributed under the terms of GPL-2.0-only — see LICENSE.
+-->
+#+END_EXAMPLE
+
+** SCSS / CSS
+Add at the top of the file:
+
+#+BEGIN_EXAMPLE
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ */
+#+END_EXAMPLE
+
+** YAML (workflows, CI config)
+Add at the top of the file:
+
+#+BEGIN_EXAMPLE
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+#+END_EXAMPLE
+
+* No header?
+If a file has no header, GPL-2.0-only still applies (project default).
+The header is required so each file is self-describing — the absence
+of a header is treated as a bug, not as a license waiver.
+
+* Third-party code
+Vendored or imported third-party code retains its original license.
+Compatible licenses (MIT, BSD-2/3-Clause, ISC, Apache-2.0) may be
+inlined with attribution preserved. Incompatible licenses (proprietary,
+GPLv3-only without a compatibility note) MUST NOT be inlined.
+
+* Tier 1 file headers (root config / governance files only)
+Every *root* config, governance, or release-tracking file carries a
+Tier 1 header. =src/= and =scripts/= files use the simple license
+preamble only — the Tier 1 figlet block is reserved for the project's
+"top of the map".
+
+** Layout
+The header block, in this order, with one blank comment-line between
+groups:
+
+1. *License preamble* — copyright + GPL-2.0-only pointer.
+2. *Figlet art* — the file's /place name/ in =smslant= font.
+3. *Filename + one-line description* — =<filename> — <purpose>=.
+4. *Date* — =YYYY-MM-DD= the header was last updated.
+5. *Description paragraph* — 2-4 lines on what the file is for.
+6. *Table of contents* — section labels (no bullets), 2-space indent.
+7. *Guidelines* (optional) — invariants a future editor MUST keep.
+8. *Author line* — =Cristian D. Moreno (Kyonax)= + email when relevant.
+
+** Comment-syntax per file type
+| File type | Comment marker     |
+|-----------+--------------------|
+| =.org=, YAML, =.gitignore=, =.gitattributes=, =Dockerfile=, =CODEOWNERS=, =.env*= | =# ...= |
+| =.js=, =.mjs=, =.vue= =<script>=, =.scss=, =vite.config.js=                | =/* ... */= block |
+| =.html=, =.vue= template, =.md=                                                            | =<!-- ... -->= block |
+
+** Place name registry (port from reckit + kyo-specific)
+Place names render as *UPPERCASE* in the figlet block (reckit
+uses lowercase; kyo diverges for better readability of the
+=smslant= shapes at small viewport widths).
+
+| File                                | Place name      |
+|-------------------------------------+-----------------|
+| =.gitignore=                          | THE VOID        |
+| =.gitattributes=                      | THE LAB         |
+| =.editorconfig=                       | THE DESK        |
+| =vite.config.js=                      | THE FORGE       |
+| =eslint.config.mjs=                   | THE PRECINCT    |
+| =index.html=                          | THE GATE        |
+| =.github/workflows/ci.yml=            | THE WATCHTOWER  |
+| =.github/workflows/deploy.yml=        | THE HANGAR      |
+| =.github/SECURITY.md=                 | THE SHIELD      |
+| =.github/CODEOWNERS=                  | THE SEAL        |
+| =CHANGELOG.org=                       | THE LOGS        |
+| =LICENSING.org=                       | THE PACT        |
+| =CONTRIBUTING.org=                    | THE DOJO        |
+| =README.org=                          | THE BRIDGE      |
+
+When adding a new root config file, pick a place name that fits the
+file's role in the project (the *forge* shapes the build, the *gate*
+is the entry point, the *watchtower* runs CI, etc.). Avoid duplicating
+an existing place name; the registry is single-assignment.
+
+** Generating new figlets
+The =smslant= FIGlet font is the only approved style. Install =pyfiglet=
+(=pip install --user pyfiglet=) and render:
+
+#+BEGIN_SRC sh
+python3 -c "from pyfiglet import Figlet; print(Figlet(font='smslant').renderText('the X').rstrip())"
+#+END_SRC
+
+Inline the rendered art into the file's Tier 1 header. Strip trailing
+whitespace; preserve internal whitespace verbatim.

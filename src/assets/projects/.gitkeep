@@ -1,0 +1,13 @@
+# Project showcase images
+#
+# Drop carousel images here, matching the filenames declared in
+# `src/data/projects.js` under each entry's `images` array. Currently
+# expected:
+#
+#   sofia-married-1.jpg, sofia-married-2.jpg, sofia-married-3.jpg
+#   veyra-organization-1.jpg, veyra-organization-2.jpg
+#   zeronet-labs-1.jpg, zeronet-labs-2.jpg
+#
+# Any of jpg / jpeg / png / webp / avif are valid; the carousel inlines
+# them via `import.meta.glob` so the file extension is preserved in the
+# final asset URL.
