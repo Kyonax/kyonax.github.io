@@ -6,6 +6,7 @@
 
 import cv_en_url from '@assets/cv/cv_cristian_d_moreno_en.pdf?url';
 import cv_es_url from '@assets/cv/cv_cristian_d_moreno_es.pdf?url';
+import useObfuscatedEmail from '@composables/use-obfuscated-email';
 import { TECHNOLOGIES } from '@data/data';
 import { PROJECTS } from '@data/projects';
 import HeroVisual from '@sections/hero-visual.vue';
@@ -84,6 +85,8 @@ onBeforeUnmount(() => _viewport_mq?.removeEventListener('change', _on_viewport_c
 
 
 const GLYPH_ARROW = '\uF063';
+
+const contact_email_href = useObfuscatedEmail('kyonax.corp', 'gmail.com');
 </script>
 
 <template>
@@ -181,7 +184,7 @@ const GLYPH_ARROW = '\uF063';
             {{ cv_label }}
           </UiLink>
           <UiLink
-            href="mailto:kyonax.corp@gmail.com"
+            :href="contact_email_href"
             variant="cyber-outline"
             size="lg"
             external

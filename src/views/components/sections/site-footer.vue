@@ -5,6 +5,7 @@
  */
 
 import logoKyonaxSvg from '@assets/app/LOGO_KYONAX.svg?raw';
+import useObfuscatedEmail from '@composables/use-obfuscated-email';
 import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
 import UiLink from '@ui/link.vue';
@@ -59,6 +60,8 @@ const SOCIALS = [
 const GLYPH_MAIL = '\uF0E0';
 const GLYPH_WSP  = '\uF232';
 
+const contact_email_href = useObfuscatedEmail('kyonax.corp', 'gmail.com');
+
 const WHATSAPP_URL =
   'https://wa.me/573022539479?text=Hola!%20me%20gustar%C3%ADa%20saber%20m%C3%A1s%20de%20tus%20Servicios';
 </script>
@@ -103,7 +106,7 @@ const WHATSAPP_URL =
         <span class="site-footer__channels-label">// CONTACT_CHANNELS</span>
         <div class="site-footer__channels-grid">
           <UiLink
-            href="mailto:kyonax.corp@gmail.com"
+            :href="contact_email_href"
             variant="primary"
             flare-delay="1s"
             class="site-footer__channel"
