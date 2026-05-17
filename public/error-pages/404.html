@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#f9cd26">
+  <title>404 Not Found, Kyonax</title>
+  <meta name="description" content="Lost signal. The page you are looking for does not exist or has moved. Return home, jump to current projects, or get in touch.">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0a0a;
+      --text:#e8e8e8;
+      --dim:#6c6c6c;
+      --primary:#f9cd26;
+      --accent:#f9cd26;
+      --accent-glow:rgba(249,205,38,.38);
+      --accent-soft:rgba(249,205,38,.06);
+      --border:rgba(249,205,38,.22);
+    }
+    html,body{background:var(--bg);color:var(--text);min-height:100vh;min-height:100svh;font-family:'Space Mono','Courier New',Consolas,Menlo,monospace;line-height:1.5;overflow:hidden}
+    body{display:flex;flex-direction:column;padding:1.25rem;background-image:radial-gradient(ellipse at center,var(--accent-soft),transparent 60%)}
+    .hud{position:fixed;font-size:.65rem;letter-spacing:.22em;color:var(--dim);opacity:.55;text-transform:uppercase;z-index:2}
+    .hud--tr{top:1rem;right:1.25rem}
+    .hud--bl{bottom:1rem;left:1.25rem}
+    main{margin:auto;width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;gap:1.25rem}
+    .figlet{font-family:inherit;font-size:clamp(1.75rem,min(5.5vw,8svh),5rem);line-height:1;color:var(--accent);white-space:pre;margin:0;filter:drop-shadow(0 0 22px var(--accent-glow))}
+    .caption{display:flex;flex-direction:column;align-items:center;gap:.4rem;margin-top:.5rem}
+    h1{font-size:.8rem;font-weight:500;letter-spacing:.32em;color:var(--text);text-transform:uppercase;margin:0;opacity:.9}
+    h1 i{font-style:normal;color:var(--accent);margin-right:.6em}
+    .explain{font-size:.78rem;color:var(--dim);max-width:48ch;letter-spacing:.06em;line-height:1.6}
+    .redirect{display:flex;gap:.65rem;list-style:none;flex-wrap:wrap;justify-content:center;margin-top:.75rem}
+    .redirect a{display:inline-block;padding:.65rem 1.1rem;font-size:.7rem;letter-spacing:.2em;color:var(--text);text-decoration:none;border:1px solid var(--border);text-transform:uppercase;transition:color 120ms,border-color 120ms,background 120ms,transform 120ms}
+    .redirect a:hover,.redirect a:focus-visible{color:var(--accent);border-color:var(--accent);background:var(--accent-soft);outline:0;transform:translateY(-1px)}
+    .redirect a::before{content:'> ';color:var(--dim);font-weight:700}
+    footer{text-align:center;margin-top:1.5rem;font-size:.58rem;color:var(--dim);letter-spacing:.3em;text-transform:uppercase;opacity:.5}
+    @media (max-width:540px){.hud{display:none}body{padding:1rem}.redirect{gap:.5rem}.redirect a{padding:.6rem .9rem;font-size:.65rem}}
+    @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <span class="hud hud--tr">// SIGNAL :: LOST</span>
+  <span class="hud hud--bl">// VECTOR :: KYO-404</span>
+
+  <main>
+    <pre class="figlet" aria-hidden="true"> __ __       __   __ __      
+/\ \\ \    /'__`\/\ \\ \     
+\ \ \\ \  /\ \/\ \ \ \\ \    
+ \ \ \\ \_\ \ \ \ \ \ \\ \_  
+  \ \__ ,__\ \ \_\ \ \__ ,__\
+   \/_/\_\_/\ \____/\/_/\_\_/
+      \/_/   \/___/    \/_/  </pre>
+
+    <div class="caption">
+      <h1><i>404</i>Not Found</h1>
+      <p class="explain">The page you reached does not exist or has moved. Pick a route to continue.</p>
+    </div>
+
+    <ul class="redirect" role="list">
+      <li><a href="/">cd&nbsp;/</a></li>
+      <li><a href="/#projects">cd&nbsp;/projects</a></li>
+      <li><a href="/#contact">cd&nbsp;/contact</a></li>
+    </ul>
+  </main>
+
+  <footer>// CCS &middot; KYONAX &middot; ZERONET //</footer>
+</body>
+</html>
