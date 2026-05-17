@@ -73,8 +73,9 @@ RewriteRule ^(.+)$ $1/index.html [L]
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
 
-  # HSTS — enable AFTER 1-2 weeks of clean HTTPS. Sticky in browsers.
-  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  # HSTS, conservative first stage. max-age=180d, no includeSubDomains, no preload.
+  # Ratchet to "max-age=31536000; includeSubDomains; preload" after 2 weeks of clean HTTPS.
+  Header always set Strict-Transport-Security "max-age=15552000"
 </IfModule>
 
 # === Compression ============================================================

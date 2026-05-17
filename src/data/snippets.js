@@ -96,9 +96,9 @@ export const TRANSLATIONS = {
       },
       'landing': {
         'meta': {
-          'title': 'Cristian D. Moreno — Software Engineer (Full-Stack Web Developer)',
+          'title': 'Senior Full-Stack Software Engineer, Remote from Colombia',
           'description': '8 years building scalable, performant web apps. Currently Frontend Engineer at AgileEngine for Madison Reed. Founder of Zerønet Labs. Available for remote work.',
-          'og-title': 'Cristian D. Moreno — Software Engineer (Full-Stack Web Developer)',
+          'og-title': 'Senior Full-Stack Software Engineer, Remote from Colombia',
           'og-image-alt': 'Cristian D. Moreno (Kyonax), Full-Stack Web Engineer based in Colombia, portrait with cyberpunk HUD overlay.',
           'role': 'Software Engineer',
         },
@@ -135,7 +135,7 @@ export const TRANSLATIONS = {
           'open-portrait': 'Open portrait',
           'portrait-alt': 'Cristian D. Moreno (Kyonax) portrait',
           'available': 'AVAILABLE FOR REMOTE WORK',
-          'summary': '8 years delivering <strong>scalable, adaptable, and high-performance</strong> web solutions for national and international clients. Currently Frontend Engineer at <strong>AgileEngine</strong> for <strong>Madison Reed</strong>, Founder & Lead Engineer at <strong>Zerønet Labs</strong>.',
+          'summary': '8 years delivering <strong>scalable, adaptable, and high-performance</strong> web solutions for national and international clients, working <strong>remote from Colombia</strong>. Currently Frontend Engineer at <strong>AgileEngine</strong> for <strong>Madison Reed</strong>, Founder & Lead Engineer at <strong>Zerønet Labs</strong>.',
           'primary-cta': 'VIEW EXPERIENCE',
           'secondary-cta': 'CONTACT ME',
           'scroll-hint': 'SCROLL // EXPLORE',
@@ -346,9 +346,9 @@ export const TRANSLATIONS = {
       },
       'landing': {
         'meta': {
-          'title': 'Cristian D. Moreno — Ingeniero de Software (Desarrollador Web Full-Stack)',
-          'description': '8 años creando aplicaciones web escalables y de alto rendimiento. Actualmente Frontend Engineer en AgileEngine para Madison Reed. Fundador de Zerønet Labs.',
-          'og-title': 'Cristian D. Moreno — Ingeniero de Software (Desarrollador Web Full-Stack)',
+          'title': 'Ingeniero de Software Full-Stack, Remoto desde Colombia',
+          'description': '8 años creando aplicaciones web escalables y de alto rendimiento. Actualmente Frontend Engineer en AgileEngine para Madison Reed. Fundador de Zerønet Labs. Disponible para trabajo remoto.',
+          'og-title': 'Ingeniero de Software Full-Stack, Remoto desde Colombia',
           'og-image-alt': 'Cristian D. Moreno (Kyonax), Ingeniero Web Full-Stack radicado en Colombia, retrato con superposición HUD cyberpunk.',
           'role': 'Ingeniero de Software',
         },
@@ -385,7 +385,7 @@ export const TRANSLATIONS = {
           'open-portrait': 'Abrir retrato',
           'portrait-alt': 'Cristian D. Moreno (Kyonax) retrato',
           'available': 'DISPONIBLE PARA TRABAJO REMOTO',
-          'summary': '8 años entregando <strong>soluciones web escalables, adaptables y de alto rendimiento</strong> para clientes nacionales e internacionales. Actualmente Frontend Engineer en <strong>AgileEngine</strong> para <strong>Madison Reed</strong>, Fundador y Lead Engineer en <strong>Zerønet Labs</strong>.',
+          'summary': '8 años entregando <strong>soluciones web escalables, adaptables y de alto rendimiento</strong> para clientes nacionales e internacionales, trabajando <strong>en remoto desde Colombia</strong>. Actualmente Frontend Engineer en <strong>AgileEngine</strong> para <strong>Madison Reed</strong>, Fundador y Lead Engineer en <strong>Zerønet Labs</strong>.',
           'primary-cta': 'VER EXPERIENCIA',
           'secondary-cta': 'CONTACTAME',
           'scroll-hint': 'SCROLL // EXPLORA',
