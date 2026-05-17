@@ -86,7 +86,7 @@ onBeforeUnmount(() => _viewport_mq?.removeEventListener('change', _on_viewport_c
 
 const GLYPH_ARROW = '\uF063';
 
-const contact_email_href = useObfuscatedEmail('kyonax.corp', 'gmail.com');
+const contact_email_href = useObfuscatedEmail('work', 'kyonax.com');
 </script>
 
 <template>

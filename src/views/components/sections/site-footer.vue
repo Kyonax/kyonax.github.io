@@ -60,7 +60,7 @@ const SOCIALS = [
 const GLYPH_MAIL = '\uF0E0';
 const GLYPH_WSP  = '\uF232';
 
-const contact_email_href = useObfuscatedEmail('kyonax.corp', 'gmail.com');
+const contact_email_href = useObfuscatedEmail('work', 'kyonax.com');
 
 const WHATSAPP_URL =
   'https://wa.me/573022539479?text=Hola!%20me%20gustar%C3%ADa%20saber%20m%C3%A1s%20de%20tus%20Servicios';
