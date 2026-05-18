@@ -118,7 +118,6 @@ useInViewport(section_ref);
     transition: border-color 0.25s ease;
 
     &:hover {
-      --element-flare-opacity: 0.10;
       border-color: color-mix(in srgb, var(--clr-primary-100) 35%, var(--clr-border-100));
     }
 
@@ -213,6 +212,17 @@ useInViewport(section_ref);
     @include min-media-query(md) {
       font-size: var(--fs-400);
       padding: 1.25rem 1.4rem 1.55rem;
+    }
+  }
+
+  /* Pause every item's element-flare animation while the user is actively
+     interacting with the FAQ section — hovering, focusing, or while any
+     item is open. Frees the paint thread for the grid-template-rows
+     layout work during open transitions and for the border-color hover
+     transitions. Flares resume when the user moves away. */
+  &__list:has(.faq__item:hover, .faq__item:focus-within, .faq__item--open) {
+    .faq__item.element-flare::before {
+      animation-play-state: paused;
     }
   }
 

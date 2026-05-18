@@ -211,7 +211,6 @@ const GLYPH_PREV     = '\uF053';
 const GLYPH_NEXT     = '\uF054';
 
 
-// `featured` is additive — NOW eligibility is determined by status alone (NOW_STATUS_PRIORITY).
 const now_keys = Object.keys(PROJECTS).filter(
   (k) => NOW_STATUS_PRIORITY[PROJECTS[k].status] !== undefined,
 );
