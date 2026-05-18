@@ -109,10 +109,12 @@ useInViewport(section_ref);
 
   &__item {
     --element-flare-opacity: 0.05;
+    --element-flare-blur: 0;
     position: relative;
     border: 1px solid var(--clr-border-100);
     background: color-mix(in srgb, var(--clr-neutral-500) 75%, transparent);
     isolation: isolate;
+    contain: layout paint;
     transition: border-color 0.25s ease;
 
     &:hover {

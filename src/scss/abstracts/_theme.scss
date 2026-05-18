@@ -343,7 +343,7 @@
     transparent
   );
   background-size: 200% 200%;
-  filter: blur(4px);
+  filter: blur(var(--element-flare-blur, 4px));
   opacity: var(--element-flare-opacity, 0.45);
   transition: opacity 0.28s ease-out;
   z-index: -1;
