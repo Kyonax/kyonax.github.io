@@ -8,16 +8,13 @@
  * Run ./scripts/convert-fonts.sh --subset (or `npm run nerd-glyphs --
  * subset` for the Symbols font) to regenerate WOFF2 variants.
  *
- * Phase 2 dropped these unused variants/families — restore from git
- * history if the design ever needs them:
+ * These variants/families are intentionally not registered — restore from
+ * git history if the design ever needs them:
  *   SpaceMono Italic + BoldItalic   (zero `font-style: italic` usage)
  *   Geomanist Italic                (same)
  *   GlittherSyavina                 (accent script, zero refs)
  *   PPmodwest + Ppneuebit           (pixel/retro display, zero refs)
  *   Avallon                         (orphan TTF, never had @font-face)
- *
- * The bogus `body { font-display: swap }` line from legacy was dropped —
- * font-display only applies inside @font-face.
  */
 
 @use "abstracts" as *;

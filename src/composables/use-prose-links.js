@@ -41,9 +41,15 @@ const decorate = (host, hint) => {
 
 export const vProseLinks = {
   mounted(el, binding) {
-    decorate(el, binding.value); 
+    decorate(el, binding.value);
   },
   updated(el, binding) {
-    decorate(el, binding.value); 
+    /* Skip when the localized hint hasn't changed — the directive is
+       idempotent so re-running on every parent re-render is wasted DOM
+       querying (especially across FAQ siblings each click). */
+    if (binding.value === binding.oldValue) {
+      return;
+    }
+    decorate(el, binding.value);
   },
 };

@@ -37,10 +37,10 @@
  *   "all"              — no range restriction
  *   any string         — used verbatim as the unicode-range value
  *
- * Phase 1 perf: WOFF2-only `src`. The es2020 build target excludes every
- * browser that lacks WOFF2 support (97%+ global), so the TTF fallback was
- * pure dead weight in dist/ (e.g. a 2.3 MB SymbolsNerdFontMono TTF that
- * no client would ever load).
+ * WOFF2-only `src`. The es2020 build target excludes every browser that
+ * lacks WOFF2 support (97%+ global), so the TTF fallback was pure dead
+ * weight in dist/ (e.g. a 2.3 MB SymbolsNerdFontMono TTF that no client
+ * would ever load).
  * ──────────────────────────────────────────────────────────────────────────── */
 @mixin font-face($name, $path, $weight: normal, $style: normal, $range: "latin") {
   @font-face {

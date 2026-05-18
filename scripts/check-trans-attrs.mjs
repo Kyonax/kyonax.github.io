@@ -3,9 +3,9 @@
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
- * check-trans-attrs.mjs — assert ZERO `[trans=` attributes remain in src/.
- * Phase 3.6 exit gate. Also flags dormant `kyo:language-changed` listeners
- * and any reference to the deleted `class-scheduler` worker / component.
+ * check-trans-attrs.mjs — asserts the vue-i18n migration stayed complete.
+ * Fails if `[trans=` attributes, `kyo:language-changed` listeners, or any
+ * reference to the deleted `class-scheduler` worker/component reappear.
  *
  * Run: node scripts/check-trans-attrs.mjs
  */

@@ -25,7 +25,7 @@ if (!existsSync(SRC)) {
 
 const loaded = await loadTranslations();
 if (!loaded) {
-  ok('no messages source — skipping. (Run after Phase 3 setup.)');
+  ok('no messages source — skipping.');
   process.exit(0);
 }
 const messages = loaded.data;

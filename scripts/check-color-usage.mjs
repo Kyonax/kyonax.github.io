@@ -115,7 +115,6 @@ if (!STRICT && failures.length === 0) {
 if (STRICT) {
   exitWith({ failures, name: 'check-color-usage --strict' });
 } else {
-  // non-strict: warn only on distribution; literals always fail
   const literalFailures = failures.filter(f => /hardcoded color literal/.test(f));
   for (const f of failures) {
     (literalFailures.includes(f) ? fail : warn)(f);
