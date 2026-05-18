@@ -229,6 +229,7 @@ const grouped = computed(() =>
     --element-flare-spread: 1px;
     --element-flare-color: var(--clr-border-50);
     --element-flare-opacity: 0.05;
+    --element-flare-blur: 0;
 
     @include min-media-query(md) {
       grid-template-rows: 1.85rem auto;
@@ -248,8 +249,6 @@ const grouped = computed(() =>
       color: var(--clr-primary-100);
       border-color: var(--clr-primary-100);
       transform: translateY(-2px);
-      --element-flare-color: var(--clr-primary-100);
-      --element-flare-opacity: 0.09;
     }
   }
 

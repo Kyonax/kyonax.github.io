@@ -348,6 +348,19 @@ useInViewport(section_ref);
       );
   }
 
+  /* Neutral cards on hover get a softer gradient than the primary card —
+     half the yellow tint and a less opaque neutral floor — so the primary
+     card stays the visual standout in the timeline. */
+  &__node--neutral &__card:hover,
+  &__node--neutral &__card:focus-visible {
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--clr-primary-100) 4%, transparent) 0%,
+        color-mix(in srgb, var(--clr-neutral-500) 70%, transparent) 100%
+      );
+  }
+
   &__card-header {
     margin-bottom: 1rem;
     border-bottom: 1px dashed var(--clr-border-100);
