@@ -342,6 +342,8 @@ onBeforeUnmount(pause);
     border: 1px solid var(--clr-primary-100);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    transform: translateZ(0);
+    will-change: transform;
     transition: transform 0.25s ease, background 0.25s ease;
     z-index: 2;
     pointer-events: none;
@@ -369,6 +371,8 @@ onBeforeUnmount(pause);
     background: color-mix(in srgb, var(--clr-neutral-900) 78%, transparent);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    transform: translateZ(0);
+    will-change: transform;
     border: 1px solid color-mix(in srgb, var(--clr-neutral-100) 18%, transparent);
     line-height: 1;
     pointer-events: none;
@@ -406,6 +410,8 @@ onBeforeUnmount(pause);
     background: color-mix(in srgb, var(--clr-neutral-900) 80%, transparent);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    transform: translateZ(0);
+    will-change: transform;
   }
 
   &__consent-card {

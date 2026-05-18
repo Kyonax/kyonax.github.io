@@ -27,17 +27,24 @@ const active_section = ref('hero');
 const scroll_progress = ref(0);
 
 let observer = null;
+let _scroll_frame = 0;
 
-const onScroll = () => {
+const _read_scroll = () => {
+  _scroll_frame = 0;
   scrolled.value = window.scrollY > 24;
   const doc = document.documentElement;
   const max = doc.scrollHeight - doc.clientHeight;
   scroll_progress.value = max > 0 ? Math.min(1, window.scrollY / max) : 0;
-
-  
   if (window.scrollY < 80) {
     active_section.value = 'hero';
   }
+};
+
+const onScroll = () => {
+  if (_scroll_frame) {
+    return;
+  }
+  _scroll_frame = requestAnimationFrame(_read_scroll);
 };
 
 const closeMobile = () => {
@@ -96,8 +103,19 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll);
   window.removeEventListener('keydown', onKeydown);
+  if (_scroll_frame) {
+    cancelAnimationFrame(_scroll_frame);
+  }
   if (observer) {
     observer.disconnect();
+  }
+  if (typeof document === 'undefined') {
+    return;
+  }
+  for (const selector of INERT_TARGETS) {
+    for (const el of document.querySelectorAll(selector)) {
+      el.removeAttribute('inert');
+    }
   }
 });
 </script>
@@ -166,14 +184,30 @@ onBeforeUnmount(() => {
   width: 100%;
   background: transparent;
   border-bottom: 1px solid transparent;
-  transition: background-color 0.25s ease, border-color 0.25s ease, backdrop-filter 0.25s ease;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
   font-family: "SpaceMono", monospace;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+    transform: translateZ(0);
+    will-change: opacity;
+  }
 
   &--scrolled {
     background: color-mix(in srgb, var(--clr-neutral-500) 80%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border-bottom-color: var(--clr-border-100);
+  }
+
+  &--scrolled::before {
+    opacity: 1;
   }
 
   &__progress {

@@ -75,17 +75,14 @@
   100% { transform: translate(-50%, -50%) scale(8);    opacity: 0;    }
 }
 
+/* Pulse is now opacity-only on a layered ::after pseudo. The shadow itself
+   is static (one paint, cached by the compositor). Safari WebKit can't
+   animate filter: drop-shadow without per-frame CPU rasterization — this
+   pattern moves the breathing motion onto an opacity-only animation which
+   is GPU-composited. */
 @keyframes kyo-glow-pulse {
-  0%, 100% {
-    filter: drop-shadow(
-      0 0 calc(var(--_glow-spread, 9px) * 0.5) var(--_glow-color, var(--clr-primary-100))
-    );
-  }
-  50% {
-    filter: drop-shadow(
-      0 0 calc(var(--_glow-spread, 9px) * 1.5) var(--_glow-color, var(--clr-primary-100))
-    );
-  }
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
 }
 
 .icon-glyph {
@@ -352,6 +349,7 @@
   z-index: -1;
   animation: flare-breathe var(--element-flare-speed, 24s) linear infinite;
   animation-delay: var(--element-flare-delay, 0s);
+  animation-play-state: paused;
   pointer-events: none;
 }
 
@@ -363,13 +361,20 @@
   100% { background-position: 100% 0;    }
 }
 
-/* Swapping to the twin keyframe restarts the sweep at t=0 on each
-   entry; the base `transition: opacity` makes both fade-in and
-   fade-out animate smoothly. */
+/* IntersectionObserver attribute on the section host gates animation
+   to in-viewport flares only. Off-screen flares stay paused — this is
+   the Safari paint-thread savings that survives the visual revert. */
+[data-in-viewport="true"] .element-flare:not(.is-static)::before {
+  animation-play-state: running;
+}
+
+/* Hover swaps to the twin keyframe so the sweep restarts at t=0 on each
+   entry, giving the snappy "respond to hover" feel the original had. */
 .element-flare:not(.is-static):hover::before,
 .element-flare:not(.is-static):focus-visible::before {
   animation-name: flare-breathe-restart;
   animation-delay: 0s;
+  animation-play-state: running;
 }
 
 .element-flare.is-static:hover::before,
@@ -383,6 +388,18 @@
   50%  { background-position: 100% 100%; }
   75%  { background-position: 0    0;    }
   100% { background-position: 100% 0;    }
+}
+
+/* Users with `prefers-reduced-motion: reduce` get the flare pseudo
+   suppressed entirely. The global rule in `_global.scss` already collapses
+   all animation-duration to 0.01ms, which leaves the flare frozen at one
+   gradient position; this rule additionally hides the pseudo so Safari
+   skips the paint-thread work entirely for that user cohort. */
+@media (prefers-reduced-motion: reduce) {
+  .element-flare::before {
+    animation: none !important;
+    opacity: 0 !important;
+  }
 }
 
 .cyberpunk-glow {

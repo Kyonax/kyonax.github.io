@@ -6,6 +6,7 @@
 
 import cv_en_url from '@assets/cv/cv_cristian_d_moreno_en.pdf?url';
 import cv_es_url from '@assets/cv/cv_cristian_d_moreno_es.pdf?url';
+import useInViewport from '@composables/use-in-viewport';
 import useObfuscatedEmail from '@composables/use-obfuscated-email';
 import { TECHNOLOGIES } from '@data/data';
 import { PROJECTS } from '@data/projects';
@@ -87,11 +88,15 @@ onBeforeUnmount(() => _viewport_mq?.removeEventListener('change', _on_viewport_c
 const GLYPH_ARROW = '\uF063';
 
 const contact_email_href = useObfuscatedEmail('work', 'kyonax.com');
+
+const section_ref = ref(null);
+useInViewport(section_ref);
 </script>
 
 <template>
   <section
     id="hero"
+    ref="section_ref"
     class="hero"
     :aria-label="t('kyo-web.landing.hero.tag')"
   >

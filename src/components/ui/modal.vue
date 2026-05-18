@@ -194,6 +194,8 @@ const GLYPH_CLOSE = '\uF00D';
     background: color-mix(in srgb, var(--clr-neutral-500) 78%, transparent);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    transform: translateZ(0);
+    will-change: transform;
 
     @include max-media-query(md) {
       padding: 0.5rem;
@@ -297,6 +299,8 @@ const GLYPH_CLOSE = '\uF00D';
       background: color-mix(in srgb, var(--clr-neutral-500) 80%, transparent);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
+      transform: translateZ(0);
+      will-change: transform;
     }
   }
 

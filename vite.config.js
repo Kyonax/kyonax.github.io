@@ -301,7 +301,7 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_VIMEO_ENABLED': JSON.stringify(env.VITE_VIMEO_ENABLED ?? 'true'),
       'import.meta.env.VITE_VIMEO_PRECONNECT': JSON.stringify(env.VITE_VIMEO_PRECONNECT ?? 'true'),
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '0.0.0'),
-      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true',
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
     },
 
     resolve: {

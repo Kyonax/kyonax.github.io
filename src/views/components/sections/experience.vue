@@ -5,6 +5,7 @@
  */
 
 import useClickableCard from '@composables/use-clickable-card';
+import useInViewport from '@composables/use-in-viewport';
 import { vProseLinks } from '@composables/use-prose-links';
 import { warmModal } from '@composables/use-warm-modal';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
@@ -124,11 +125,15 @@ const close_modal = () => {
 };
 
 const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
+
+const section_ref = ref(null);
+useInViewport(section_ref);
 </script>
 
 <template>
   <section
     id="experience"
+    ref="section_ref"
     class="experience-section kyo-section"
     :aria-label="t('kyo-web.landing.experience.label')"
   >
@@ -318,6 +323,12 @@ const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
     &:hover,
     &:focus-visible {
       border-color: var(--clr-primary-100);
+      background:
+        linear-gradient(
+          135deg,
+          color-mix(in srgb, var(--clr-primary-100) 8%, transparent) 0%,
+          color-mix(in srgb, var(--clr-neutral-500) 80%, transparent) 100%
+        );
       transform: translateX(4px);
       --element-flare-opacity: 0.24;
     }

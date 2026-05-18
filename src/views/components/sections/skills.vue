@@ -4,13 +4,17 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import useInViewport from '@composables/use-in-viewport';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
 import { TECH_BY_ID } from '@data/data';
 import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
 import UiSectionHeader from '@ui/section-header.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+const section_ref = ref(null);
+useInViewport(section_ref);
 
 const { t, locale } = useI18n();
 
@@ -73,6 +77,7 @@ const grouped = computed(() =>
 <template>
   <section
     id="skills"
+    ref="section_ref"
     class="skills kyo-section"
     :aria-label="t('kyo-web.landing.skills.label')"
   >

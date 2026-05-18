@@ -4,6 +4,7 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import useInViewport from '@composables/use-in-viewport';
 import { vProseLinks } from '@composables/use-prose-links';
 import UiHudDeco from '@ui/hud-deco.vue';
 import UiSectionHeader from '@ui/section-header.vue';
@@ -21,11 +22,15 @@ const toggle = (id) => {
 };
 
 const GLYPH_CHEVRON = '\uF054';
+
+const section_ref = ref(null);
+useInViewport(section_ref);
 </script>
 
 <template>
   <section
     id="faq"
+    ref="section_ref"
     class="faq kyo-section"
     :aria-label="t('kyo-web.landing.faq.section-aria')"
   >
@@ -198,18 +203,14 @@ const GLYPH_CHEVRON = '\uF054';
   }
 
   &__answer {
-    padding: 0 1.15rem 1.35rem;
-    padding-left: calc(1.15rem + 2rem + 1rem);
+    padding: 1.25rem 1.15rem 1.35rem;
     border-top: 1px dashed color-mix(in srgb, var(--clr-border-100) 50%, transparent);
     margin-top: 0.25rem;
-    padding-top: 1.25rem;
     font-size: var(--fs-300);
 
     @include min-media-query(md) {
       font-size: var(--fs-400);
-      padding-left: calc(1.4rem + 2.5rem + 1.25rem);
-      padding-right: 1.4rem;
-      padding-bottom: 1.55rem;
+      padding: 1.25rem 1.4rem 1.55rem;
     }
   }
 
