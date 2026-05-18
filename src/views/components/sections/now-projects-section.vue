@@ -5,6 +5,7 @@
  */
 
 import { vImageReady } from '@composables/use-image-ready';
+import useInViewport from '@composables/use-in-viewport';
 import useProjectCountdowns from '@composables/use-project-countdowns';
 import { vProseLinks } from '@composables/use-prose-links';
 import { retainImageUrl, warmImageViewer, warmProjectCard } from '@composables/use-warm-modal';
@@ -486,11 +487,15 @@ const _warm_modal = (key) => {
   }
   warmYoutube(`modal:${key}`);
 };
+
+const section_ref = ref(null);
+useInViewport(section_ref);
 </script>
 
 <template>
   <section
     id="projects"
+    ref="section_ref"
     class="now-projects-section kyo-section"
     :aria-label="t('kyo-web.landing.projects.label')"
   >

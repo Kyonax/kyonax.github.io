@@ -222,6 +222,8 @@ const dialog_label = computed(() =>
     padding: 0.35rem 0.6rem;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+    transform: translateZ(0);
+    will-change: transform;
     pointer-events: none;
     line-height: 1;
   }

@@ -169,6 +169,9 @@ onMounted(() => {
   border: 1px solid var(--clr-border-100);
   border-radius: 0;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transform: translateZ(0);
+  will-change: transform;
   font-family: "SpaceMono", monospace;
   font-size: var(--fs-300);
   color: var(--clr-neutral-100);

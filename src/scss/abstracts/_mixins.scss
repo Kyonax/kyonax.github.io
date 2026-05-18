@@ -110,9 +110,13 @@
   $animated: true,
   $speed: 1.5s
 ) {
-  /* Static halo. Element classed `.cyberpunk-glow` (or any consumer applying
-     this mixin) renders this drop-shadow as the baseline. The keyframe in
-     _theme.scss animates it via the same custom properties. */
+  /* Static halo + opacity-pulsed breathing layer. The host element carries a
+     drop-shadow that paints once (rasterized then cached by the compositor).
+     If `$animated`, a sibling ::after pseudo with a brighter shadow cross-fades
+     via opacity-only animation — GPU-composited, free on Safari WebKit. The
+     old approach animated the drop-shadow size directly, which forced per-frame
+     CPU rasterization on Safari. */
+  position: relative;
   --_glow-color:  #{$glow-color};
   --_glow-blur:   #{$blur};
   --_glow-spread: #{$spread};
@@ -120,7 +124,19 @@
   filter: drop-shadow(0 0 var(--_glow-spread) var(--_glow-color));
 
   @if $animated {
-    animation: kyo-glow-pulse $speed ease-in-out infinite alternate;
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: -1;
+      box-shadow: 0 0 calc(var(--_glow-spread) * 1.5) var(--_glow-color);
+      opacity: 0.55;
+      animation: kyo-glow-pulse $speed ease-in-out infinite alternate;
+      transform: translateZ(0);
+      will-change: opacity;
+    }
   }
 }
 

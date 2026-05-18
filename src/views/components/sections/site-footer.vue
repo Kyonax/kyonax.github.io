@@ -5,6 +5,7 @@
  */
 
 import logoKyonaxSvg from '@assets/app/LOGO_KYONAX.svg?raw';
+import useInViewport from '@composables/use-in-viewport';
 import useObfuscatedEmail from '@composables/use-obfuscated-email';
 import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
@@ -19,8 +20,15 @@ const path         = ref('');
 const nav_language = ref('');
 const viewport     = ref({ w: 0, h: 0 });
 
+let _resize_frame = 0;
 const onResize = () => {
-  viewport.value = { w: window.innerWidth, h: window.innerHeight };
+  if (_resize_frame) {
+    return;
+  }
+  _resize_frame = requestAnimationFrame(() => {
+    _resize_frame = 0;
+    viewport.value = { w: window.innerWidth, h: window.innerHeight };
+  });
 };
 
 const resolved_tz = ref('—');
@@ -32,12 +40,15 @@ onMounted(() => {
   try {
     resolved_tz.value = Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
   } catch { /* Intl unavailable in some embedded WebViews */ }
-  onResize();
+  viewport.value = { w: window.innerWidth, h: window.innerHeight };
   window.addEventListener('resize', onResize, { passive: true });
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize);
+  if (_resize_frame) {
+    cancelAnimationFrame(_resize_frame);
+  }
 });
 
 const manifest = computed(() => [
@@ -64,11 +75,15 @@ const contact_email_href = useObfuscatedEmail('work', 'kyonax.com');
 
 const WHATSAPP_URL =
   'https://wa.me/573022539479?text=Hola!%20me%20gustar%C3%ADa%20saber%20m%C3%A1s%20de%20tus%20Servicios';
+
+const footer_ref = ref(null);
+useInViewport(footer_ref);
 </script>
 
 <template>
   <footer
     id="contact"
+    ref="footer_ref"
     class="site-footer"
     role="contentinfo"
     :aria-label="t('kyo-web.landing.footer.tag')"

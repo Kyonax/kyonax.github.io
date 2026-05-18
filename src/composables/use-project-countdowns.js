@@ -17,12 +17,14 @@ export const useProjectCountdowns = (keys) => {
 
   let worker = null;
   let visibility_handler = null;
+  let message_handler = null;
 
   onMounted(() => {
     worker = new NowProjectWorker();
-    worker.addEventListener('message', (event) => {
+    message_handler = (event) => {
       Object.assign(countdowns, event.data);
-    });
+    };
+    worker.addEventListener('message', message_handler);
     worker.postMessage({ projects: PROJECTS, keys });
 
     visibility_handler = () => {
@@ -40,6 +42,10 @@ export const useProjectCountdowns = (keys) => {
       visibility_handler = null;
     }
     if (worker) {
+      if (message_handler) {
+        worker.removeEventListener('message', message_handler);
+        message_handler = null;
+      }
       worker.terminate();
       worker = null;
     }
