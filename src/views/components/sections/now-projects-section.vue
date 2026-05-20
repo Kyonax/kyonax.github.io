@@ -864,21 +864,16 @@ useInViewport(section_ref);
     display: grid;
     grid-template-rows: auto auto auto auto auto auto;
     gap: 1rem;
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem 0.75rem;
     text-decoration: none;
     cursor: pointer;
     color: inherit;
-    background:
-      linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--clr-primary-100) 6%, transparent) 0%,
-        var(--clr-neutral-500) 60%
-      );
-    border: 1px solid var(--clr-primary-100);
+    background: var(--clr-neutral-500);
+    border: 1px solid var(--clr-border-100);
     isolation: isolate;
     --element-flare-spread: 2px;
     --element-flare-color: var(--clr-primary-100);
-    --element-flare-opacity: 0.03;
+    --element-flare-opacity: 0;
     transition: transform 0.25s ease, border-color 0.25s ease;
 
     &.is-static {
@@ -888,13 +883,17 @@ useInViewport(section_ref);
     }
 
     &:hover, &:focus-visible {
+      border-color: var(--clr-primary-100);
       transform: translateY(-4px);
-      --element-flare-opacity: 0.09;
+      --element-flare-opacity: 0.06;
     }
 
-    &.is-ended {
-      border-color: var(--clr-warning-100);
-      --element-flare-color: var(--clr-warning-100);
+    &:not(.has-modal) {
+      &:hover, &:focus-visible {
+        border-color: var(--clr-border-100);
+        transform: none;
+        --element-flare-opacity: 0;
+      }
     }
   }
 
@@ -929,7 +928,7 @@ useInViewport(section_ref);
   &__name {
     font-family: "Geomanist", sans-serif;
     font-size: var(--fs-500);
-    color: var(--clr-neutral-50);
+    color: var(--clr-neutral-100);
     margin: 0;
     letter-spacing: 0.02em;
     line-height: 1.1;
@@ -986,7 +985,8 @@ useInViewport(section_ref);
 
   &__no-link {
     border-top: 1px dashed var(--clr-border-100);
-    padding-top: 0.85rem;
+    margin-top: 1rem;
+    padding-top: 1.5rem;
     font-family: "SpaceMono", monospace;
     font-size: var(--fs-200);
     letter-spacing: 0.12em;
@@ -1025,6 +1025,8 @@ useInViewport(section_ref);
     letter-spacing: 0.12em;
     font-weight: 700;
     background: color-mix(in srgb, var(--clr-warning-100) 6%, transparent);
+
+    .icon-glyph { transform: translateY(0.1em); }
   }
 
   /* Absolute overlay so the entire card is one accessible button; siblings
@@ -1056,7 +1058,8 @@ useInViewport(section_ref);
     font-size: var(--fs-200);
     letter-spacing: 0.08em;
     border-top: 1px dashed var(--clr-border-100);
-    padding-top: 0.85rem;
+    margin-top: 1rem;
+    padding-top: 1.85rem;
     transition: color 0.2s ease;
 
     &.is-corner {
@@ -1125,8 +1128,8 @@ useInViewport(section_ref);
     transition: border-color 0.2s ease, transform 0.2s ease;
     isolation: isolate;
     --element-flare-spread: 1px;
-    --element-flare-color: var(--clr-border-50);
-    --element-flare-opacity: 0.03;
+    --element-flare-color: var(--clr-primary-100);
+    --element-flare-opacity: 0;
 
     &.is-static {
       cursor: default;
@@ -1141,7 +1144,7 @@ useInViewport(section_ref);
       border-color: var(--clr-primary-100);
       transform: translateY(-2px);
       --element-flare-color: var(--clr-primary-100);
-      --element-flare-opacity: 0.09;
+      --element-flare-opacity: 0.06;
     }
   }
 
@@ -1194,7 +1197,7 @@ useInViewport(section_ref);
     font-size: var(--fs-400);
     margin: 0;
     letter-spacing: 0.04em;
-    color: var(--clr-neutral-50);
+    color: var(--clr-neutral-100);
   }
 }
 

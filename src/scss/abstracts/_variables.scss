@@ -15,7 +15,7 @@
  *   - _theme.scss @each loop → emits :root { --clr-* / --fs-* } at runtime
  *
  * Counts:
- *   $colors      → 7 families × 5–7 shades = 43 tokens
+ *   $colors      → 8 families × 5–7 shades = 50 tokens
  *   $typo-scale  → 8 sizes × 3 breakpoint tiers = 24 tokens
  *   $breakpoints → 4 keys
  */
@@ -33,78 +33,78 @@ $breakpoints: (
 /* ────────────────────────────────────────────────────────────────────────────
  * Color palette — emitted as --clr-{family}-{shade} CSS custom properties.
  * The brand color is --clr-primary-100 (#f9cd26).
- * Background is --clr-neutral-500 (#000000).
+ * Background is --clr-neutral-500 (oklch(14.5% 0 0)).
  * Default border is --clr-border-100 (semi-transparent white, 0.2 alpha).
  * ──────────────────────────────────────────────────────────────────────────── */
 $colors: (
   primary: (
-    50:  hsl(48,  95%,  78%),
-    100: hsl(47,  95%,  56%),  /* #f9cd26 — canonical brand color */
-    200: hsl(49,  100%, 39%),
-    300: hsl(48,  100%, 29%),
-    400: hsl(45,  100%, 20%),
-    500: hsl(35,  100%, 13%),
+    50:  oklch(92.6% 0.1077 95.8),
+    100: oklch(85.9% 0.1686 91.3),  /* #f9cd26 — canonical brand color */
+    200: oklch(72.6% 0.1484 92.7),
+    300: oklch(57.9% 0.1183 91.2),
+    400: oklch(43.4% 0.0887 86.5),
+    500: oklch(30%   0.0652 69.4),
   ),
   secondary: (
-    50:  hsl(224, 95%, 78%),
-    100: hsl(224, 95%, 56%),  /* #265ef9 */
-    200: hsl(224, 74%, 45%),
-    300: hsl(224, 74%, 39%),
-    400: hsl(224, 74%, 34%),
-    500: hsl(224, 74%, 22%),
+    50:  oklch(76%   0.1173 268.3),
+    100: oklch(54.7% 0.24   264.3),  /* #265ef9 */
+    200: oklch(46.8% 0.1998 264.4),
+    300: oklch(42.3% 0.178  264.5),
+    400: oklch(38.5% 0.1593 264.6),
+    500: oklch(29%   0.1117 264.9),
   ),
   neutral: (
-    50:  hsl(0, 0%, 95%),
-    100: hsl(0, 0%, 85%),
-    200: hsl(0, 0%, 65%),
-    300: hsl(0, 0%, 48%),      /* bumped from 45% → 48% — clears 4.5:1 on neutral-500 bg per WCAG 1.4.3, visual delta < 3% lightness (invisible). See docs/changes/2026-05-15-neutral-300-contrast-bump.md to revert. */
-    400: hsl(0, 0%, 25%),
-    500: hsl(0, 0%, 0%),       /* #000000 — page background */
+    50:  oklch(70.8% 0     0),        /* normal foreground — body text */
+    100: oklch(98.5% 0     0),        /* accent foreground — headings / emphasis */
+    200: oklch(70.5% 0.015 286.375),  /* zinc-400 — secondary text (subtle cool cast) */
+    300: oklch(55.2% 0.016 285.938),  /* zinc-500 — muted text; verify WCAG 4.5:1 on neutral-500 bg */
+    400: oklch(37%   0.013 285.805),  /* zinc-700 — dark surfaces / card backgrounds */
+    500: oklch(14.5% 0     0),        /* page background */
+    900: oklch(0%    0     0),        /* pure black — modal / image-viewer overlays */
   ),
   border: (
-    50:  hsla(0, 0%, 95.29%, 0.2),
-    100: hsla(0, 0%, 100%,   0.2),  /* default border */
-    200: hsla(0, 0%, 90.59%, 0.2),
-    300: hsla(0, 0%, 85.88%, 0.2),
-    400: hsla(0, 0%, 61.18%, 0.2),
-    500: hsla(0, 0%, 46.47%, 0.2),
-    600: hsla(0, 0%, 26.47%, 0.2),
+    50:  oklch(96.4% 0 0 / 0.2),
+    100: oklch(100%  0 0 / 0.2),  /* default border */
+    200: oklch(92.8% 0 0 / 0.2),
+    300: oklch(89.1% 0 0 / 0.2),
+    400: oklch(69.3% 0 0 / 0.2),
+    500: oklch(56.8% 0 0 / 0.2),
+    600: oklch(38.5% 0 0 / 0.2),
   ),
   success: (
-    50:  hsl(91, 48%,  72%),
-    100: hsl(91, 62%,  44%),  /* #6cb42a */
-    200: hsl(91, 100%, 28%),
-    300: hsl(105, 100%, 21%),
-    400: hsl(120, 100%, 15%),
-    500: hsl(120, 100%, 9%),
+    50:  oklch(84.6% 0.0987 130.5),
+    100: oklch(70.2% 0.1817 133.5),  /* #6cb42a */
+    200: oklch(57.8% 0.1715 135.9),
+    300: oklch(46.2% 0.1497 140.3),
+    400: oklch(36.3% 0.1233 142.5),
+    500: oklch(26.1% 0.0887 142.5),
   ),
   warning: (
-    50:  hsl(29, 95%,  78%),
-    100: hsl(29, 95%,  56%),  /* #f98b26 */
-    200: hsl(30, 100%, 40%),
-    300: hsl(25, 100%, 32%),
-    400: hsl(17, 100%, 24%),
-    500: hsl(0,  100%, 17%),
+    50:  oklch(86.1% 0.0916 64.2),
+    100: oklch(74.3% 0.169  56.8),  /* #f98b26 */
+    200: oklch(62%   0.1564 53.5),
+    300: oklch(50.6% 0.1416 46.3),
+    400: oklch(39.1% 0.1276 38.1),
+    500: oklch(28.6% 0.1174 29.2),
   ),
   error: (
-    50:  hsl(352, 65%, 74%),
-    100: hsl(352, 69%, 48%),  /* #d1263d */
-    200: hsl(352, 70%, 39%),
-    300: hsl(352, 70%, 34%),
-    400: hsl(352, 70%, 29%),
-    500: hsl(352, 69%, 19%),
+    50:  oklch(75%   0.105  11.2),
+    100: oklch(55.6% 0.2015 20.7),  /* #d1263d */
+    200: oklch(47.9% 0.1728 20.5),
+    300: oklch(43.4% 0.1552 20.3),
+    400: oklch(38.8% 0.137  19.9),
+    500: oklch(29.2% 0.0972 18.6),
   ),
-  /* `accent` family — magenta neon (316°). Used by the WORKING_ON project
-     state. Sits between red-error (352°) and blue-secondary (224°) on
-     the wheel, distinct from every other family in the palette and
-     reads as a high-energy "live now" cyberpunk highlight. */
+  /* `accent` family — magenta neon (341°). Used by the WORKING_ON project
+     state. Distinct from every other family in the palette and reads as
+     a high-energy "live now" cyberpunk highlight. */
   accent: (
-    50:  hsl(316, 80%, 78%),
-    100: hsl(316, 90%, 60%),  /* #ee3ec5 */
-    200: hsl(316, 95%, 48%),
-    300: hsl(316, 95%, 38%),
-    400: hsl(316, 95%, 28%),
-    500: hsl(316, 95%, 18%),
+    50:  oklch(79.7% 0.1345 337.2),
+    100: oklch(67.7% 0.2516 341.2),  /* #ee3ec5 */
+    200: oklch(63.6% 0.2693 344.4),
+    300: oklch(53.4% 0.226  344.2),
+    400: oklch(42.8% 0.1804 343.8),
+    500: oklch(31.4% 0.1317 343),
   ),
 );
 

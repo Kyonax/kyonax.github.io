@@ -108,7 +108,7 @@ const grouped = computed(() =>
           <li
             v-for="item in cat.items"
             :key="item.id"
-            class="skills__item element-flare"
+            class="skills__item"
             :style="{ '--element-flare-delay': item.delay }"
           >
             <BrandIcon
@@ -178,13 +178,21 @@ const grouped = computed(() =>
     border-bottom: 1px dashed var(--clr-border-100);
     padding-bottom: 0.75rem;
     margin-bottom: 1rem;
+    color: var(--clr-neutral-100);
+
+    .icon-glyph {
+      transition: color 0.2s ease;
+    }
+  }
+
+  &__category:hover &__category-header .icon-glyph {
     color: var(--clr-primary-100);
   }
 
   &__category-label {
     font-family: "Geomanist", sans-serif;
     font-size: var(--fs-400);
-    color: var(--clr-neutral-50);
+    color: var(--clr-neutral-100);
     margin: 0;
     letter-spacing: 0.06em;
   }
@@ -222,7 +230,7 @@ const grouped = computed(() =>
     min-height: 4.25rem;
     background: var(--clr-neutral-500);
     border: 1px solid var(--clr-border-100);
-    color: var(--clr-neutral-100);
+    color: var(--clr-neutral-50);
     transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
     cursor: default;
     isolation: isolate;

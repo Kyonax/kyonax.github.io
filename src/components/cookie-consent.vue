@@ -174,7 +174,7 @@ onMounted(() => {
   will-change: transform;
   font-family: "SpaceMono", monospace;
   font-size: var(--fs-300);
-  color: var(--clr-neutral-100);
+  color: var(--clr-neutral-50);
   box-shadow: 0 4px 20px color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
 
   &__copy {

@@ -235,9 +235,9 @@ useInViewport(section_ref);
   align-items: stretch;
   background:
     radial-gradient(
-      ellipse at 80% 20%,
-      color-mix(in srgb, var(--clr-primary-100) 8%, transparent),
-      transparent 55%
+      ellipse at 80% 35%,
+      color-mix(in srgb, var(--clr-primary-100) 4%, transparent),
+      transparent 40%
     ),
     var(--clr-neutral-500);
 
@@ -284,13 +284,13 @@ useInViewport(section_ref);
     align-items: center;
 
     @include min-media-query(lg) {
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.85fr);
       gap: 4rem;
 
       /* Pin to row 1 — sparse auto-placement otherwise drops the
          later child to row 2. */
       & > .hero__content { grid-column: 1; grid-row: 1; }
-      & > .hero__visual  { grid-column: 2; grid-row: 1; }
+      & > .hero__visual  { grid-column: 2; grid-row: 1; justify-self: end; }
     }
   }
 
@@ -336,14 +336,12 @@ useInViewport(section_ref);
 
   &__title {
     font-family: "Geomanist", sans-serif;
-    font-size: var(--fs-700);
+    font-size: var(--fs-800);
     font-weight: 700;
     line-height: 1;
     margin: 0 0 1rem;
     letter-spacing: -0.01em;
-    color: var(--clr-neutral-50);
-
-    @include min-media-query(md) { font-size: var(--fs-800); }
+    color: var(--clr-neutral-100);
   }
 
   &__name { display: block; }
@@ -356,9 +354,9 @@ useInViewport(section_ref);
     font-size: var(--fs-200);
     letter-spacing: 0.12em;
     font-weight: 700;
-    color: color-mix(in srgb, var(--clr-success-100) 55%, transparent);
+    color: var(--clr-success-100);
     background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
-    border: 1px solid color-mix(in srgb, var(--clr-success-100) 55%, transparent);
+    border: 1px solid var(--clr-success-100);
     padding: 0.4rem 0.8rem;
     text-decoration: none;
     cursor: pointer;
@@ -367,8 +365,8 @@ useInViewport(section_ref);
     &:focus,
     &:focus-visible,
     &:active {
-      color: color-mix(in srgb, var(--clr-success-100) 55%, transparent);
-      border-color: color-mix(in srgb, var(--clr-success-100) 55%, transparent);
+      color: var(--clr-success-100);
+      border-color: var(--clr-success-100);
       background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
       outline: none;
     }
@@ -425,7 +423,7 @@ useInViewport(section_ref);
     line-height: 1.55;
     letter-spacing: 0.012em;
     word-spacing: 0.05em;
-    color: var(--clr-neutral-100);
+    color: var(--clr-neutral-50);
     margin: 0 0 2rem;
     max-width: 100%;
 
@@ -434,8 +432,22 @@ useInViewport(section_ref);
     }
 
     :deep(strong) {
-      color: var(--clr-primary-100);
+      font-family: "SpaceMono", monospace;
       font-weight: 700;
+      color: var(--clr-neutral-100);
+    }
+
+    :deep(strong a) {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+      transition: color 0.2s ease;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--clr-primary-100);
+      }
     }
   }
 
@@ -470,7 +482,7 @@ useInViewport(section_ref);
     dd {
       font-family: "Geomanist", sans-serif;
       font-size: var(--fs-600);
-      color: var(--clr-primary-100);
+      color: var(--clr-neutral-100);
       margin: 0;
       line-height: 1;
       font-weight: 700;
@@ -484,7 +496,7 @@ useInViewport(section_ref);
     letter-spacing: 0.06em;
     margin-left: 0.2em;
     vertical-align: 0.85em;
-    color: var(--clr-primary-100);
+    color: var(--clr-neutral-100);
   }
 
   &__meta {

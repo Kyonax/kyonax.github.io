@@ -48,7 +48,7 @@ useInViewport(section_ref);
       <li
         v-for="(id, i) in ITEM_IDS"
         :key="id"
-        class="faq__item element-flare"
+        class="faq__item"
         :class="{ 'faq__item--open': active_id === id }"
       >
         <h3 class="faq__heading">
@@ -171,7 +171,7 @@ useInViewport(section_ref);
     font-family: "Geomanist", sans-serif;
     font-weight: 700;
     font-size: var(--fs-300);
-    color: var(--clr-neutral-50);
+    color: var(--clr-neutral-100);
     line-height: 1.35;
     letter-spacing: 0.03em;
 
@@ -215,16 +215,6 @@ useInViewport(section_ref);
     }
   }
 
-  /* Pause every item's element-flare animation while the user is actively
-     interacting with the FAQ section — hovering, focusing, or while any
-     item is open. Frees the paint thread for the grid-template-rows
-     layout work during open transitions and for the border-color hover
-     transitions. Flares resume when the user moves away. */
-  &__list:has(.faq__item:hover, .faq__item:focus-within, .faq__item--open) {
-    .faq__item.element-flare::before {
-      animation-play-state: paused;
-    }
-  }
 
   @media (prefers-reduced-motion: reduce) {
     &__panel,

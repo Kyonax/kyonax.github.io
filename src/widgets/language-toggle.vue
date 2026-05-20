@@ -157,7 +157,7 @@ const setItemRef = (el, idx) => {
   font-family: "SpaceMono", monospace;
 
   &__button {
-    
+    color: var(--clr-neutral-50);
     min-width: 4.25rem;
     padding-left: 0.7rem;
     padding-right: 0.7rem;
@@ -207,7 +207,7 @@ const setItemRef = (el, idx) => {
     border: 0;
     padding: 0.5rem 0.9rem;
     cursor: pointer;
-    color: var(--clr-neutral-100);
+    color: var(--clr-neutral-50);
     font-family: inherit;
     font-size: var(--fs-300);
     letter-spacing: 0.06em;
@@ -216,12 +216,12 @@ const setItemRef = (el, idx) => {
 
     &:hover,
     &:focus-visible {
-      color: var(--clr-neutral-50);
-      background: color-mix(in srgb, var(--clr-primary-100) 15%, transparent);
+      color: var(--clr-neutral-100);
+      background: color-mix(in srgb, var(--clr-neutral-100) 8%, transparent);
     }
 
     &.is-active {
-      color: var(--clr-primary-100);
+      color: var(--clr-neutral-100);
       font-weight: 700;
     }
   }
