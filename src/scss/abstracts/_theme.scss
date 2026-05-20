@@ -181,7 +181,7 @@
     line-height: 0.85;
     letter-spacing: 0;
     text-transform: none;
-    color: var(--clr-primary-100);
+    color: var(--clr-neutral-50);
     opacity: 0.04;
     font-weight: 900;
 
@@ -225,28 +225,37 @@
   line-height: 1.55;
   letter-spacing: 0.02em;
   word-spacing: 0.05em;
-  color: color-mix(in srgb, var(--clr-neutral-100) 88%, var(--clr-neutral-500));
+  color: var(--clr-neutral-50);
 }
 
 .kyo-prose strong {
-  color: color-mix(in srgb, var(--clr-neutral-50) 90%, var(--clr-neutral-500));
+  font-family: "SpaceMono", monospace;
   font-weight: 700;
-  background: color-mix(in srgb, var(--clr-primary-100) 8%, transparent);
-  padding: 0.05rem 0.35rem;
+  color: var(--clr-neutral-100);
+}
+
+.kyo-prose code {
+  font-family: "SpaceMono", monospace;
+  font-size: 0.88em;
+  color: var(--clr-neutral-100);
+  background: color-mix(in srgb, var(--clr-border-100) 40%, transparent);
+  padding: 0.1rem 0.35rem;
   border-radius: 2px;
 }
 
 .kyo-prose a {
-  color: var(--clr-primary-100);
+  font-family: "SpaceMono", monospace;
+  font-weight: 700;
+  color: var(--clr-neutral-100);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
-  transition: opacity 0.2s var(--ease-standard, ease);
+  transition: color 0.2s ease;
 }
 
 .kyo-prose a:hover,
 .kyo-prose a:focus-visible {
-  opacity: 0.75;
+  color: var(--clr-primary-100);
 }
 
 .kyo-prose a strong {

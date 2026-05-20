@@ -63,14 +63,19 @@ defineEmits(['open']);
   &__frame {
     position: relative;
     padding: 0.5rem;
-    border: 1px solid var(--clr-primary-100);
-    background: color-mix(in srgb, var(--clr-primary-100) 5%, var(--clr-neutral-500));
+    border: 1px solid var(--clr-border-100);
+    background: var(--clr-neutral-500);
     overflow: hidden;
     display: flex;
     color: inherit;
     font: inherit;
     cursor: zoom-in;
     text-align: left;
+    transition: border-color 0.2s ease;
+
+    &:hover {
+      border-color: var(--clr-primary-100);
+    }
 
     &:focus-visible {
       outline: 2px solid var(--clr-primary-100);
@@ -103,12 +108,15 @@ defineEmits(['open']);
       position: absolute;
       width: 16px;
       height: 16px;
-      border: 1px solid var(--clr-primary-100);
+      border: 1px solid var(--clr-border-100);
       pointer-events: none;
       z-index: 2;
+      transition: border-color 0.2s ease;
     }
     &::before { top: -5px; left: -5px;  border-right: 0; border-bottom: 0; }
     &::after  { bottom: -5px; right: -5px; border-left: 0;  border-top: 0; }
+    &:hover::before,
+    &:hover::after { border-color: var(--clr-primary-100); }
   }
 
   &__inner {

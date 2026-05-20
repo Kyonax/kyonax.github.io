@@ -16,28 +16,44 @@ const NAV_LINKS = [
   { id: 'skills',     key: 'kyo-web.landing.nav.skills' },
   { id: 'experience', key: 'kyo-web.landing.nav.experience' },
   { id: 'projects',   key: 'kyo-web.landing.nav.projects' },
+  { id: 'faq',        key: 'kyo-web.landing.nav.faq' },
+  { id: 'contact',    key: 'kyo-web.landing.nav.contact' },
 ];
 
-const GLYPH_MENU  = '\uF0C9';
-const GLYPH_CLOSE = '\uF00D';
+const GITHUB_URL   = 'https://github.com/Kyonax';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/kyonax/';
+
+const GLYPH_MENU     = '\uF0C9';
+const GLYPH_CLOSE    = '\uF00D';
+const GLYPH_GITHUB   = '\uF09B';
+const GLYPH_LINKEDIN = '\uF0E1';
 
 const scrolled = ref(false);
 const mobile_open = ref(false);
 const active_section = ref('hero');
-const scroll_progress = ref(0);
 
-let observer = null;
 let _scroll_frame = 0;
 
 const _read_scroll = () => {
   _scroll_frame = 0;
   scrolled.value = window.scrollY > 24;
-  const doc = document.documentElement;
-  const max = doc.scrollHeight - doc.clientHeight;
-  scroll_progress.value = max > 0 ? Math.min(1, window.scrollY / max) : 0;
   if (window.scrollY < 80) {
     active_section.value = 'hero';
+    return;
   }
+  const target_y = window.innerHeight * 0.4;
+  let winner = null;
+  let min_dist = Infinity;
+  for (const l of NAV_LINKS) {
+    const el = document.getElementById(l.id);
+    if (!el) continue;
+    const dist = Math.abs(el.getBoundingClientRect().top - target_y);
+    if (dist < min_dist) {
+      min_dist = dist;
+      winner = l.id;
+    }
+  }
+  if (winner) active_section.value = winner;
 };
 
 const onScroll = () => {
@@ -81,23 +97,6 @@ onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('keydown', onKeydown);
   onScroll();
-
-  observer = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          active_section.value = e.target.id;
-        }
-      }
-    },
-    { rootMargin: '-45% 0px -45% 0px', threshold: 0 },
-  );
-  for (const l of NAV_LINKS) {
-    const el = document.querySelector(`#${l.id}`);
-    if (el) {
-      observer.observe(el);
-    }
-  }
 });
 
 onBeforeUnmount(() => {
@@ -105,9 +104,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown);
   if (_scroll_frame) {
     cancelAnimationFrame(_scroll_frame);
-  }
-  if (observer) {
-    observer.disconnect();
   }
   if (typeof document === 'undefined') {
     return;
@@ -126,8 +122,6 @@ onBeforeUnmount(() => {
     :class="{ 'hud-nav--scrolled': scrolled, 'hud-nav--open': mobile_open }"
     role="banner"
   >
-    <div class="hud-nav__progress" :style="{ '--progress': scroll_progress }" aria-hidden="true" />
-
     <div class="hud-nav__bar">
       <a
         href="#hero"
@@ -160,6 +154,27 @@ onBeforeUnmount(() => {
 
       <div class="hud-nav__actions">
         <LanguageToggle class="hud-nav__lang" />
+        <span class="hud-nav__separator" aria-hidden="true" />
+        <div class="hud-nav__social-group">
+          <a
+            :href="GITHUB_URL"
+            class="hud-nav__social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            :aria-label="t('kyo-web.landing.nav.aria.brand') + ' GitHub'"
+          >
+            <span class="icon-glyph icon-glyph--lg hud-nav__social-icon" :data-text="GLYPH_GITHUB" aria-hidden="true" />
+          </a>
+          <a
+            :href="LINKEDIN_URL"
+            class="hud-nav__social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            :aria-label="t('kyo-web.landing.nav.aria.brand') + ' LinkedIn'"
+          >
+            <span class="icon-glyph icon-glyph--lg hud-nav__social-icon" :data-text="GLYPH_LINKEDIN" aria-hidden="true" />
+          </a>
+        </div>
         <UiButton
           variant="ghost"
           size="md"
@@ -202,24 +217,12 @@ onBeforeUnmount(() => {
   }
 
   &--scrolled {
-    background: color-mix(in srgb, var(--clr-neutral-500) 80%, transparent);
+    background: color-mix(in srgb, var(--clr-neutral-500) 92%, transparent);
     border-bottom-color: var(--clr-border-100);
   }
 
   &--scrolled::before {
     opacity: 1;
-  }
-
-  &__progress {
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 2px;
-    background: linear-gradient(
-      to right,
-      var(--clr-primary-100) calc(var(--progress, 0) * 100%),
-      transparent calc(var(--progress, 0) * 100%)
-    );
-    pointer-events: none;
   }
 
   &__bar {
@@ -229,7 +232,7 @@ onBeforeUnmount(() => {
     
     gap: 0;
     padding: 0.6rem 1rem;
-    max-width: 1440px;
+    max-width: calc(1280px + 4rem);
     margin: 0 auto;
 
     @include min-media-query(lg) {
@@ -242,18 +245,19 @@ onBeforeUnmount(() => {
     display: inline-flex;
     align-items: center;
     margin-left: 0.5rem;
-    color: var(--clr-primary-100);
+    color: var(--clr-neutral-100);
     text-decoration: none;
     font-family: "Geomanist", sans-serif;
     font-weight: 900;
     font-size: var(--fs-400);
     line-height: 1;
-    transition: text-shadow 0.2s ease, transform 0.2s ease;
+    transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
 
     @include min-media-query(md) { font-size: var(--fs-400); }
 
     &:hover,
     &:focus-visible {
+      color: var(--clr-primary-100);
       text-shadow: 0 0 10px color-mix(in srgb, var(--clr-primary-100) 55%, transparent);
     }
   }
@@ -261,28 +265,34 @@ onBeforeUnmount(() => {
   &__brand-name {
     line-height: 1;
     display: inline-block;
+    transform: translateY(0.1em);
   }
 
   &__links {
     display: none;
     gap: 1.25rem;
-    justify-content: center;
+    justify-content: flex-start;
 
     @include min-media-query(md) {
       display: inline-flex;
+      padding-left: 2rem;
+    }
+
+    @include min-media-query(lg) {
+      padding-left: 1.25rem;
     }
   }
 
   &__link {
     position: relative;
-    color: var(--clr-neutral-200);
+    color: var(--clr-neutral-50);
     text-decoration: none;
     font-size: var(--fs-300);
     letter-spacing: 0.08em;
     padding: 0.4rem 0.2rem;
     transition: color 0.2s ease;
 
-    
+
     &::after {
       content: "";
       position: absolute;
@@ -290,7 +300,7 @@ onBeforeUnmount(() => {
       right: 0;
       bottom: 0;
       height: 1px;
-      background: var(--clr-primary-100);
+      background: var(--clr-neutral-100);
       transform: scaleX(0);
       transform-origin: left center;
       transition: transform 0.35s var(--ease-standard);
@@ -303,11 +313,11 @@ onBeforeUnmount(() => {
 
     &:hover,
     &:focus-visible {
-      color: var(--clr-primary-100);
+      color: var(--clr-neutral-100);
     }
 
     &.is-active {
-      color: var(--clr-primary-100);
+      color: var(--clr-neutral-100);
 
       &::after { transform: scaleX(1); }
     }
@@ -322,6 +332,52 @@ onBeforeUnmount(() => {
     @include min-media-query(md) {
       gap: 0.75rem;
     }
+  }
+
+  &__separator {
+    display: none;
+    width: 1px;
+    height: 1.1rem;
+    background: var(--clr-border-100);
+
+    @include min-media-query(md) {
+      display: block;
+    }
+  }
+
+  &__social-group {
+    display: none;
+
+    @include min-media-query(md) {
+      display: inline-flex;
+      gap: 0.15rem;
+    }
+  }
+
+  &__social-link {
+    display: none;
+    color: var(--clr-neutral-50);
+    text-decoration: none;
+    transition: border-color 0.2s ease, color 0.2s ease;
+
+    @include min-media-query(md) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem;
+      border: 1px solid transparent;
+    }
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--clr-primary-100);
+      color: var(--clr-primary-100);
+    }
+  }
+
+  &__social-icon {
+    font-size: 1.1rem;
+    transform: translateY(0);
   }
 
   
@@ -366,7 +422,7 @@ onBeforeUnmount(() => {
 
         &:last-child { border-bottom: 0; }
         &.is-active {
-          background: color-mix(in srgb, var(--clr-primary-100) 10%, transparent);
+          background: color-mix(in srgb, var(--clr-primary-300) 20%, transparent);
         }
         
         &::after { display: none; }

@@ -318,7 +318,7 @@ useInViewport(section_ref);
     transition: border-color 0.25s ease, transform 0.25s ease;
     isolation: isolate;
     --element-flare-spread: 2px;
-    --element-flare-opacity: 0.06;
+    --element-flare-opacity: 0.04;
 
     &:hover,
     &:focus-visible {
@@ -330,11 +330,20 @@ useInViewport(section_ref);
           color-mix(in srgb, var(--clr-neutral-500) 80%, transparent) 100%
         );
       transform: translateX(4px);
-      --element-flare-opacity: 0.24;
+      --element-flare-opacity: 0.16;
     }
 
     @include min-media-query(md) {
       padding: 1.5rem;
+    }
+  }
+
+  &__node:not(:first-child) &__card {
+    --element-flare-opacity: 0;
+
+    &:hover,
+    &:focus-visible {
+      --element-flare-opacity: 0.16;
     }
   }
 
@@ -369,13 +378,22 @@ useInViewport(section_ref);
 
   &__role {
     font-family: "Geomanist", sans-serif;
-    
     font-size: var(--fs-500);
     font-weight: 700;
-    color: var(--clr-primary-100);
+    color: var(--clr-neutral-100);
     margin: 0 0 0.4rem;
     letter-spacing: 0.02em;
     line-height: 1.2;
+    transition: color 0.25s ease;
+  }
+
+  &__card:hover &__role,
+  &__card:focus-visible &__role {
+    color: var(--clr-primary-100);
+  }
+
+  &__node--primary &__role {
+    color: var(--clr-primary-100);
   }
 
   &__specs {

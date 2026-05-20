@@ -15,6 +15,8 @@ import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
 
+const current_year = new Date().getFullYear();
+
 const host         = ref('');
 const path         = ref('');
 const nav_language = ref('');
@@ -117,13 +119,12 @@ useInViewport(footer_ref);
         </div>
       </div>
 
-      <div class="site-footer__channels">
+      <div id="contact" class="site-footer__channels">
         <span class="site-footer__channels-label">// CONTACT_CHANNELS</span>
         <div class="site-footer__channels-grid">
           <UiLink
             :href="contact_email_href"
             variant="primary"
-            flare-delay="1s"
             class="site-footer__channel"
             external
           >
@@ -133,7 +134,6 @@ useInViewport(footer_ref);
           <UiLink
             :href="WHATSAPP_URL"
             variant="primary"
-            flare-delay="2s"
             class="site-footer__channel"
             external
           >
@@ -150,7 +150,6 @@ useInViewport(footer_ref);
             <UiLink
               :href="social.url"
               variant="ghost"
-              :flare-delay="social.delay"
               class="site-footer__social"
               external
               :aria-label="social.label"
@@ -177,7 +176,7 @@ useInViewport(footer_ref);
     </div>
 
     <div class="site-footer__bottom">
-      <small class="site-footer__rights">{{ t('kyo-web.landing.footer.rights') }}</small>
+      <small class="site-footer__rights">{{ t('kyo-web.landing.footer.rights', { year: current_year }) }}</small>
       <small class="site-footer__made-by">{{ t('kyo-web.landing.footer.made-by') }}</small>
     </div>
   </footer>
@@ -193,7 +192,7 @@ useInViewport(footer_ref);
     linear-gradient(
       to bottom,
       transparent 0%,
-      color-mix(in srgb, var(--clr-primary-100) 4%, var(--clr-neutral-500)) 100%
+      color-mix(in srgb, var(--clr-primary-100) 1%, var(--clr-neutral-500)) 100%
     );
   border-top: 1px solid var(--clr-primary-100);
   font-family: "SpaceMono", monospace;
@@ -415,12 +414,11 @@ useInViewport(footer_ref);
 
   &__bottom {
     max-width: 1280px;
-    
     margin: 3rem auto 0;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.5rem 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
     color: var(--clr-neutral-300);
     font-size: var(--fs-200);
     letter-spacing: 0.06em;
@@ -428,15 +426,29 @@ useInViewport(footer_ref);
     @include min-media-query(md) {
       margin-top: 4rem;
     }
+
+    @include min-media-query(lg) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem 1.5rem;
+    }
   }
 
   &__rights {
     font-family: "Geomanist", sans-serif;
+    white-space: pre-line;
   }
 
   &__made-by {
     font-family: "SpaceMono", monospace;
     color: var(--clr-neutral-200);
+    align-self: flex-end;
+
+    @include min-media-query(lg) {
+      align-self: center;
+    }
   }
 }
 </style>

@@ -50,7 +50,7 @@ const heading_tag = computed(() => `h${props.level}`);
   &__title {
     font-family: "Geomanist", sans-serif;
     font-size: var(--fs-700);
-    color: var(--clr-neutral-50);
+    color: var(--clr-neutral-100);
     margin: 0 0 0.5rem;
     letter-spacing: -0.01em;
     line-height: 1;
@@ -62,7 +62,7 @@ const heading_tag = computed(() => `h${props.level}`);
     line-height: 1.6;
     letter-spacing: 0.012em;
     word-spacing: 0.04em;
-    color: var(--clr-neutral-100);
+    color: var(--clr-neutral-50);
     margin: 0;
     max-width: 60ch;
   }

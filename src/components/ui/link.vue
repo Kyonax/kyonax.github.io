@@ -176,7 +176,7 @@ const download_attr = computed(() => {
 
     &:hover,
     &:focus-visible {
-      color: var(--clr-neutral-50);
+      color: var(--clr-neutral-100);
       background: color-mix(in srgb, var(--clr-primary-100) 12%, var(--clr-neutral-500));
       transform: translateY(-2px);
       outline: none;

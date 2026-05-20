@@ -191,7 +191,7 @@ const GLYPH_CLOSE = '\uF00D';
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background: color-mix(in srgb, var(--clr-neutral-500) 78%, transparent);
+    background: color-mix(in srgb, var(--clr-neutral-500) 35%, transparent);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     transform: translateZ(0);
@@ -204,7 +204,7 @@ const GLYPH_CLOSE = '\uF00D';
 
   &__dialog {
     position: relative;
-    background: color-mix(in srgb, var(--clr-neutral-500) 92%, var(--clr-primary-100) 4%);
+    background: var(--clr-neutral-500);
     border: 1px solid var(--clr-border-100);
     width: 100%;
     max-width: 95dvw;
