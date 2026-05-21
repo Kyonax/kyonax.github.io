@@ -10,7 +10,7 @@
  * Wire protocol:
  *   inbound:  {projects: Record<string, Project>, keys: string[]}
  *             {cmd: 'pause'|'resume'}
- *   outbound: Record<string, {label: string, countdown: string, utc_ts: number} | {}>
+ *   outbound: Record<string, {label: string, countdown: string|null, utc_ts: number|null}>
  *
  * Deadline strings are interpreted in America/Bogota (UTC-5) then converted to UTC.
  */
@@ -102,9 +102,11 @@ const _hydrate_cache = (projects, keys) => {
     }
 
     let best = null;
+    let last_past_label = null;
     for (const [label, ts] of Object.entries(project.deadlines)) {
       const utc_ts = _parse_colombia_time(ts);
       if (utc_ts <= now) {
+        last_past_label = label.toUpperCase();
         continue;
       }
       if (!best || utc_ts < best.utc_ts) {
@@ -118,6 +120,9 @@ const _hydrate_cache = (projects, keys) => {
 
     if (best) {
       cached_deadlines.push(best);
+    } else if (last_past_label) {
+      /* All deadlines past — emit so consumer sees ended state, never the void. */
+      cached_deadlines.push({ key, label: last_past_label, utc_ts: null });
     }
   }
 };
@@ -127,11 +132,9 @@ const _tick = () => {
   const out = {};
 
   for (const { key, label, utc_ts } of cached_deadlines) {
-    out[key] = {
-      label,
-      utc_ts,
-      countdown: _format_countdown(utc_ts - now),
-    };
+    out[key] = utc_ts === null
+      ? { label, utc_ts: null, countdown: null }
+      : { label, utc_ts, countdown: _format_countdown(utc_ts - now) };
   }
 
   postMessage(out);

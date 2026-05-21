@@ -264,7 +264,7 @@ const _has_modal_description = (key) => te(_modal_description_key(key));
 
 const buildNowCard = (key) => {
   const project = PROJECTS[key];
-  const cd = countdowns[key];
+  const cd = countdowns.value[key];
   const ended = cd && !cd.countdown;
   const status_id = project.status || DEFAULT_NOW_STATUS;
   const next = _next_future_deadline(project);
@@ -347,6 +347,10 @@ const main_cards = computed(() => {
   return now_keys
     .map(buildNowCard)
     .sort((a, b) => {
+      /* Ended (no future deadline) sinks to the bottom regardless of status priority. */
+      if (a.ended !== b.ended) {
+        return a.ended ? 1 : -1;
+      }
       const pa = NOW_STATUS_PRIORITY[a.status_id] ?? 99;
       const pb = NOW_STATUS_PRIORITY[b.status_id] ?? 99;
       if (pa !== pb) {
@@ -548,9 +552,7 @@ useInViewport(section_ref);
             <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
           </div>
 
-          <p class="now-projects-section__milestone">
-            // {{ card.label.toUpperCase() }}
-          </p>
+          <p class="now-projects-section__milestone">// {{ card.label.toUpperCase() }}</p>
           <div v-if="card.is_working_on" class="now-projects-section__countdown">
             <div class="now-projects-section__countdown-head">
               <span class="now-projects-section__countdown-label">
@@ -620,7 +622,7 @@ useInViewport(section_ref);
       </li>
     </ul>
 
-    <section class="now-projects-section__featured" aria-labelledby="now-projects-featured-label">
+    <div class="now-projects-section__featured" role="region" aria-labelledby="now-projects-featured-label">
       <h3 id="now-projects-featured-label" class="now-projects-section__featured-label">
         <span class="icon-glyph" :data-text="GLYPH_FEATURED" aria-hidden="true" />
         {{ t('kyo-web.landing.projects.featured-label') }}
@@ -659,7 +661,7 @@ useInViewport(section_ref);
           />
         </div>
       </div>
-    </section>
+    </div>
 
     <UiModal
       v-if="active_card"
@@ -893,6 +895,15 @@ useInViewport(section_ref);
         border-color: var(--clr-border-100);
         transform: none;
         --element-flare-opacity: 0;
+      }
+    }
+
+    /* Ended cards adopt the same warning color as the ENDED state pill. */
+    &.is-ended {
+      --element-flare-color: var(--clr-warning-100);
+
+      &:hover, &:focus-visible {
+        border-color: var(--clr-warning-100);
       }
     }
   }

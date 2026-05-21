@@ -20,7 +20,7 @@
       owns the bootstrap and only injects gtag.js once the user
       either accepts or declines the banner.
 
-        transformIndexHtml slots (lcpPreload, fontPreload, vimeoPreconnect)
+        transformIndexHtml slots (lcpPreload, fontPreload)
         Favicons (ico + png + apple-touch)
         Root mount target #root (NOT #app — vite-ssg rootContainer)
 
@@ -38,7 +38,6 @@
 
     <%- lcpPreload %>
     <%- fontPreload %>
-    <%- vimeoPreconnect %>
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />

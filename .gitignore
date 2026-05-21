@@ -162,3 +162,5 @@ temp/
 CLAUDE.md
 COMMIT.org
 PR.org
+
+.lighthouseci/

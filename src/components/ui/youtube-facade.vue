@@ -229,7 +229,7 @@ onBeforeUnmount(pause);
       v-if="_consent_prompt_open"
       class="youtube-facade__consent"
       role="dialog"
-      aria-modal="false"
+      aria-modal="true"
       :aria-labelledby="`yt-consent-title-${videoId}`"
       :aria-describedby="`yt-consent-body-${videoId}`"
       @keydown="_on_consent_keydown"

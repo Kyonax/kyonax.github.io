@@ -36,8 +36,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import vue from '@vitejs/plugin-vue';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import { createHtmlPlugin } from 'vite-plugin-html';
 
 const r = (path) => fileURLToPath(new URL(path, import.meta.url));
@@ -116,15 +117,6 @@ const applyPreviewMiddleware = (server) => {
 };
 
 export default defineConfig(({ mode }) => {
-  // vite-ssg invokes the config under non-standard mode names ("local" etc.)
-  // which loadEnv rejects. Skip loadEnv unless mode is the usual pair.
-  const env = (mode === 'production' || mode === 'development')
-    ? loadEnv(mode, process.cwd(), '')
-    : {};
-
-  const VIMEO_ENABLED = env.VITE_VIMEO_ENABLED !== 'false';
-  const VIMEO_PRECONNECT = VIMEO_ENABLED && env.VITE_VIMEO_PRECONNECT !== 'false';
-
   return {
     plugins: [
       /* MUST come before createHtmlPlugin AND carry `enforce: 'pre'` —
@@ -144,13 +136,20 @@ export default defineConfig(({ mode }) => {
 
       vue(),
 
+      VueI18nPlugin({
+        /* Keep runtime+compiler bundled — message strings live in
+           `@data/snippets` as a JS object, and `src/seo/json-ld/*` reads
+           leaf strings directly (not via t()). Pre-compilation would
+           require migrating to JSON + refactoring those consumers. */
+        runtimeOnly: false,
+        compositionOnly: true,
+        fullInstall: true,
+        strictMessage: false,
+      }),
+
       createHtmlPlugin({
         inject: {
           data: {
-            vimeoPreconnect: VIMEO_PRECONNECT
-              ? '<link rel="preconnect" href="https://player.vimeo.com" crossorigin>'
-              : '',
-
             // Placeholder in dev; the lcp-preload-injector plugin below
             // replaces it post-hash so the href is content-addressed.
             lcpPreload: mode === 'production'
@@ -234,6 +233,7 @@ export default defineConfig(({ mode }) => {
               'GeomanistBold',
               'SpaceMonoNerdFont-Regular',
               'SpaceMonoNerdFont-Bold',
+              'SymbolsNerdFontMono-Regular',
             ];
             const matches = FONT_FAMILIES
               .map((family) => {
@@ -298,8 +298,6 @@ export default defineConfig(({ mode }) => {
     },
 
     define: {
-      'import.meta.env.VITE_VIMEO_ENABLED': JSON.stringify(env.VITE_VIMEO_ENABLED ?? 'true'),
-      'import.meta.env.VITE_VIMEO_PRECONNECT': JSON.stringify(env.VITE_VIMEO_PRECONNECT ?? 'true'),
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '0.0.0'),
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
     },
@@ -315,7 +313,6 @@ export default defineConfig(({ mode }) => {
         '@data':        r('./src/data'),
         '@workers':     r('./src/workers'),
         '@i18n':        r('./src/i18n'),
-        '@config':      r('./src/config'),
         '@scss':        r('./src/scss'),
         '@assets':      r('./src/assets'),
         '@fonts':       r('./src/fonts'),

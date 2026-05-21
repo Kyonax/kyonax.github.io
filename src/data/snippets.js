@@ -250,7 +250,7 @@ export const TRANSLATIONS = {
         'footer': {
           'tag': 'END OF TRANSMISSION',
           'signoff': 'Built with Vue 3 + Vite SSG + vue-router + vue-i18n + Unhead + JSON-LD + SCSS + Sharp + Web Workers. MADE WITH LOVE.',
-          'rights': 'Source code under GPL-2.0-only.\nDesign and original content © {year} Cristian D. Moreno (Kyonax).\nAll rights reserved.',
+          'rights': 'Source code under GPL-2.0-only. Design and original content © {year} Cristian D. Moreno (Kyonax). All rights reserved.',
           'made-by': 'DESIGNED & BUILT BY CRISTIAN D. MORENO',
         },
       },
@@ -502,7 +502,7 @@ export const TRANSLATIONS = {
         'footer': {
           'tag': 'FIN DE LA TRANSMISIÓN',
           'signoff': 'Construido con Vue 3 + Vite SSG + vue-router + vue-i18n + Unhead + JSON-LD + SCSS + Sharp + Web Workers. MADE WITH LOVE.',
-          'rights': 'Código fuente bajo GPL-2.0-only.\nDiseño y contenido original © {year} Cristian D. Moreno (Kyonax).\nTodos los derechos reservados.',
+          'rights': 'Código fuente bajo GPL-2.0-only. Diseño y contenido original © {year} Cristian D. Moreno (Kyonax). Todos los derechos reservados.',
           'made-by': 'DISEÑADO Y CONSTRUIDO POR CRISTIAN D. MORENO',
         },
       },
