@@ -86,7 +86,15 @@ export const buildPersonJsonLd = (locale) => ({
       url: AUTHOR_INFO.orcid,
     },
   ],
-  worksFor: EMPLOYERS.current.map(_org),
+  worksFor: [
+    {
+      '@type': 'EmployeeRole',
+      roleName: 'Senior Frontend Engineer',
+      startDate: '2025',
+      worksFor: _org(EMPLOYERS.current[0]),
+    },
+    _org(EMPLOYERS.current[1]),
+  ],
   alumniOf: EMPLOYERS.past.map(_org),
   memberOf: _org(COMMUNITY),
 });

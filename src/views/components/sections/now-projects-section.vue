@@ -551,6 +551,12 @@ useInViewport(section_ref);
           <p class="now-projects-section__milestone">
             // {{ card.label.toUpperCase() }}
           </p>
+          <p
+            v-if="_has_modal_description(card.key)"
+            class="sr-only"
+            aria-hidden="true"
+            v-html="t(_modal_description_key(card.key))"
+          />
           <div v-if="card.is_working_on" class="now-projects-section__countdown">
             <div class="now-projects-section__countdown-head">
               <span class="now-projects-section__countdown-label">
