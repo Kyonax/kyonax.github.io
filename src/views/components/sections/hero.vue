@@ -136,7 +136,7 @@ useInViewport(section_ref);
 
         <h1 class="hero__title">
           <span class="hero__name">{{ t('kyo-web.persistent-data.name') }}</span>
-          <span class="hero__alias">A.K.A. KYONAX<sup>京</sup></span>
+          <span class="hero__alias">A.K.A. KYONAX<sup lang="ja">京</sup></span>
         </h1>
 
         <h2 class="hero__role">

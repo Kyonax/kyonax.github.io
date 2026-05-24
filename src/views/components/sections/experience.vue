@@ -422,6 +422,11 @@ useInViewport(section_ref);
     line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+
+    @include min-media-query(md) {
+      -webkit-line-clamp: 6;
+      line-clamp: 6;
+    }
   }
 
   &__view-more {

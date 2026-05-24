@@ -45,15 +45,19 @@ const _read_scroll = () => {
   let winner = null;
   let min_dist = Infinity;
   for (const l of NAV_LINKS) {
-    const el = document.getElementById(l.id);
-    if (!el) continue;
+    const el = document.querySelector(`#${l.id}`);
+    if (!el) {
+      continue;
+    }
     const dist = Math.abs(el.getBoundingClientRect().top - target_y);
     if (dist < min_dist) {
       min_dist = dist;
       winner = l.id;
     }
   }
-  if (winner) active_section.value = winner;
+  if (winner) {
+    active_section.value = winner;
+  }
 };
 
 const onScroll = () => {

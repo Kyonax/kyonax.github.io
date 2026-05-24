@@ -138,7 +138,7 @@ export const TRANSLATIONS = {
           'open-portrait': 'Open portrait',
           'portrait-alt': 'Cristian D. Moreno (Kyonax) portrait',
           'available': 'AVAILABLE FOR REMOTE WORK',
-          'summary': '8 years delivering <strong>scalable, adaptable, and high-performance</strong> web solutions for national and international clients, working fully remote from <strong>Latin America</strong>. Currently Frontend Engineer at <strong>AgileEngine</strong>, building for <strong>Madison Reed</strong>, Founder & Lead Engineer at <strong><a href="https://github.com/kyonax" target="_blank" rel="noopener noreferrer">Zerønet Labs</a></strong>.',
+          'summary': '8 years delivering scalable, adaptable, and high-performance web solutions for national and international clients, working fully remote from <strong>Latin America</strong>. Currently Frontend Engineer at <strong>AgileEngine</strong>, building for <strong>Madison Reed</strong>, Founder & Lead Engineer at <strong><a href="https://github.com/kyonax" target="_blank" rel="noopener noreferrer">Zerønet Labs</a></strong>.',
           'primary-cta': 'VIEW EXPERIENCE',
           'secondary-cta': 'CONTACT ME',
           'scroll-hint': 'SCROLL // EXPLORE',
@@ -158,7 +158,7 @@ export const TRANSLATIONS = {
         },
         'skills': {
           'label': 'STACK // TOOLS',
-          'subtitle': 'Battle-tested technologies powering production systems',
+          'subtitle': 'Battle-tested tooling across frontend, backend, devops, and AI, powering production web systems.',
           'categories': {
             'frontend': 'FRONTEND',
             'backend': 'BACKEND',
@@ -169,7 +169,7 @@ export const TRANSLATIONS = {
         },
         'experience': {
           'label': 'EXPERIENCE // TIMELINE',
-          'subtitle': 'From growth marketing to leading engineering, 8 years of building.',
+          'subtitle': '8 years of senior full-stack and frontend web development, from e-commerce engineering to open-source tooling.',
           'tools-label': 'STACK',
           'read-more': 'READ FULL DETAILS',
         },
@@ -182,7 +182,7 @@ export const TRANSLATIONS = {
         },
         'projects': {
           'label': 'NOW // WORKING ON',
-          'subtitle': "Live deadlines, real countdowns. What I'm building right now.",
+          'subtitle': 'Open-source tools and client projects in active development. Full-stack web development in progress.',
           'view-repo': 'VIEW REPO',
           'featured-label': 'FEATURED // PORTFOLIO',
           'ends-in-prefix': 'ENDS IN',
@@ -219,7 +219,7 @@ export const TRANSLATIONS = {
         'faq': {
           'tag': '// 05',
           'title': 'FAQ // QUERIES',
-          'subtitle': 'Quick answers to the questions I get asked most often.',
+          'subtitle': 'Hiring, remote availability, technologies, and performance services from a senior full-stack engineer.',
           'section-aria': 'Frequently asked questions',
           'items': {
             'what-i-do': {
@@ -263,7 +263,7 @@ export const TRANSLATIONS = {
         'footer': {
           'tag': 'END OF TRANSMISSION',
           'signoff': 'Built with Vue 3 + Vite SSG + vue-router + vue-i18n + Unhead + JSON-LD + SCSS + Sharp + Web Workers. MADE WITH LOVE.',
-          'rights': 'Source code under GPL-2.0-only.\nDesign and original content © {year} Cristian D. Moreno (Kyonax).\nAll rights reserved.',
+          'rights': 'Source code under GPL-2.0-only. Design and original content © {year} Cristian D. Moreno (Kyonax). All rights reserved.',
           'made-by': 'DESIGNED & BUILT BY CRISTIAN D. MORENO',
         },
       },
@@ -403,7 +403,7 @@ export const TRANSLATIONS = {
           'open-portrait': 'Abrir retrato',
           'portrait-alt': 'Cristian D. Moreno (Kyonax) retrato',
           'available': 'DISPONIBLE PARA TRABAJO REMOTO',
-          'summary': '8 años entregando <strong>soluciones web escalables, adaptables y de alto rendimiento</strong> para clientes nacionales e internacionales, trabajando en remoto desde <strong>Colombia</strong>, con disponibilidad para clientes en toda Latinoamérica. Actualmente Frontend Engineer en <strong>AgileEngine</strong>, desarrollando para <strong>Madison Reed</strong>, Fundador y Lead Engineer en <strong><a href="https://github.com/kyonax" target="_blank" rel="noopener noreferrer">Zerønet Labs</a></strong>.',
+          'summary': '8 años entregando soluciones web escalables, adaptables y de alto rendimiento para clientes nacionales e internacionales, trabajando en remoto desde <strong>Colombia</strong>, con disponibilidad para clientes en toda Latinoamérica. Actualmente Frontend Engineer en <strong>AgileEngine</strong>, desarrollando para <strong>Madison Reed</strong>, Fundador y Lead Engineer en <strong><a href="https://github.com/kyonax" target="_blank" rel="noopener noreferrer">Zerønet Labs</a></strong>.',
           'primary-cta': 'VER EXPERIENCIA',
           'secondary-cta': 'CONTACTAME',
           'scroll-hint': 'SCROLL // EXPLORA',
@@ -423,7 +423,7 @@ export const TRANSLATIONS = {
         },
         'skills': {
           'label': 'STACK // HERRAMIENTAS',
-          'subtitle': 'Tecnologías probadas en entornos de producción',
+          'subtitle': 'Herramientas probadas en producción a través de frontend, backend, devops e IA.',
           'categories': {
             'frontend': 'FRONTEND',
             'backend': 'BACKEND',
@@ -434,7 +434,7 @@ export const TRANSLATIONS = {
         },
         'experience': {
           'label': 'EXPERIENCIA // LÍNEA DE TIEMPO',
-          'subtitle': 'De growth marketing a liderazgo en ingeniería, 8 años construyendo.',
+          'subtitle': '8 años de desarrollo web full-stack y frontend senior, de ingeniería e-commerce a herramientas open-source.',
           'tools-label': 'STACK',
           'read-more': 'VER DETALLE COMPLETO',
         },
@@ -447,7 +447,7 @@ export const TRANSLATIONS = {
         },
         'projects': {
           'label': 'AHORA // TRABAJANDO EN',
-          'subtitle': 'Deadlines en vivo, contadores reales. Lo que estoy construyendo ahora mismo.',
+          'subtitle': 'Herramientas open-source y proyectos de clientes en desarrollo activo. Desarrollo web full-stack en progreso.',
           'view-repo': 'VER REPO',
           'featured-label': 'DESTACADOS // PORTAFOLIO',
           'ends-in-prefix': 'TERMINA EN',
@@ -484,7 +484,7 @@ export const TRANSLATIONS = {
         'faq': {
           'tag': '// 05',
           'title': 'FAQ // CONSULTAS',
-          'subtitle': 'Respuestas rápidas a las preguntas que me hacen con más frecuencia.',
+          'subtitle': 'Contratación, disponibilidad remota, tecnologías y servicios de un ingeniero full-stack senior.',
           'section-aria': 'Preguntas frecuentes',
           'items': {
             'what-i-do': {
@@ -528,7 +528,7 @@ export const TRANSLATIONS = {
         'footer': {
           'tag': 'FIN DE LA TRANSMISIÓN',
           'signoff': 'Construido con Vue 3 + Vite SSG + vue-router + vue-i18n + Unhead + JSON-LD + SCSS + Sharp + Web Workers. MADE WITH LOVE.',
-          'rights': 'Código fuente bajo GPL-2.0-only.\nDiseño y contenido original © {year} Cristian D. Moreno (Kyonax).\nTodos los derechos reservados.',
+          'rights': 'Código fuente bajo GPL-2.0-only. Diseño y contenido original © {year} Cristian D. Moreno (Kyonax). Todos los derechos reservados.',
           'made-by': 'DISEÑADO Y CONSTRUIDO POR CRISTIAN D. MORENO',
         },
       },

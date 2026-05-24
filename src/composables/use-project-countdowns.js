@@ -5,15 +5,20 @@
 
 import { PROJECTS } from '@data/projects';
 import NowProjectWorker from '@workers/now-project.worker.js?worker';
-import { onBeforeUnmount, onMounted, reactive } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 /**
  * Reactive countdown map for the given project keys.
  * Backed by a Web Worker that ticks at 1Hz and pauses on `visibilitychange`.
- * @returns {Record<string, {label: string, countdown: string|null, utc_ts: number}>}
+ *
+ * Returns a Ref so each 1Hz tick is one atomic reactivity notification instead
+ * of one-per-mutated-key from in-place Object.assign on a reactive proxy. Stale
+ * keys also vanish automatically when the worker payload shape narrows. Consumers
+ * use `countdowns.value[key]` in JS and `countdowns.<key>` in templates (auto-unwrap).
+ * @returns {import('vue').Ref<Record<string, {label: string, countdown: string|null, utc_ts: number}>>}
  */
 export const useProjectCountdowns = (keys) => {
-  const countdowns = reactive({});
+  const countdowns = ref({});
 
   let worker = null;
   let visibility_handler = null;
@@ -22,7 +27,7 @@ export const useProjectCountdowns = (keys) => {
   onMounted(() => {
     worker = new NowProjectWorker();
     message_handler = (event) => {
-      Object.assign(countdowns, event.data);
+      countdowns.value = event.data;
     };
     worker.addEventListener('message', message_handler);
     worker.postMessage({ projects: PROJECTS, keys });

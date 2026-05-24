@@ -65,6 +65,10 @@ const heading_tag = computed(() => `h${props.level}`);
     color: var(--clr-neutral-50);
     margin: 0;
     max-width: 60ch;
+
+    @include min-media-query(md) {
+      max-width: 90ch;
+    }
   }
 }
 </style>

@@ -54,10 +54,10 @@ $colors: (
     500: oklch(29%   0.1117 264.9),
   ),
   neutral: (
-    50:  oklch(70.8% 0     0),        /* normal foreground — body text */
-    100: oklch(98.5% 0     0),        /* accent foreground — headings / emphasis */
-    200: oklch(70.5% 0.015 286.375),  /* zinc-400 — secondary text (subtle cool cast) */
-    300: oklch(55.2% 0.016 285.938),  /* zinc-500 — muted text; verify WCAG 4.5:1 on neutral-500 bg */
+    50:  oklch(76%   0     0),        /* normal foreground — body text — bumped from L=70.8% (~4.7:1, AA-marginal) to L=76% (~5.8:1) for a comfortable AA margin */
+    100: oklch(98.5% 0     0),        /* accent foreground — headings / emphasis (AAA on neutral-500) */
+    200: oklch(78%   0.014 286.375),  /* secondary text (subtle cool cast) — bumped from L=70.5% so it stays visually distinct from the now-bumped 300 (~6.0:1 AA pass) */
+    300: oklch(70%   0.016 285.938),  /* muted text — bumped from L=55.2% (Tailwind zinc-500) which failed WCAG AA (~3.2:1). New value ~4.9:1 on neutral-500 */
     400: oklch(37%   0.013 285.805),  /* zinc-700 — dark surfaces / card backgrounds */
     500: oklch(14.5% 0     0),        /* page background */
     900: oklch(0%    0     0),        /* pure black — modal / image-viewer overlays */

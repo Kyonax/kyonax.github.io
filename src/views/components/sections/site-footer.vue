@@ -42,7 +42,8 @@ onMounted(() => {
   try {
     resolved_tz.value = Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
   } catch { /* Intl unavailable in some embedded WebViews */ }
-  viewport.value = { w: window.innerWidth, h: window.innerHeight };
+  /* rAF-defer the initial viewport read — sync innerWidth/Height during hydration forces a layout pass (~143ms). */
+  onResize();
   window.addEventListener('resize', onResize, { passive: true });
 });
 
@@ -211,11 +212,15 @@ useInViewport(footer_ref);
     max-width: 1280px;
     margin: 0 auto;
     display: grid;
-    
     grid-template-columns: 1fr 1fr;
     gap: 5rem 1.25rem;
 
     & > :first-child { grid-column: 1 / -1; }
+
+    @include max-media-query(md) {
+      grid-template-columns: 1fr;
+      row-gap: 3rem;
+    }
 
     @include min-media-query(md) {
       gap: 5rem 3rem;
@@ -301,7 +306,6 @@ useInViewport(footer_ref);
     gap: 0.4rem 1.25rem;
     font-family: "SpaceMono", monospace;
     font-size: var(--fs-100);
-    opacity: 0.55;
   }
 
   &__manifest-row {
@@ -351,6 +355,12 @@ useInViewport(footer_ref);
     width: 100%;
   }
 
+  &__socials {
+    @include max-media-query(md) {
+      text-align: right;
+    }
+  }
+
   &__socials-list {
     list-style: none;
     margin: 0;
@@ -358,6 +368,10 @@ useInViewport(footer_ref);
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+
+    @include max-media-query(md) {
+      justify-content: flex-end;
+    }
   }
 
   &__social {

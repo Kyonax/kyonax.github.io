@@ -2,9 +2,6 @@
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
- *
- * Vimeo widget is hidden via FEATURES.vimeo.enabled (defaults to false in
- * src/config/features.js — flip to true when a new video is ready).
  */
 
 import CookieConsent from '@components/cookie-consent.vue';
@@ -16,7 +13,7 @@ import SiteFooter from '@sections/site-footer.vue';
 import SkillsSection from '@sections/skills.vue';
 import IconSprite from '@ui/icon-sprite.vue';
 import HudNav from '@widgets/hud-nav.vue';
-import { defineAsyncComponent } from 'vue';
+import { defineAsyncComponent, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 /* Below-fold sections code-split into their own chunks. <Suspense> wraps
@@ -28,9 +25,20 @@ import { useI18n } from 'vue-i18n';
 const NowProjectsSection = defineAsyncComponent(() => import('@sections/now-projects-section.vue'));
 const FaqSection = defineAsyncComponent(() => import('@sections/faq.vue'));
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 useSeoHead();
 useStructuredData();
+
+/* WCAG 3.1.1 — keep <html lang> in sync with the active i18n locale across
+   every locale-change path: user toggle, direct /es/ URL hit, browser back/
+   forward, and SSR hydration. vite-ssg emits the correct lang per prerendered
+   route, but CSR navigation between EN↔ES would leave the live DOM attribute
+   stale; this watch fixes that without coupling to the toggle component. */
+watch(locale, (next) => {
+  if (typeof document !== 'undefined' && next) {
+    document.documentElement.lang = next;
+  }
+}, { immediate: true });
 </script>
 
 <template>

@@ -131,7 +131,7 @@ const GLYPH_CLOSE = '\uF00D';
         :class="[`ui-modal__dialog--${size}`, { 'ui-modal__dialog--chromeless': chromeless }]"
         role="dialog"
         aria-modal="true"
-        :aria-label="ariaLabel || title"
+        :aria-label="ariaLabel || title || undefined"
         tabindex="-1"
         @keydown="onDialogKeydown"
       >
