@@ -42,12 +42,15 @@ export const RAW_HTML_KEYS = new Set([
   'kyo-web.landing.hero.summary',
   'kyo-web.landing.footer.signoff',
 
-  'kyo-web.landing.faq.items.location.answer',
-  'kyo-web.landing.faq.items.availability.answer',
-  'kyo-web.landing.faq.items.work.answer',
-  'kyo-web.landing.faq.items.current-role.answer',
-  'kyo-web.landing.faq.items.different.answer',
+  'kyo-web.landing.faq.items.what-i-do.answer',
+  'kyo-web.landing.faq.items.hire-me.answer',
+  'kyo-web.landing.faq.items.technologies.answer',
+  'kyo-web.landing.faq.items.projects-companies.answer',
+  'kyo-web.landing.faq.items.hiring-criteria.answer',
   'kyo-web.landing.faq.items.contact.answer',
+  'kyo-web.landing.faq.items.latam.answer',
+  'kyo-web.landing.faq.items.frontend-vs-fullstack.answer',
+  'kyo-web.landing.faq.items.performance-seo.answer',
 ]);
 
 export default RAW_HTML_KEYS;

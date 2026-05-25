@@ -98,7 +98,7 @@ useInViewport(section_ref);
     id="hero"
     ref="section_ref"
     class="hero"
-    :aria-label="t('kyo-web.landing.hero.tag')"
+    :aria-label="t('kyo-web.landing.hero.section-aria')"
   >
     <UiHudDeco variant="tr" text="// HANDSHAKE :: VERIFIED" />
     <UiHudDeco variant="bl" text="// VECTOR :: KYO-001" />
@@ -139,9 +139,9 @@ useInViewport(section_ref);
           <span class="hero__alias">A.K.A. KYONAX<sup lang="ja">京</sup></span>
         </h1>
 
-        <p class="hero__role">
+        <h2 class="hero__role">
           {{ t('kyo-web.landing.hero.role-value') }}
-        </p>
+        </h2>
 
         <p class="hero__summary" v-html="t('kyo-web.landing.hero.summary')" />
 

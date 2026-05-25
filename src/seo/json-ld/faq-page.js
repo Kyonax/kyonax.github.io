@@ -14,7 +14,7 @@ import { TRANSLATIONS } from '@data/snippets';
 import { faqPageId, faqQuestionId, today,WEBSITE_ID } from './identifiers';
 import { stripHtml } from './sanitize';
 
-const ITEM_IDS = ['location', 'availability', 'work', 'current-role', 'different', 'contact'];
+const ITEM_IDS = ['what-i-do', 'hire-me', 'technologies', 'projects-companies', 'hiring-criteria', 'contact', 'latam', 'frontend-vs-fullstack', 'performance-seo'];
 
 const BUILD_DATE = today();
 

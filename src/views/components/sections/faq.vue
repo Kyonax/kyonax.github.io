@@ -13,7 +13,7 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const ITEM_IDS = ['location', 'availability', 'work', 'current-role', 'different', 'contact'];
+const ITEM_IDS = ['what-i-do', 'hire-me', 'technologies', 'projects-companies', 'hiring-criteria', 'contact', 'latam', 'frontend-vs-fullstack', 'performance-seo'];
 
 const active_id = ref(null);
 

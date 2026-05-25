@@ -265,8 +265,8 @@ const _has_modal_description = (key) => te(_modal_description_key(key));
 const buildNowCard = (key) => {
   const project = PROJECTS[key];
   const cd = countdowns.value[key];
-  const ended = cd && !cd.countdown;
   const status_id = project.status || DEFAULT_NOW_STATUS;
+  const ended = cd && !cd.countdown && status_id !== 'WORKING_ON';
   const next = _next_future_deadline(project);
   const deadline_ms = cd?.utc_ts ?? next?.ms ?? null;
   const started_str  = project.started || '';
@@ -347,6 +347,10 @@ const main_cards = computed(() => {
   return now_keys
     .map(buildNowCard)
     .sort((a, b) => {
+      /* Cards with a started date (WORKING_ON) always pin to the top. */
+      if (a.is_working_on !== b.is_working_on) {
+        return a.is_working_on ? -1 : 1;
+      }
       /* Ended (no future deadline) sinks to the bottom regardless of status priority. */
       if (a.ended !== b.ended) {
         return a.ended ? 1 : -1;
@@ -553,6 +557,12 @@ useInViewport(section_ref);
           </div>
 
           <p class="now-projects-section__milestone">// {{ card.label.toUpperCase() }}</p>
+          <p
+            v-if="_has_modal_description(card.key)"
+            class="sr-only"
+            aria-hidden="true"
+            v-html="t(_modal_description_key(card.key))"
+          />
           <div v-if="card.is_working_on" class="now-projects-section__countdown">
             <div class="now-projects-section__countdown-head">
               <span class="now-projects-section__countdown-label">

@@ -185,6 +185,11 @@ useInViewport(section_ref);
             class="experience-section__description kyo-prose"
             v-html="t(`kyo-web.content-data.experience.${entry.id}.description`)"
           />
+          <div
+            class="sr-only"
+            aria-hidden="true"
+            v-html="t(`kyo-web.content-data.experience.${entry.id}.bullets`)"
+          />
           <span class="experience-section__view-more" aria-hidden="true">
             {{ t('kyo-web.landing.experience.read-more') }}
             <span class="experience-section__view-more-glyph">›</span>
@@ -417,6 +422,11 @@ useInViewport(section_ref);
     line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+
+    @include min-media-query(md) {
+      -webkit-line-clamp: 6;
+      line-clamp: 6;
+    }
   }
 
   &__view-more {

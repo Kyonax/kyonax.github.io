@@ -13,9 +13,9 @@ const { t } = useI18n();
 
 const NAV_LINKS = [
   { id: 'hero',       key: 'kyo-web.landing.nav.hero' },
-  { id: 'skills',     key: 'kyo-web.landing.nav.skills' },
   { id: 'experience', key: 'kyo-web.landing.nav.experience' },
   { id: 'projects',   key: 'kyo-web.landing.nav.projects' },
+  { id: 'skills',     key: 'kyo-web.landing.nav.skills' },
   { id: 'faq',        key: 'kyo-web.landing.nav.faq' },
   { id: 'contact',    key: 'kyo-web.landing.nav.contact' },
 ];

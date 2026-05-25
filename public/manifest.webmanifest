@@ -1,0 +1,18 @@
+{
+  "name": "Cristian D. Moreno",
+  "short_name": "Kyonax",
+  "description": "Senior Full-Stack & Frontend Engineer, Remote from Colombia",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#000000",
+  "theme_color": "#f9cd26",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
