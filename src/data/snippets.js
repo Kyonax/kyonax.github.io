@@ -228,7 +228,7 @@ export const TRANSLATIONS = {
             },
             'hire-me': {
               'question': 'Can I hire you for a remote web development project?',
-              'answer': 'Yes. Smaller projects can run alongside my current role. A larger engagement, long-term contract, or full-time position would require a transition first, and I am open to that for the right fit. I work on a project, contract, or staff augmentation basis. Email <a href="mailto:work@kyonax.com"><strong>work&#64;kyonax.com</strong></a> with your scope and timeline and I will reply within 24 hours on weekdays.',
+              'answer': 'Yes. Smaller projects can run alongside my current role. A larger engagement, long-term contract, or full-time position would require a transition first, and I am open to that for the right fit. I work on a project, contract, or staff augmentation basis. Email <a href="mailto:work&#64;kyonax.com"><strong>work&#64;kyonax.com</strong></a> with your scope and timeline and I will reply within 24 hours on weekdays.',
             },
             'technologies': {
               'question': 'What technologies do you use in your full-stack development work?',
@@ -244,19 +244,19 @@ export const TRANSLATIONS = {
             },
             'contact': {
               'question': 'How can I reach you to start a development project?',
-              'answer': 'Email <a href="mailto:work@kyonax.com"><strong>work&#64;kyonax.com</strong></a> to reach me, <strong>Cristian</strong>, directly. I reply within 24 hours on weekdays. My timezone is <strong>UTC-5</strong> (Colombia Standard Time), with full overlap across US Eastern and Central hours. For a useful first reply, tell me what you want to build or improve, your target timeline, and whether you are looking for a project, a contract, or a full-time position. I also respond on <a href="https://www.linkedin.com/in/kyonax/" target="_blank" rel="noopener"><strong>LinkedIn</strong></a> if you prefer that channel.',
+              'answer': 'Email <a href="mailto:work&#64;kyonax.com"><strong>work&#64;kyonax.com</strong></a> to reach me, <strong>Cristian</strong>, directly. I reply within 24 hours on weekdays. My timezone is <strong>UTC-5</strong> (Colombia Standard Time), with full overlap across US Eastern and Central hours. For a useful first reply, tell me what you want to build or improve, your target timeline, and whether you are looking for a project, a contract, or a full-time position. I also respond on <a href="https://www.linkedin.com/in/kyonax/" target="_blank" rel="noopener"><strong>LinkedIn</strong></a> if you prefer that channel.',
             },
             'latam': {
               'question': 'Do you take on projects from clients in Mexico, Argentina, and across Latin America?',
-              'answer': 'Absolutely. I am based in <strong>Colombia</strong> at <strong>UTC-5</strong>, which aligns fully with US Eastern and Central hours and works well for teams across Mexico, Argentina, and Latin America. I work in English and Spanish with no timezone friction. Clients from across the region are welcome on a project or contract basis. Reach out at <a href="mailto:work@kyonax.com"><strong>work&#64;kyonax.com</strong></a> with your scope and timeline.',
+              'answer': 'Absolutely. I am based in <strong>Colombia</strong> at <strong>UTC-5</strong>, which aligns fully with US Eastern and Central hours and works well for teams across Mexico, Argentina, and Latin America. I work in English and Spanish with no timezone friction. Clients from across the region are welcome on a project or contract basis. Reach out at <a href="mailto:work&#64;kyonax.com"><strong>work&#64;kyonax.com</strong></a> with your scope and timeline.',
             },
             'frontend-vs-fullstack': {
               'question': 'You work as both a Frontend and Full-Stack Engineer. What is the actual difference in practice?',
-              'answer': "Frontend is the interface people see and use. Full-stack adds the server, the database, and everything connecting them. The distinction matters mostly for scope and cost. If your product needs the interface improved, frontend is the right fit. If it needs new features or backend systems built, full-stack covers the complete delivery. I work across both.",
+              'answer': 'Frontend is the interface people see and use. Full-stack adds the server, the database, and everything connecting them. The distinction matters mostly for scope and cost. If your product needs the interface improved, frontend is the right fit. If it needs new features or backend systems built, full-stack covers the complete delivery. I work across both.',
             },
             'performance-seo': {
               'question': 'Do you offer web performance optimization or technical SEO services?',
-              'answer': 'Yes. A slow site loses visitors before they act, and poor search visibility means fewer reach it to begin with. I audit both, identify what is actually hurting your numbers, and fix it. Work covers page speed, image optimization, search engine structured data, and multilingual site setup. Available as a standalone engagement or as part of a broader project. Contact me at <a href="mailto:work@kyonax.com"><strong>work&#64;kyonax.com</strong></a> with your site URL and goals.',
+              'answer': 'Yes. A slow site loses visitors before they act, and poor search visibility means fewer reach it to begin with. I audit both, identify what is actually hurting your numbers, and fix it. Work covers page speed, image optimization, search engine structured data, and multilingual site setup. Available as a standalone engagement or as part of a broader project. Contact me at <a href="mailto:work&#64;kyonax.com"><strong>work&#64;kyonax.com</strong></a> with your site URL and goals.',
             },
           },
         },
@@ -493,7 +493,7 @@ export const TRANSLATIONS = {
             },
             'hire-me': {
               'question': '¿Puedo contratarte para un proyecto de desarrollo web remoto?',
-              'answer': 'Sí. Proyectos más pequeños pueden correr junto a mi rol actual. Un compromiso más grande, contrato de largo plazo o posición full-time requeriría una transición primero, y estoy abierto a eso para el encaje correcto. Trabajo en modalidad de proyecto, contrato o staff augmentation. Escribe a <a href="mailto:work@kyonax.com"><strong>work&#64;kyonax.com</strong></a> con tu alcance y plazo y te respondo en 24 horas en días hábiles.',
+              'answer': 'Sí. Proyectos más pequeños pueden correr junto a mi rol actual. Un compromiso más grande, contrato de largo plazo o posición full-time requeriría una transición primero, y estoy abierto a eso para el encaje correcto. Trabajo en modalidad de proyecto, contrato o staff augmentation. Escribe a <a href="mailto:work&#64;kyonax.com"><strong>work&#64;kyonax.com</strong></a> con tu alcance y plazo y te respondo en 24 horas en días hábiles.',
             },
             'technologies': {
               'question': '¿Qué tecnologías usás en tu trabajo como desarrollador Full-Stack?',
@@ -509,19 +509,19 @@ export const TRANSLATIONS = {
             },
             'contact': {
               'question': '¿Cómo puedo contactarte para iniciar un proyecto de desarrollo?',
-              'answer': 'Escribe a <a href="mailto:work@kyonax.com"><strong>work&#64;kyonax.com</strong></a> para contactarme a mí, <strong>Cristian</strong>, directamente. Respondo cada mensaje en 24 horas en días hábiles. Mi zona horaria es <strong>UTC-5</strong> (hora estándar de Colombia), con superposición completa con US Eastern y Central. Para una primera respuesta útil, cuéntame qué quieres construir o mejorar, tu plazo aproximado, y si buscas un proyecto, contrato o posición full-time. También respondo por <a href="https://www.linkedin.com/in/kyonax/" target="_blank" rel="noopener"><strong>LinkedIn</strong></a> si prefieres ese canal.',
+              'answer': 'Escribe a <a href="mailto:work&#64;kyonax.com"><strong>work&#64;kyonax.com</strong></a> para contactarme a mí, <strong>Cristian</strong>, directamente. Respondo cada mensaje en 24 horas en días hábiles. Mi zona horaria es <strong>UTC-5</strong> (hora estándar de Colombia), con superposición completa con US Eastern y Central. Para una primera respuesta útil, cuéntame qué quieres construir o mejorar, tu plazo aproximado, y si buscas un proyecto, contrato o posición full-time. También respondo por <a href="https://www.linkedin.com/in/kyonax/" target="_blank" rel="noopener"><strong>LinkedIn</strong></a> si prefieres ese canal.',
             },
             'latam': {
               'question': '¿Trabajás con clientes en México, Argentina y toda Latinoamérica?',
-              'answer': 'Claro. Estoy en <strong>Colombia</strong> a <strong>UTC-5</strong>, lo que se alinea completamente con los horarios de US Eastern y Central y funciona bien para equipos en México, Argentina y Latinoamérica. Trabajo en español e inglés, sin fricción de huso horario. Clientes de toda la región son bienvenidos en modalidad de proyecto o contrato. Escríbeme a <a href="mailto:work@kyonax.com"><strong>work&#64;kyonax.com</strong></a> con tu alcance y plazo.',
+              'answer': 'Claro. Estoy en <strong>Colombia</strong> a <strong>UTC-5</strong>, lo que se alinea completamente con los horarios de US Eastern y Central y funciona bien para equipos en México, Argentina y Latinoamérica. Trabajo en español e inglés, sin fricción de huso horario. Clientes de toda la región son bienvenidos en modalidad de proyecto o contrato. Escríbeme a <a href="mailto:work&#64;kyonax.com"><strong>work&#64;kyonax.com</strong></a> con tu alcance y plazo.',
             },
             'frontend-vs-fullstack': {
               'question': 'Trabajás como Frontend y Full-Stack Engineer. ¿Cuál es la diferencia en la práctica?',
-              'answer': "Frontend es la interfaz que la gente ve y usa. Full-stack agrega el servidor, la base de datos y todo lo que los conecta. La distinción importa principalmente para el alcance y el costo. Si tu producto necesita mejorar la interfaz, frontend es la opción correcta. Si necesita nuevas funcionalidades o sistemas backend, full-stack cubre la entrega completa. Cubro los dos.",
+              'answer': 'Frontend es la interfaz que la gente ve y usa. Full-stack agrega el servidor, la base de datos y todo lo que los conecta. La distinción importa principalmente para el alcance y el costo. Si tu producto necesita mejorar la interfaz, frontend es la opción correcta. Si necesita nuevas funcionalidades o sistemas backend, full-stack cubre la entrega completa. Cubro los dos.',
             },
             'performance-seo': {
               'question': '¿Ofrecés servicios de optimización de rendimiento web o SEO técnico?',
-              'answer': 'Sí. Un sitio lento pierde visitantes antes de que actúen, y una visibilidad de búsqueda deficiente significa que menos personas lo encuentran. Audito ambos, identifico qué está afectando realmente los números y lo corrijo. El trabajo cubre velocidad de página, optimización de imágenes, datos estructurados para motores de búsqueda, y configuración de sitios multilingüe. Disponible como compromiso independiente o como parte de un proyecto más amplio. Contáctame en <a href="mailto:work@kyonax.com"><strong>work&#64;kyonax.com</strong></a> con la URL de tu sitio y tus objetivos.',
+              'answer': 'Sí. Un sitio lento pierde visitantes antes de que actúen, y una visibilidad de búsqueda deficiente significa que menos personas lo encuentran. Audito ambos, identifico qué está afectando realmente los números y lo corrijo. El trabajo cubre velocidad de página, optimización de imágenes, datos estructurados para motores de búsqueda, y configuración de sitios multilingüe. Disponible como compromiso independiente o como parte de un proyecto más amplio. Contáctame en <a href="mailto:work&#64;kyonax.com"><strong>work&#64;kyonax.com</strong></a> con la URL de tu sitio y tus objetivos.',
             },
           },
         },
