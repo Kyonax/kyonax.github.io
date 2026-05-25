@@ -794,18 +794,18 @@ useInViewport(section_ref);
           </div>
         </div>
 
-        <h2 class="project-modal__section-title">
+        <p class="project-modal__section-title">
           {{ t('kyo-web.landing.projects.description-label') }}
-        </h2>
+        </p>
         <p
           v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
           class="project-modal__description kyo-prose"
           v-html="t(`kyo-web.content-data.projects.${active_card.key}.description`)"
         />
 
-        <h2 v-if="active_card.stack.length" class="project-modal__section-title">
+        <p v-if="active_card.stack.length" class="project-modal__section-title">
           {{ t('kyo-web.landing.projects.stack-label') }}
-        </h2>
+        </p>
         <ul v-if="active_card.stack.length" class="project-modal__stack" role="list">
           <li
             v-for="tech in active_card.stack"

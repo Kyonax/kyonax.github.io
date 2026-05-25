@@ -419,3 +419,34 @@
 
   @include cyberpunk-glow($color, $blur, $spread, true, $speed);
 }
+
+/* Cursor-following tooltip — rendered via <Teleport to="body"> in components
+   that use useCursorTooltip(). Must live here (global, not scoped) because
+   the element is injected outside the component tree.
+   Position is set inline by the composable (clientX/Y); CSS adds the offset
+   via transform so the JS tracking stays coordinate-clean. */
+.kyo-cursor-tooltip {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  background: var(--clr-neutral-500);
+  color: var(--clr-neutral-100);
+  border: 1px solid var(--clr-border-100);
+  font-family: "SpaceMono", monospace;
+  font-size: var(--fs-100);
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.65rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  transform: translate(10px, 16px);
+}
+
+.kyo-ct-enter-active,
+.kyo-ct-leave-active {
+  transition: opacity 0.12s ease;
+}
+
+.kyo-ct-enter-from,
+.kyo-ct-leave-to {
+  opacity: 0;
+}

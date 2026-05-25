@@ -8,6 +8,7 @@ import cv_en_url from '@assets/cv/cv_cristian_d_moreno_en.pdf?url';
 import cv_es_url from '@assets/cv/cv_cristian_d_moreno_es.pdf?url';
 import useInViewport from '@composables/use-in-viewport';
 import useObfuscatedEmail from '@composables/use-obfuscated-email';
+import useCursorTooltip from '@composables/use-cursor-tooltip';
 import { TECHNOLOGIES } from '@data/data';
 import { PROJECTS } from '@data/projects';
 import HeroVisual from '@sections/hero-visual.vue';
@@ -16,7 +17,7 @@ import UiHudDeco from '@ui/hud-deco.vue';
 import UiLink from '@ui/link.vue';
 import ModalLoading from '@ui/modal-loading.vue';
 import UiStateGrid from '@ui/state-grid.vue';
-import { computed, defineAsyncComponent, onBeforeUnmount,onMounted, ref } from 'vue';
+import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 /* UiImageViewer (modal + image-viewer chunk) loads on first portrait open.
@@ -45,6 +46,17 @@ const active_projects = computed(
 const stack_count = computed(() => TECHNOLOGIES.length);
 
 const years_suffix = computed(() => locale.value === 'es' ? 'AÑOS' : 'YEARS');
+
+const ccs_tag_ref = ref(null);
+const { visible: ccs_tooltip_visible, x: ccs_x, y: ccs_y } = useCursorTooltip(ccs_tag_ref);
+
+const orcid_ref = ref(null);
+const { visible: orcid_tooltip_visible, x: orcid_x, y: orcid_y } = useCursorTooltip(orcid_ref);
+
+const summary_ref = ref(null);
+const { visible: zeronet_tooltip_visible, x: zeronet_x, y: zeronet_y } = useCursorTooltip(
+  () => summary_ref.value?.querySelector('a[href*="zeronet-labs"], a[href*="kyonax"]') ?? null,
+);
 
 const portrait_viewer_open = ref(false);
 const open_portrait_viewer  = () => {
@@ -114,6 +126,7 @@ useInViewport(section_ref);
       <div class="hero__content">
         <div class="hero__tag-row">
           <a
+            ref="ccs_tag_ref"
             class="hero__tag"
             href="https://github.com/ccs-devhub"
             target="_blank"
@@ -123,7 +136,19 @@ useInViewport(section_ref);
             <UiStateGrid />
             <span v-html="t('kyo-web.landing.hero.tag')" />
           </a>
+          <Teleport to="body">
+            <Transition name="kyo-ct">
+              <div
+                v-if="ccs_tooltip_visible"
+                class="kyo-cursor-tooltip"
+                :style="{ left: ccs_x + 'px', top: ccs_y + 'px' }"
+              >
+                {{ t('kyo-web.landing.hero.tooltip.ccs') }}
+              </div>
+            </Transition>
+          </Teleport>
           <a
+            ref="orcid_ref"
             class="hero__orcid"
             href="https://orcid.org/0009-0006-4459-5538"
             target="_blank"
@@ -133,6 +158,17 @@ useInViewport(section_ref);
             <BrandIcon class="hero__orcid-icon" name="orcid" aria-hidden="true" />
             <span class="hero__orcid-label">ORCID</span>
           </a>
+          <Teleport to="body">
+            <Transition name="kyo-ct">
+              <div
+                v-if="orcid_tooltip_visible"
+                class="kyo-cursor-tooltip"
+                :style="{ left: orcid_x + 'px', top: orcid_y + 'px' }"
+              >
+                {{ t('kyo-web.landing.hero.tooltip.orcid') }}
+              </div>
+            </Transition>
+          </Teleport>
         </div>
 
         <h1 class="hero__title">
@@ -144,7 +180,18 @@ useInViewport(section_ref);
           {{ t('kyo-web.landing.hero.role-value') }}
         </h2>
 
-        <p class="hero__summary" v-html="t('kyo-web.landing.hero.summary')" />
+        <p ref="summary_ref" class="hero__summary" v-html="t('kyo-web.landing.hero.summary')" />
+        <Teleport to="body">
+          <Transition name="kyo-ct">
+            <div
+              v-if="zeronet_tooltip_visible"
+              class="kyo-cursor-tooltip"
+              :style="{ left: zeronet_x + 'px', top: zeronet_y + 'px' }"
+            >
+              {{ t('kyo-web.landing.hero.tooltip.zeronet') }}
+            </div>
+          </Transition>
+        </Teleport>
 
         <dl class="hero__stats">
           <div class="hero__stat">
@@ -337,12 +384,20 @@ useInViewport(section_ref);
 
   &__title {
     font-family: "Geomanist", sans-serif;
-    font-size: var(--fs-800);
+    font-size: 4.5rem;
     font-weight: 700;
     line-height: 1;
     margin: 0 0 1rem;
     letter-spacing: -0.01em;
     color: var(--clr-neutral-100);
+
+    @include min-media-query(sm) {
+      font-size: 5rem;
+    }
+
+    @include min-media-query(lg) {
+      font-size: var(--fs-800);
+    }
   }
 
   &__name { display: block; }
@@ -443,11 +498,11 @@ useInViewport(section_ref);
       text-decoration: underline;
       text-decoration-thickness: 1px;
       text-underline-offset: 0.2em;
-      transition: opacity 0.2s ease;
+      transition: color 0.2s ease;
 
       &:hover,
       &:focus-visible {
-        opacity: 0.75;
+        color: var(--clr-primary-100);
       }
     }
   }
