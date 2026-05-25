@@ -63,7 +63,7 @@ useInViewport(section_ref);
             :aria-expanded="String(active_id === id)"
             :aria-controls="`faq-answer-${id}`"
             @click="toggle(id)"
-            @keydown.escape="if (active_id === id) toggle(id)"
+            @keydown.escape="active_id === id && toggle(id)"
           >
             <span class="faq__num kyo-chip" :data-text="String(i + 1).padStart(2, '0')" aria-hidden="true" />
             <span class="faq__question">{{ t(`kyo-web.landing.faq.items.${id}.question`) }}</span>
