@@ -203,7 +203,7 @@ onMounted(() => {
     background: transparent;
     color: var(--clr-neutral-100);
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    transition: background 0.15s ease;
 
     &--primary {
       background: var(--clr-primary-100);

@@ -10,7 +10,6 @@ import useStructuredData from '@composables/use-structured-data';
 import ExperienceSection from '@sections/experience.vue';
 import HeroSection from '@sections/hero.vue';
 import SiteFooter from '@sections/site-footer.vue';
-import SkillsSection from '@sections/skills.vue';
 import IconSprite from '@ui/icon-sprite.vue';
 import HudNav from '@widgets/hud-nav.vue';
 import { defineAsyncComponent, watch } from 'vue';
@@ -23,7 +22,8 @@ import { useI18n } from 'vue-i18n';
    automatically. Fallback is an empty <section> with the same anchor
    ID + min-height so layout doesn't shift while the chunk arrives. */
 const NowProjectsSection = defineAsyncComponent(() => import('@sections/now-projects-section.vue'));
-const FaqSection = defineAsyncComponent(() => import('@sections/faq.vue'));
+const SkillsSection     = defineAsyncComponent(() => import('@sections/skills.vue'));
+const FaqSection        = defineAsyncComponent(() => import('@sections/faq.vue'));
 
 const { t, locale } = useI18n();
 useSeoHead();
@@ -57,7 +57,12 @@ watch(locale, (next) => {
         <div id="projects" class="landing__lazy-fallback" aria-hidden="true" />
       </template>
     </Suspense>
-    <SkillsSection />
+    <Suspense>
+      <SkillsSection />
+      <template #fallback>
+        <div id="skills" class="landing__lazy-fallback" aria-hidden="true" />
+      </template>
+    </Suspense>
     <Suspense>
       <FaqSection />
       <template #fallback>

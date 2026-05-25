@@ -8,7 +8,7 @@ import useInViewport from '@composables/use-in-viewport';
 import { vProseLinks } from '@composables/use-prose-links';
 import UiHudDeco from '@ui/hud-deco.vue';
 import UiSectionHeader from '@ui/section-header.vue';
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -18,7 +18,11 @@ const ITEM_IDS = ['what-i-do', 'hire-me', 'technologies', 'projects-companies', 
 const active_id = ref(null);
 
 const toggle = (id) => {
-  active_id.value = active_id.value === id ? null : id;
+  const closing = active_id.value === id;
+  active_id.value = closing ? null : id;
+  if (closing) {
+    nextTick(() => document.querySelector(`#faq-question-${id}`)?.focus());
+  }
 };
 
 const GLYPH_CHEVRON = '\uF054';
@@ -56,9 +60,10 @@ useInViewport(section_ref);
             :id="`faq-question-${id}`"
             type="button"
             class="faq__summary"
-            :aria-expanded="active_id === id"
+            :aria-expanded="String(active_id === id)"
             :aria-controls="`faq-answer-${id}`"
             @click="toggle(id)"
+            @keydown.escape="active_id === id && toggle(id)"
           >
             <span class="faq__num kyo-chip" :data-text="String(i + 1).padStart(2, '0')" aria-hidden="true" />
             <span class="faq__question">{{ t(`kyo-web.landing.faq.items.${id}.question`) }}</span>
@@ -115,8 +120,6 @@ useInViewport(section_ref);
     background: color-mix(in srgb, var(--clr-neutral-500) 75%, transparent);
     isolation: isolate;
     contain: layout paint;
-    transition: border-color 0.25s ease;
-
     &:hover {
       border-color: color-mix(in srgb, var(--clr-primary-100) 35%, var(--clr-border-100));
     }

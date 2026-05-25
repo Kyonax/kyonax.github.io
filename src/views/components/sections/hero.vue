@@ -40,7 +40,7 @@ const cv_label = computed(() =>
 );
 
 const active_projects = computed(
-  () => Object.values(PROJECTS).filter((p) => !p.featured).length,
+  () => (PROJECTS ? Object.values(PROJECTS).filter((p) => !p.featured).length : 0),
 );
 const stack_count = computed(() => TECHNOLOGIES.length);
 
@@ -118,6 +118,7 @@ useInViewport(section_ref);
             href="https://github.com/ccs-devhub"
             target="_blank"
             rel="noopener noreferrer"
+            :aria-label="t('kyo-web.landing.hero.tag-aria')"
           >
             <UiStateGrid />
             <span v-html="t('kyo-web.landing.hero.tag')" />
@@ -129,7 +130,7 @@ useInViewport(section_ref);
             rel="noopener noreferrer"
             :aria-label="t('kyo-web.landing.hero.orcid-aria')"
           >
-            <BrandIcon class="hero__orcid-icon" name="orcid" />
+            <BrandIcon class="hero__orcid-icon" name="orcid" aria-hidden="true" />
             <span class="hero__orcid-label">ORCID</span>
           </a>
         </div>
@@ -442,11 +443,11 @@ useInViewport(section_ref);
       text-decoration: underline;
       text-decoration-thickness: 1px;
       text-underline-offset: 0.2em;
-      transition: color 0.2s ease;
+      transition: opacity 0.2s ease;
 
       &:hover,
       &:focus-visible {
-        color: var(--clr-primary-100);
+        opacity: 0.75;
       }
     }
   }
@@ -469,6 +470,7 @@ useInViewport(section_ref);
     padding: 0.75rem;
     display: grid;
     gap: 0.25rem;
+    contain: layout paint;
 
     dt {
       font-family: "SpaceMono", monospace;
@@ -562,7 +564,6 @@ useInViewport(section_ref);
     letter-spacing: 0.12em;
     color: var(--clr-neutral-200);
     text-decoration: none;
-    transition: color 0.2s ease;
     z-index: 2;
 
     @include max-media-query(md) {

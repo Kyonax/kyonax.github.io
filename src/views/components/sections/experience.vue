@@ -4,7 +4,6 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import useClickableCard from '@composables/use-clickable-card';
 import useInViewport from '@composables/use-in-viewport';
 import { vProseLinks } from '@composables/use-prose-links';
 import { warmModal } from '@composables/use-warm-modal';
@@ -14,7 +13,7 @@ import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
 import ModalLoading from '@ui/modal-loading.vue';
 import UiSectionHeader from '@ui/section-header.vue';
-import { computed, defineAsyncComponent, ref } from 'vue';
+import { computed, defineAsyncComponent, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 /* UiModal chunk loads on first card-open instead of shipping with the
@@ -116,15 +115,20 @@ const active_entry = computed(() =>
   active_id.value ? ENTRIES.find((e) => e.id === active_id.value) : null,
 );
 
+let _modal_trigger_el = null;
+
 const open_modal = (id) => {
+  _modal_trigger_el = document.activeElement;
   active_id.value = id;
 };
 
 const close_modal = () => {
   active_id.value = null;
+  nextTick(() => {
+    _modal_trigger_el?.focus();
+    _modal_trigger_el = null;
+  });
 };
-
-const { onKeydown: onCardKeydown } = useClickableCard(open_modal);
 
 const section_ref = ref(null);
 useInViewport(section_ref);
@@ -160,19 +164,20 @@ useInViewport(section_ref);
 
         <article
           class="experience-section__card element-flare"
+          :class="{ 'is-static': idx !== 0 }"
           :style="{ '--element-flare-delay': `${idx * 0.5}s` }"
-          role="button"
-          tabindex="0"
-          :aria-label="`${t(`kyo-web.content-data.experience.${entry.id}.role`)} — ${t('kyo-web.landing.experience.read-more')}`"
-          @click="open_modal(entry.id)"
-          @keydown="onCardKeydown($event, entry.id)"
-          @pointerenter="warmModal"
-          @focusin="warmModal"
         >
+          <button
+            class="experience-section__card-btn"
+            :aria-label="`${t(`kyo-web.content-data.experience.${entry.id}.role`)} — ${t('kyo-web.landing.experience.read-more')}`"
+            @click="open_modal(entry.id)"
+            @pointerenter="warmModal"
+            @focusin="warmModal"
+          />
           <header class="experience-section__card-header">
-            <h3 class="experience-section__role">
+            <h2 class="experience-section__role">
               {{ t(`kyo-web.content-data.experience.${entry.id}.role`) }}
-            </h3>
+            </h2>
             <p
               v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
               class="experience-section__specs"
@@ -201,25 +206,25 @@ useInViewport(section_ref);
     <UiModal
       v-if="active_entry"
       :is-open="true"
-      :title="t(`kyo-web.content-data.experience.${active_entry.id}.role`)"
-      :subtitle="t(`kyo-web.content-data.experience.${active_entry.id}.specs`)"
+      :title="active_entry ? t(`kyo-web.content-data.experience.${active_entry.id}.role`) : ''"
+      :subtitle="active_entry ? t(`kyo-web.content-data.experience.${active_entry.id}.specs`) : ''"
       subtitle-html
       :close-label="t('kyo-web.landing.modal.close')"
       size="lg"
       @close="close_modal"
     >
       <div class="experience-modal">
-        <h2 class="experience-modal__section-title">
+        <h3 class="experience-modal__section-title">
           {{ t('kyo-web.landing.modal.highlights') }}
-        </h2>
+        </h3>
         <ul
           v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
           class="experience-modal__bullets kyo-prose"
-          v-html="t(`kyo-web.content-data.experience.${active_entry.id}.bullets`)"
+          v-html="t(`kyo-web.content-data.experience.${active_entry?.id}.bullets`)"
         />
-        <h2 class="experience-modal__section-title">
+        <h3 class="experience-modal__section-title">
           {{ t('kyo-web.landing.experience.tools-label') }}
-        </h2>
+        </h3>
         <ul class="experience-modal__stack" role="list">
           <li
             v-for="chip in stack_chips_for(active_entry.id)"
@@ -320,13 +325,13 @@ useInViewport(section_ref);
     padding: 1.25rem;
     margin-bottom: 1.5rem;
     cursor: pointer;
-    transition: border-color 0.25s ease, transform 0.25s ease;
+    transition: transform 0.25s ease;
     isolation: isolate;
     --element-flare-spread: 2px;
     --element-flare-opacity: 0.04;
 
     &:hover,
-    &:focus-visible {
+    &:has(:focus-visible) {
       border-color: var(--clr-primary-100);
       background:
         linear-gradient(
@@ -337,6 +342,24 @@ useInViewport(section_ref);
       transform: translateX(4px);
       --element-flare-opacity: 0.16;
     }
+  }
+
+  &__card-btn {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    z-index: 1;
+    border-radius: inherit;
+
+    &:focus-visible {
+      outline: 2px solid var(--clr-primary-100);
+      outline-offset: 2px;
+    }
+  }
+
+  &__card {
 
     @include min-media-query(md) {
       padding: 1.5rem;
@@ -389,11 +412,10 @@ useInViewport(section_ref);
     margin: 0 0 0.4rem;
     letter-spacing: 0.02em;
     line-height: 1.2;
-    transition: color 0.25s ease;
   }
 
   &__card:hover &__role,
-  &__card:focus-visible &__role {
+  &__card:has(:focus-visible) &__role {
     color: var(--clr-primary-100);
   }
 
@@ -439,12 +461,17 @@ useInViewport(section_ref);
     text-transform: uppercase;
     color: var(--clr-primary-100);
     margin: 0 0 1rem;
-    transition: gap 0.2s ease;
     pointer-events: none;
+  }
+
+  &__card:hover &__view-more-glyph,
+  &__card:has(:focus-visible) &__view-more-glyph {
+    transform: translateX(4px);
   }
 
   &__view-more-glyph {
     font-size: 1.2em;
+    transition: transform 0.2s ease;
     line-height: 1;
     transform: translateY(-0.05em);
     transition: transform 0.2s ease;

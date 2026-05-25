@@ -107,7 +107,7 @@ const setItemRef = (el, idx) => {
       size="sm"
       class="language-toggle__button"
       :class="{ 'is-open': open }"
-      :aria-expanded="open"
+      :aria-expanded="String(open)"
       aria-haspopup="menu"
       aria-controls="language-toggle-menu"
       :aria-label="t('kyo-web.widget.trans-lang.button-aria')"
