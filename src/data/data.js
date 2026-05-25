@@ -8,7 +8,7 @@ export const SUPPORTED_LANGUAGES = ['en', 'es'];
 
 export const AUTHOR_INFO = {
   name:  'Cristian D. Moreno (Kyonax)',
-  email: 'support@kyonax.com',
+  email: 'work@kyonax.com',
   twitter: '@kyonax_on_tech',
   github:  'https://github.com/Kyonax',
   orcid:   'https://orcid.org/0009-0006-4459-5538',
@@ -18,9 +18,10 @@ export const AUTHOR_INFO = {
 export const SEO = {
   keywords: [
     'Cristian D. Moreno', 'Kyonax', 'KYO-T', 'kyonax_on_tech', '京',
-    'Frontend Engineer', 'Full Stack Developer', 'Vue 3', 'TypeScript',
+    'Frontend Engineer', 'Full Stack Developer', 'Full-Stack Engineer', 'Vue 3', 'TypeScript',
     'Web Performance', 'AgileEngine', 'Madison Reed', 'Zerønet Labs',
     'Bogotá Developer', 'Colombia Frontend', 'Senior Software Engineer',
+    'Remote Developer', 'LATAM Developer', 'Colombia Software Engineer', 'JavaScript Developer',
   ],
   ogImage:        '/og-banner.jpg',
   ogImageWidth:   1200,
