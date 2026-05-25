@@ -1,0 +1,59 @@
+[
+  {
+    "name": "main bundle (JS)",
+    "path": "dist/assets/app-*.js",
+    "limit": "160 KB",
+    "gzip": true
+  },
+  {
+    "name": "main bundle (CSS)",
+    "path": "dist/assets/app-*.css",
+    "limit": "12 KB",
+    "gzip": true
+  },
+  {
+    "name": "now-projects chunk (JS+CSS)",
+    "path": [
+      "dist/assets/now-projects-section-*.js",
+      "dist/assets/now-projects-section-*.css"
+    ],
+    "limit": "10 KB",
+    "gzip": true
+  },
+  {
+    "name": "modal chunk (JS+CSS)",
+    "path": [
+      "dist/assets/modal-*.js",
+      "dist/assets/modal-*.css"
+    ],
+    "limit": "4 KB",
+    "gzip": true
+  },
+  {
+    "name": "image-viewer chunk (JS+CSS)",
+    "path": [
+      "dist/assets/image-viewer-*.js",
+      "dist/assets/image-viewer-*.css"
+    ],
+    "limit": "3 KB",
+    "gzip": true
+  },
+  {
+    "name": "youtube-facade chunk (JS+CSS)",
+    "path": [
+      "dist/assets/youtube-facade-*.js",
+      "dist/assets/youtube-facade-*.css"
+    ],
+    "limit": "5 KB",
+    "gzip": true
+  },
+  {
+    "name": "faq chunk (JS+CSS)",
+    "path": [
+      "dist/assets/faq-*.js",
+      "dist/assets/faq-*.css"
+    ],
+    "limit": "3 KB",
+    "gzip": true
+  }
+]

@@ -907,6 +907,15 @@ useInViewport(section_ref);
         --element-flare-opacity: 0;
       }
     }
+
+    /* Ended cards adopt the same warning color as the ENDED state pill. */
+    &.is-ended {
+      --element-flare-color: var(--clr-warning-100);
+
+      &:hover, &:focus-visible {
+        border-color: var(--clr-warning-100);
+      }
+    }
   }
 
   &__card-header {

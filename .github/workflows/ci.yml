@@ -18,6 +18,8 @@
 #   Migration gates (precheck)
 #   Vitest
 #   Production build (vite-ssg)
+#   Size Limit (gzipped bundle budgets)
+#   Lighthouse CI (perf/a11y/best-practices/seo)
 #   Security Scan (inline grep, GitHub annotations)
 #   Protected Files (categorized PR comment, advisory only)
 #   Pre-Check Label (aggregator)
@@ -101,6 +103,79 @@ jobs:
           name: dist-${{ github.sha }}
           path: dist/
           retention-days: 7
+
+  size-limit:
+    name: Size Limit
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist/
+      - run: npm run check:size
+
+  lighthouse-ci:
+    name: Lighthouse CI
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist/
+      - name: Run Lighthouse CI
+        id: lhci
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        # `continue-on-error` lets the post-comment step run even when an
+        # assertion fails — the PR comment should ALWAYS post so reviewers
+        # see the score deltas. The job still reports failure via outcome.
+        continue-on-error: true
+        run: npm run check:lighthouse
+      - name: Post Lighthouse comment on PR
+        # Run on every PR event, even if the lhci step asserted-failed.
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO:      ${{ github.repository }}
+          MARKER:    '<!-- lighthouse-ci-comment -->'
+        run: |
+          BODY=$(node scripts/lighthouse-comment.mjs)
+          EXISTING_ID=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+            --paginate \
+            --jq "[.[] | select(.body | startswith(env.MARKER))][0].id // empty")
+          if [ -n "$EXISTING_ID" ]; then
+            echo "Updating existing Lighthouse comment #${EXISTING_ID}"
+            gh api -X PATCH "repos/${REPO}/issues/comments/${EXISTING_ID}" \
+              -f body="$BODY"
+          else
+            echo "Posting new Lighthouse comment on PR #${PR_NUMBER}"
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$BODY"
+          fi
+      - name: Fail job if Lighthouse assertions failed
+        # Restore the assertion failure as the job outcome AFTER the comment
+        # has been posted — `continue-on-error: true` on the lhci step hides
+        # the failure from the job; this step re-surfaces it.
+        if: always() && steps.lhci.outcome == 'failure'
+        run: |
+          echo "::error::Lighthouse CI assertions failed — see the PR comment for details"
+          exit 1
 
   security-scan:
     name: Security Scan
@@ -278,7 +353,7 @@ jobs:
   pre-check-label:
     name: Pre-Check Label
     runs-on: ubuntu-latest
-    needs: [eslint, precheck, tests, build, security-scan]
+    needs: [eslint, precheck, tests, build, size-limit, lighthouse-ci, security-scan]
     if: always() && github.event_name == 'pull_request'
     permissions:
       contents: read
@@ -294,6 +369,8 @@ jobs:
           PRECHECK_RESULT: ${{ needs.precheck.result }}
           TESTS_RESULT: ${{ needs.tests.result }}
           BUILD_RESULT: ${{ needs.build.result }}
+          SIZE_LIMIT_RESULT: ${{ needs.size-limit.result }}
+          LIGHTHOUSE_RESULT: ${{ needs.lighthouse-ci.result }}
           SECURITY_RESULT: ${{ needs.security-scan.result }}
         run: |
           echo "Gate outcomes:"
@@ -301,12 +378,16 @@ jobs:
           echo "  precheck      : $PRECHECK_RESULT"
           echo "  tests         : $TESTS_RESULT"
           echo "  build         : $BUILD_RESULT"
+          echo "  size-limit    : $SIZE_LIMIT_RESULT"
+          echo "  lighthouse-ci : $LIGHTHOUSE_RESULT"
           echo "  security-scan : $SECURITY_RESULT"
 
           if [[ "$ESLINT_RESULT" != "success" ]] \
              || [[ "$PRECHECK_RESULT" != "success" ]] \
              || [[ "$TESTS_RESULT" != "success" ]] \
              || [[ "$BUILD_RESULT" != "success" ]] \
+             || [[ "$SIZE_LIMIT_RESULT" != "success" ]] \
+             || [[ "$LIGHTHOUSE_RESULT" != "success" ]] \
              || [[ "$SECURITY_RESULT" != "success" ]]; then
             echo "::warning::One or more pre-checks failed — applying 'Pre-Check Failed' label"
             gh pr edit "$PR_NUMBER" \
