@@ -50,7 +50,6 @@ watch(locale, (next) => {
 
   <main id="main" class="landing">
     <HeroSection />
-    <SkillsSection />
     <ExperienceSection />
     <Suspense>
       <NowProjectsSection />
@@ -58,6 +57,7 @@ watch(locale, (next) => {
         <div id="projects" class="landing__lazy-fallback" aria-hidden="true" />
       </template>
     </Suspense>
+    <SkillsSection />
     <Suspense>
       <FaqSection />
       <template #fallback>
