@@ -33,9 +33,15 @@ const mobile_open = ref(false);
 const active_section = ref('hero');
 
 let _scroll_frame = 0;
+let _last_scroll_run = 0;
 
 const _read_scroll = () => {
   _scroll_frame = 0;
+  const now = Date.now();
+  if (now - _last_scroll_run < 100) {
+    return;
+  }
+  _last_scroll_run = now;
   scrolled.value = window.scrollY > 24;
   if (window.scrollY < 80) {
     active_section.value = 'hero';
@@ -184,7 +190,7 @@ onBeforeUnmount(() => {
           size="md"
           class="hud-nav__menu-toggle"
           aria-controls="hud-nav-menu"
-          :aria-expanded="mobile_open"
+          :aria-expanded="String(mobile_open)"
           :aria-label="mobile_open ? t('kyo-web.landing.nav.close') : t('kyo-web.landing.nav.menu')"
           @click="mobile_open = !mobile_open"
         >
@@ -255,7 +261,7 @@ onBeforeUnmount(() => {
     font-weight: 900;
     font-size: var(--fs-400);
     line-height: 1;
-    transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
+    transition: transform 0.2s ease;
 
     @include min-media-query(md) { font-size: var(--fs-400); }
 

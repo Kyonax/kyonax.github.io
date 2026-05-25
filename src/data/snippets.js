@@ -133,6 +133,7 @@ export const TRANSLATIONS = {
         },
         'hero': {
           'tag': 'CCS MEMBER :: ID-001',
+          'tag-aria': 'CCS Member ID-001, Cyber Code Syndicate on GitHub',
           'section-aria': 'Portfolio of Cristian D. Moreno, Senior Full-Stack & Frontend Engineer, Cyber Code Syndicate Member',
           'orcid-aria': 'ORCID profile',
           'open-portrait': 'Open portrait',
@@ -398,6 +399,7 @@ export const TRANSLATIONS = {
         },
         'hero': {
           'tag': 'CCS MEMBER :: ID-001',
+          'tag-aria': 'Miembro CCS ID-001, Cyber Code Syndicate en GitHub',
           'section-aria': 'Portafolio de Cristian D. Moreno, Ingeniero Full-Stack y Frontend Senior, Miembro del Cyber Code Syndicate',
           'orcid-aria': 'Perfil de ORCID',
           'open-portrait': 'Abrir retrato',

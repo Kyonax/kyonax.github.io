@@ -19,7 +19,7 @@ import UiHudDeco from '@ui/hud-deco.vue';
 import ModalLoading from '@ui/modal-loading.vue';
 import UiSectionHeader from '@ui/section-header.vue';
 import UiStateGrid from '@ui/state-grid.vue';
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 /* Modal + image-viewer + youtube facade chunks load on first card-open
@@ -75,19 +75,29 @@ const _resolve_image = (filename) => {
   };
 };
 
-/* 1Hz tick for WORKING_ON count-up. SSR-safe init (no Date.now() at module
-   load — would diverge between prerender and first client paint and trigger
-   a hydration mismatch). Real value populated inside onMounted's _start_tick. */
-const _now_ms = ref(0);
+/* 1Hz tick for WORKING_ON count-up. SSR-safe — no Date.now() at module load
+   to avoid hydration mismatch. _now_ms_raw is a plain variable (not reactive)
+   so it never triggers main_cards recomputation. _tick increments once per
+   second and is read only by elapsed_segments() in the template, scoping
+   re-renders to those specific spans rather than the full card list. */
+let _now_ms_raw = 0;
+const _tick = ref(0);
+let _last_sec = 0;
 let _tick_id = null;
 
 const _start_tick = () => {
   if (_tick_id) {
     return;
   }
-  _now_ms.value = Date.now();
+  _now_ms_raw = Date.now();
   _tick_id = setInterval(() => {
-    _now_ms.value = Date.now(); 
+    const sec = Math.floor(Date.now() / 1000);
+    if (sec === _last_sec) {
+      return;
+    }
+    _last_sec = sec;
+    _now_ms_raw = sec * 1000;
+    _tick.value++;
   }, 1000);
 };
 const _stop_tick = () => {
@@ -180,7 +190,7 @@ const _next_future_deadline = (project) => {
      SSR prerender and CSR initial render produce identical text. After
      onMounted populates _now_ms, the reactive read here re-evaluates with
      the real wall clock and the "earliest future" branch takes over. */
-  const now = _now_ms.value;
+  const now = _now_ms_raw;
   if (now === 0) {
     for (const [label, ts] of Object.entries(project.deadlines)) {
       const ms = _parse_bogota(ts);
@@ -384,8 +394,10 @@ const segments = (countdown) => {
   return countdown.split('_').filter(Boolean);
 };
 
-const elapsed_segments = (started_ms) =>
-  _format_elapsed_segments(started_ms, _now_ms.value);
+const elapsed_segments = (started_ms) => {
+  void _tick.value;
+  return _format_elapsed_segments(started_ms, _now_ms_raw);
+};
 
 const active_id = ref(null);
 const image_viewer = ref(null);
@@ -401,13 +413,20 @@ const close_image_viewer = () => {
 };
 const carousel_idx = ref(0);
 
+let _modal_trigger_el = null;
+
 const open_modal = (key) => {
+  _modal_trigger_el = document.activeElement;
   active_id.value = key;
   carousel_idx.value = 0;
 };
 
 const close_modal = () => {
   active_id.value = null;
+  nextTick(() => {
+    _modal_trigger_el?.focus();
+    _modal_trigger_el = null;
+  });
 };
 
 const carousel_prev = (total) => {
@@ -560,7 +579,6 @@ useInViewport(section_ref);
           <p
             v-if="_has_modal_description(card.key)"
             class="sr-only"
-            aria-hidden="true"
             v-html="t(_modal_description_key(card.key))"
           />
           <div v-if="card.is_working_on" class="now-projects-section__countdown">
@@ -886,7 +904,7 @@ useInViewport(section_ref);
     --element-flare-spread: 2px;
     --element-flare-color: var(--clr-primary-100);
     --element-flare-opacity: 0;
-    transition: transform 0.25s ease, border-color 0.25s ease;
+    transition: transform 0.25s ease;
 
     &.is-static {
       cursor: default;
@@ -974,6 +992,7 @@ useInViewport(section_ref);
     padding: 0.75rem;
     display: grid;
     gap: 0.5rem;
+    contain: layout paint;
   }
 
   &__countdown-head {
