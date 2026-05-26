@@ -52,6 +52,11 @@ const ccsBaseRules = {
   'import/first': 'error',
   'import/newline-after-import': 'error',
   'import/no-duplicates': 'error',
+  // Vite alias paths (@sections/, @ui/, etc.) are resolved by Vite at
+  // build time, not by Node. ESLint's import resolver can't follow them
+  // without extra vite-resolver configuration, so we disable the rule
+  // and rely on check-aliases.mjs to validate alias ↔ directory parity.
+  'import/no-unresolved': 'off',
 
   // ── Filenames ──────────────────────────────────────────
   'unicorn/filename-case': ['error', {

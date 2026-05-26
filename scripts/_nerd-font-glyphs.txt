@@ -6,6 +6,11 @@
 #   npm run convert:fonts:subset
 # then commit both this file and the regenerated WOFF2.
 
+E606
+E608
+E60C
+E702
+E7AD
 F005
 F00D
 F053

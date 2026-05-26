@@ -22,22 +22,22 @@ const CATEGORIES = [
   {
     id: 'frontend',
     glyph: '\uF121',
-    ids: ['html', 'css', 'scss', 'ts', 'react', 'next', 'vue', 'pug', 'stylus'],
+    ids: ['html', 'css', 'scss', 'js', 'ts', 'react', 'next', 'vue', 'pug', 'stylus'],
   },
   {
     id: 'backend',
     glyph: '\uF233',
-    ids: ['node', 'express', 'nest', 'symfony', 'postgresql', 'mongodb'],
+    ids: ['node', 'express', 'nest', 'symfony', 'php', 'python', 'postgresql', 'mongodb'],
   },
   {
     id: 'devops',
     glyph: '\uF0C2',
-    ids: ['docker', 'githubactions', 'vite', 'eslint', 'vitest', 'playwright', 'storybook'],
+    ids: ['git', 'docker', 'aws', 'githubactions', 'vite', 'eslint', 'jest', 'vitest', 'playwright', 'storybook', 'bash'],
   },
   {
     id: 'ai',
     glyph: '\uF2DB',
-    ids: ['claude', 'openai', 'gemini', 'grok', 'gptel', 'n8n', 'bash', 'litellm', 'ai-workflows'],
+    ids: ['claude', 'openai', 'gemini', 'grok', 'gptel', 'n8n', 'litellm', 'ai-workflows'],
   },
 ];
 
