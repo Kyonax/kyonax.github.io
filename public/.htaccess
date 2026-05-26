@@ -52,6 +52,12 @@ RewriteRule ^(.+)$ $1/index.html [L]
   AddType font/woff2                       woff2
 </IfModule>
 
+# === Character encoding =====================================================
+# Declares charset in the HTTP Content-Type response header for all text
+# documents — satisfies SEO validators that check the HTTP header, not only
+# the <meta charset> tag in HTML.
+AddDefaultCharset UTF-8
+
 # === Cache-Control ==========================================================
 <IfModule mod_headers.c>
   # Hashed build assets: 1 year, immutable (Vite emits content-hashed names)
@@ -79,6 +85,15 @@ RewriteRule ^(.+)$ $1/index.html [L]
 </IfModule>
 
 # === Compression ============================================================
+# Brotli — preferred by all modern browsers; ~15% better than GZIP.
+# Silently ignored if mod_brotli is not loaded on the host.
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/css text/xml text/plain \
+    application/javascript application/json application/xml \
+    image/svg+xml font/woff2
+</IfModule>
+
+# GZIP fallback for hosts / clients that do not support Brotli.
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css text/xml text/plain \
     application/javascript application/json application/xml \
