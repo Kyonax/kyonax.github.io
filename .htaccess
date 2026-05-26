@@ -1,0 +1,125 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+#
+# Apache/LiteSpeed config for kyonax.com on Hostinger shared hosting.
+# Lives at document root /public_html/.htaccess (copied verbatim from public/).
+
+RewriteEngine On
+
+# === HTTPS + apex canonicalization ==========================================
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\.kyonax\.com$ [NC]
+RewriteRule ^(.*)$ https://kyonax.com/$1 [R=301,L]
+
+# Map legacy kyo.wtf hits to the new apex (only fires if Hostinger still serves
+# the old domain after migration; safe no-op otherwise).
+RewriteCond %{HTTP_HOST} ^(www\.)?kyo\.wtf$ [NC]
+RewriteRule ^(.*)$ https://kyonax.com/$1 [R=301,L]
+
+# === Legacy ?language= -> /es or / (server-side 301 for crawler accuracy) ==
+RewriteCond %{QUERY_STRING} (^|&)language=es(&|$) [NC]
+RewriteRule ^$ /es? [R=301,L]
+RewriteCond %{QUERY_STRING} (^|&)language=en(&|$) [NC]
+RewriteRule ^(es/?)?$ /? [R=301,L]
+
+# === Canonical: NO trailing slash =========================================
+# Disable Apache/LiteSpeed auto-add-slash for directory requests. Without
+# this, hitting /es would 301 to /es/ via mod_dir before our rules fire.
+DirectorySlash Off
+
+# Strip trailing slash on non-directory paths only. Skipping real
+# directories breaks the LiteSpeed redirect loop where mod_dir adds the
+# slash for /es (real dir) and our strip rule removes it again.
+RewriteCond %{REQUEST_URI} !^/$
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# Internally serve the index.html of every prerendered route directory
+# (/es, /privacy, /es/privacy) without exposing the trailing slash to
+# the browser. The URL stays canonical-no-slash. The content comes from
+# the matching index.html inside that directory.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_URI} !/$
+RewriteRule ^(.+)$ $1/index.html [L]
+
+# === MIME types (LiteSpeed lacks AVIF by default) ==========================
+<IfModule mod_mime.c>
+  AddType image/avif                       avif avifs
+  AddType image/webp                       webp
+  AddType image/svg+xml                    svg svgz
+  AddType application/manifest+json        webmanifest
+  AddType application/xml                  xml
+  AddType font/woff2                       woff2
+</IfModule>
+
+# === Character encoding =====================================================
+# Declares charset in the HTTP Content-Type response header for all text
+# documents — satisfies SEO validators that check the HTTP header, not only
+# the <meta charset> tag in HTML.
+AddDefaultCharset UTF-8
+
+# === Cache-Control ==========================================================
+<IfModule mod_headers.c>
+  # Hashed build assets: 1 year, immutable (Vite emits content-hashed names)
+  <FilesMatch "-[A-Za-z0-9_-]{8}\.(js|css|woff2|avif|webp|jpg|jpeg|png|svg|gif|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  # Apex-level static images: 30 days
+  <FilesMatch "^(og-banner|favicon)\.(jpg|jpeg|png|svg|ico)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  # HTML, XML, JSON, manifests, txt: short cache so deploys flip fast
+  <FilesMatch "\.(html|xml|json|webmanifest|txt)$">
+    Header set Cache-Control "public, max-age=300, must-revalidate"
+  </FilesMatch>
+
+  # === Security headers =====================================================
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+
+  # HSTS, conservative first stage. max-age=180d, no includeSubDomains, no preload.
+  # Ratchet to "max-age=31536000; includeSubDomains; preload" after 2 weeks of clean HTTPS.
+  Header always set Strict-Transport-Security "max-age=15552000"
+</IfModule>
+
+# === Compression ============================================================
+# Brotli — preferred by all modern browsers; ~15% better than GZIP.
+# Silently ignored if mod_brotli is not loaded on the host.
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/css text/xml text/plain \
+    application/javascript application/json application/xml \
+    image/svg+xml font/woff2
+</IfModule>
+
+# GZIP fallback for hosts / clients that do not support Brotli.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/xml text/plain \
+    application/javascript application/json application/xml \
+    image/svg+xml font/woff2
+</IfModule>
+
+# === Default index ==========================================================
+DirectoryIndex index.html
+
+# === Error pages ============================================================
+# Branded cyberpunk error pages live in /error-pages/. Each is standalone HTML
+# under 6 KB with inline CSS, noindex+nofollow, EN+ES copy, and a redirect
+# list back into the site. The 404 surface replaces the SPA-fallback wiring
+# that previously served index.html on every miss.
+ErrorDocument 400 /error-pages/400.html
+ErrorDocument 401 /error-pages/401.html
+ErrorDocument 403 /error-pages/403.html
+ErrorDocument 404 /error-pages/404.html
+ErrorDocument 500 /error-pages/500.html
+
+# === Block public access to .git/ (Hostinger Git deploy clones into /public_html/)
+RedirectMatch 403 ^/\.git(/.*)?$
+<IfModule mod_rewrite.c>
+  RewriteRule "(^|/)\.git" - [F,L]
+</IfModule>
+
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
