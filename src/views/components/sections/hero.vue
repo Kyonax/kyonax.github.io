@@ -6,9 +6,9 @@
 
 import cv_en_url from '@assets/cv/cv_cristian_d_moreno_en.pdf?url';
 import cv_es_url from '@assets/cv/cv_cristian_d_moreno_es.pdf?url';
+import useCursorTooltip from '@composables/use-cursor-tooltip';
 import useInViewport from '@composables/use-in-viewport';
 import useObfuscatedEmail from '@composables/use-obfuscated-email';
-import useCursorTooltip from '@composables/use-cursor-tooltip';
 import { TECHNOLOGIES } from '@data/data';
 import { PROJECTS } from '@data/projects';
 import HeroVisual from '@sections/hero-visual.vue';
@@ -17,7 +17,7 @@ import UiHudDeco from '@ui/hud-deco.vue';
 import UiLink from '@ui/link.vue';
 import ModalLoading from '@ui/modal-loading.vue';
 import UiStateGrid from '@ui/state-grid.vue';
-import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 /* UiImageViewer (modal + image-viewer chunk) loads on first portrait open.
@@ -84,12 +84,14 @@ const portrait_aria = computed(() =>
    diff is empty. _viewport_mq is read inside onMounted (post-hydration)
    and the visible instance flips reactively. */
 const is_desktop = ref(false);
+const is_mounted = ref(false);
 let _viewport_mq = null;
 const _on_viewport_change = (event) => {
   is_desktop.value = event.matches;
 };
 
 onMounted(() => {
+  is_mounted.value = true;
   _viewport_mq = window.matchMedia('(min-width: 1200px)');
   is_desktop.value = _viewport_mq.matches;
   _viewport_mq.addEventListener('change', _on_viewport_change);
@@ -136,7 +138,7 @@ useInViewport(section_ref);
             <UiStateGrid />
             <span v-html="t('kyo-web.landing.hero.tag')" />
           </a>
-          <Teleport to="body">
+          <Teleport v-if="is_mounted" to="body">
             <Transition name="kyo-ct">
               <div
                 v-if="ccs_tooltip_visible"
@@ -158,7 +160,7 @@ useInViewport(section_ref);
             <BrandIcon class="hero__orcid-icon" name="orcid" aria-hidden="true" />
             <span class="hero__orcid-label">ORCID</span>
           </a>
-          <Teleport to="body">
+          <Teleport v-if="is_mounted" to="body">
             <Transition name="kyo-ct">
               <div
                 v-if="orcid_tooltip_visible"
@@ -181,7 +183,7 @@ useInViewport(section_ref);
         </h2>
 
         <p ref="summary_ref" class="hero__summary" v-html="t('kyo-web.landing.hero.summary')" />
-        <Teleport to="body">
+        <Teleport v-if="is_mounted" to="body">
           <Transition name="kyo-ct">
             <div
               v-if="zeronet_tooltip_visible"

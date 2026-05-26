@@ -9,16 +9,15 @@
  *   - Template ref:     useCursorTooltip(ref(el))
  *   - Getter function:  useCursorTooltip(() => el.querySelector('a'))
  *
- * The getter form is needed for elements inside v-html content, which are
- * not reachable via template refs. nextTick is awaited so v-html has
- * rendered before the DOM query runs.
+ * Vue applies v-html and sets template refs during the render phase, before
+ * onMounted fires, so both forms can resolve the target synchronously.
  *
  * Usage:
  *   const { visible, x, y } = useCursorTooltip(el_ref);
  *   const { visible, x, y } = useCursorTooltip(() => parent.value?.querySelector('a'));
  */
 
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 export default function useCursorTooltip(target) {
   const visible = ref(false);
@@ -42,19 +41,22 @@ export default function useCursorTooltip(target) {
 
   let _el = null;
 
-  onMounted(async () => {
-    await nextTick();
+  onMounted(() => {
     _el = typeof target === 'function'
-      ? target()
-      : (target.value?.$el ?? target.value);
-    if (!_el) return;
+      ? (target() ?? null)
+      : (target.value?.$el ?? target.value ?? null);
+    if (!_el) {
+      return;
+    }
     _el.addEventListener('mouseenter', on_enter);
     _el.addEventListener('mousemove', on_move);
     _el.addEventListener('mouseleave', on_leave);
   });
 
   onBeforeUnmount(() => {
-    if (!_el) return;
+    if (!_el) {
+      return;
+    }
     _el.removeEventListener('mouseenter', on_enter);
     _el.removeEventListener('mousemove', on_move);
     _el.removeEventListener('mouseleave', on_leave);

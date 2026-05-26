@@ -4,8 +4,8 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import useInViewport from '@composables/use-in-viewport';
 import useCursorTooltip from '@composables/use-cursor-tooltip';
+import useInViewport from '@composables/use-in-viewport';
 import { vProseLinks } from '@composables/use-prose-links';
 import { warmModal } from '@composables/use-warm-modal';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
@@ -14,7 +14,7 @@ import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
 import ModalLoading from '@ui/modal-loading.vue';
 import UiSectionHeader from '@ui/section-header.vue';
-import { computed, defineAsyncComponent, nextTick, ref } from 'vue';
+import { computed, defineAsyncComponent, nextTick, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 /* UiModal chunk loads on first card-open instead of shipping with the
@@ -110,6 +110,9 @@ const stack_chips_for = (entry_id) => {
   _chip_cache.set(cache_key, chips);
   return chips;
 };
+
+const is_mounted = ref(false);
+onMounted(() => { is_mounted.value = true; });
 
 const active_id = ref(null);
 const active_entry = computed(() =>
@@ -259,7 +262,7 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
         </ul>
       </div>
     </UiModal>
-    <Teleport to="body">
+    <Teleport v-if="is_mounted" to="body">
       <Transition name="kyo-ct">
         <div
           v-if="zl_visible"

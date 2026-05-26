@@ -441,9 +441,8 @@
   transform: translate(10px, 16px);
 }
 
-.kyo-ct-enter-active,
 .kyo-ct-leave-active {
-  transition: opacity 0.12s ease;
+  transition: opacity 0.1s ease;
 }
 
 .kyo-ct-enter-from,

@@ -5,7 +5,7 @@
  */
 
 import CookieConsent from '@components/cookie-consent.vue';
-import useSeoHead       from '@composables/use-seo-head';
+import useSeoHead from '@composables/use-seo-head';
 import useStructuredData from '@composables/use-structured-data';
 import ExperienceSection from '@sections/experience.vue';
 import HeroSection from '@sections/hero.vue';
@@ -21,9 +21,15 @@ import { useI18n } from 'vue-i18n';
    for the chunk before swapping — handles the SSR-vs-CSR shape match
    automatically. Fallback is an empty <section> with the same anchor
    ID + min-height so layout doesn't shift while the chunk arrives. */
-const NowProjectsSection = defineAsyncComponent(() => import('@sections/now-projects-section.vue'));
-const SkillsSection     = defineAsyncComponent(() => import('@sections/skills.vue'));
-const FaqSection        = defineAsyncComponent(() => import('@sections/faq.vue'));
+const NowProjectsSection = defineAsyncComponent(() => {
+  return import('@sections/now-projects-section.vue');
+});
+const SkillsSection = defineAsyncComponent(() => {
+  return import('@sections/skills.vue');
+});
+const FaqSection = defineAsyncComponent(() => {
+  return import('@sections/faq.vue');
+});
 
 const { t, locale } = useI18n();
 useSeoHead();

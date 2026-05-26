@@ -575,7 +575,7 @@ useInViewport(section_ref);
             <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
           </div>
 
-          <p class="now-projects-section__milestone">// {{ card.label.toUpperCase() }}</p>
+          <p class="now-projects-section__milestone">{{ `// ${card.label.toUpperCase()}` }}</p>
           <p
             v-if="_has_modal_description(card.key)"
             class="sr-only"
