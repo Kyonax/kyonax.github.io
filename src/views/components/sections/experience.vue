@@ -112,7 +112,9 @@ const stack_chips_for = (entry_id) => {
 };
 
 const is_mounted = ref(false);
-onMounted(() => { is_mounted.value = true; });
+onMounted(() => {
+  is_mounted.value = true;
+});
 
 const active_id = ref(null);
 const active_entry = computed(() =>
