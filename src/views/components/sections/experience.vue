@@ -406,12 +406,7 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
   }
 
   &__node:not(:first-child) &__card {
-    --element-flare-opacity: calc(var(--prox, 0) * 0.16);
-
-    &:hover,
-    &:focus-visible {
-      --element-flare-opacity: 0.16;
-    }
+    --element-flare-opacity: 0;
   }
 
   &__node--primary &__card {
