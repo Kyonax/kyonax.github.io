@@ -390,13 +390,6 @@
   opacity: 0;
 }
 
-@keyframes flare-breathe-restart {
-  0%   { background-position: 100% 0;    }
-  25%  { background-position: 0    100%; }
-  50%  { background-position: 100% 100%; }
-  75%  { background-position: 0    0;    }
-  100% { background-position: 100% 0;    }
-}
 
 /* Users with `prefers-reduced-motion: reduce` get the flare pseudo
    suppressed entirely. The global rule in `_global.scss` already collapses
