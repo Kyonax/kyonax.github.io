@@ -55,9 +55,9 @@ export default function useProximityHover(containerRef, selector) {
         if (!r) {
           continue;
         }
-        const cx = r.left + r.width  / 2;
-        const cy = r.top  + r.height / 2;
-        const d  = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+        const dx = Math.max(0, Math.max(r.left - x, x - (r.left + r.width)));
+        const dy = Math.max(0, Math.max(r.top  - y, y - (r.top  + r.height)));
+        const d  = Math.sqrt(dx ** 2 + dy ** 2);
         const t  = Math.max(0, 1 - d / THRESHOLD);
         el.style.setProperty('--prox', t.toFixed(3));
       }
