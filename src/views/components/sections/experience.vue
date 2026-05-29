@@ -176,7 +176,6 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
 
         <article
           class="experience-section__card element-flare"
-          :class="{ 'is-static': idx !== 0 }"
           :style="{ '--element-flare-delay': `${idx * 0.5}s` }"
         >
           <button
@@ -359,27 +358,26 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
   &__card {
     border: 1px solid var(--clr-border-100);
     border-color: color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 100%), var(--clr-border-100));
-    background: color-mix(in srgb, var(--clr-neutral-500) 75%, transparent);
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 8%), transparent) 0%,
+        color-mix(in srgb, var(--clr-neutral-500) 80%, transparent) 100%
+      );
     padding: 1.25rem;
     margin-bottom: 1.5rem;
     cursor: pointer;
     transform: translateX(calc(4px * var(--prox, 0)));
-    transition: transform 0.25s ease, border-color 0.2s ease;
+    transition: transform 0.25s ease, border-color 0.2s ease, background 0.25s ease;
     isolation: isolate;
     --element-flare-spread: 2px;
-    --element-flare-opacity: calc(0.04 + var(--prox, 0) * 0.12);
+    --element-flare-opacity: calc(0.04 + var(--prox, 0) * 0.26);
 
     &:hover,
     &:has(:focus-visible) {
       border-color: var(--clr-primary-100);
-      background:
-        linear-gradient(
-          135deg,
-          color-mix(in srgb, var(--clr-primary-100) 8%, transparent) 0%,
-          color-mix(in srgb, var(--clr-neutral-500) 80%, transparent) 100%
-        );
       transform: translateX(4px);
-      --element-flare-opacity: 0.16;
+      --element-flare-opacity: 0.30;
     }
   }
 
@@ -405,8 +403,19 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
     }
   }
 
-  &__node:not(:first-child) &__card {
-    --element-flare-opacity: 0;
+  &__node--neutral &__card {
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 4%), transparent) 0%,
+        color-mix(in srgb, var(--clr-neutral-500) 70%, transparent) 100%
+      );
+    --element-flare-opacity: calc(var(--prox, 0) * 0.08);
+
+    &:hover,
+    &:focus-visible {
+      --element-flare-opacity: 0.08;
+    }
   }
 
   &__node--primary &__card {
@@ -416,19 +425,6 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
         135deg,
         color-mix(in srgb, var(--clr-primary-100) 8%, transparent) 0%,
         color-mix(in srgb, var(--clr-neutral-500) 80%, transparent) 100%
-      );
-  }
-
-  /* Neutral cards on hover get a softer gradient than the primary card —
-     half the yellow tint and a less opaque neutral floor — so the primary
-     card stays the visual standout in the timeline. */
-  &__node--neutral &__card:hover,
-  &__node--neutral &__card:focus-visible {
-    background:
-      linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--clr-primary-100) 4%, transparent) 0%,
-        color-mix(in srgb, var(--clr-neutral-500) 70%, transparent) 100%
       );
   }
 
