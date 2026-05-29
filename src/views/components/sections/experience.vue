@@ -7,6 +7,7 @@
 import useCursorTooltip from '@composables/use-cursor-tooltip';
 import useInViewport from '@composables/use-in-viewport';
 import { vProseLinks } from '@composables/use-prose-links';
+import useProximityHover from '@composables/use-proximity-hover';
 import { warmModal } from '@composables/use-warm-modal';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
 import { TECH_BY_ID } from '@data/data';
@@ -138,6 +139,7 @@ const close_modal = () => {
 
 const section_ref = ref(null);
 useInViewport(section_ref);
+useProximityHover(section_ref, '.experience-section__card');
 
 const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
   () => section_ref.value?.querySelector('.experience-section__description a[href*="zeronet-labs"]') ?? null,
@@ -356,14 +358,16 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
 
   &__card {
     border: 1px solid var(--clr-border-100);
+    border-color: color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 100%), var(--clr-border-100));
     background: color-mix(in srgb, var(--clr-neutral-500) 75%, transparent);
     padding: 1.25rem;
     margin-bottom: 1.5rem;
     cursor: pointer;
-    transition: transform 0.25s ease;
+    transform: translateX(calc(4px * var(--prox, 0)));
+    transition: transform 0.25s ease, border-color 0.2s ease;
     isolation: isolate;
     --element-flare-spread: 2px;
-    --element-flare-opacity: 0.04;
+    --element-flare-opacity: calc(0.04 + var(--prox, 0) * 0.12);
 
     &:hover,
     &:has(:focus-visible) {
@@ -402,7 +406,7 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
   }
 
   &__node:not(:first-child) &__card {
-    --element-flare-opacity: 0;
+    --element-flare-opacity: calc(var(--prox, 0) * 0.16);
 
     &:hover,
     &:focus-visible {
@@ -443,7 +447,8 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
     font-family: "Geomanist", sans-serif;
     font-size: var(--fs-500);
     font-weight: 700;
-    color: var(--clr-neutral-100);
+    color: color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 100%), var(--clr-neutral-100));
+    transition: color 0.2s ease;
     margin: 0 0 0.4rem;
     letter-spacing: 0.02em;
     line-height: 1.2;
@@ -506,10 +511,9 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
 
   &__view-more-glyph {
     font-size: 1.2em;
-    transition: transform 0.2s ease;
     line-height: 1;
-    transform: translateY(-0.05em);
     transition: transform 0.2s ease;
+    transform: translate(calc(0.2rem * var(--prox, 0)), -0.05em);
   }
 
   &__card:hover &__view-more-glyph,
