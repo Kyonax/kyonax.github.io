@@ -377,12 +377,11 @@
   animation-play-state: running;
 }
 
-/* Hover swaps to the twin keyframe so the sweep restarts at t=0 on each
-   entry, giving the snappy "respond to hover" feel the original had. */
+/* Proximity already engages the flare before direct hover, so the
+   animation-name reset is no longer needed — keep play-state running
+   as a fallback for elements not yet caught by IntersectionObserver. */
 .element-flare:not(.is-static):hover::before,
 .element-flare:not(.is-static):focus-visible::before {
-  animation-name: flare-breathe-restart;
-  animation-delay: 0s;
   animation-play-state: running;
 }
 
