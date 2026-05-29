@@ -377,13 +377,6 @@
   animation-play-state: running;
 }
 
-/* Proximity already engages the flare before direct hover, so the
-   animation-name reset is no longer needed — keep play-state running
-   as a fallback for elements not yet caught by IntersectionObserver. */
-.element-flare:not(.is-static):hover::before,
-.element-flare:not(.is-static):focus-visible::before {
-  animation-play-state: running;
-}
 
 .element-flare.is-static:hover::before,
 .element-flare.is-static:focus-visible::before {
