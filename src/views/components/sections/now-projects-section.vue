@@ -8,6 +8,7 @@ import { vImageReady } from '@composables/use-image-ready';
 import useInViewport from '@composables/use-in-viewport';
 import useProjectCountdowns from '@composables/use-project-countdowns';
 import { vProseLinks } from '@composables/use-prose-links';
+import useProximityHover from '@composables/use-proximity-hover';
 import { retainImageUrl, warmImageViewer, warmProjectCard } from '@composables/use-warm-modal';
 import { warmYoutube } from '@composables/use-youtube-warmup';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
@@ -516,6 +517,7 @@ const _warm_modal = (key) => {
 
 const section_ref = ref(null);
 useInViewport(section_ref);
+useProximityHover(section_ref, '.now-projects-section__card:not(.is-static)');
 </script>
 
 <template>
@@ -575,7 +577,9 @@ useInViewport(section_ref);
             <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
           </div>
 
-          <p class="now-projects-section__milestone">{{ `// ${card.label.toUpperCase()}` }}</p>
+          <p class="now-projects-section__milestone">
+            {{ `// ${card.label.toUpperCase()}` }}
+          </p>
           <p
             v-if="_has_modal_description(card.key)"
             class="sr-only"
@@ -904,7 +908,13 @@ useInViewport(section_ref);
     --element-flare-spread: 2px;
     --element-flare-color: var(--clr-primary-100);
     --element-flare-opacity: 0;
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, border-color 0.2s ease;
+
+    &.has-modal {
+      transform: translateY(calc(-4px * var(--prox, 0)));
+      border-color: color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 100%), var(--clr-border-100));
+      --element-flare-opacity: calc(var(--prox, 0) * 0.06);
+    }
 
     &.is-static {
       cursor: default;
@@ -929,6 +939,7 @@ useInViewport(section_ref);
     /* Ended cards adopt the same warning color as the ENDED state pill. */
     &.is-ended {
       --element-flare-color: var(--clr-warning-100);
+      border-color: color-mix(in srgb, var(--clr-warning-100) calc(var(--prox, 0) * 100%), var(--clr-border-100));
 
       &:hover, &:focus-visible {
         border-color: var(--clr-warning-100);
