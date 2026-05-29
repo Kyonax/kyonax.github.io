@@ -517,7 +517,7 @@ const _warm_modal = (key) => {
 
 const section_ref = ref(null);
 useInViewport(section_ref);
-useProximityHover(section_ref, '.now-projects-section__card:not(.is-static)');
+useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .now-projects-section__featured-item:not(.is-static)');
 </script>
 
 <template>
@@ -1176,11 +1176,13 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static)');
     color: var(--clr-neutral-50);
     text-decoration: none;
     cursor: pointer;
+    border-color: color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 100%), var(--clr-border-100));
+    transform: translateY(calc(-2px * var(--prox, 0)));
     transition: border-color 0.2s ease, transform 0.2s ease;
     isolation: isolate;
     --element-flare-spread: 1px;
     --element-flare-color: var(--clr-primary-100);
-    --element-flare-opacity: 0;
+    --element-flare-opacity: calc(var(--prox, 0) * 0.06);
 
     &.is-static {
       cursor: default;
