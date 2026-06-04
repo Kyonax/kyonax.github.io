@@ -8,10 +8,12 @@
  * and ~30% smaller in the emitted payload.
  */
 
-import buildPersonJsonLd      from './person';
-import buildProfilePageJsonLd from './profile-page';
-import buildVideoObjectsJsonLd from './videos';
-import buildWebSiteJsonLd     from './website';
+import buildPersonJsonLd              from './person';
+import buildProfessionalServiceJsonLd from './professional-service';
+import buildProfilePageJsonLd         from './profile-page';
+import { buildProjectsJsonLd }        from './projects';
+import buildVideoObjectsJsonLd        from './videos';
+import buildWebSiteJsonLd             from './website';
 
 export { buildFaqJsonLd } from './faq-page';
 export { buildVideoObjectsJsonLd } from './videos';
@@ -22,7 +24,9 @@ export const buildSiteJsonLd = ({ locale = 'en' } = {}) => ({
     buildWebSiteJsonLd(),
     buildProfilePageJsonLd(locale),
     buildPersonJsonLd(locale),
+    buildProfessionalServiceJsonLd(locale),
     ...buildVideoObjectsJsonLd({ locale }),
+    ...buildProjectsJsonLd(),
   ],
 });
 
