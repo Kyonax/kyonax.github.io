@@ -8,6 +8,7 @@
  */
 
 import { SITE_ORIGIN } from '@data/data';
+
 import { PERSON_ID } from './identifiers';
 
 const LINKEDIN_RECS_URL = 'https://www.linkedin.com/in/kyonax/details/recommendations/';

@@ -26,7 +26,9 @@ const is_paused = ref(false);
 
 const _mod = (n) => ((n % COUNT) + COUNT) % COUNT;
 
-const go_to = (n, d) => { dir.value = d; idx.value = _mod(n); };
+const go_to = (n, d) => {
+  dir.value = d; idx.value = _mod(n); 
+};
 const next  = () => go_to(idx.value + 1,  1);
 const prev  = () => go_to(idx.value - 1, -1);
 
@@ -40,8 +42,14 @@ let _timer   = null;
 let _drag_x  = 0;
 let _dragging = false;
 
-const _start = () => { _stop(); _timer = setInterval(next, AUTO_MS); };
-const _stop  = () => { if (_timer) { clearInterval(_timer); _timer = null; } };
+const _start = () => {
+  _stop(); _timer = setInterval(next, AUTO_MS); 
+};
+const _stop  = () => {
+  if (_timer) {
+    clearInterval(_timer); _timer = null; 
+  } 
+};
 
 watch(is_paused, (p) => (p ? _stop() : _start()));
 
@@ -56,9 +64,13 @@ watch(is_paused, (p) => (p ? _stop() : _start()));
  */
 const _sync_height = () => {
   const cards = [...(carousel_ref.value?.querySelectorAll('.testimonials-section__card') ?? [])];
-  if (!cards.length) return;
+  if (!cards.length) {
+    return;
+  }
   const max_h = Math.max(...cards.map((c) => c.offsetHeight));
-  if (max_h > 0) carousel_ref.value.style.height = `${max_h + 20}px`;
+  if (max_h > 0) {
+    carousel_ref.value.style.height = `${max_h + 20}px`;
+  }
 };
 
 onMounted(() => {
@@ -79,24 +91,35 @@ onBeforeUnmount(_stop);
  * normally while an actual swipe still gets captured for reliable tracking.
  */
 const on_drag_start = (e) => {
-  if (e.button !== 0 && e.pointerType === 'mouse') return;
+  if (e.button !== 0 && e.pointerType === 'mouse') {
+    return;
+  }
   _drag_x   = e.clientX;
   _dragging = true;
 };
 const on_drag_move = (e) => {
-  if (!_dragging) return;
+  if (!_dragging) {
+    return;
+  }
   if (Math.abs(e.clientX - _drag_x) >= 8 && !e.currentTarget.hasPointerCapture(e.pointerId)) {
     e.currentTarget.setPointerCapture(e.pointerId);
   }
 };
 const on_drag_end = (e) => {
-  if (!_dragging) return;
+  if (!_dragging) {
+    return;
+  }
   _dragging = false;
   const delta = e.clientX - _drag_x;
-  if (delta < -DRAG_PX) next();
-  else if (delta > DRAG_PX) prev();
+  if (delta < -DRAG_PX) {
+    next();
+  } else if (delta > DRAG_PX) {
+    prev();
+  }
 };
-const on_drag_cancel = () => { _dragging = false; };
+const on_drag_cancel = () => {
+  _dragging = false; 
+};
 </script>
 
 <template>
