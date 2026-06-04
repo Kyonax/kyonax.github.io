@@ -5,6 +5,7 @@
  */
 
 import useInViewport from '@composables/use-in-viewport';
+import useProximityHover from '@composables/use-proximity-hover';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
 import { TECH_BY_ID } from '@data/data';
 import BrandIcon from '@ui/brand-icon.vue';
@@ -15,6 +16,7 @@ import { useI18n } from 'vue-i18n';
 
 const section_ref = ref(null);
 useInViewport(section_ref);
+useProximityHover(section_ref, '.skills__item', 0.05);
 
 const { t, locale } = useI18n();
 
@@ -230,13 +232,15 @@ const grouped = computed(() =>
     min-height: 4.25rem;
     background: var(--clr-neutral-500);
     border: 1px solid var(--clr-border-100);
-    color: var(--clr-neutral-50);
+    border-color: color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 100%), var(--clr-border-100));
+    color: color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 100%), var(--clr-neutral-50));
+    transform: translateY(calc(-2px * var(--prox, 0)));
     transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
     cursor: default;
     isolation: isolate;
     --element-flare-spread: 1px;
     --element-flare-color: var(--clr-border-50);
-    --element-flare-opacity: 0.05;
+    --element-flare-opacity: calc(0.05 + var(--prox, 0) * 0.15);
     --element-flare-blur: 0;
 
     @include min-media-query(md) {

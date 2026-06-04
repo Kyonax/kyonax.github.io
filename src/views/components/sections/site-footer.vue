@@ -2,20 +2,19 @@
 /*
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ *
+ * Site footer. Renders the canonical KYONAX brand signature (drop-in
+ * component, reusable across products) followed by site-specific info:
+ * the LINKS column (socials + privacy) and the RUNTIME \\ column
+ * (browser/session manifest).
  */
 
-import logoKyonaxSvg from '@assets/app/LOGO_KYONAX.svg?raw';
 import useInViewport from '@composables/use-in-viewport';
-import useObfuscatedEmail from '@composables/use-obfuscated-email';
-import BrandIcon from '@ui/brand-icon.vue';
-import UiHudDeco from '@ui/hud-deco.vue';
-import UiLink from '@ui/link.vue';
+import KyonaxBrandSignature from '@components/brand/kyonax-brand-signature.vue';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
-
-const current_year = new Date().getFullYear();
 
 const host         = ref('');
 const path         = ref('');
@@ -24,9 +23,7 @@ const viewport     = ref({ w: 0, h: 0 });
 
 let _resize_frame = 0;
 const onResize = () => {
-  if (_resize_frame) {
-    return;
-  }
+  if (_resize_frame) return;
   _resize_frame = requestAnimationFrame(() => {
     _resize_frame = 0;
     viewport.value = { w: window.innerWidth, h: window.innerHeight };
@@ -42,16 +39,13 @@ onMounted(() => {
   try {
     resolved_tz.value = Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
   } catch { /* Intl unavailable in some embedded WebViews */ }
-  /* rAF-defer the initial viewport read — sync innerWidth/Height during hydration forces a layout pass (~143ms). */
   onResize();
   window.addEventListener('resize', onResize, { passive: true });
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize);
-  if (_resize_frame) {
-    cancelAnimationFrame(_resize_frame);
-  }
+  if (_resize_frame) cancelAnimationFrame(_resize_frame);
 });
 
 const manifest = computed(() => [
@@ -64,20 +58,14 @@ const manifest = computed(() => [
 ]);
 
 const SOCIALS = [
-  { id: 'github',    url: 'https://github.com/kyonax',             glyph: '\uF09B', label: 'GitHub, @kyonax',    delay: '1s' },
-  { id: 'linkedin',  url: 'https://linkedin.com/in/kyonax',        glyph: '\uF0E1', label: 'LinkedIn profile, Cristian D. Moreno',  delay: '2s' },
-  { id: 'x',         url: 'https://x.com/kyonax_on_tech',          brand: 'x',      label: 'X (formerly Twitter), @kyonax_on_tech',        delay: '3s' },
-  { id: 'instagram', url: 'https://instagram.com/kyonax_on_tech',  glyph: '\uF16D', label: 'Instagram, @kyonax_on_tech', delay: '4s' },
-  { id: 'tiktok',    url: 'https://tiktok.com/@kyonax_on_tech',    brand: 'tiktok', label: 'TikTok, @kyonax_on_tech',    delay: '5s' },
+  { id: 'github',    url: 'https://github.com/kyonax',            label: 'GITHUB',    aria: 'GitHub, @kyonax' },
+  { id: 'linkedin',  url: 'https://linkedin.com/in/kyonax',       label: 'LINKEDIN',  aria: 'LinkedIn, Cristian D. Moreno' },
+  { id: 'x',         url: 'https://x.com/kyonax_on_tech',         label: 'X',         aria: 'X, @kyonax_on_tech' },
+  { id: 'instagram', url: 'https://instagram.com/kyonax_on_tech', label: 'INSTAGRAM', aria: 'Instagram, @kyonax_on_tech' },
+  { id: 'tiktok',    url: 'https://tiktok.com/@kyonax_on_tech',   label: 'TIKTOK',    aria: 'TikTok, @kyonax_on_tech' },
 ];
 
-const GLYPH_MAIL = '\uF0E0';
-const GLYPH_WSP  = '\uF232';
-
-const contact_email_href = useObfuscatedEmail('work', 'kyonax.com');
-
-const WHATSAPP_URL =
-  'https://wa.me/573022539479?text=Hola!%20me%20gustar%C3%ADa%20saber%20m%C3%A1s%20de%20tus%20Servicios';
+const privacy_href = computed(() => (locale.value === 'es' ? '/es/privacy' : '/privacy'));
 
 const footer_ref = ref(null);
 useInViewport(footer_ref);
@@ -91,94 +79,60 @@ useInViewport(footer_ref);
     role="contentinfo"
     :aria-label="t('kyo-web.landing.footer.tag')"
   >
-    <UiHudDeco variant="tl" text="// BEACON :: ON" />
-    <UiHudDeco variant="tr" text="// CHANNEL :: CCS // KYONAX // ZERONET" class="site-footer__deco-channel" />
-    <div class="site-footer__top">
-      <div class="site-footer__brand">
-        <span
-          class="site-footer__logo"
-          aria-hidden="true"
-          v-html="logoKyonaxSvg"
-        />
-        <div class="site-footer__signoff" aria-hidden="true">
-          <span class="site-footer__signoff-tag">SYS // SIGNATURE</span>
-          <p class="site-footer__signoff-text" v-html="t('kyo-web.landing.footer.signoff')" />
-          <dl class="site-footer__manifest">
-            <div
-              v-for="entry in manifest"
-              :key="entry.key"
-              class="site-footer__manifest-row"
-            >
-              <dt class="site-footer__manifest-key">
-                {{ entry.label }}
-              </dt>
-              <dd class="site-footer__manifest-value">
-                {{ entry.value }}
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </div>
+    <!-- Drop-in KYONAX brand signature (reusable across products) -->
+    <KyonaxBrandSignature />
 
-      <div id="contact" class="site-footer__channels">
-        <span class="site-footer__channels-label">// CONTACT_CHANNELS</span>
-        <div class="site-footer__channels-grid">
-          <UiLink
-            :href="contact_email_href"
-            variant="primary"
-            class="site-footer__channel"
-            external
-          >
-            <span class="icon-glyph" :data-text="GLYPH_MAIL" aria-hidden="true" />
-            <span>{{ t('kyo-web.contact.contact-me') }}</span>
-          </UiLink>
-          <UiLink
-            :href="WHATSAPP_URL"
-            variant="primary"
-            class="site-footer__channel"
-            external
-          >
-            <span class="icon-glyph" :data-text="GLYPH_WSP" aria-hidden="true" />
-            <span>{{ t('kyo-web.contact.wsp') }}</span>
-          </UiLink>
-        </div>
-      </div>
-
-      <nav class="site-footer__socials" :aria-label="t('kyo-web.landing.nav.contact')">
-        <span class="site-footer__channels-label">// SOCIAL_GRID</span>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- INFO CONTAINER — site-specific: LINKS column + RUNTIME \\ column.   -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="site-footer__info">
+      <nav
+        class="site-footer__socials"
+        :aria-label="t('kyo-web.landing.nav.contact')"
+      >
+        <span class="site-footer__col-tag" aria-hidden="true">// LINKS</span>
         <ul role="list" class="site-footer__socials-list">
-          <li v-for="social in SOCIALS" :key="social.id">
-            <UiLink
-              :href="social.url"
-              variant="ghost"
-              class="site-footer__social"
-              external
-              :aria-label="social.label"
-            >
-              <BrandIcon
-                v-if="social.brand"
-                class="site-footer__social-icon brand-icon--lg"
-                :name="social.brand"
-              />
-              <span
-                v-else
-                class="icon-glyph icon-glyph--lg site-footer__social-icon"
-                :data-text="social.glyph"
-                aria-hidden="true"
-              />
-            </UiLink>
+          <li
+            v-for="(s, i) in SOCIALS"
+            :key="s.id"
+            class="site-footer__social-item"
+          >
+            <a
+              :href="s.url"
+              class="site-footer__social-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              :aria-label="s.aria"
+            >{{ s.label }}</a><span
+              v-if="i < SOCIALS.length - 1"
+              class="site-footer__social-dot"
+              aria-hidden="true"
+            >·</span>
+          </li>
+        </ul>
+        <ul role="list" class="site-footer__legal-list">
+          <li>
+            <a
+              :href="privacy_href"
+              class="site-footer__legal-link"
+            >{{ t('kyo-web.landing.footer.privacy') }}</a>
           </li>
         </ul>
       </nav>
-    </div>
 
-    <div class="site-footer__divider" aria-hidden="true">
-      <span class="site-footer__divider-tag">{{ t('kyo-web.landing.footer.tag') }}</span>
-    </div>
-
-    <div class="site-footer__bottom">
-      <small class="site-footer__rights">{{ t('kyo-web.landing.footer.rights', { year: current_year }) }}</small>
-      <small class="site-footer__made-by">{{ t('kyo-web.landing.footer.made-by') }}</small>
+      <div class="site-footer__manifest" aria-hidden="true">
+        <span class="site-footer__col-tag site-footer__col-tag--right">RUNTIME \\</span>
+        <dl class="site-footer__manifest-list">
+          <div
+            v-for="entry in manifest"
+            :key="entry.key"
+            class="site-footer__manifest-row"
+          >
+            <dt class="site-footer__manifest-key">{{ entry.label }}</dt>
+            <dd class="site-footer__manifest-val">{{ entry.value }}</dd>
+          </div>
+        </dl>
+      </div>
     </div>
   </footer>
 </template>
@@ -187,176 +141,64 @@ useInViewport(footer_ref);
 .site-footer {
   position: relative;
   overflow: hidden;
-  padding: 4rem 1.5rem 2rem;
-  margin-top: 4rem;
-  background:
-    linear-gradient(
-      to bottom,
-      transparent 0%,
-      color-mix(in srgb, var(--clr-primary-100) 1%, var(--clr-neutral-500)) 100%
-    );
-  border-top: 1px solid var(--clr-primary-100);
+  padding: 2.5rem 1rem 2.5rem;
+  margin-top: 2rem;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--clr-primary-100) 1%, var(--clr-neutral-500)) 100%
+  );
   font-family: "SpaceMono", monospace;
 
-  @include min-media-query(md) {
-    padding: 5rem 2rem 2rem;
+  @include min-media-query(sm) {
+    padding: 2.5rem 1.5rem 2.5rem;
   }
 
-  
-  &__deco-channel {
-    display: none;
-    @include min-media-query(md) { display: inline-block; }
+  @include min-media-query(lg) {
+    padding: 2.5rem 2.5rem 2.5rem;
   }
 
-  &__top {
-    max-width: 1280px;
-    margin: 0 auto;
+  // ── INFO CONTAINER (sits below brand signature with small gap) ─────────
+  &__info {
+    max-width: 1100px;
+    margin: 1.25rem auto 0;
+    padding: 0 0.6rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 5rem 1.25rem;
+    gap: 0;
 
-    & > :first-child { grid-column: 1 / -1; }
-
-    @include max-media-query(md) {
+    @include max-media-query(sm) {
       grid-template-columns: 1fr;
-      row-gap: 3rem;
+      gap: 1.25rem;
     }
-
-    @include min-media-query(md) {
-      gap: 5rem 3rem;
-    }
-  }
-
-  &__brand {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    align-items: flex-start;
-
-    
-    @include max-media-query(md) {
-      align-items: stretch;
-      gap: 1.5rem;
-    }
-  }
-
-
-  &__logo {
-    display: block;
-    width: 100%;
-    max-width: 480px;
-    color: var(--clr-primary-100);
-
-    :deep(svg) {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    @include max-media-query(md) {
-      max-width: none;
-    }
-  }
-
-  &__signoff {
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-    border: 1px dashed var(--clr-border-100);
-    padding: 0.85rem 1.1rem;
-    width: 100%;
-    background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
-  }
-
-  &__signoff-tag {
-    font-size: var(--fs-100);
-    color: var(--clr-primary-100);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    opacity: 0.8;
-  }
-
-  
-  &__signoff-text {
-    margin: 0;
-    font-family: "Geomanist", sans-serif;
-    font-size: var(--fs-200);
-    color: var(--clr-neutral-200);
-    line-height: 1.55;
-    letter-spacing: 0.02em;
-    word-spacing: 0.06em;
-    opacity: 0.75;
-
-    :deep(.heart-glyph) {
-      display: inline-block;
-      font-size: 0.95em;
-      line-height: 1;
-      vertical-align: -0.06em;
-      margin: 0 0.04em;
-      color: var(--clr-primary-100);
-    }
-  }
-
-  
-  &__manifest {
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 0.4rem 1.25rem;
-    font-family: "SpaceMono", monospace;
-    font-size: var(--fs-100);
-  }
-
-  &__manifest-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.05rem;
-    min-width: 0;
-  }
-
-  &__manifest-key {
-    color: var(--clr-neutral-300);
-    letter-spacing: 0.16em;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  &__manifest-value {
-    margin: 0;
-    color: var(--clr-neutral-200);
-    letter-spacing: 0.04em;
-    word-break: break-word;
-  }
-
-  &__channels-label {
-    display: block;
-    font-size: var(--fs-200);
-    color: var(--clr-primary-100);
-    letter-spacing: 0.12em;
-    margin-bottom: 0.75rem;
-  }
-
-  &__channels-grid {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-    max-width: 16rem;
-  }
-
-  &__channel {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.6rem;
-    padding-left: 0.9rem;
-    padding-right: 0.9rem;
-    width: 100%;
   }
 
   &__socials {
-    @include max-media-query(md) {
+    padding: 0 0.5rem 0 0;
+    min-width: 0;
+  }
+
+  &__manifest {
+    padding: 0 0 0 0.5rem;
+    min-width: 0;
+    text-align: right;
+  }
+
+  &__col-tag {
+    display: block;
+    font-size: var(--fs-300);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--clr-primary-100);
+    opacity: 0.7;
+    margin-bottom: 0.4rem;
+
+    @include max-media-query(sm) {
+      font-size: var(--fs-200);
+      letter-spacing: 0.12em;
+    }
+
+    &--right {
       text-align: right;
     }
   }
@@ -367,102 +209,109 @@ useInViewport(footer_ref);
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-
-    @include max-media-query(md) {
-      justify-content: flex-end;
-    }
+    align-items: baseline;
+    row-gap: 0.1rem;
+    line-height: 1.35;
   }
 
-  &__social {
+  &__social-item {
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 1px solid var(--clr-border-100);
-    transition: border-color 0.2s ease, color 0.2s ease;
-
-    &:hover {
-      border-color: var(--clr-primary-100);
-      color: var(--clr-primary-100);
-    }
+    align-items: baseline;
+    line-height: 1.35;
   }
 
-  &__social-icon {
-    font-size: 1.4rem;
-    /* Cancel the global glyph lift inside the 44x44 square cells. */
-    transform: translateY(0);
-  }
-
-  &__divider {
-    position: relative;
-    margin: 14rem auto 1.5rem;
-    max-width: 1280px;
-    height: 1px;
-    background: linear-gradient(
-      to right,
-      transparent,
-      var(--clr-primary-100),
-      transparent
-    );
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    @include min-media-query(md) {
-      margin-top: 16rem;
-    }
-  }
-
-  &__divider-tag {
-    background: var(--clr-neutral-500);
+  &__social-link {
+    font-size: var(--fs-100);
+    font-weight: 700;
+    letter-spacing: 0.1em;
     color: var(--clr-primary-100);
-    padding: 0.4rem 1rem;
-    border: 1px solid var(--clr-primary-100);
-    font-size: var(--fs-200);
-    letter-spacing: 0.16em;
-    transform: translateY(-50%);
+    opacity: 0.75;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+    line-height: 1.35;
+
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
+    }
   }
 
-  &__bottom {
-    max-width: 1280px;
-    margin: 3rem auto 0;
+  &__social-dot {
+    color: var(--clr-primary-100);
+    opacity: 0.4;
+    font-size: var(--fs-100);
+    margin: 0 0.35rem;
+    line-height: 1.35;
+  }
+
+  &__legal-list {
+    list-style: none;
+    margin: 0.1rem 0 0;
+    padding: 0;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-    color: var(--clr-neutral-300);
-    font-size: var(--fs-200);
-    letter-spacing: 0.06em;
+    flex-wrap: wrap;
+    gap: 0.1rem 0.75rem;
+    line-height: 1.35;
+  }
 
-    @include min-media-query(md) {
-      margin-top: 4rem;
-    }
+  &__legal-link {
+    font-size: var(--fs-100);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: var(--clr-primary-100);
+    opacity: 0.55;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+    line-height: 1.35;
 
-    @include min-media-query(lg) {
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem 1.5rem;
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
     }
   }
 
-  &__rights {
-    font-family: "Geomanist", sans-serif;
-    white-space: pre-line;
+  &__manifest-list {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.1rem 0.85rem;
+    justify-content: flex-end;
+    line-height: 1.35;
   }
 
-  &__made-by {
-    font-family: "SpaceMono", monospace;
-    color: var(--clr-neutral-200);
-    align-self: flex-end;
+  &__manifest-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    min-width: 0;
+    justify-content: flex-end;
+    line-height: 1.35;
+  }
 
-    @include min-media-query(lg) {
-      align-self: center;
-    }
+  &__manifest-key {
+    font-size: var(--fs-100);
+    letter-spacing: 0.1em;
+    color: var(--clr-primary-100);
+    opacity: 0.65;
+    font-weight: 700;
+    min-width: 3.75rem;
+    flex-shrink: 0;
+    line-height: 1.35;
+  }
+
+  &__manifest-val {
+    margin: 0;
+    font-size: var(--fs-100);
+    letter-spacing: 0.04em;
+    color: var(--clr-primary-100);
+    opacity: 0.45;
+    word-break: break-all;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.35;
   }
 }
 </style>
