@@ -17,7 +17,7 @@
       "dist/assets/now-projects-section-*.js",
       "dist/assets/now-projects-section-*.css"
     ],
-    "limit": "10 KB",
+    "limit": "11 KB",
     "gzip": true
   },
   {

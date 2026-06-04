@@ -9,8 +9,8 @@
  * (browser/session manifest).
  */
 
-import useInViewport from '@composables/use-in-viewport';
 import KyonaxBrandSignature from '@components/brand/kyonax-brand-signature.vue';
+import useInViewport from '@composables/use-in-viewport';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -23,7 +23,9 @@ const viewport     = ref({ w: 0, h: 0 });
 
 let _resize_frame = 0;
 const onResize = () => {
-  if (_resize_frame) return;
+  if (_resize_frame) {
+    return;
+  }
   _resize_frame = requestAnimationFrame(() => {
     _resize_frame = 0;
     viewport.value = { w: window.innerWidth, h: window.innerHeight };
@@ -45,7 +47,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize);
-  if (_resize_frame) cancelAnimationFrame(_resize_frame);
+  if (_resize_frame) {
+    cancelAnimationFrame(_resize_frame);
+  }
 });
 
 const manifest = computed(() => [

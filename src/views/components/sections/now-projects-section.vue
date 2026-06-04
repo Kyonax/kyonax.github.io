@@ -30,7 +30,9 @@ const _mobile_mq = typeof window !== 'undefined'
   : null;
 const _is_mobile = ref(_mobile_mq?.matches ?? false);
 if (_mobile_mq) {
-  _mobile_mq.addEventListener('change', (e) => { _is_mobile.value = e.matches; });
+  _mobile_mq.addEventListener('change', (e) => {
+    _is_mobile.value = e.matches; 
+  });
 }
 
 /* Modal + image-viewer + youtube facade chunks load on first card-open
@@ -173,7 +175,9 @@ const _seg_fmt = new Intl.DateTimeFormat('en-US', {
 });
 
 const _format_ended_segments = (ms) => {
-  if (!ms || !Number.isFinite(ms)) return [];
+  if (!ms || !Number.isFinite(ms)) {
+    return [];
+  }
   const p = Object.fromEntries(
     _seg_fmt.formatToParts(new Date(ms)).map(({ type, value }) => [type, value]),
   );
@@ -181,7 +185,7 @@ const _format_ended_segments = (ms) => {
     (p.month || '').toUpperCase(),
     p.day || '',
     p.year || '',
-    `${p.hour || '00'}:${p.minute || '00'}`.replace(/^24:/, '00:').replace(/ /g, ' '),
+    `${p.hour || '00'}:${p.minute || '00'}`.replace(/^24:/, '00:').replace(/\u00a0/g, ' '),
   ];
 };
 
@@ -394,12 +398,20 @@ const _sorted_now_cards = computed(() =>
     .sort((a, b) => {
       const a_done = a.status_id === 'DONE';
       const b_done = b.status_id === 'DONE';
-      if (a_done !== b_done) return a_done ? 1 : -1;
-      if (a.is_working_on !== b.is_working_on) return a.is_working_on ? -1 : 1;
-      if (a.ended !== b.ended) return a.ended ? 1 : -1;
+      if (a_done !== b_done) {
+        return a_done ? 1 : -1;
+      }
+      if (a.is_working_on !== b.is_working_on) {
+        return a.is_working_on ? -1 : 1;
+      }
+      if (a.ended !== b.ended) {
+        return a.ended ? 1 : -1;
+      }
       const pa = NOW_STATUS_PRIORITY[a.status_id] ?? 99;
       const pb = NOW_STATUS_PRIORITY[b.status_id] ?? 99;
-      if (pa !== pb) return pa - pb;
+      if (pa !== pb) {
+        return pa - pb;
+      }
       return _deadline_ms(PROJECTS[a.key]) - _deadline_ms(PROJECTS[b.key]);
     }),
 );
@@ -409,7 +421,9 @@ const page_idx = ref(0);
 const page_dir = ref(1);
 
 /* Reset to first page whenever PAGE_SIZE switches (mobile ↔ desktop). */
-watch(PAGE_SIZE, () => { page_idx.value = 0; });
+watch(PAGE_SIZE, () => {
+  page_idx.value = 0; 
+});
 
 const main_cards = computed(() => {
   const ps = PAGE_SIZE.value;
@@ -420,7 +434,9 @@ const main_cards = computed(() => {
 const padded_main_cards = computed(() => {
   const ps = PAGE_SIZE.value;
   const cards = main_cards.value;
-  if (cards.length >= ps) return cards;
+  if (cards.length >= ps) {
+    return cards;
+  }
   return [...cards, ...Array(ps - cards.length).fill(null)];
 });
 
@@ -429,7 +445,9 @@ const padded_main_cards = computed(() => {
    every modal-bound card on the NEXT page so navigation feels instant. */
 const preload_next_page = () => {
   const ps = PAGE_SIZE.value;
-  if (page_count.value <= 1) return;
+  if (page_count.value <= 1) {
+    return;
+  }
   const start = ((page_idx.value + 1) % page_count.value) * ps;
   _sorted_now_cards.value.slice(start, start + ps).filter(c => c.has_modal).forEach(warmProjectCard);
 };
@@ -443,7 +461,9 @@ const page_prev = () => {
   page_idx.value = (page_idx.value - 1 + page_count.value) % page_count.value;
 };
 const page_goto = (idx) => {
-  if (idx === page_idx.value) return;
+  if (idx === page_idx.value) {
+    return;
+  }
   page_dir.value = idx > page_idx.value ? 1 : -1;
   page_idx.value = idx;
 };
@@ -508,9 +528,14 @@ const carousel_goto = (idx) => {
 };
 
 const onModalKeydown = (event, total) => {
-  if (!total || total < 2) return;
-  if (event.key === 'ArrowLeft')       { event.preventDefault(); carousel_prev(total); }
-  else if (event.key === 'ArrowRight') { event.preventDefault(); carousel_next(total); }
+  if (!total || total < 2) {
+    return;
+  }
+  if (event.key === 'ArrowLeft')       {
+    event.preventDefault(); carousel_prev(total); 
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault(); carousel_next(total); 
+  }
 };
 
 /* Carousel image skeleton state. Keyed by `${cardKey}-${idx}` so each
@@ -647,7 +672,10 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
 
             <header class="now-projects-section__card-header">
               <span class="now-projects-section__status">
-                <span v-if="card.status_id === 'DONE'" class="icon-glyph" :data-text="GLYPH_ENDED" aria-hidden="true" />
+                <span v-if="card.status_id === 'DONE'"
+class="icon-glyph"
+:data-text="GLYPH_ENDED"
+aria-hidden="true" />
                 <UiStateGrid v-else-if="card.status_id === 'WORKING_ON' || card.status_id === 'IN_PROGRESS'" />
                 <span v-else class="state-square" aria-hidden="true" />
                 {{ card.status_label }}

@@ -13,11 +13,11 @@ import SiteFooter from '@sections/site-footer.vue';
 import IconSprite from '@ui/icon-sprite.vue';
 import HudNav from '@widgets/hud-nav.vue';
 import { defineAsyncComponent, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const TestimonialsSection = defineAsyncComponent(() => {
   return import('@sections/testimonials-section.vue');
 });
-import { useI18n } from 'vue-i18n';
 
 /* Below-fold sections code-split into their own chunks. <Suspense> wraps
    each one so vite-ssg awaits the loader during prerender (full SEO

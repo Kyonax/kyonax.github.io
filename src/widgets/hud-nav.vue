@@ -43,7 +43,9 @@ let _last_scroll_run = 0;
 const _read_scroll = () => {
   _scroll_frame = 0;
   const now = Date.now();
-  if (now - _last_scroll_run < 100) return;
+  if (now - _last_scroll_run < 100) {
+    return;
+  }
   _last_scroll_run = now;
 
   scrolled.value = window.scrollY > 24;
@@ -76,10 +78,14 @@ const _read_scroll = () => {
 
   let winner = null;
   for (const { id, top } of candidates) {
-    if (top <= threshold) winner = id;
+    if (top <= threshold) {
+      winner = id;
+    }
   }
 
-  if (winner) active_section.value = SECTION_NAV_MAP[winner] ?? winner;
+  if (winner) {
+    active_section.value = SECTION_NAV_MAP[winner] ?? winner;
+  }
 };
 
 const onScroll = () => {
