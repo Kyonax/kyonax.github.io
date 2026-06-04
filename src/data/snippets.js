@@ -79,7 +79,7 @@ export const TRANSLATIONS = {
             'description': "<a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'>Zerønet Labs</a> is the commercial side of the Kyonax ecosystem, a studio focused on building accurate and performant software for companies of any size. The product line includes <strong>UI libraries</strong> primarily for Vue.js, <strong>npm packages</strong> for Vue, React and Next.js, plus <strong>AI-powered automations</strong> and supporting tooling for startup and mid-size clients. The brand pitch is short and direct, solve real business problems with automation and performant engineering.<br><br><strong>zeronet-labs-website</strong> is the public face of the brand and the launch surface for every product it ships. The site carries the company manifest, the active product line, case studies, and a direct contact funnel. Pitched as the deliberate counterpart to the open-source <strong>Cyber Code Syndicate</strong> side of the Kyonax ecosystem, where Zerønet sells commercial work to fund the rest of the operation.<br><br>Built around the <strong>Zerønet</strong> tagline (zero heavy networks, zero slowdowns, zero wasted cycles), with <strong>performance</strong> and <strong>SEO</strong> treated as first-class concerns over visual flourish, since commercial landings live or die by <strong>Core Web Vitals</strong>, search visibility, and how fast a visitor reaches the call to action. Implementation parallels the <strong>kyo-website</strong> stack (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> for static locales, plain <strong>JavaScript</strong> over <strong>SCSS</strong> styling) with brand-specific theming layered on top.<br><br>Currently at <strong>v0.1.0</strong> and on hold while the commercial side is being scoped, with active development scheduled to resume in mid-2026.",
           },
           'cyber-code-syndicate': {
-            'description': "<a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong> (<strong>CCS</strong>)</a> is the free and open-source side of the Kyonax ecosystem, a community built around shared <strong>guidelines</strong>, <strong>principles</strong>, and <strong>architectures</strong> for every project it backs. It holds shared <strong>code standards</strong>, <strong>teaching methodologies</strong> for newcomers entering software development, curated guidance on <strong>responsible AI usage</strong>, and an official community paper at <a href='https://doi.org/10.5281/zenodo.17994539' target='_blank' rel='noopener'><strong>Zenodo DOI 10.5281/zenodo.17994539</strong></a> that develops the conceptual framework. CCS is grounded in <strong>ethical software practices</strong>, <strong>privacy by default</strong>, <strong>transparency</strong>, and <strong>autonomy</strong>, and exists to bring real value to the community without selling anything in return.<br><br><strong>cyber-code-syndicate</strong> is the community landing for the organization, the main entry point for anyone who wants to know what the community is about and how to join. The site holds the public-facing surface of the guidelines and principles, the active project list, the mentorship and workshop channels, and the path for new members to onboard. Pitched as the deliberate counterpart to the commercial <a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'>Zerønet Labs</a> side of the Kyonax ecosystem.<br><br>Built as a multilingual landing with Spanish as the primary language and English as a secondary surface to match the community's audience, styled with the same <strong>cyberpunk</strong> aesthetic shared across the rest of the Kyonax ecosystem. The build is performance-aware from the start, with <strong>performance</strong> and <strong>SEO</strong> treated as first-class concerns since the site doubles as the community's public face and onboarding funnel for new members. Implementation parallels the <strong>kyo-website</strong> stack (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> for static EN and ES locales, plain <strong>JavaScript</strong> over <strong>SCSS</strong> styling) with brand-specific theming layered on top.<br><br>Currently at <strong>v0.1.0</strong> and on hold while the community side is being scoped, with active development scheduled to resume in mid-2026.",
+            'description': "<a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong></a> (<strong>CCS</strong>) is the free and open-source side of the Kyonax ecosystem, a community built around shared <strong>guidelines</strong>, <strong>principles</strong>, and <strong>architectures</strong> for every project it backs. It holds shared <strong>code standards</strong>, <strong>teaching methodologies</strong> for newcomers entering software development, curated guidance on <strong>responsible AI usage</strong>, and an official community paper at <a href='https://doi.org/10.5281/zenodo.17994539' target='_blank' rel='noopener'><strong>Zenodo DOI 10.5281/zenodo.17994539</strong></a> that develops the conceptual framework. CCS is grounded in <strong>ethical software practices</strong>, <strong>privacy by default</strong>, <strong>transparency</strong>, and <strong>autonomy</strong>, and exists to bring real value to the community without selling anything in return.<br><br><strong>cyber-code-syndicate</strong> is the community landing for the organization, the main entry point for anyone who wants to know what the community is about and how to join. The site holds the public-facing surface of the guidelines and principles, the active project list, the mentorship and workshop channels, and the path for new members to onboard. Pitched as the deliberate counterpart to the commercial <a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'>Zerønet Labs</a> side of the Kyonax ecosystem.<br><br>Built as a multilingual landing with Spanish as the primary language and English as a secondary surface to match the community's audience, styled with the same <strong>cyberpunk</strong> aesthetic shared across the rest of the Kyonax ecosystem. The build is performance-aware from the start, with <strong>performance</strong> and <strong>SEO</strong> treated as first-class concerns since the site doubles as the community's public face and onboarding funnel for new members. Implementation parallels the <strong>kyo-website</strong> stack (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> for static EN and ES locales, plain <strong>JavaScript</strong> over <strong>SCSS</strong> styling) with brand-specific theming layered on top.<br><br>Currently at <strong>v0.1.0</strong> and on hold while the community side is being scoped, with active development scheduled to resume in mid-2026.",
           },
         },
       },
@@ -164,9 +164,36 @@ export const TRANSLATIONS = {
             'languages-value': 'EN / ES',
           },
         },
+        'testimonials': {
+          'section-aria': 'Testimonials and recommendations',
+          'lead': 'What clients and colleagues say about building web projects with me.',
+          'source-label': 'LinkedIn Recommendation',
+          'source-aria-prefix': 'View LinkedIn recommendation by',
+          'go-to': 'View all on LinkedIn',
+          'prev': 'Previous testimonial',
+          'next': 'Next testimonial',
+          'slide-of': 'Testimonial {n} of {count}',
+          'items': {
+            'john-montes': {
+              'quote': 'I had the privilege of working alongside Cristian at Softtek on a critical Shopware ecommerce project, where his expertise in Symfony, Vue.js, PHP, and JavaScript was instrumental to our success. As the Senior QA, I deeply valued Cristian\'s technical mastery and collaborative spirit. He consistently delivered clean, testable code that accelerated our testing cycles and minimized issues. His ability to navigate high-pressure scenarios (whether resolving critical bugs, optimizing integrations, or meeting tight deadlines) set him apart. Cristian didn\'t just fix problems; he anticipated them, implementing preventative solutions that elevated our entire project\'s resilience.',
+              'author': 'John C. Montes',
+              'role': '— Senior QA Analyst, Softtek',
+            },
+            'mo-osburn': {
+              'quote': 'I had the pleasure of working with Cristian Moreno on a complex eCommerce project for Maritz, where he served as our lead front end developer. Cristian handled challenging front end tasks and resolved difficult bugs with expertise, all while mentoring and coaching new developers on the team. He played a pivotal role in the project\'s success.',
+              'author': 'Mo Osburn',
+              'role': '— Technical Project Manager, Maritz',
+            },
+            'diego-yair': {
+              'quote': 'It has been an absolute pleasure working with you over the past year. You are an amazing developer, and I truly appreciate your patience and dedication in introducing me to the project and providing support whenever needed. Your guidance through the challenges we faced together was invaluable, and I am incredibly grateful for the opportunity to collaborate with you. Working with you has been a rewarding and inspiring experience.',
+              'author': 'Diego Yair Hernández Mejía',
+              'role': '— Senior Frontend Developer, Softtek',
+            },
+          },
+        },
         'skills': {
           'label': 'SKILLS // TOOLS',
-          'subtitle': 'Battle-tested tooling across frontend, backend, devops, and AI, powering production web systems.',
+          'subtitle': 'Technologies I use in production, from frontend and backend to devops and AI.',
           'categories': {
             'frontend': 'FRONTEND',
             'backend': 'BACKEND',
@@ -177,7 +204,7 @@ export const TRANSLATIONS = {
         },
         'experience': {
           'label': 'EXPERIENCE // TIMELINE',
-          'subtitle': '8 years of senior full-stack and frontend web development, from e-commerce engineering to open-source tooling.',
+          'subtitle': 'My full-stack web engineering career, from e-commerce platforms to SaaS products and open-source projects.',
           'tools-label': 'STACK',
           'read-more': 'READ FULL DETAILS',
           'prev': 'Previous role',
@@ -195,7 +222,7 @@ export const TRANSLATIONS = {
         },
         'projects': {
           'label': 'PROJECTS // PORTFOLIO',
-          'subtitle': 'Open-source tools and client projects in active development. Full-stack web development in progress.',
+          'subtitle': 'What I\'m building and shipping, from open-source developer tools to client work and live products.',
           'view-repo': 'VIEW REPO',
           'featured-label': 'FEATURED // PORTFOLIO',
           'ends-in-prefix': 'ENDS IN',
@@ -235,7 +262,7 @@ export const TRANSLATIONS = {
         'faq': {
           'tag': '// 05',
           'title': 'FAQ // QUERIES',
-          'subtitle': 'Hiring, remote availability, technologies, and performance services from a senior full-stack engineer.',
+          'subtitle': 'Answers to the most common questions about working with me on web projects.',
           'section-aria': 'Frequently asked questions',
           'items': {
             'what-i-do': {
@@ -363,7 +390,7 @@ export const TRANSLATIONS = {
             'description': "<a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'>Zerønet Labs</a> es el lado comercial del ecosistema Kyonax, un estudio enfocado en construir software preciso y de alto rendimiento para empresas de cualquier tamaño. La línea de productos incluye <strong>librerías UI</strong> principalmente para Vue.js, <strong>paquetes npm</strong> para Vue, React y Next.js, además de <strong>automatizaciones impulsadas por IA</strong> y herramientas de soporte para clientes startup y de tamaño medio. El pitch de marca es corto y directo, resolver problemas reales de negocio con automatización e ingeniería de alto rendimiento.<br><br><strong>zeronet-labs-website</strong> es el rostro público de la marca y la superficie de lanzamiento para cada producto que sale al mercado. El sitio lleva el manifiesto de la empresa, la línea activa de productos, casos de estudio y un funnel de contacto directo. Planteado como contraparte deliberada del lado open-source <strong>Cyber Code Syndicate</strong> del ecosistema Kyonax, donde Zerønet vende el trabajo comercial para financiar el resto de la operación.<br><br>Construido alrededor del eslogan <strong>Zerønet</strong> (zero heavy networks, zero slowdowns, zero wasted cycles), con <strong>rendimiento</strong> y <strong>SEO</strong> tratados como prioridades de primera clase por encima de los adornos visuales, ya que las landings comerciales viven o mueren por los <strong>Core Web Vitals</strong>, la visibilidad en buscadores y la rapidez con que un visitante llega al call to action. La implementación replica el stack de <strong>kyo-website</strong> (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> para locales estáticos, <strong>JavaScript</strong> plano sobre estilos <strong>SCSS</strong>) con un sistema de theming específico de la marca encima.<br><br>Actualmente en <strong>v0.1.0</strong> y en pausa mientras se afina el lado comercial, con el desarrollo activo programado para reanudar a mediados de 2026.",
           },
           'cyber-code-syndicate': {
-            'description': "<a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong> (<strong>CCS</strong>)</a> es el lado de software libre y código abierto del ecosistema Kyonax, una comunidad construida alrededor de <strong>lineamientos</strong>, <strong>principios</strong> y <strong>arquitecturas</strong> compartidos para cada proyecto que respalda. Aloja <strong>estándares de código</strong> compartidos, <strong>metodologías de enseñanza</strong> para quienes recién comienzan en el desarrollo de software, guías curadas sobre <strong>uso responsable de IA</strong>, y un paper oficial de la comunidad en <a href='https://doi.org/10.5281/zenodo.17994539' target='_blank' rel='noopener'><strong>Zenodo DOI 10.5281/zenodo.17994539</strong></a> que desarrolla el marco conceptual completo. CCS está arraigado en <strong>prácticas éticas de software</strong>, <strong>privacidad por defecto</strong>, <strong>transparencia</strong> y <strong>autonomía</strong>, y existe para llevar valor real a la comunidad sin vender nada a cambio.<br><br><strong>cyber-code-syndicate</strong> es el landing comunitario de la organización, el punto de entrada principal para cualquiera que quiera saber de qué se trata la comunidad y cómo unirse. El sitio aloja la superficie pública de los lineamientos y principios, la lista activa de proyectos, los canales de mentoría y talleres, y el camino para que nuevos miembros se incorporen. Planteado como contraparte deliberada del lado comercial <a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'>Zerønet Labs</a> del ecosistema Kyonax.<br><br>Construido como un landing multilingüe con español como idioma principal e inglés como superficie secundaria para igualar la audiencia de la comunidad, estilizado con la misma estética <strong>cyberpunk</strong> compartida a lo largo del resto del ecosistema Kyonax. La construcción está orientada a rendimiento desde el inicio, con <strong>rendimiento</strong> y <strong>SEO</strong> tratados como prioridades de primera clase, dado que el sitio funciona también como rostro público de la comunidad y embudo de onboarding para nuevos miembros. La implementación replica el stack de <strong>kyo-website</strong> (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> para locales estáticos EN y ES, <strong>JavaScript</strong> plano sobre estilos <strong>SCSS</strong>) con un sistema de theming específico de la marca encima.<br><br>Actualmente en <strong>v0.1.0</strong> y en pausa mientras se afina el lado comunitario, con el desarrollo activo programado para reanudar a mediados de 2026.",
+            'description': "<a href='https://github.com/ccs-devhub' target='_blank' rel='noopener'><strong>Cyber Code Syndicate</strong></a> (<strong>CCS</strong>) es el lado de software libre y código abierto del ecosistema Kyonax, una comunidad construida alrededor de <strong>lineamientos</strong>, <strong>principios</strong> y <strong>arquitecturas</strong> compartidos para cada proyecto que respalda. Aloja <strong>estándares de código</strong> compartidos, <strong>metodologías de enseñanza</strong> para quienes recién comienzan en el desarrollo de software, guías curadas sobre <strong>uso responsable de IA</strong>, y un paper oficial de la comunidad en <a href='https://doi.org/10.5281/zenodo.17994539' target='_blank' rel='noopener'><strong>Zenodo DOI 10.5281/zenodo.17994539</strong></a> que desarrolla el marco conceptual completo. CCS está arraigado en <strong>prácticas éticas de software</strong>, <strong>privacidad por defecto</strong>, <strong>transparencia</strong> y <strong>autonomía</strong>, y existe para llevar valor real a la comunidad sin vender nada a cambio.<br><br><strong>cyber-code-syndicate</strong> es el landing comunitario de la organización, el punto de entrada principal para cualquiera que quiera saber de qué se trata la comunidad y cómo unirse. El sitio aloja la superficie pública de los lineamientos y principios, la lista activa de proyectos, los canales de mentoría y talleres, y el camino para que nuevos miembros se incorporen. Planteado como contraparte deliberada del lado comercial <a href='https://github.com/zeronet-labs' target='_blank' rel='noopener'>Zerønet Labs</a> del ecosistema Kyonax.<br><br>Construido como un landing multilingüe con español como idioma principal e inglés como superficie secundaria para igualar la audiencia de la comunidad, estilizado con la misma estética <strong>cyberpunk</strong> compartida a lo largo del resto del ecosistema Kyonax. La construcción está orientada a rendimiento desde el inicio, con <strong>rendimiento</strong> y <strong>SEO</strong> tratados como prioridades de primera clase, dado que el sitio funciona también como rostro público de la comunidad y embudo de onboarding para nuevos miembros. La implementación replica el stack de <strong>kyo-website</strong> (<strong>Vue 3</strong>, <strong>Vite</strong>, <strong>vite-ssg</strong> para locales estáticos EN y ES, <strong>JavaScript</strong> plano sobre estilos <strong>SCSS</strong>) con un sistema de theming específico de la marca encima.<br><br>Actualmente en <strong>v0.1.0</strong> y en pausa mientras se afina el lado comunitario, con el desarrollo activo programado para reanudar a mediados de 2026.",
           },
         },
       },
@@ -448,9 +475,36 @@ export const TRANSLATIONS = {
             'languages-value': 'EN / ES',
           },
         },
+        'testimonials': {
+          'section-aria': 'Testimonios y recomendaciones',
+          'lead': 'Lo que clientes y colegas dicen sobre construir proyectos web conmigo.',
+          'source-label': 'Recomendación de LinkedIn',
+          'source-aria-prefix': 'Ver recomendación de LinkedIn de',
+          'go-to': 'Ver todas en LinkedIn',
+          'prev': 'Testimonio anterior',
+          'next': 'Siguiente testimonio',
+          'slide-of': 'Testimonio {n} de {count}',
+          'items': {
+            'john-montes': {
+              'quote': 'Tuve el privilegio de trabajar junto a Cristian en Softtek en un proyecto crítico de e-commerce con Shopware, donde su expertise en Symfony, Vue.js, PHP y JavaScript fue fundamental para nuestro éxito. Como QA Senior, valoré profundamente su dominio técnico y espíritu colaborativo. Entregó consistentemente código limpio y testeable que aceleró nuestros ciclos de pruebas y minimizó los incidentes. Su capacidad para manejar escenarios de alta presión, ya fuera resolviendo bugs críticos, optimizando integraciones o cumpliendo plazos ajustados, lo distinguió del resto. Cristian no solo resolvía problemas, los anticipaba, implementando soluciones preventivas que elevaron la resiliencia del proyecto.',
+              'author': 'John C. Montes',
+              'role': '— QA Senior, Softtek',
+            },
+            'mo-osburn': {
+              'quote': 'Tuve el placer de trabajar con Cristian Moreno en un complejo proyecto de e-commerce para Maritz, donde se desempeñó como nuestro desarrollador frontend líder. Cristian manejó tareas frontend complejas y resolvió bugs difíciles con gran destreza, mientras guiaba y capacitaba a los nuevos desarrolladores del equipo. Fue un actor clave en el éxito del proyecto.',
+              'author': 'Mo Osburn',
+              'role': '— Technical Project Manager, Maritz',
+            },
+            'diego-yair': {
+              'quote': 'Ha sido un placer absoluto trabajar contigo durante el último año. Eres un desarrollador increíble, y valoro mucho tu paciencia y dedicación al integrarme al proyecto y brindarme apoyo en todo momento. Tu guía en los desafíos que enfrentamos juntos fue invaluable, y estoy muy agradecido por la oportunidad de colaborar contigo. Trabajar contigo ha sido una experiencia enriquecedora e inspiradora.',
+              'author': 'Diego Yair Hernández Mejía',
+              'role': '— Senior Frontend Developer, Softtek',
+            },
+          },
+        },
         'skills': {
           'label': 'SKILLS // HERRAMIENTAS',
-          'subtitle': 'Herramientas probadas en producción a través de frontend, backend, devops e IA.',
+          'subtitle': 'Las herramientas que uso en producción, de frontend y backend a devops e IA.',
           'categories': {
             'frontend': 'FRONTEND',
             'backend': 'BACKEND',
@@ -461,7 +515,7 @@ export const TRANSLATIONS = {
         },
         'experience': {
           'label': 'EXPERIENCIA // LÍNEA DE TIEMPO',
-          'subtitle': '8 años de desarrollo web full-stack y frontend senior, de ingeniería e-commerce a herramientas open-source.',
+          'subtitle': 'Mi trayectoria en ingeniería web full-stack, desde plataformas e-commerce hasta productos SaaS y proyectos open-source.',
           'tools-label': 'STACK',
           'read-more': 'VER DETALLE COMPLETO',
           'prev': 'Rol anterior',
@@ -479,7 +533,7 @@ export const TRANSLATIONS = {
         },
         'projects': {
           'label': 'PROYECTOS // PORTAFOLIO',
-          'subtitle': 'Herramientas open-source y proyectos de clientes en desarrollo activo. Desarrollo web full-stack en progreso.',
+          'subtitle': 'Lo que estoy construyendo y entregando, de herramientas open-source a desarrollos para clientes y productos lanzados.',
           'view-repo': 'VER REPO',
           'featured-label': 'DESTACADOS // PORTAFOLIO',
           'ends-in-prefix': 'TERMINA',
@@ -519,7 +573,7 @@ export const TRANSLATIONS = {
         'faq': {
           'tag': '// 05',
           'title': 'FAQ // CONSULTAS',
-          'subtitle': 'Contratación, disponibilidad remota, tecnologías y servicios de un ingeniero full-stack senior.',
+          'subtitle': 'Respuestas a las preguntas más comunes sobre trabajar conmigo en proyectos web.',
           'section-aria': 'Preguntas frecuentes',
           'items': {
             'what-i-do': {
