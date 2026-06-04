@@ -23,6 +23,16 @@ import UiStateGrid from '@ui/state-grid.vue';
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+/* sm breakpoint = 48em = 768px. Below that, show 3 cards per page so the
+ * single-column mobile grid doesn't produce 6 stacked rows per tile. */
+const _mobile_mq = typeof window !== 'undefined'
+  ? window.matchMedia('(max-width: 767px)')
+  : null;
+const _is_mobile = ref(_mobile_mq?.matches ?? false);
+if (_mobile_mq) {
+  _mobile_mq.addEventListener('change', (e) => { _is_mobile.value = e.matches; });
+}
+
 /* Modal + image-viewer + youtube facade chunks load on first card-open
    instead of shipping with the initial bundle. `ModalLoading` ships
    eagerly so the click renders a placeholder instantly even when the
@@ -42,7 +52,7 @@ const YoutubeFacade = defineAsyncComponent(() => import('@ui/youtube-facade.vue'
 
 const { t, te, locale } = useI18n();
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = computed(() => _is_mobile.value ? 3 : 6);
 const FEATURED_MAX = 9;
 
 
@@ -338,15 +348,14 @@ const buildNowCard = (key) => {
   };
 };
 
-/* Modal-opening logic lives on a child `.card-hit-area` button (stretched-link
-   pattern) so the outer is never a `role="button"` with nested interactives. */
-const _card_root_tag = (card) =>
-  card.has_modal || !card.has_link ? 'div' : 'a';
-
-const _card_root_attrs = (card) =>
-  !card.has_modal && card.has_link
-    ? { href: card.url, target: '_blank', rel: 'noopener noreferrer' }
-    : {};
+/* All cards render as <div>. Interactive hit-areas are always child elements:
+   a <button> overlay for modal cards, an <a> overlay for link-only cards.
+   This keeps the outer element free of interactive semantics, prevents any
+   nested-interactive violation, and makes WCAG 2.5.3 trivially pass — the
+   overlay contains no visible text, so aria-label IS the accessible name
+   with nothing to compare against. */
+const _card_root_tag = () => 'div';
+const _card_root_attrs = () => ({});
 
 const _card_root_class = (card) => ({
   'is-ended':  card.ended,
@@ -395,28 +404,34 @@ const _sorted_now_cards = computed(() =>
     }),
 );
 
-const page_count = computed(() => Math.max(1, Math.ceil(_sorted_now_cards.value.length / PAGE_SIZE)));
+const page_count = computed(() => Math.max(1, Math.ceil(_sorted_now_cards.value.length / PAGE_SIZE.value)));
 const page_idx = ref(0);
 const page_dir = ref(1);
 
+/* Reset to first page whenever PAGE_SIZE switches (mobile ↔ desktop). */
+watch(PAGE_SIZE, () => { page_idx.value = 0; });
+
 const main_cards = computed(() => {
-  const start = page_idx.value * PAGE_SIZE;
-  return _sorted_now_cards.value.slice(start, start + PAGE_SIZE);
+  const ps = PAGE_SIZE.value;
+  const start = page_idx.value * ps;
+  return _sorted_now_cards.value.slice(start, start + ps);
 });
 
 const padded_main_cards = computed(() => {
+  const ps = PAGE_SIZE.value;
   const cards = main_cards.value;
-  if (cards.length >= PAGE_SIZE) return cards;
-  return [...cards, ...Array(PAGE_SIZE - cards.length).fill(null)];
+  if (cards.length >= ps) return cards;
+  return [...cards, ...Array(ps - cards.length).fill(null)];
 });
 
 /* Fire once per page mount (the <ul> key forces a remount on every page
    change, resetting the .once listener). Warms modal chunk + images for
    every modal-bound card on the NEXT page so navigation feels instant. */
 const preload_next_page = () => {
+  const ps = PAGE_SIZE.value;
   if (page_count.value <= 1) return;
-  const start = ((page_idx.value + 1) % page_count.value) * PAGE_SIZE;
-  _sorted_now_cards.value.slice(start, start + PAGE_SIZE).filter(c => c.has_modal).forEach(warmProjectCard);
+  const start = ((page_idx.value + 1) % page_count.value) * ps;
+  _sorted_now_cards.value.slice(start, start + ps).filter(c => c.has_modal).forEach(warmProjectCard);
 };
 
 const page_next = () => {
@@ -621,6 +636,14 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
               :aria-label="_card_hit_label(card)"
               @click="open_modal(card.key)"
             />
+            <a
+              v-else-if="card.has_link"
+              :href="card.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="now-projects-section__card-hit-area"
+              :aria-label="card.name"
+            />
 
             <header class="now-projects-section__card-header">
               <span class="now-projects-section__status">
@@ -644,6 +667,7 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
             </p>
             <p
               v-if="_has_modal_description(card.key)"
+              v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
               class="sr-only"
               v-html="t(_modal_description_key(card.key))"
             />
