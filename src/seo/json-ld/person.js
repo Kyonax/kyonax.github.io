@@ -7,7 +7,16 @@ import { AUTHOR_INFO, LOCALE_URL, SEO, SITE_ORIGIN,TECHNOLOGIES } from '@data/da
 import { TRANSLATIONS } from '@data/snippets';
 
 import { PERSON_ID } from './identifiers';
+import { PROJECT_IDS } from './projects';
 import { stripHtml } from './sanitize';
+
+const SERVICE_ID = `${SITE_ORIGIN}/#service`;
+
+const WORK_LOCATIONS = [
+  { '@type': 'Place', name: 'Villavicencio, Colombia', address: { '@type': 'PostalAddress', addressLocality: 'Villavicencio', addressRegion: 'Meta', addressCountry: 'CO' } },
+  { '@type': 'Place', name: 'Colombia', address: { '@type': 'PostalAddress', addressCountry: 'CO' } },
+  { '@type': 'Place', name: 'Latin America' },
+];
 
 const EMPLOYERS = {
   current: [
@@ -67,6 +76,9 @@ export const buildPersonJsonLd = (locale) => ({
     addressRegion: 'Meta',
     addressCountry: 'CO',
   },
+  homeLocation: WORK_LOCATIONS[0],
+  workLocation: WORK_LOCATIONS,
+  makesOffer: { '@id': SERVICE_ID },
   knowsLanguage: ['en', 'es'],
   knowsAbout: _knows_about(locale),
   sameAs: [
@@ -91,12 +103,14 @@ export const buildPersonJsonLd = (locale) => ({
       '@type': 'EmployeeRole',
       roleName: 'Senior Frontend Engineer',
       startDate: '2025',
+      endDate: '2026-05',
       worksFor: _org(EMPLOYERS.current[0]),
     },
     _org(EMPLOYERS.current[1]),
   ],
   alumniOf: EMPLOYERS.past.map(_org),
   memberOf: _org(COMMUNITY),
+  hasCreatedWork: PROJECT_IDS,
 });
 
 export default buildPersonJsonLd;

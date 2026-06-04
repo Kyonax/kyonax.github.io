@@ -1,0 +1,42 @@
+<script setup>
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-2.0-only — see LICENSE.
+ */
+
+import { computed } from 'vue';
+
+const props = defineProps({
+  name: { type: String, required: true },
+  alt:  { type: String, default: '' },
+});
+
+const aria_label = computed(() => props.alt || props.name);
+const href = computed(() => `#app-${props.name}`);
+</script>
+
+<template>
+  <svg
+    class="app-icon"
+    :role="alt ? 'img' : null"
+    :aria-label="alt ? aria_label : null"
+    :aria-hidden="alt ? null : 'true'"
+    focusable="false"
+  >
+    <use :href="href" />
+  </svg>
+</template>
+
+<style lang="scss" scoped>
+.app-icon {
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  vertical-align: middle;
+  transform: translateY(-0.06em);
+  color: inherit;
+  fill: none;
+  stroke: currentColor;
+}
+</style>

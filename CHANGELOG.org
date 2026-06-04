@@ -33,7 +33,57 @@
 #+LAST_UPDATE: May 14, 2026
 #+OPTIONS: toc:nil num:nil H:4
 
-* [Unreleased]
+* [Unreleased] — Sessions 7–14 (2026-05-29 to 2026-06-03)
+
+*Summary:* Hire-intent SEO pass with JSON-LD graph expansion, projects section
+rebuilt as paginated carousel, footer redesigned as reusable KyonaxBrandSignature
+component, AppIcon stroke-icon system added, proximity hover optimised for mobile.
+
+** Added
+- =src/seo/json-ld/professional-service.js= — ProfessionalService node: 18 Colombian
+  cities + LATAM + US in =areaServed=, 9 service types per locale, linked from
+  =Person.makesOffer=.
+- =src/seo/json-ld/projects.js= — four SoftwareApplication nodes (reckit, webcam2ascii,
+  org2html, the-invite); =Person.hasCreatedWork= links all 4 via =PROJECT_IDS= export.
+- =src/components/brand/kyonax-brand-signature.vue= — reusable KYONAX brand block;
+  corner-dot implied frame; dual-font Geomanist + SpaceMono; 京 kanji; KYONAX wordmark;
+  identity row; legal strip; responsive at 1024 / 768 / 414 px.
+- =src/components/ui/app-icon.vue= + =src/data/app-icons.js= + =src/assets/icons/= —
+  stroke-based AppIcon system parallel to BrandIcon; consolidated into icon-sprite.vue
+  via =_build_symbols(sources, prefix)= helper.
+- =src/assets/cv/Cristian-Moreno-Senior-Software-Engineer-{EN,ES}.pdf= — CV PDFs
+  renamed to professional convention; ATS seniority signal from filename.
+
+** Changed
+- JSON-LD @graph entities: 3 → 8. =Person= gains =homeLocation=, =workLocation= (3 Place
+  entries), =makesOffer=, =hasCreatedWork=; AgileEngine =EmployeeRole= adds =endDate:
+  '2026-05'=. =TECHNOLOGIES= adds rust + preact; =Person.knowsAbout= auto-expands.
+- =SEO.keywords= 21 → 66 entries: 12 Colombian cities ordered by search volume, hire-intent
+  EN + ES tokens, nearshore + bilingual signals. ES meta title: Ingeniero → Desarrollador
+  Web for higher search volume.
+- Hero: location text label replaced with inline map-marker SVG (AppIcon); availability
+  tokens =AVAILABLE FOR HIRE= / =ABIERTO A CONTRATOS=; responsive breakpoints at 558 px
+  (=text-align-last: right= on title wrap), 414 px (V/CIO city abbreviation), 374 px (CTA
+  size reduction via =:deep=); =active_projects= counts all 8 projects.
+- Projects section: =PAGE_SIZE=6= paginated carousel; =padded_main_cards= ghost fill; slide
+  transitions; =preload_next_page= on pointer-enter. =--state-color= cascade drives flare,
+  borders, countdown label + date + segments from one per-card token. All 8 projects get
+  Geomanist descriptions (≤56 chars, trailing dot) below the countdown block. Deadline labels
+  project-specific (≤31 chars) with tech prefix. DONE cards sort last via explicit
+  =status_id= guard. Spanish date format strips DE connector (18 DE JUN → 18 JUN).
+  =ends-in-prefix= ES: TERMINA EN → TERMINA.
+- Footer: rebuilt around =<KyonaxBrandSignature />=; site-footer.vue retains LINKS column
+  and RUNTIME column only; outer spacing halved on top, extra 1 rem at bottom.
+- =icon-sprite.vue=: embeds brand-* and app-* symbol families via shared =_build_symbols=.
+- =use-proximity-hover.js=: =pointer: coarse= early-return added; mobile TBT 250 ms → 70 ms;
+  Lighthouse Performance 84 → 90 (3-run median); desktop unchanged at 99. CCS license header
+  added (pre-existing miss).
+- =snippets.js=: hero summary past-tense; CV bullets ATS + quantification pass all 6 roles
+  EN + ES; =ends-in-prefix= ES strip; footer i18n keys; responsive city-split i18n keys;
+  =projects.js= =milestone= field for DONE card labels; =the-invite= =ended= date 2026-02-05.
+
+** Removed
+- =src/assets/cv/cv_cristian_d_moreno_{en,es}.pdf= — replaced by professionally named files.
 
 * [v2.0.1-vue-migration] — 2026-05-16 :: Performance hardening + ADA round
 

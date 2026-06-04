@@ -82,6 +82,8 @@ export const TECHNOLOGIES = [
   { id: 'bash',          name: { en: 'Bash Scripting',  es: 'Bash Scripting'  }, iconGlyph: '', iconClass: '' },
   { id: 'litellm',       name: { en: 'LiteLLM',         es: 'LiteLLM'         }, iconGlyph: '', iconClass: '' },
   { id: 'ai-workflows',  name: { en: 'AI Workflows',    es: 'Flujos IA'       }, iconGlyph: '', iconClass: '' },
+  { id: 'rust',          name: { en: 'Rust',            es: 'Rust'            }, iconGlyph: '', iconClass: '' },
+  { id: 'preact',        name: { en: 'Preact',          es: 'Preact'          }, iconGlyph: '', iconClass: '' },
 ];
 
 export const TECH_BY_ID = Object.freeze(

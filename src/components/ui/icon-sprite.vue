@@ -4,23 +4,27 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import { APP_ICON_SOURCES } from '@data/app-icons';
 import { BRAND_SVG_SOURCES } from '@data/brand-icons';
 
-const SPRITE_MARKUP = (() => {
+const _build_symbols = (sources, prefix) => {
   const symbols = [];
-  for (const [id, raw] of Object.entries(BRAND_SVG_SOURCES)) {
+  for (const [id, raw] of Object.entries(sources)) {
     const view_box = raw.match(/<svg\b[^>]*viewBox\s*=\s*"([^"]+)"/);
     const inner = raw
       .replace(/^[\s\S]*?<svg[^>]*>/, '')
       .replace(/<\/svg>[\s\S]*$/, '')
       .trim();
     const vb = view_box ? view_box[1] : '0 0 24 24';
-    symbols.push(
-      `<symbol id="brand-${id}" viewBox="${vb}">${inner}</symbol>`,
-    );
+    symbols.push(`<symbol id="${prefix}-${id}" viewBox="${vb}">${inner}</symbol>`);
   }
-  return symbols.join('');
-})();
+  return symbols;
+};
+
+const SPRITE_MARKUP = [
+  ..._build_symbols(BRAND_SVG_SOURCES, 'brand'),
+  ..._build_symbols(APP_ICON_SOURCES, 'app'),
+].join('');
 </script>
 
 <template>

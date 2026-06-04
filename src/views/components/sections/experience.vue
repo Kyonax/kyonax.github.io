@@ -31,8 +31,8 @@ const UiModal = defineAsyncComponent({
 const { t, locale } = useI18n();
 
 const ENTRIES = [
-  { id: 'agile-engine',        tone: 'primary' },
-  { id: 'zeronet',             tone: 'neutral' },
+  { id: 'zeronet',             tone: 'primary' },
+  { id: 'agile-engine',        tone: 'neutral' },
   { id: 'softtek',             tone: 'neutral' },
   { id: 'cr-senior-fullstack', tone: 'neutral' },
   { id: 'cr-web-dev',          tone: 'neutral' },

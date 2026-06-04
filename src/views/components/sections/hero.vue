@@ -4,14 +4,15 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import cv_en_url from '@assets/cv/cv_cristian_d_moreno_en.pdf?url';
-import cv_es_url from '@assets/cv/cv_cristian_d_moreno_es.pdf?url';
+import cv_en_url from '@assets/cv/Cristian-Moreno-Senior-Software-Engineer-EN.pdf?url';
+import cv_es_url from '@assets/cv/Cristian-Moreno-Senior-Software-Engineer-ES.pdf?url';
 import useCursorTooltip from '@composables/use-cursor-tooltip';
 import useInViewport from '@composables/use-in-viewport';
 import useObfuscatedEmail from '@composables/use-obfuscated-email';
 import { TECHNOLOGIES } from '@data/data';
 import { PROJECTS } from '@data/projects';
 import HeroVisual from '@sections/hero-visual.vue';
+import AppIcon from '@ui/app-icon.vue';
 import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
 import UiLink from '@ui/link.vue';
@@ -33,15 +34,13 @@ const UiImageViewer = defineAsyncComponent({
 const { t, locale } = useI18n();
 
 const cv_href = computed(() => (locale.value === 'es' ? cv_es_url : cv_en_url));
-const cv_filename = computed(() =>
-  locale.value === 'es' ? 'cv_cristian_d_moreno_es.pdf' : 'cv_cristian_d_moreno_en.pdf',
-);
+const cv_filename = computed(() => 'Cristian-Moreno-Senior-Software-Engineer-CV.pdf');
 const cv_label = computed(() =>
   t(locale.value === 'es' ? 'kyo-web.content-data.download.cv-es' : 'kyo-web.content-data.download.cv-en'),
 );
 
 const active_projects = computed(
-  () => (PROJECTS ? Object.values(PROJECTS).filter((p) => !p.featured).length : 0),
+  () => (PROJECTS ? Object.keys(PROJECTS).length : 0),
 );
 const stack_count = computed(() => TECHNOLOGIES.length);
 
@@ -217,13 +216,21 @@ useInViewport(section_ref);
         </dl>
 
         <div class="hero__meta">
-          <div class="hero__meta-item">
-            <span class="hero__meta-label">{{ t('kyo-web.landing.hero.location-label') }}</span>
-            <span class="hero__meta-value">{{ t('kyo-web.landing.hero.location-value') }}</span>
+          <div class="hero__meta-item hero__meta-item--location">
+            <AppIcon
+              class="hero__meta-icon"
+              name="map-marker"
+              :alt="t('kyo-web.landing.hero.location-label')"
+            />
+            <span class="hero__meta-value">
+              <span class="hero__meta-city hero__meta-city--full">{{ t('kyo-web.landing.hero.location-city') }}</span>
+              <span class="hero__meta-city hero__meta-city--short">{{ t('kyo-web.landing.hero.location-city-short') }}</span>
+              {{ t('kyo-web.landing.hero.location-country') }}
+            </span>
           </div>
+          <span class="hero__meta-dot" aria-hidden="true" />
           <div class="hero__meta-item">
             <span class="hero__meta-status">
-              <span class="hero__meta-dot" aria-hidden="true" />
               {{ t('kyo-web.landing.hero.available') }}
             </span>
           </div>
@@ -402,7 +409,13 @@ useInViewport(section_ref);
     }
   }
 
-  &__name { display: block; }
+  &__name {
+    display: block;
+
+    @media (max-width: 558px) {
+      text-align-last: right;
+    }
+  }
 
   &__orcid {
     display: inline-flex;
@@ -561,7 +574,8 @@ useInViewport(section_ref);
   &__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem 1.5rem;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 1.75rem;
     font-family: "SpaceMono", monospace;
     font-size: var(--fs-100);
@@ -578,26 +592,35 @@ useInViewport(section_ref);
     color: var(--clr-neutral-200);
   }
 
-  &__meta-label {
+  &__meta-icon {
+    font-size: 1.15em;
     color: var(--clr-neutral-300);
-    letter-spacing: 0.08em;
   }
 
   &__meta-value {
     color: var(--clr-neutral-50);
   }
 
+  &__meta-city--short { display: none; }
+
+  @media (max-width: 414px) {
+    &__meta-city--full { display: none; }
+    &__meta-city--short { display: inline; }
+  }
+
   &__meta-status {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
     color: var(--clr-success-100);
     letter-spacing: 0.08em;
   }
 
   &__meta-dot {
+    flex-shrink: 0;
     width: 6px;
     height: 6px;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
     background: var(--clr-success-100);
     border-radius: 50%;
     box-shadow: 0 0 6px var(--clr-success-100);
@@ -607,6 +630,13 @@ useInViewport(section_ref);
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+
+    @media (max-width: 374px) {
+      :deep(.ui-link--size-lg) {
+        font-size: var(--fs-300);
+        padding: 0.65rem 1rem;
+      }
+    }
   }
 
   &__scroll-hint {
