@@ -33,11 +33,13 @@
 #+LAST_UPDATE: May 14, 2026
 #+OPTIONS: toc:nil num:nil H:4
 
-* [Unreleased] — Sessions 7–14 (2026-05-29 to 2026-06-03)
+* [v2.1.0] — 2026-06-04 :: Hire-intent SEO, testimonials carousel, WCAG fixes, section copy
 
-*Summary:* Hire-intent SEO pass with JSON-LD graph expansion, projects section
-rebuilt as paginated carousel, footer redesigned as reusable KyonaxBrandSignature
-component, AppIcon stroke-icon system added, proximity hover optimised for mobile.
+*Summary:* Hire-intent SEO pass with JSON-LD graph expanded to 11 entities, testimonials
+infinite carousel with LinkedIn Review JSON-LD and Person.aggregateRating, projects section
+rebuilt as paginated carousel, footer redesigned as reusable KyonaxBrandSignature component,
+WCAG 2.4.4 + 2.5.3 fixes on project cards, and all section subtitle strings rewritten
+with first-person voice.
 
 ** Added
 - =src/seo/json-ld/professional-service.js= — ProfessionalService node: 18 Colombian
@@ -53,6 +55,17 @@ component, AppIcon stroke-icon system added, proximity hover optimised for mobil
   via =_build_symbols(sources, prefix)= helper.
 - =src/assets/cv/Cristian-Moreno-Senior-Software-Engineer-{EN,ES}.pdf= — CV PDFs
   renamed to professional convention; ATS seniority signal from filename.
+- =src/views/components/sections/testimonials-section.vue= — infinite 3-card circular
+  carousel; =__slot= + =__card= + =__source= badge structure; =setPointerCapture=
+  deferred to =pointermove= ≥8px; =clip-path: inset(0 0 -3rem 0)= horizontal-only
+  clipping; auto-advance 7.5s; mobile 8-line clamp.
+- =src/data/testimonials.js= — 3 testimonials; avatar imports; =initials= fallback
+  (=MO=); country flags (🇨🇴 🇺🇸 🇲🇽); LinkedIn URLs.
+- =src/seo/json-ld/testimonials.js= — 3 =Review= nodes; =publisher: LinkedIn
+  Organization=; =author.sameAs=; =REVIEW_IDS= export consumed by =person.js=.
+- =src/assets/brands/linkedin.svg= — LinkedIn mark; =fill="currentColor"=;
+  auto-indexed by BrandIcon glob.
+- =src/assets/testimonials/john-montes.jpg=, =diego-yair.jpg= — square profile photos.
 
 ** Changed
 - JSON-LD @graph entities: 3 → 8. =Person= gains =homeLocation=, =workLocation= (3 Place
@@ -81,6 +94,21 @@ component, AppIcon stroke-icon system added, proximity hover optimised for mobil
 - =snippets.js=: hero summary past-tense; CV bullets ATS + quantification pass all 6 roles
   EN + ES; =ends-in-prefix= ES strip; footer i18n keys; responsive city-split i18n keys;
   =projects.js= =milestone= field for DONE card labels; =the-invite= =ended= date 2026-02-05.
+- JSON-LD =@graph= entities: 8 → 11. =Person= gains =aggregateRating= (=ratingValue: '5'=,
+  =reviewCount: '3'=) and =review: REVIEW_IDS= back-refs. Three =Review= nodes added.
+- =now-projects-section.vue= — WCAG 2.4.4 + 2.5.3: =_card_root_tag= always returns
+  ='div'=; empty =<a>= overlay with =aria-label="card.name"= for link-only cards
+  (=has_link= branch); visible text never inside the =<a>=, so 2.5.3 passes trivially.
+- =testimonials-section.vue= =__lead= — =kyo-prose= class; =font-weight: 400=;
+  =font-size: var(--fs-300)=; lead text "What clients and colleagues say about building
+  web projects with me." (EN) / "Lo que clientes y colegas dicen sobre construir
+  proyectos web conmigo." (ES); =__carousel::before= left =-0.1rem=.
+- =snippets.js= — 30 new keys =kyo-web.landing.testimonials.*= EN + ES (203 total);
+  all 10 section subtitle strings (5 EN + 5 ES) rewritten with first-person voice,
+  cv-summary-writing recipe, Colombian register rules (no =y...y= connectors, no calques).
+- =_theme.scss= — =--clr-linkedin-blue: #0077b5= added.
+- =App.vue= — =TestimonialsSection= as =defineAsyncComponent= + =<Suspense>= after
+  =<HeroSection />=.
 
 ** Removed
 - =src/assets/cv/cv_cristian_d_moreno_{en,es}.pdf= — replaced by professionally named files.

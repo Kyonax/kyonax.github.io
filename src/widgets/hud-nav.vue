@@ -17,8 +17,13 @@ const NAV_LINKS = [
   { id: 'projects',   key: 'kyo-web.landing.nav.projects' },
   { id: 'skills',     key: 'kyo-web.landing.nav.skills' },
   { id: 'faq',        key: 'kyo-web.landing.nav.faq' },
-  { id: 'contact',    key: 'kyo-web.landing.nav.contact' },
+  // contact: add back once contact section is built
 ];
+
+/* Sections that exist in the DOM but have no nav link — mapped to the
+ * nearest nav parent so the active-state algorithm doesn't skip them. */
+const SECTION_NAV_MAP = { testimonials: 'hero' };
+const _TRACKED_IDS    = [...NAV_LINKS.map(l => l.id), ...Object.keys(SECTION_NAV_MAP)];
 
 const GITHUB_URL   = 'https://github.com/Kyonax';
 const LINKEDIN_URL = 'https://www.linkedin.com/in/kyonax/';
@@ -38,32 +43,43 @@ let _last_scroll_run = 0;
 const _read_scroll = () => {
   _scroll_frame = 0;
   const now = Date.now();
-  if (now - _last_scroll_run < 100) {
-    return;
-  }
+  if (now - _last_scroll_run < 100) return;
   _last_scroll_run = now;
+
   scrolled.value = window.scrollY > 24;
+
   if (window.scrollY < 80) {
     active_section.value = 'hero';
     return;
   }
-  const target_y = window.innerHeight * 0.4;
+
+  /*
+   * "Last section whose top has crossed above 50% of the viewport."
+   * Sorting candidates by their current top position (page order) and
+   * iterating in that order means the LAST one that passes the threshold
+   * is the section actually filling the screen — producing natural,
+   * non-premature active-state transitions.
+   *
+   * Contrast with the previous min-distance approach: that activated the
+   * next section when it was merely "closer to 40% vh" than the current
+   * one, which fired far too early (next section still well below center).
+   */
+  const threshold = window.innerHeight * 0.5;
+
+  const candidates = _TRACKED_IDS
+    .map((id) => {
+      const el = document.querySelector(`#${id}`);
+      return el ? { id, top: el.getBoundingClientRect().top } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.top - b.top); // ensure page-order regardless of _TRACKED_IDS order
+
   let winner = null;
-  let min_dist = Infinity;
-  for (const l of NAV_LINKS) {
-    const el = document.querySelector(`#${l.id}`);
-    if (!el) {
-      continue;
-    }
-    const dist = Math.abs(el.getBoundingClientRect().top - target_y);
-    if (dist < min_dist) {
-      min_dist = dist;
-      winner = l.id;
-    }
+  for (const { id, top } of candidates) {
+    if (top <= threshold) winner = id;
   }
-  if (winner) {
-    active_section.value = winner;
-  }
+
+  if (winner) active_section.value = SECTION_NAV_MAP[winner] ?? winner;
 };
 
 const onScroll = () => {

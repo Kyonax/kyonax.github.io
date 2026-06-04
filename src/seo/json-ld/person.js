@@ -9,6 +9,7 @@ import { TRANSLATIONS } from '@data/snippets';
 import { PERSON_ID } from './identifiers';
 import { PROJECT_IDS } from './projects';
 import { stripHtml } from './sanitize';
+import { REVIEW_IDS } from './testimonials';
 
 const SERVICE_ID = `${SITE_ORIGIN}/#service`;
 
@@ -111,6 +112,14 @@ export const buildPersonJsonLd = (locale) => ({
   alumniOf: EMPLOYERS.past.map(_org),
   memberOf: _org(COMMUNITY),
   hasCreatedWork: PROJECT_IDS,
+  review: REVIEW_IDS,
+  aggregateRating: {
+    '@type':       'AggregateRating',
+    ratingValue:   '5',
+    reviewCount:   '3',
+    bestRating:    '5',
+    worstRating:   '1',
+  },
 });
 
 export default buildPersonJsonLd;

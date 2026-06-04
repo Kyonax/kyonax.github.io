@@ -9,6 +9,7 @@ import cv_es_url from '@assets/cv/Cristian-Moreno-Senior-Software-Engineer-ES.pd
 import useCursorTooltip from '@composables/use-cursor-tooltip';
 import useInViewport from '@composables/use-in-viewport';
 import useObfuscatedEmail from '@composables/use-obfuscated-email';
+import { vProseLinks } from '@composables/use-prose-links';
 import { TECHNOLOGIES } from '@data/data';
 import { PROJECTS } from '@data/projects';
 import HeroVisual from '@sections/hero-visual.vue';
@@ -181,7 +182,12 @@ useInViewport(section_ref);
           {{ t('kyo-web.landing.hero.role-value') }}
         </h2>
 
-        <p ref="summary_ref" class="hero__summary" v-html="t('kyo-web.landing.hero.summary')" />
+        <p
+          ref="summary_ref"
+          v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
+          class="hero__summary"
+          v-html="t('kyo-web.landing.hero.summary')"
+        />
         <Teleport v-if="is_mounted" to="body">
           <Transition name="kyo-ct">
             <div

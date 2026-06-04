@@ -12,6 +12,7 @@ import buildPersonJsonLd              from './person';
 import buildProfessionalServiceJsonLd from './professional-service';
 import buildProfilePageJsonLd         from './profile-page';
 import { buildProjectsJsonLd }        from './projects';
+import { buildTestimonialsJsonLd }    from './testimonials';
 import buildVideoObjectsJsonLd        from './videos';
 import buildWebSiteJsonLd             from './website';
 
@@ -27,6 +28,7 @@ export const buildSiteJsonLd = ({ locale = 'en' } = {}) => ({
     buildProfessionalServiceJsonLd(locale),
     ...buildVideoObjectsJsonLd({ locale }),
     ...buildProjectsJsonLd(),
+    ...buildTestimonialsJsonLd(locale),
   ],
 });
 
