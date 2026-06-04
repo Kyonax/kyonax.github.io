@@ -20,7 +20,8 @@
 
   --clr-orcid-bg: #a6ce39;
   --clr-orcid-fg: #ffffff;
-  --clr-youtube-red: #ff0000;
+  --clr-youtube-red:   #ff0000;
+  --clr-linkedin-blue: #0077b5;
 
   /* Material-Design standard easing — used for all UI transitions.
      Edit here to retune every hover/expand/animation in one place. */
@@ -377,27 +378,12 @@
   animation-play-state: running;
 }
 
-/* Hover swaps to the twin keyframe so the sweep restarts at t=0 on each
-   entry, giving the snappy "respond to hover" feel the original had. */
-.element-flare:not(.is-static):hover::before,
-.element-flare:not(.is-static):focus-visible::before {
-  animation-name: flare-breathe-restart;
-  animation-delay: 0s;
-  animation-play-state: running;
-}
 
 .element-flare.is-static:hover::before,
 .element-flare.is-static:focus-visible::before {
   opacity: 0;
 }
 
-@keyframes flare-breathe-restart {
-  0%   { background-position: 100% 0;    }
-  25%  { background-position: 0    100%; }
-  50%  { background-position: 100% 100%; }
-  75%  { background-position: 0    0;    }
-  100% { background-position: 100% 0;    }
-}
 
 /* Users with `prefers-reduced-motion: reduce` get the flare pseudo
    suppressed entirely. The global rule in `_global.scss` already collapses

@@ -8,6 +8,7 @@ import { vImageReady } from '@composables/use-image-ready';
 import useInViewport from '@composables/use-in-viewport';
 import useProjectCountdowns from '@composables/use-project-countdowns';
 import { vProseLinks } from '@composables/use-prose-links';
+import useProximityHover from '@composables/use-proximity-hover';
 import { retainImageUrl, warmImageViewer, warmProjectCard } from '@composables/use-warm-modal';
 import { warmYoutube } from '@composables/use-youtube-warmup';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
@@ -21,6 +22,16 @@ import UiSectionHeader from '@ui/section-header.vue';
 import UiStateGrid from '@ui/state-grid.vue';
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+/* sm breakpoint = 48em = 768px. Below that, show 3 cards per page so the
+ * single-column mobile grid doesn't produce 6 stacked rows per tile. */
+const _mobile_mq = typeof window !== 'undefined'
+  ? window.matchMedia('(max-width: 767px)')
+  : null;
+const _is_mobile = ref(_mobile_mq?.matches ?? false);
+if (_mobile_mq) {
+  _mobile_mq.addEventListener('change', (e) => { _is_mobile.value = e.matches; });
+}
 
 /* Modal + image-viewer + youtube facade chunks load on first card-open
    instead of shipping with the initial bundle. `ModalLoading` ships
@@ -41,7 +52,7 @@ const YoutubeFacade = defineAsyncComponent(() => import('@ui/youtube-facade.vue'
 
 const { t, te, locale } = useI18n();
 
-const NOW_MAX = 6;
+const PAGE_SIZE = computed(() => _is_mobile.value ? 3 : 6);
 const FEATURED_MAX = 9;
 
 
@@ -141,8 +152,10 @@ const _format_elapsed_segments = (started_ms, now_ms) => {
   ];
 };
 
+const _TZ = 'America/Bogota';
+
 const _DEADLINE_FMT_OPTS = {
-  timeZone: 'America/Bogota',
+  timeZone: _TZ,
   month:    'short',
   day:      'numeric',
   year:     'numeric',
@@ -152,6 +165,24 @@ const _DEADLINE_FMT_OPTS = {
 const _deadline_fmt = {
   en: new Intl.DateTimeFormat('en-US', _DEADLINE_FMT_OPTS),
   es: new Intl.DateTimeFormat('es-CO', _DEADLINE_FMT_OPTS),
+};
+
+const _seg_fmt = new Intl.DateTimeFormat('en-US', {
+  timeZone: _TZ, month: 'short', day: '2-digit', year: 'numeric',
+  hour: '2-digit', minute: '2-digit', hour12: false,
+});
+
+const _format_ended_segments = (ms) => {
+  if (!ms || !Number.isFinite(ms)) return [];
+  const p = Object.fromEntries(
+    _seg_fmt.formatToParts(new Date(ms)).map(({ type, value }) => [type, value]),
+  );
+  return [
+    (p.month || '').toUpperCase(),
+    p.day || '',
+    p.year || '',
+    `${p.hour || '00'}:${p.minute || '00'}`.replace(/^24:/, '00:').replace(/ /g, ' '),
+  ];
 };
 
 const _parse_bogota = (s) => {
@@ -176,7 +207,8 @@ const _format_deadline_ms = (ms) => {
   /* es-CO Intl emits U+00A0 between "A." and "M." — SSR escapes it as
      &nbsp; while CSR emits the raw codepoint, producing a text-content
      hydration mismatch. Collapse to ASCII space at the boundary. */
-  return fmt.format(new Date(ms)).toUpperCase().replace(/\u00A0/g, ' ');
+  const str = fmt.format(new Date(ms)).toUpperCase().replace(/\u00A0/g, ' ');
+  return locale.value === 'es' ? str.replace(/ DE /g, ' ') : str;
 };
 
 const _format_deadline = (deadline_str) =>
@@ -281,46 +313,49 @@ const buildNowCard = (key) => {
   const deadline_ms = cd?.utc_ts ?? next?.ms ?? null;
   const started_str  = project.started || '';
   const started_ms   = _parse_bogota(started_str);
+  const project_ended_ms = _parse_bogota(project.ended || '');
   const media_urls = _resolve_media(key, project.images);
   const stack      = _resolve_stack(key, project.stack);
-  const has_link   = Boolean(project.url);
+  const url        = project.url || '';
+  const has_link   = Boolean(url);
   const has_modal  = media_urls.length > 0 || _has_modal_description(key);
+  const description      = project.description || '';
+  const explicit_milestone = project.milestone ? project.milestone.toUpperCase() : '';
+  const has_own_label    = Boolean(cd?.label || next?.label || explicit_milestone);
   return {
     key,
     name:        project.name,
-    url:         project.url || '',
+    url,
     has_link,
     has_modal,
     version:     project.version || project.modality || '',
     status_id,
     status_color: _status_color(status_id),
     status_label: t(_status_label_key(status_id)),
-    label:       cd?.label || next?.label?.toUpperCase() || project.description || '',
+    description,
+    show_description: Boolean(description) && has_own_label,
+    label:       cd?.label || next?.label?.toUpperCase() || explicit_milestone || description,
     countdown:   cd?.countdown || null,
     deadline_text: _format_deadline_ms(deadline_ms),
     ended,
     is_working_on: status_id === 'WORKING_ON' && Number.isFinite(started_ms),
     started_ms,
     started_text: started_str ? _format_deadline(started_str) : null,
+    ended_segs: _format_ended_segments(deadline_ms),
+    completed_segs: _format_ended_segments(project_ended_ms),
     media_urls,
     stack,
   };
 };
 
-/* Modal-opening logic lives on a child `.card-hit-area` button (stretched-link
-   pattern) so the outer is never a `role="button"` with nested interactives. */
-const _card_root_tag = (card) =>
-  card.has_modal || !card.has_link ? 'div' : 'a';
-
-const _card_root_attrs = (card) => {
-  if (card.has_modal) {
-    return {};
-  }
-  if (card.has_link)  {
-    return { href: card.url, target: '_blank', rel: 'noopener noreferrer' };
-  }
-  return {};
-};
+/* All cards render as <div>. Interactive hit-areas are always child elements:
+   a <button> overlay for modal cards, an <a> overlay for link-only cards.
+   This keeps the outer element free of interactive semantics, prevents any
+   nested-interactive violation, and makes WCAG 2.5.3 trivially pass — the
+   overlay contains no visible text, so aria-label IS the accessible name
+   with nothing to compare against. */
+const _card_root_tag = () => 'div';
+const _card_root_attrs = () => ({});
 
 const _card_root_class = (card) => ({
   'is-ended':  card.ended,
@@ -353,27 +388,65 @@ const buildFeaturedCard = (key) => {
   };
 };
 
-const main_cards = computed(() => {
-  return now_keys
+const _sorted_now_cards = computed(() =>
+  now_keys
     .map(buildNowCard)
     .sort((a, b) => {
-      /* Cards with a started date (WORKING_ON) always pin to the top. */
-      if (a.is_working_on !== b.is_working_on) {
-        return a.is_working_on ? -1 : 1;
-      }
-      /* Ended (no future deadline) sinks to the bottom regardless of status priority. */
-      if (a.ended !== b.ended) {
-        return a.ended ? 1 : -1;
-      }
+      const a_done = a.status_id === 'DONE';
+      const b_done = b.status_id === 'DONE';
+      if (a_done !== b_done) return a_done ? 1 : -1;
+      if (a.is_working_on !== b.is_working_on) return a.is_working_on ? -1 : 1;
+      if (a.ended !== b.ended) return a.ended ? 1 : -1;
       const pa = NOW_STATUS_PRIORITY[a.status_id] ?? 99;
       const pb = NOW_STATUS_PRIORITY[b.status_id] ?? 99;
-      if (pa !== pb) {
-        return pa - pb;
-      }
+      if (pa !== pb) return pa - pb;
       return _deadline_ms(PROJECTS[a.key]) - _deadline_ms(PROJECTS[b.key]);
-    })
-    .slice(0, NOW_MAX);
+    }),
+);
+
+const page_count = computed(() => Math.max(1, Math.ceil(_sorted_now_cards.value.length / PAGE_SIZE.value)));
+const page_idx = ref(0);
+const page_dir = ref(1);
+
+/* Reset to first page whenever PAGE_SIZE switches (mobile ↔ desktop). */
+watch(PAGE_SIZE, () => { page_idx.value = 0; });
+
+const main_cards = computed(() => {
+  const ps = PAGE_SIZE.value;
+  const start = page_idx.value * ps;
+  return _sorted_now_cards.value.slice(start, start + ps);
 });
+
+const padded_main_cards = computed(() => {
+  const ps = PAGE_SIZE.value;
+  const cards = main_cards.value;
+  if (cards.length >= ps) return cards;
+  return [...cards, ...Array(ps - cards.length).fill(null)];
+});
+
+/* Fire once per page mount (the <ul> key forces a remount on every page
+   change, resetting the .once listener). Warms modal chunk + images for
+   every modal-bound card on the NEXT page so navigation feels instant. */
+const preload_next_page = () => {
+  const ps = PAGE_SIZE.value;
+  if (page_count.value <= 1) return;
+  const start = ((page_idx.value + 1) % page_count.value) * ps;
+  _sorted_now_cards.value.slice(start, start + ps).filter(c => c.has_modal).forEach(warmProjectCard);
+};
+
+const page_next = () => {
+  page_dir.value = 1;
+  page_idx.value = (page_idx.value + 1) % page_count.value;
+};
+const page_prev = () => {
+  page_dir.value = -1;
+  page_idx.value = (page_idx.value - 1 + page_count.value) % page_count.value;
+};
+const page_goto = (idx) => {
+  if (idx === page_idx.value) return;
+  page_dir.value = idx > page_idx.value ? 1 : -1;
+  page_idx.value = idx;
+};
 
 const featured_cards = computed(() =>
   Object.keys(PROJECTS)
@@ -387,12 +460,7 @@ const active_card = computed(() =>
   active_id.value ? modal_cards.value.find((c) => c.key === active_id.value) : null,
 );
 
-const segments = (countdown) => {
-  if (!countdown) {
-    return [];
-  }
-  return countdown.split('_').filter(Boolean);
-};
+const segments = (countdown) => countdown ? countdown.split('_').filter(Boolean) : [];
 
 const elapsed_segments = (started_ms) => {
   void _tick.value;
@@ -440,15 +508,9 @@ const carousel_goto = (idx) => {
 };
 
 const onModalKeydown = (event, total) => {
-  if (!total || total < 2) {
-    return;
-  }
-  if (event.key === 'ArrowLeft')  {
-    event.preventDefault(); carousel_prev(total); 
-  }
-  if (event.key === 'ArrowRight') {
-    event.preventDefault(); carousel_next(total); 
-  }
+  if (!total || total < 2) return;
+  if (event.key === 'ArrowLeft')       { event.preventDefault(); carousel_prev(total); }
+  else if (event.key === 'ArrowRight') { event.preventDefault(); carousel_next(total); }
 };
 
 /* Carousel image skeleton state. Keyed by `${cardKey}-${idx}` so each
@@ -516,6 +578,8 @@ const _warm_modal = (key) => {
 
 const section_ref = ref(null);
 useInViewport(section_ref);
+useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .now-projects-section__featured-item:not(.is-static)');
+
 </script>
 
 <template>
@@ -534,121 +598,209 @@ useInViewport(section_ref);
       :subtitle="t('kyo-web.landing.projects.subtitle')"
     />
 
-    <ul class="now-projects-section__cards" role="list">
-      <li
-        v-for="(card, idx) in main_cards"
-        :key="card.key"
-        class="now-projects-section__card-wrap"
+    <Transition :name="`page-${page_dir > 0 ? 'fwd' : 'bck'}`" mode="out-in">
+      <ul
+        :key="page_idx"
+        class="now-projects-section__cards"
+        :class="{ 'now-projects-section__cards--no-pager': page_count <= 1 }"
+        role="list"
+        @pointerenter.once="preload_next_page"
       >
-        <component
-          :is="_card_root_tag(card)"
-          v-bind="_card_root_attrs(card)"
-          class="now-projects-section__card element-flare"
-          :class="_card_root_class(card)"
-          :style="{
-            '--state-color': `var(--clr-${card.status_color}-100)`,
-            '--element-flare-delay': `${idx * 0.6}s`,
-          }"
-          @pointerenter="card.has_modal && warmProjectCard(card)"
-          @focusin="card.has_modal && warmProjectCard(card)"
+        <li
+          v-for="(card, idx) in padded_main_cards"
+          :key="card ? card.key : `ghost-${idx}`"
+          class="now-projects-section__card-wrap"
         >
-          <button
-            v-if="card.has_modal"
-            type="button"
-            class="now-projects-section__card-hit-area"
-            :aria-label="_card_hit_label(card)"
-            @click="open_modal(card.key)"
+          <div
+            v-if="!card"
+            class="now-projects-section__card now-projects-section__card--ghost"
+            aria-hidden="true"
           />
-
-          <header class="now-projects-section__card-header">
-            <span class="now-projects-section__status">
-              <UiStateGrid />
-              {{ card.status_label }}
-            </span>
-            <span class="now-projects-section__index-num" :data-text="`#${String(idx + 1).padStart(2, '0')}`" aria-hidden="true" />
-          </header>
-
-          <div class="now-projects-section__name-block">
-            <h3 class="now-projects-section__name">
-              {{ card.name }}
-            </h3>
-            <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
-          </div>
-
-          <p class="now-projects-section__milestone">{{ `// ${card.label.toUpperCase()}` }}</p>
-          <p
-            v-if="_has_modal_description(card.key)"
-            class="sr-only"
-            v-html="t(_modal_description_key(card.key))"
-          />
-          <div v-if="card.is_working_on" class="now-projects-section__countdown">
-            <div class="now-projects-section__countdown-head">
-              <span class="now-projects-section__countdown-label">
-                {{ t('kyo-web.landing.projects.started-in-prefix') }}
-              </span>
-              <span v-if="card.started_text" class="now-projects-section__countdown-date">
-                {{ card.started_text }}
-              </span>
-            </div>
-            <div class="now-projects-section__countdown-segments">
-              <span
-                v-for="seg in elapsed_segments(card.started_ms)"
-                :key="seg"
-                class="now-projects-section__segment"
-              >{{ seg }}</span>
-            </div>
-            <span class="now-projects-section__countdown-tz">
-              {{ t('kyo-web.landing.projects.timezone-label') }}
-            </span>
-          </div>
-          <div v-else-if="!card.ended && card.countdown" class="now-projects-section__countdown">
-            <div class="now-projects-section__countdown-head">
-              <span class="now-projects-section__countdown-label">
-                {{ t('kyo-web.landing.projects.ends-in-prefix') }}
-              </span>
-              <span v-if="card.deadline_text" class="now-projects-section__countdown-date">
-                {{ card.deadline_text }}
-              </span>
-            </div>
-            <div class="now-projects-section__countdown-segments">
-              <span
-                v-for="seg in segments(card.countdown)"
-                :key="seg"
-                class="now-projects-section__segment"
-              >{{ seg }}</span>
-            </div>
-            <span class="now-projects-section__countdown-tz">
-              {{ t('kyo-web.landing.projects.timezone-label') }}
-            </span>
-          </div>
-          <div v-else-if="card.ended" class="now-projects-section__ended-state">
-            <span class="icon-glyph" :data-text="GLYPH_ENDED" aria-hidden="true" />
-            <span>{{ t('kyo-web.landing.projects.ended-state') }}</span>
-          </div>
-
-          <a
-            v-if="card.has_modal && card.has_link"
-            :href="card.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="now-projects-section__link is-corner"
-            :aria-label="`${t('kyo-web.landing.projects.view-repo')}, ${card.name}`"
+          <component
+            v-else
+            :is="_card_root_tag(card)"
+            v-bind="_card_root_attrs(card)"
+            class="now-projects-section__card element-flare"
+            :class="_card_root_class(card)"
+            :style="{
+              '--state-color': `var(--clr-${card.status_color}-100)`,
+              '--element-flare-delay': `${idx * 0.6}s`,
+            }"
+            @pointerenter="card.has_modal && warmProjectCard(card)"
+            @focusin="card.has_modal && warmProjectCard(card)"
           >
-            <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
-            <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
-            <span class="icon-glyph now-projects-section__link-external" :data-text="GLYPH_LINK" aria-hidden="true" />
-          </a>
-          <span v-else-if="!card.has_modal && card.has_link" class="now-projects-section__link">
-            <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
-            <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
-            <span class="icon-glyph now-projects-section__link-external" :data-text="GLYPH_LINK" aria-hidden="true" />
-          </span>
-          <span v-else class="now-projects-section__no-link">
-            {{ t('kyo-web.landing.projects.no-link') }}
-          </span>
-        </component>
-      </li>
-    </ul>
+            <button
+              v-if="card.has_modal"
+              type="button"
+              class="now-projects-section__card-hit-area"
+              :aria-label="_card_hit_label(card)"
+              @click="open_modal(card.key)"
+            />
+            <a
+              v-else-if="card.has_link"
+              :href="card.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="now-projects-section__card-hit-area"
+              :aria-label="card.name"
+            />
+
+            <header class="now-projects-section__card-header">
+              <span class="now-projects-section__status">
+                <span v-if="card.status_id === 'DONE'" class="icon-glyph" :data-text="GLYPH_ENDED" aria-hidden="true" />
+                <UiStateGrid v-else-if="card.status_id === 'WORKING_ON' || card.status_id === 'IN_PROGRESS'" />
+                <span v-else class="state-square" aria-hidden="true" />
+                {{ card.status_label }}
+              </span>
+              <span class="now-projects-section__index-num" :data-text="`#${String(page_idx * PAGE_SIZE + idx + 1).padStart(2, '0')}`" aria-hidden="true" />
+            </header>
+
+            <div class="now-projects-section__name-block">
+              <h3 class="now-projects-section__name">
+                {{ card.name }}
+              </h3>
+              <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
+            </div>
+
+            <p class="now-projects-section__milestone">
+              {{ `// ${card.label.toUpperCase()}` }}
+            </p>
+            <p
+              v-if="_has_modal_description(card.key)"
+              v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
+              class="sr-only"
+              v-html="t(_modal_description_key(card.key))"
+            />
+            <div v-if="card.is_working_on" class="now-projects-section__countdown">
+              <div class="now-projects-section__countdown-head">
+                <span class="now-projects-section__countdown-label">
+                  {{ t('kyo-web.landing.projects.started-in-prefix') }}
+                </span>
+                <span v-if="card.started_text" class="now-projects-section__countdown-date">
+                  {{ card.started_text }}
+                </span>
+              </div>
+              <div class="now-projects-section__countdown-segments">
+                <span
+                  v-for="seg in elapsed_segments(card.started_ms)"
+                  :key="seg"
+                  class="now-projects-section__segment"
+                >{{ seg }}</span>
+              </div>
+              <span class="now-projects-section__countdown-tz">
+                {{ t('kyo-web.landing.projects.timezone-label') }}
+              </span>
+            </div>
+            <div v-else-if="!card.ended && card.countdown" class="now-projects-section__countdown">
+              <div class="now-projects-section__countdown-head">
+                <span class="now-projects-section__countdown-label">
+                  {{ t('kyo-web.landing.projects.ends-in-prefix') }}
+                </span>
+                <span v-if="card.deadline_text" class="now-projects-section__countdown-date">
+                  {{ card.deadline_text }}
+                </span>
+              </div>
+              <div class="now-projects-section__countdown-segments">
+                <span
+                  v-for="seg in segments(card.countdown)"
+                  :key="seg"
+                  class="now-projects-section__segment"
+                >{{ seg }}</span>
+              </div>
+              <span class="now-projects-section__countdown-tz">
+                {{ t('kyo-web.landing.projects.timezone-label') }}
+              </span>
+            </div>
+            <div v-else-if="card.ended" class="now-projects-section__countdown">
+              <div class="now-projects-section__countdown-head">
+                <span class="now-projects-section__countdown-label">{{ t('kyo-web.landing.projects.ended-in-prefix') }}</span>
+              </div>
+              <div class="now-projects-section__countdown-segments">
+                <span
+                  v-for="seg in card.ended_segs"
+                  :key="seg"
+                  class="now-projects-section__segment now-projects-section__segment--ended"
+                >{{ seg }}</span>
+              </div>
+              <span class="now-projects-section__countdown-tz">{{ t('kyo-web.landing.projects.timezone-label') }}</span>
+            </div>
+            <div v-else class="now-projects-section__countdown">
+              <div class="now-projects-section__countdown-head">
+                <span class="now-projects-section__countdown-label">{{ t('kyo-web.landing.projects.ended-in-prefix') }}</span>
+              </div>
+              <div class="now-projects-section__countdown-segments">
+                <span
+                  v-for="seg in card.completed_segs"
+                  :key="seg"
+                  class="now-projects-section__segment now-projects-section__segment--ended"
+                >{{ seg }}</span>
+              </div>
+              <span class="now-projects-section__countdown-tz">{{ t('kyo-web.landing.projects.timezone-label') }}</span>
+            </div>
+
+            <p v-if="card.show_description" class="now-projects-section__card-description">
+              {{ card.description }}
+            </p>
+
+            <a
+              v-if="card.has_modal && card.has_link"
+              :href="card.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="now-projects-section__link is-corner"
+              :aria-label="`${t('kyo-web.landing.projects.view-repo')}, ${card.name}`"
+            >
+              <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
+              <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
+              <span class="icon-glyph now-projects-section__link-external" :data-text="GLYPH_LINK" aria-hidden="true" />
+            </a>
+            <span v-else-if="!card.has_modal && card.has_link" class="now-projects-section__link">
+              <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
+              <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
+              <span class="icon-glyph now-projects-section__link-external" :data-text="GLYPH_LINK" aria-hidden="true" />
+            </span>
+            <span v-else class="now-projects-section__no-link">
+              {{ t('kyo-web.landing.projects.no-link') }}
+            </span>
+          </component>
+        </li>
+      </ul>
+    </Transition>
+
+    <div v-if="page_count > 1" class="now-projects-section__pagination">
+      <button
+        type="button"
+        class="now-projects-section__pagination-nav"
+        :aria-label="t('kyo-web.landing.projects.carousel-prev')"
+        @click="page_prev"
+      >
+        <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_PREV" aria-hidden="true" />
+      </button>
+      <div
+        class="now-projects-section__pagination-dots"
+        role="group"
+        :aria-label="t('kyo-web.landing.projects.label')"
+      >
+        <button
+          v-for="(_, i) in page_count"
+          :key="`pgdot-${i}`"
+          type="button"
+          class="now-projects-section__pagination-dot"
+          :class="{ 'is-active': page_idx === i }"
+          :aria-current="page_idx === i ? 'true' : undefined"
+          :aria-label="`${i + 1} / ${page_count}`"
+          @click="page_goto(i)"
+        />
+      </div>
+      <button
+        type="button"
+        class="now-projects-section__pagination-nav"
+        :aria-label="t('kyo-web.landing.projects.carousel-next')"
+        @click="page_next"
+      >
+        <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_NEXT" aria-hidden="true" />
+      </button>
+    </div>
 
     <div class="now-projects-section__featured" role="region" aria-labelledby="now-projects-featured-label">
       <h3 id="now-projects-featured-label" class="now-projects-section__featured-label">
@@ -872,7 +1024,9 @@ useInViewport(section_ref);
 
   &__cards {
     list-style: none;
-    margin: 0 0 4rem;
+    margin: 0 0 1.25rem;
+
+    &--no-pager { margin-bottom: 3rem; }
     padding: 0;
     display: grid;
     grid-template-columns: 1fr;
@@ -889,10 +1043,74 @@ useInViewport(section_ref);
 
   &__card-wrap { display: contents; }
 
+  &__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 4rem;
+  }
+
+  &__pagination-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    background: var(--clr-neutral-500);
+    border: 1px solid var(--clr-primary-100);
+    color: var(--clr-primary-100);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover, &:focus-visible {
+      background: color-mix(in srgb, var(--clr-primary-100) 12%, var(--clr-neutral-500));
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--clr-primary-100);
+      outline-offset: 2px;
+    }
+  }
+
+  &__pagination-dots {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  &__pagination-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    padding: 0;
+    border: 1px solid var(--clr-primary-100);
+    background: transparent;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &.is-active {
+      background: var(--clr-primary-100);
+      transform: scale(1.25);
+    }
+
+    &:hover, &:focus-visible {
+      background: color-mix(in srgb, var(--clr-primary-100) 40%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--clr-primary-100);
+      outline-offset: 2px;
+    }
+  }
+
   &__card {
     position: relative;
-    display: grid;
-    grid-template-rows: auto auto auto auto auto auto;
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
     padding: 1.5rem 1.5rem 0.75rem;
     text-decoration: none;
@@ -901,10 +1119,17 @@ useInViewport(section_ref);
     background: var(--clr-neutral-500);
     border: 1px solid var(--clr-border-100);
     isolation: isolate;
+    contain: layout paint;
     --element-flare-spread: 2px;
-    --element-flare-color: var(--clr-primary-100);
+    --element-flare-color: var(--state-color, var(--clr-primary-100));
     --element-flare-opacity: 0;
     transition: transform 0.25s ease;
+
+    &.has-modal {
+      transform: translateY(calc(-4px * var(--prox, 0)));
+      border-color: color-mix(in srgb, var(--state-color, var(--clr-primary-100)) calc(var(--prox, 0) * 100%), var(--clr-border-100));
+      --element-flare-opacity: calc(var(--prox, 0) * 0.06);
+    }
 
     &.is-static {
       cursor: default;
@@ -913,9 +1138,18 @@ useInViewport(section_ref);
     }
 
     &:hover, &:focus-visible {
-      border-color: var(--clr-primary-100);
+      border-color: var(--state-color, var(--clr-primary-100));
       transform: translateY(-4px);
       --element-flare-opacity: 0.06;
+    }
+
+    &--ghost {
+      pointer-events: none;
+      cursor: default;
+      border-style: dashed;
+      background: color-mix(in srgb, var(--clr-neutral-500) 40%, transparent);
+      opacity: 0.25;
+      min-height: 310.34px;
     }
 
     &:not(.has-modal) {
@@ -926,13 +1160,10 @@ useInViewport(section_ref);
       }
     }
 
-    /* Ended cards adopt the same warning color as the ENDED state pill. */
+    /* Ended cards: override --state-color so every descendant (flare, border,
+       segments, label) picks up warning automatically via the cascade. */
     &.is-ended {
-      --element-flare-color: var(--clr-warning-100);
-
-      &:hover, &:focus-visible {
-        border-color: var(--clr-warning-100);
-      }
+      --state-color: var(--clr-warning-100);
     }
   }
 
@@ -951,6 +1182,8 @@ useInViewport(section_ref);
     gap: 0.5rem;
     color: var(--state-color, var(--clr-primary-100));
     font-weight: 700;
+
+    > .icon-glyph { transform: translateY(-0.1em); }
   }
 
   &__index-num {
@@ -976,6 +1209,15 @@ useInViewport(section_ref);
   &__version {
     font-size: var(--fs-200);
     padding: 0.15rem 0.45rem;
+  }
+
+  &__card-description {
+    font-family: "Geomanist", sans-serif;
+    font-size: var(--fs-200);
+    color: var(--clr-neutral-300);
+    letter-spacing: 0.02em;
+    margin: 0;
+    line-height: 1.4;
   }
 
   &__milestone {
@@ -1006,14 +1248,14 @@ useInViewport(section_ref);
     font-family: "SpaceMono", monospace;
     font-size: var(--fs-200);
     letter-spacing: 0.12em;
-    color: var(--clr-primary-100);
+    color: var(--state-color, var(--clr-primary-100));
   }
 
   &__countdown-date {
     font-family: "SpaceMono", monospace;
     font-size: var(--fs-200);
     letter-spacing: 0.12em;
-    color: var(--clr-primary-100);
+    color: var(--state-color, var(--clr-primary-100));
   }
 
   &__countdown-tz {
@@ -1027,6 +1269,7 @@ useInViewport(section_ref);
     border-top: 1px dashed var(--clr-border-100);
     margin-top: 1rem;
     padding-top: 1.5rem;
+    padding-bottom: 1rem;
     font-family: "SpaceMono", monospace;
     font-size: var(--fs-200);
     letter-spacing: 0.12em;
@@ -1044,13 +1287,19 @@ useInViewport(section_ref);
     font-size: var(--fs-300);
     font-weight: 700;
     padding: 0.4rem 0.6rem;
-    background: color-mix(in srgb, var(--clr-primary-100) 10%, var(--clr-neutral-500));
-    border: 1px solid var(--clr-primary-100);
-    color: var(--clr-primary-100);
+    background: color-mix(in srgb, var(--state-color, var(--clr-primary-100)) 10%, var(--clr-neutral-500));
+    border: 1px solid var(--state-color, var(--clr-primary-100));
+    color: var(--state-color, var(--clr-primary-100));
     letter-spacing: 0.04em;
     line-height: 1;
     min-width: 2.5rem;
     text-align: center;
+
+    &--ended {
+      background: color-mix(in srgb, var(--state-color, var(--clr-primary-100)) 10%, var(--clr-neutral-500));
+      border-color: var(--state-color, var(--clr-primary-100));
+      color: var(--state-color, var(--clr-primary-100));
+    }
   }
 
   &__ended-state {
@@ -1067,6 +1316,33 @@ useInViewport(section_ref);
     background: color-mix(in srgb, var(--clr-warning-100) 6%, transparent);
 
     .icon-glyph { transform: translateY(0.1em); }
+  }
+
+  &__completed-state {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--state-color, var(--clr-primary-100));
+    color: var(--state-color, var(--clr-primary-100));
+    font-family: "SpaceMono", monospace;
+    font-size: var(--fs-200);
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    background: color-mix(in srgb, var(--state-color, var(--clr-primary-100)) 6%, transparent);
+
+    .icon-glyph, .state-square { transform: translateY(-0.1em); flex-shrink: 0; }
+  }
+
+  &__completed-date {
+    width: 100%;
+    font-family: "SpaceMono", monospace;
+    font-size: var(--fs-100);
+    letter-spacing: 0.12em;
+    color: var(--state-color, var(--clr-primary-100));
+    font-weight: 400;
+    opacity: 0.7;
   }
 
   /* Absolute overlay so the entire card is one accessible button; siblings
@@ -1100,13 +1376,14 @@ useInViewport(section_ref);
     border-top: 1px dashed var(--clr-border-100);
     margin-top: 1rem;
     padding-top: 1.85rem;
-    transition: color 0.2s ease;
+    transition: none;
 
     &.is-corner {
       text-decoration: none;
       cursor: pointer;
       position: relative;
       z-index: 2;
+      padding-bottom: 1rem;
 
       &:hover, &:focus-visible {
         color: var(--clr-primary-100);
@@ -1120,11 +1397,6 @@ useInViewport(section_ref);
 
   &__link-external {
     --icon-glyph-size: 0.85em;
-  }
-
-  &__card:hover &__link,
-  &__card:focus-visible &__link {
-    color: var(--clr-primary-100);
   }
 
   &__featured {
@@ -1165,11 +1437,14 @@ useInViewport(section_ref);
     color: var(--clr-neutral-50);
     text-decoration: none;
     cursor: pointer;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    border-color: color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 100%), var(--clr-border-100));
+    transform: translateY(calc(-2px * var(--prox, 0)));
+    transition: transform 0.2s ease;
     isolation: isolate;
+    contain: layout paint;
     --element-flare-spread: 1px;
     --element-flare-color: var(--clr-primary-100);
-    --element-flare-opacity: 0;
+    --element-flare-opacity: calc(var(--prox, 0) * 0.06);
 
     &.is-static {
       cursor: default;
@@ -1351,7 +1626,7 @@ useInViewport(section_ref);
     border: 1px solid var(--clr-primary-100);
     color: var(--clr-primary-100);
     cursor: pointer;
-    transition: transform 0.2s ease, background 0.2s ease;
+    transition: transform 0.2s ease;
 
     &:hover, &:focus-visible {
       background: color-mix(in srgb, var(--clr-primary-100) 12%, var(--clr-neutral-500));
@@ -1374,7 +1649,7 @@ useInViewport(section_ref);
     border: 1px solid var(--clr-primary-100);
     background: transparent;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
+    transition: transform 0.2s ease;
 
     &.is-active {
       background: var(--clr-primary-100);
@@ -1442,7 +1717,7 @@ useInViewport(section_ref);
     font-size: var(--fs-200);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    transition: background 0.2s ease, transform 0.2s ease;
+    transition: transform 0.2s ease;
 
     &:hover, &:focus-visible {
       background: color-mix(in srgb, var(--clr-primary-100) 14%, transparent);
@@ -1455,4 +1730,16 @@ useInViewport(section_ref);
   }
 }
 
+/* Page transition — slide from the direction of navigation */
+.page-fwd-enter-active,
+.page-fwd-leave-active,
+.page-bck-enter-active,
+.page-bck-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.page-fwd-enter-from  { opacity: 0; transform: translateX(24px); }
+.page-fwd-leave-to    { opacity: 0; transform: translateX(-24px); }
+.page-bck-enter-from  { opacity: 0; transform: translateX(-24px); }
+.page-bck-leave-to    { opacity: 0; transform: translateX(24px); }
 </style>
