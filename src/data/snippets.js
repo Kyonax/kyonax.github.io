@@ -12,7 +12,7 @@ export const TRANSLATIONS = {
       },
       'content-data': {
         'about-me': {
-          'description': 'Hello! I’m <strong>Cristian D. Moreno</strong>, also known as <strong>Kyonax<sup>京</sup></strong>. A Senior Full Stack Web Developer with 7+ years of experience, I specialize in building scalable, high-performance solutions with clean code and strong design patterns. I’m also the Full Stack Lead and Founder of <strong>Zeronet Labs</strong>, where we create innovative, AI-driven tools and automations with a futuristic, cyberpunk-inspired edge.',
+          'description': 'Hello! I’m <strong>Cristian D. Moreno</strong>, also known as <strong>Kyonax<sup>京</sup></strong>. A Senior Full Stack Web Developer with 8+ years of experience, I specialize in building scalable, high-performance solutions with clean code and strong design patterns. I’m also the Full Stack Lead and Founder of <strong>Zeronet Labs</strong>, where we create innovative, AI-driven tools and automations with a futuristic, cyberpunk-inspired edge.',
         },
         'download': {
           'cv-en': 'DOWNLOAD CV',
@@ -167,12 +167,13 @@ export const TRANSLATIONS = {
         'testimonials': {
           'section-aria': 'Testimonials and recommendations',
           'lead': 'What clients and colleagues say about building web projects with me.',
-          'source-label': 'LinkedIn Recommendation',
-          'source-aria-prefix': 'View LinkedIn recommendation by',
-          'go-to': 'View all on LinkedIn',
+          'source-label': '{source} Recommendation',
           'prev': 'Previous testimonial',
           'next': 'Next testimonial',
           'slide-of': 'Testimonial {n} of {count}',
+          'label': 'TESTIMONIALS // VERIFIED',
+          'count-label': '{count} verified recommendations',
+          'rated-aria': 'Rated {rating} out of 5',
           'items': {
             'john-montes': {
               'quote': 'I had the privilege of working alongside Cristian at Softtek on a critical Shopware ecommerce project, where his expertise in Symfony, Vue.js, PHP, and JavaScript was instrumental to our success. As the Senior QA, I deeply valued Cristian\'s technical mastery and collaborative spirit. He consistently delivered clean, testable code that accelerated our testing cycles and minimized issues. His ability to navigate high-pressure scenarios (whether resolving critical bugs, optimizing integrations, or meeting tight deadlines) set him apart. Cristian didn\'t just fix problems; he anticipated them, implementing preventative solutions that elevated our entire project\'s resilience.',
@@ -323,7 +324,7 @@ export const TRANSLATIONS = {
       },
       'content-data': {
         'about-me': {
-          'description': '¡Hola! Soy <strong>Cristian D. Moreno</strong>, también conocido como <strong>Kyonax<sup>京</sup></strong>. Senior Full Stack Web Developer con más de 7 años de experiencia, especializado en crear soluciones escalables y de alto rendimiento, aplicando clean code y strong design patterns. Además, soy Full Stack Lead y Fundador de <strong>Zeronet Labs</strong>, donde desarrollamos herramientas y automatizaciones impulsadas por AI con una estética futurista inspirada en el cyberpunk.',
+          'description': '¡Hola! Soy <strong>Cristian D. Moreno</strong>, también conocido como <strong>Kyonax<sup>京</sup></strong>. Senior Full Stack Web Developer con más de 8 años de experiencia, especializado en crear soluciones escalables y de alto rendimiento, aplicando clean code y strong design patterns. Además, soy Full Stack Lead y Fundador de <strong>Zeronet Labs</strong>, donde desarrollamos herramientas y automatizaciones impulsadas por AI con una estética futurista inspirada en el cyberpunk.',
         },
         'download': {
           'cv-en': 'DESCARGAR CV',
@@ -478,12 +479,13 @@ export const TRANSLATIONS = {
         'testimonials': {
           'section-aria': 'Testimonios y recomendaciones',
           'lead': 'Lo que clientes y colegas dicen sobre construir proyectos web conmigo.',
-          'source-label': 'Recomendación de LinkedIn',
-          'source-aria-prefix': 'Ver recomendación de LinkedIn de',
-          'go-to': 'Ver todas en LinkedIn',
+          'source-label': 'Recomendación de {source}',
           'prev': 'Testimonio anterior',
           'next': 'Siguiente testimonio',
           'slide-of': 'Testimonio {n} de {count}',
+          'label': 'TESTIMONIOS // VERIFICADO',
+          'count-label': '{count} recomendaciones verificadas',
+          'rated-aria': 'Calificado {rating} de 5',
           'items': {
             'john-montes': {
               'quote': 'Tuve el privilegio de trabajar junto a Cristian en Softtek en un proyecto crítico de e-commerce con Shopware, donde su expertise en Symfony, Vue.js, PHP y JavaScript fue fundamental para nuestro éxito. Como QA Senior, valoré profundamente su dominio técnico y espíritu colaborativo. Entregó consistentemente código limpio y testeable que aceleró nuestros ciclos de pruebas y minimizó los incidentes. Su capacidad para manejar escenarios de alta presión, ya fuera resolviendo bugs críticos, optimizando integraciones o cumpliendo plazos ajustados, lo distinguió del resto. Cristian no solo resolvía problemas, los anticipaba, implementando soluciones preventivas que elevaron la resiliencia del proyecto.',

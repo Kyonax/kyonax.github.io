@@ -194,21 +194,30 @@ export default defineConfig(({ mode }) => {
             }
 
             const sized = portrait.filter((p) => p.width > 0);
-            const fallback = portrait.find((p) => p.width === 0) || sized[sized.length - 1];
 
-            const srcset = sized
+            // Preload avif only + matching type/sizes so the scanner picks the same candidate the <picture> uses.
+            const IS_AVIF = /\.avif$/;
+            const avif = sized.filter((p) => IS_AVIF.test(p.name));
+            const preload_set = avif.length > 0 ? avif : sized;
+            const preload_type = avif.length > 0 ? 'image/avif' : '';
+            const fallback = avif.length > 0
+              ? (portrait.find((p) => p.width === 0 && IS_AVIF.test(p.name)) || avif[avif.length - 1])
+              : (portrait.find((p) => p.width === 0) || sized[sized.length - 1]);
+
+            const srcset = preload_set
               .map((p) => `/${p.name} ${p.width}w`)
               .join(', ');
 
-            const tag = sized.length > 0
-              ? '<link rel="preload" as="image" '
-                + `href="/${fallback.name}" `
-                + `imagesrcset="${srcset}" `
-                + 'imagesizes="(max-width: 768px) 300px, (max-width: 1200px) 600px, 900px" '
-                + 'fetchpriority="high">'
-              : '<link rel="preload" as="image" '
-                + `href="/${fallback.name}" `
-                + 'fetchpriority="high">';
+            // imagesizes MUST mirror the <UiImage sizes> in hero-visual.vue.
+            const has_set = preload_set.length > 0;
+            const tag = [
+              '<link rel="preload" as="image"',
+              preload_type ? `type="${preload_type}"` : '',
+              `href="/${fallback.name}"`,
+              has_set ? `imagesrcset="${srcset}"` : '',
+              has_set ? 'imagesizes="(max-width: 768px) 70vw, 380px"' : '',
+              'fetchpriority="high">',
+            ].filter(Boolean).join(' ');
 
             return html.replace('<!-- LCP-PRELOAD-PLACEHOLDER -->', tag);
           },

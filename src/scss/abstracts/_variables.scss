@@ -131,7 +131,7 @@ $typo-scale: (
     800: 3.125rem,   /* 37.5px */
   ),
   medium: (
-    100: 0.75rem,    /* 9px    */
+    100: 0.875rem,   /* 10.5px (was 0.75rem/9px — flagged as very small) */
     200: 1rem,       /* 12px   */
     300: 1.125rem,   /* 13.5px */
     400: 1.25rem,    /* 15px   */

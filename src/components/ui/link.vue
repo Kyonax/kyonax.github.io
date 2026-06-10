@@ -149,40 +149,70 @@ const download_attr = computed(() => {
   }
 
 
+  /* Chamfered (notched) corners drawn as two stacked clip-path layers so the
+     outline follows the diagonals — a single clipped `border` leaves the cut
+     edges borderless (the original bug). ::before = brand outline, ::after =
+     inset fill. */
   &--cyber {
+    --cyber-notch: 14px;
+    --cyber-fill: var(--clr-neutral-500);
     position: relative;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
     line-height: 1;
     text-align: center;
-    background: var(--clr-neutral-500);
+    background: transparent;
     color: var(--clr-primary-100);
-    border: 1px solid var(--clr-primary-100);
+    border: 0;
     font-family: "SpaceMono", monospace;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    transition: transform 0.2s ease;
-    clip-path: polygon(
-      0 0,
-      calc(100% - 14px) 0,
-      100% 14px,
-      100% 100%,
-      14px 100%,
-      0 calc(100% - 14px)
-    );
+    transition: color 0.2s ease;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background: var(--clr-primary-100);
+      clip-path: polygon(
+        0 0,
+        calc(100% - var(--cyber-notch)) 0,
+        100% var(--cyber-notch),
+        100% 100%,
+        var(--cyber-notch) 100%,
+        0 calc(100% - var(--cyber-notch))
+      );
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      z-index: -1;
+      background: var(--cyber-fill);
+      clip-path: polygon(
+        0 0,
+        calc(100% - (var(--cyber-notch) - 1px)) 0,
+        100% calc(var(--cyber-notch) - 1px),
+        100% 100%,
+        calc(var(--cyber-notch) - 1px) 100%,
+        0 calc(100% - (var(--cyber-notch) - 1px))
+      );
+    }
 
     &:hover,
     &:focus-visible {
+      --cyber-fill: color-mix(in srgb, var(--clr-primary-100) 12%, var(--clr-neutral-500));
       color: var(--clr-neutral-100);
-      background: color-mix(in srgb, var(--clr-primary-100) 12%, var(--clr-neutral-500));
-      transform: translateY(-2px);
       outline: none;
     }
 
-    &:focus-visible {
+    &:focus-visible::after {
       box-shadow: inset 0 0 0 2px var(--clr-neutral-50);
     }
   }

@@ -16,7 +16,7 @@ import { defineAsyncComponent, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const TestimonialsSection = defineAsyncComponent(() => {
-  return import('@sections/testimonials-section.vue');
+  return import('@sections/testimonials-proof.vue');
 });
 
 /* Below-fold sections code-split into their own chunks. <Suspense> wraps
@@ -35,7 +35,7 @@ const FaqSection = defineAsyncComponent(() => {
   return import('@sections/faq.vue');
 });
 
-const { t, locale } = useI18n();
+const { locale } = useI18n();
 useSeoHead();
 useStructuredData();
 
@@ -53,8 +53,6 @@ watch(locale, (next) => {
 
 <template>
   <IconSprite />
-
-  <a class="skip-link" href="#hero">{{ t('kyo-web.landing.nav.skip-to-content') }}</a>
 
   <HudNav />
 
@@ -104,29 +102,6 @@ watch(locale, (next) => {
        NowProjects + FAQ sections at typical viewport sizes. */
     min-height: 60vh;
     display: block;
-  }
-}
-
-.skip-link {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  transform: translateY(-150%);
-  padding: 0.75rem 1.25rem;
-  background: var(--clr-primary-100);
-  color: var(--clr-neutral-500);
-  font-family: "SpaceMono", monospace;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-decoration: none;
-  transition: transform 0.2s ease;
-
-  &:focus,
-  &:focus-visible {
-    transform: translateY(0);
-    outline: 2px solid var(--clr-neutral-50);
-    outline-offset: 2px;
   }
 }
 </style>

@@ -123,8 +123,8 @@ onMounted(() => {
   <aside
     v-if="open"
     class="cookie-consent"
-    role="region"
-    aria-live="polite"
+    role="dialog"
+    aria-modal="false"
     :aria-label="t('kyo-web.landing.consent.aria')"
     @keydown="onKeydown"
   >

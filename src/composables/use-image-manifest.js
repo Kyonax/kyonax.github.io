@@ -11,7 +11,7 @@ const _is_raster_path = (path) =>
 
 const _build_manifest = () => {
   const modules = import.meta.glob(
-    '@assets/app/*.{jpg,jpeg,png,webp,avif}',
+    '@assets/{app,testimonials}/*.{jpg,jpeg,png,webp,avif}',
     { eager: true, query: '?url', import: 'default' },
   );
 

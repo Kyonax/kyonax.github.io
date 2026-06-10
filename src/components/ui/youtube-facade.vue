@@ -393,7 +393,7 @@ onBeforeUnmount(pause);
 
   &__channel {
     font-family: "Geomanist", sans-serif;
-    font-size: 0.78rem;
+    font-size: 0.875rem;
     font-weight: 500;
     letter-spacing: 0.02em;
     color: var(--clr-neutral-100);

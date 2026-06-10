@@ -271,7 +271,7 @@ useInViewport(section_ref);
       />
     </div>
 
-    <a class="hero__scroll-hint" href="#skills" :aria-label="t('kyo-web.landing.hero.scroll-hint')">
+    <a class="hero__scroll-hint" href="#testimonials" :aria-label="t('kyo-web.landing.hero.scroll-hint')">
       <span>{{ t('kyo-web.landing.hero.scroll-hint') }}</span>
       <span class="icon-glyph" :data-text="GLYPH_ARROW" aria-hidden="true" />
     </a>
@@ -569,7 +569,7 @@ useInViewport(section_ref);
 
   &__stat-suffix {
     font-family: "SpaceMono", monospace;
-    font-size: 0.38em;
+    font-size: 0.45em;
     font-weight: 700;
     letter-spacing: 0.06em;
     margin-left: 0.2em;

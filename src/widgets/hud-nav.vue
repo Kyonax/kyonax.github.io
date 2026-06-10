@@ -154,6 +154,8 @@ onBeforeUnmount(() => {
     :class="{ 'hud-nav--scrolled': scrolled, 'hud-nav--open': mobile_open }"
     role="banner"
   >
+    <a class="hud-nav__skip-link" href="#hero">{{ t('kyo-web.landing.nav.skip-to-content') }}</a>
+
     <div class="hud-nav__bar">
       <a
         href="#hero"
@@ -233,6 +235,30 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid transparent;
   transition: background-color 0.25s ease, border-color 0.25s ease;
   font-family: "SpaceMono", monospace;
+
+  /* Skip link lives inside the banner landmark so all content stays in a
+     landmark (WCAG 1.3.1). Visible only on focus; pinned to the viewport. */
+  &__skip-link {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transform: translateY(-150%);
+    padding: 0.75rem 1.25rem;
+    background: var(--clr-primary-100);
+    color: var(--clr-neutral-500);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+
+    &:focus,
+    &:focus-visible {
+      transform: translateY(0);
+      outline: 2px solid var(--clr-neutral-50);
+      outline-offset: 2px;
+    }
+  }
 
   &::before {
     content: "";

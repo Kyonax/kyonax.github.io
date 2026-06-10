@@ -24,12 +24,12 @@ const CATEGORIES = [
   {
     id: 'frontend',
     glyph: '\uF121',
-    ids: ['html', 'css', 'scss', 'js', 'ts', 'react', 'next', 'vue', 'pug', 'stylus'],
+    ids: ['html', 'css', 'scss', 'js', 'ts', 'react', 'preact', 'next', 'vue', 'pug', 'stylus'],
   },
   {
     id: 'backend',
     glyph: '\uF233',
-    ids: ['node', 'express', 'nest', 'symfony', 'php', 'python', 'postgresql', 'mongodb'],
+    ids: ['node', 'express', 'nest', 'symfony', 'php', 'python', 'rust', 'postgresql', 'mongodb'],
   },
   {
     id: 'devops',
@@ -74,6 +74,12 @@ const grouped = computed(() =>
       })),
   })),
 );
+
+/* HUD count reflects the skills actually rendered (sum of category items),
+   so the "NODES" label never drifts from the grid below it. */
+const node_count = computed(() =>
+  grouped.value.reduce((sum, cat) => sum + cat.items.length, 0),
+);
 </script>
 
 <template>
@@ -83,7 +89,7 @@ const grouped = computed(() =>
     class="skills kyo-section"
     :aria-label="t('kyo-web.landing.skills.label')"
   >
-    <UiHudDeco variant="tr" text="// SYNC :: 31 NODES" />
+    <UiHudDeco variant="tr" :text="`// SYNC :: ${node_count} NODES`" />
     <UiHudDeco variant="bl" text="// デベロッパー" />
     <UiHudDeco variant="watermark" text="開発者" class="skills__watermark" />
     <UiSectionHeader

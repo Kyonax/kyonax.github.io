@@ -642,8 +642,8 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
             aria-hidden="true"
           />
           <component
-            v-else
             :is="_card_root_tag(card)"
+            v-else
             v-bind="_card_root_attrs(card)"
             class="now-projects-section__card element-flare"
             :class="_card_root_class(card)"
@@ -672,10 +672,12 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
 
             <header class="now-projects-section__card-header">
               <span class="now-projects-section__status">
-                <span v-if="card.status_id === 'DONE'"
-class="icon-glyph"
-:data-text="GLYPH_ENDED"
-aria-hidden="true" />
+                <span
+                  v-if="card.status_id === 'DONE'"
+                  class="icon-glyph"
+                  :data-text="GLYPH_ENDED"
+                  aria-hidden="true"
+                />
                 <UiStateGrid v-else-if="card.status_id === 'WORKING_ON' || card.status_id === 'IN_PROGRESS'" />
                 <span v-else class="state-square" aria-hidden="true" />
                 {{ card.status_label }}
@@ -1106,26 +1108,37 @@ aria-hidden="true" />
   &__pagination-dots {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     flex: 1;
     justify-content: center;
   }
 
+  /* 27px touch target (>=24px, WCAG 2.5.8; root is 12px) — small visible pip via ::before */
   &__pagination-dot {
-    width: 0.6rem;
-    height: 0.6rem;
+    width: 2.25rem;
+    height: 2.25rem;
     padding: 0;
-    border: 1px solid var(--clr-primary-100);
+    border: 0;
     background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: transform 0.2s ease;
 
-    &.is-active {
+    &::before {
+      content: "";
+      width: 0.6rem;
+      height: 0.6rem;
+      border: 1px solid var(--clr-primary-100);
+      background: transparent;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    &.is-active::before {
       background: var(--clr-primary-100);
       transform: scale(1.25);
     }
 
-    &:hover, &:focus-visible {
+    &:hover::before, &:focus-visible::before {
       background: color-mix(in srgb, var(--clr-primary-100) 40%, transparent);
     }
 

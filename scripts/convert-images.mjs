@@ -15,6 +15,7 @@ import { c, fail, head, isOutdated,ok, rel, REPO_ROOT, walk } from './_lib.mjs';
 const SRC_DIRS = [
   join(REPO_ROOT, 'src/assets/app'),
   join(REPO_ROOT, 'src/assets/projects'),
+  join(REPO_ROOT, 'src/assets/testimonials'),
 ];
 const SOURCE_EXTS = ['.jpg', '.jpeg', '.png'];
 const WEBP_QUALITY = 90;
