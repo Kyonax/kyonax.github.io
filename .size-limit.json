@@ -82,5 +82,14 @@
     ],
     "limit": "3 KB",
     "gzip": true
+  },
+  {
+    "name": "experience-brain chunk (JS+CSS)",
+    "path": [
+      "dist/assets/experience-brain-*.js",
+      "dist/assets/experience-brain-*.css"
+    ],
+    "limit": "10 KB",
+    "gzip": true
   }
 ]

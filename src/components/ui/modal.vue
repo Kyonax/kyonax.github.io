@@ -27,7 +27,7 @@ const props = defineProps({
   size: {
     type: String,
     default: 'md',
-    validator: (v) => ['sm', 'md', 'lg', 'full'].includes(v),
+    validator: (v) => ['sm', 'md', 'prose', 'lg', 'full'].includes(v),
   },
   ariaLabel: { type: String, default: '' },
   closeLabel: { type: String, default: 'Close' },
@@ -216,6 +216,26 @@ const GLYPH_CLOSE = '\uF00D';
 
     &--sm   { max-width: min(95dvw, 480px); }
     &--md   { max-width: min(95dvw, 760px); }
+
+    /* `prose` = the measure plus its gutters, so a text-led modal is exactly as
+       wide as its own readable line and no wider. Both numbers are derived, not
+       chosen:
+         widest measure-derived block = --kyo-measure (68ch at --fs-400)
+                                      + the bullets' counter gutter
+         shell                        = that + 3rem of body padding
+       --fs-400 steps 1.25rem -> 1.5rem at `lg`, so 68ch is 565px below that
+       breakpoint and 677px above it; the shell MUST step with it. Holding one
+       width across the scale is what stranded 22% of the body empty in the
+       1024-1199 band. Re-derive both if --kyo-measure or --fs-400 moves. */
+    &--prose {
+      max-width: min(95dvw, 645px);
+
+      @include min-media-query(lg) { max-width: min(95dvw, 760px); }
+    }
+
+    /* `lg` is media-only — the image-viewer lightbox (which is `chromeless`, so
+       this cap does not even apply to it). Text-led modals belong in `prose`;
+       putting them here left a 324px / 32% void beside every paragraph. */
     &--lg   { max-width: min(95dvw, 1040px); }
     &--full { max-width: 95dvw; max-height: 95dvh; }
 

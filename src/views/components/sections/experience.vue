@@ -12,10 +12,11 @@ import { warmModal } from '@composables/use-warm-modal';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
 import { TECH_BY_ID } from '@data/data';
 import BrandIcon from '@ui/brand-icon.vue';
+import CursorTooltip from '@ui/cursor-tooltip.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
 import ModalLoading from '@ui/modal-loading.vue';
 import UiSectionHeader from '@ui/section-header.vue';
-import { computed, defineAsyncComponent, nextTick, onMounted, ref } from 'vue';
+import { computed, defineAsyncComponent, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 /* UiModal chunk loads on first card-open instead of shipping with the
@@ -28,15 +29,22 @@ const UiModal = defineAsyncComponent({
   delay: 0,
 });
 
+/* Canvas dot-brain is client-only: its chunk loads when the section nears
+   the viewport, and SSG prerenders just the reserved box + sr-only text. */
+const ExperienceBrain = defineAsyncComponent(() =>
+  import('@sections/experience-brain.vue'),
+);
+
 const { t, locale } = useI18n();
 
+/* Mirrors the four \cventry rows of the verified CVs (EN 3afb94d4 / ES e7d13e27).
+   The three former Cabeza-Rota cards were consolidated into one on 2026-08-15 to
+   match the CV, which states a single 10/2020-11/2023 engagement. */
 const ENTRIES = [
-  { id: 'zeronet',             tone: 'primary' },
-  { id: 'agile-engine',        tone: 'neutral' },
-  { id: 'softtek',             tone: 'neutral' },
-  { id: 'cr-senior-fullstack', tone: 'neutral' },
-  { id: 'cr-web-dev',          tone: 'neutral' },
-  { id: 'cr-growth',           tone: 'neutral' },
+  { id: 'zeronet',      tone: 'primary' },
+  { id: 'agile-engine', tone: 'neutral' },
+  { id: 'softtek',      tone: 'neutral' },
+  { id: 'cabeza-rota',  tone: 'neutral' },
 ];
 
 const TOKEN_ALIASES = {
@@ -112,11 +120,6 @@ const stack_chips_for = (entry_id) => {
   return chips;
 };
 
-const is_mounted = ref(false);
-onMounted(() => {
-  is_mounted.value = true;
-});
-
 const active_id = ref(null);
 const active_entry = computed(() =>
   active_id.value ? ENTRIES.find((e) => e.id === active_id.value) : null,
@@ -139,7 +142,20 @@ const close_modal = () => {
 
 const section_ref = ref(null);
 useInViewport(section_ref);
-useProximityHover(section_ref, '.experience-section__card');
+useProximityHover(section_ref, '.experience-section__card', { mobileFocus: true });
+
+const brain_host_ref = ref(null);
+const brain_ready = ref(false);
+const brain_live = ref(false);
+useInViewport(brain_host_ref, {
+  attribute: 'data-brain-viewport',
+  on_change: (visible) => {
+    if (visible) {
+      brain_ready.value = true;
+    }
+    brain_live.value = visible;
+  },
+});
 
 const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
   () => section_ref.value?.querySelector('.experience-section__description a[href*="zeronet-labs"]') ?? null,
@@ -161,6 +177,13 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
       :title="t('kyo-web.landing.experience.label')"
       :subtitle="t('kyo-web.landing.experience.subtitle')"
     />
+
+    <div ref="brain_host_ref" class="experience-section__brain">
+      <ExperienceBrain v-if="brain_ready" :live="brain_live" />
+      <p class="sr-only">
+        {{ t('kyo-web.landing.experience.brain.sr-summary') }}
+      </p>
+    </div>
 
     <ol class="experience-section__timeline">
       <li
@@ -201,11 +224,6 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
             class="experience-section__description kyo-prose"
             v-html="t(`kyo-web.content-data.experience.${entry.id}.description`)"
           />
-          <div
-            class="sr-only"
-            aria-hidden="true"
-            v-html="t(`kyo-web.content-data.experience.${entry.id}.bullets`)"
-          />
           <span class="experience-section__view-more" aria-hidden="true">
             {{ t('kyo-web.landing.experience.read-more') }}
             <span class="experience-section__view-more-glyph">›</span>
@@ -221,7 +239,7 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
       :subtitle="active_entry ? t(`kyo-web.content-data.experience.${active_entry.id}.specs`) : ''"
       subtitle-html
       :close-label="t('kyo-web.landing.modal.close')"
-      size="lg"
+      size="prose"
       @close="close_modal"
     >
       <div class="experience-modal">
@@ -229,13 +247,23 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
           class="experience-modal__description kyo-prose"
           v-html="t(`kyo-web.content-data.experience.${active_entry?.id}.description`)"
         />
+        <!-- Mirrors the two \cvsubhead groups of the verified CVs: the activities
+             list, then the key-impact list. Same order, same split. -->
         <p class="experience-modal__section-title">
-          {{ t('kyo-web.landing.modal.highlights') }}
+          {{ t('kyo-web.landing.modal.activities') }}
         </p>
         <ul
           v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
           class="experience-modal__bullets kyo-prose"
-          v-html="t(`kyo-web.content-data.experience.${active_entry?.id}.bullets`)"
+          v-html="t(`kyo-web.content-data.experience.${active_entry?.id}.activities`)"
+        />
+        <p class="experience-modal__section-title">
+          {{ t('kyo-web.landing.modal.impact') }}
+        </p>
+        <ul
+          v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
+          class="experience-modal__bullets kyo-prose"
+          v-html="t(`kyo-web.content-data.experience.${active_entry?.id}.impact`)"
         />
         <p class="experience-modal__section-title">
           {{ t('kyo-web.landing.experience.tools-label') }}
@@ -265,29 +293,104 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
         </ul>
       </div>
     </UiModal>
-    <Teleport v-if="is_mounted" to="body">
-      <Transition name="kyo-ct">
-        <div
-          v-if="zl_visible"
-          class="kyo-cursor-tooltip"
-          :style="{ left: zl_x + 'px', top: zl_y + 'px' }"
-        >
-          {{ t('kyo-web.landing.hero.tooltip.zeronet') }}
-        </div>
-      </Transition>
-    </Teleport>
+    <CursorTooltip :visible="zl_visible" :x="zl_x" :y="zl_y">
+      {{ t('kyo-web.landing.hero.tooltip.zeronet') }}
+    </CursorTooltip>
   </section>
 </template>
 
 <style lang="scss" scoped>
 .experience-section {
+
+  /* Clip like .kyo-section's hidden, without becoming the sticky scrollport. */
+  overflow: clip;
+
+  /* Stacked viewports: tighter header block above the brain. */
+  @include max-media-query(md) {
+    :deep(.ui-section-header) {
+      margin-bottom: 1.25rem;
+    }
+  }
+
+  /* Two columns ≥md: sticky brain left, timeline right. Only the COLUMN
+     content widens 10% past the 1280px .kyo-section frame — the header,
+     its divider, and the HUD decos hold the normal frame. */
+  @include min-media-query(md) {
+    display: grid;
+    grid-template-columns: minmax(0, 12fr) minmax(0, 13fr);
+    column-gap: 3rem;
+    align-items: start;
+    max-width: 1404px;
+
+    :deep(.ui-section-header) {
+      grid-column: 1 / -1;
+      width: 100%;
+      max-width: 1244px;
+      justify-self: center;
+    }
+
+    :deep(.hud-deco--tr) {
+      right: calc(1.25rem + max(0px, (100% - 1280px) / 2));
+    }
+
+    :deep(.hud-deco--bl) {
+      left: calc(1.25rem + max(0px, (100% - 1280px) / 2));
+    }
+
+    &__brain {
+      grid-column: 1;
+    }
+
+    &__timeline {
+      grid-column: 2;
+    }
+  }
+
+  /* Stacked (<md): a bigger brain that tucks its lower part behind the
+     first timeline card, K5-style, with the header gap pulled in. */
+  &__brain {
+    position: relative;
+    width: 100%;
+    max-width: 780px;
+    aspect-ratio: 1;
+    /* Both pulls scale with the viewport: up under the header, down so
+       the first card always cuts the brain's lower mesh. */
+    margin: clamp(-7rem, -9vw, -2rem) auto clamp(-18rem, -24vw, -5rem);
+    z-index: 0;
+
+    /* Small phones (≤560px = 35em, owner-set boundary): the brain
+       outsizes the viewport, Cloudflare-globe style — the section's
+       overflow: clip crops it at the screen edge. The oversize host
+       grows its internal dead zones, so the pulls deepen with it. */
+    @media only screen and (max-width: 35em) {
+      width: 135vw;
+      max-width: none;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: clamp(-8rem, calc(-18vw + 1rem), -2rem);
+      margin-bottom: clamp(-16rem, -26vw, -7rem);
+    }
+
+    @include min-media-query(md) {
+      position: sticky;
+      top: 5.5rem;
+      max-width: none;
+      margin: 0;
+    }
+  }
+
+  &__timeline {
+    position: relative;
+    z-index: 1;
+  }
+
   &__watermark {
     top: 2rem;
     right: -2rem;
 
     @include min-media-query(md) {
       top: 3rem;
-      right: 2rem;
+      right: calc(2rem + max(0px, (100% - 1280px) / 2));
     }
   }
 
@@ -361,8 +464,8 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
     background:
       linear-gradient(
         135deg,
-        color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 8%), transparent) 0%,
-        color-mix(in srgb, var(--clr-neutral-500) 80%, transparent) 100%
+        color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 8%), var(--clr-neutral-500)) 0%,
+        var(--clr-neutral-500) 100%
       );
     padding: 1.25rem;
     margin-bottom: 1.5rem;
@@ -407,8 +510,8 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
     background:
       linear-gradient(
         135deg,
-        color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 4%), transparent) 0%,
-        color-mix(in srgb, var(--clr-neutral-500) 70%, transparent) 100%
+        color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 4%), var(--clr-neutral-500)) 0%,
+        var(--clr-neutral-500) 100%
       );
     --element-flare-opacity: calc(var(--prox, 0) * 0.08);
 
@@ -423,8 +526,8 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
     background:
       linear-gradient(
         135deg,
-        color-mix(in srgb, var(--clr-primary-100) 8%, transparent) 0%,
-        color-mix(in srgb, var(--clr-neutral-500) 80%, transparent) 100%
+        color-mix(in srgb, var(--clr-primary-100) 8%, var(--clr-neutral-500)) 0%,
+        var(--clr-neutral-500) 100%
       );
   }
 
@@ -520,6 +623,7 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
 
   &__description {
     font-size: var(--fs-400);
+    max-width: var(--kyo-measure);
     margin: 0 0 1.5rem;
   }
 
@@ -543,7 +647,18 @@ const { visible: zl_visible, x: zl_x, y: zl_y } = useCursorTooltip(
     list-style: none;
     margin: 0;
     padding: 0;
+    /* Declared here as well as on the li: `ch` resolves against THIS
+       element's font-size, so without it the cap is computed at the modal
+       body's 15px and the 18px text lands ~12 characters short. */
+    font-size: var(--fs-400);
+    /* Measure applies to the text, so the counter gutter is added back on
+       top of it — see the li padding-left below. */
+    max-width: calc(var(--kyo-measure) + 3rem);
     counter-reset: kyo-bullet;
+
+    @include min-media-query(md) {
+      max-width: calc(var(--kyo-measure) + 3.5rem);
+    }
 
     :deep(li) {
       counter-increment: kyo-bullet;
