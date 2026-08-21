@@ -38,6 +38,9 @@ import { fileURLToPath, URL } from 'node:url';
 
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import vue from '@vitejs/plugin-vue';
+import browserslist from 'browserslist';
+import browserslistToEsbuild from 'browserslist-to-esbuild';
+import { browserslistToTargets } from 'lightningcss';
 import { defineConfig } from 'vite';
 import { createHtmlPlugin } from 'vite-plugin-html';
 
@@ -333,6 +336,11 @@ export default defineConfig(({ mode }) => {
     },
 
     css: {
+      // Prefixing + down-levelling follow the signed browserslist floor (scripts/targets.lock.txt).
+      transformer: 'lightningcss',
+      lightningcss: {
+        targets: browserslistToTargets(browserslist()),
+      },
       preprocessorOptions: {
         scss: {
           // SASS needs its own resolver hint — Vite's resolve.alias is JS-only.
