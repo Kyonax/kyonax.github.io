@@ -38,6 +38,11 @@ export const useInViewport = (target_ref, options = {}) => {
       return;
     }
     el.setAttribute(attr, visible ? 'true' : 'false');
+    /* Optional JS-side hook so animation engines can gate on visibility
+       (a display:none host never intersects, so it stays idle). */
+    if (options.on_change) {
+      options.on_change(visible);
+    }
   };
 
   onMounted(() => {
@@ -48,7 +53,7 @@ export const useInViewport = (target_ref, options = {}) => {
     el.setAttribute(attr, 'false');
     const observer = _get_observer();
     if (!observer) {
-      el.setAttribute(attr, 'true');
+      on_change(true);
       return;
     }
     _targets.set(el, on_change);

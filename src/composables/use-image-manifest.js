@@ -3,6 +3,8 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import IMAGE_DIMENSIONS from '@data/image-dimensions.generated.json';
+
 const VARIANT_PATTERN = /^(.+?)-(\d+)\.(jpg|jpeg|png|webp|avif)$/;
 const PLAIN_PATTERN   = /^(.+?)\.(jpg|jpeg|png|webp|avif)$/;
 
@@ -66,6 +68,12 @@ const _build_manifest = () => {
     const widths = group.raster.map((v) => v.width);
     const max_width = widths.length > 0 ? Math.max(...widths) : 0;
 
+    /* Height from source aspect ratio reserves the <img> box - no CLS. */
+    const intrinsic = IMAGE_DIMENSIONS[base];
+    const height = intrinsic && max_width > 0
+      ? Math.round((max_width * intrinsic.h) / intrinsic.w)
+      : 0;
+
     manifest[base] = {
       fallback_src:   group.fallback_src
         || (group.raster.length > 0 ? group.raster[group.raster.length - 1].url : null),
@@ -73,7 +81,7 @@ const _build_manifest = () => {
       webp_srcset:    _to_srcset(group.webp),
       avif_srcset:    _to_srcset(group.avif),
       width:  max_width,
-      height: 0,
+      height,
     };
   }
 

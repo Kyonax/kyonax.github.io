@@ -6,6 +6,7 @@
 
 import BlastImage from '@components/blast-image.vue';
 import { vImageReady } from '@composables/use-image-ready';
+import useImageZoom from '@composables/use-image-zoom';
 import { retainImageUrl } from '@composables/use-warm-modal';
 import UiModal from '@ui/modal.vue';
 import { computed, defineAsyncComponent, ref, watch } from 'vue';
@@ -29,6 +30,12 @@ const props = defineProps({
 
 defineEmits(['close']);
 
+/* Pinch / double-tap / drag-to-pan zoom for the still-image branches. The
+   composable owns its own touch input, so native page zoom stays intact
+   elsewhere; YouTube embeds resolve no target and are left untouched. */
+const viewer_ref = ref(null);
+const { isZoomed, reset: resetZoom } = useImageZoom(viewer_ref, '.image-viewer__picture');
+
 const is_youtube = computed(() => props.picture?.kind === 'youtube');
 
 const loaded = ref(false);
@@ -50,7 +57,8 @@ const on_loaded = (el) => {
 watch(
   () => [props.isOpen, props.img, props.picture?.fallback],
   () => {
-    loaded.value = false; 
+    loaded.value = false;
+    resetZoom();
   },
 );
 
@@ -90,8 +98,9 @@ const dialog_label = computed(() =>
     @close="$emit('close')"
   >
     <div
+      ref="viewer_ref"
       class="image-viewer"
-      :class="{ 'image-viewer--video': is_youtube, 'is-loaded': loaded || is_youtube }"
+      :class="{ 'image-viewer--video': is_youtube, 'is-loaded': loaded || is_youtube, 'is-zoomed': isZoomed }"
     >
       <YoutubeFacade
         v-if="is_youtube"
@@ -140,6 +149,16 @@ const dialog_label = computed(() =>
 .image-viewer {
   display: inline-flex;
   position: relative;
+  /* Clip the picture once it is scaled past its own box so panning reveals
+     the off-screen regions instead of overflowing the modal. */
+  overflow: hidden;
+
+  /* The still-image branch owns all of its touch input (pinch / pan), so the
+     browser never starts a competing native gesture. Scoped away from the
+     video variant, whose iframe handles its own interaction. */
+  &:not(.image-viewer--video) {
+    touch-action: none;
+  }
   /* Generous default canvas: until <img> reports intrinsic dimensions the
      wrapper would otherwise collapse and the skeleton would render as a
      thin sliver. Tuned to ~80% of the viewport so the placeholder feels

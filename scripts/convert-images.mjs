@@ -4,9 +4,9 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, statSync, writeFileSync } from 'node:fs';
 import { cpus } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import sharp from 'sharp';
 
@@ -138,6 +138,38 @@ ok(
     total_avif ? `  (total ${_bytes(total_avif)})` : ''}`,
 );
 ok(`source raster total: ${_bytes(total_before)}`);
+
+/* Emit intrinsic dims so the manifest can set <img> height - kills CLS. */
+const DIMENSIONS_OUT = join(REPO_ROOT, 'src/data/image-dimensions.generated.json');
+const _VARIANT_RE = /^(.+?)-(\d+)\.(?:jpe?g|png)$/;
+const _PLAIN_RE   = /^(.+?)\.(?:jpe?g|png)$/;
+
+const _base_of = (file) => {
+  const m = file.match(_VARIANT_RE) || file.match(_PLAIN_RE);
+  return m ? m[1] : null;
+};
+
+const dimensions = {};
+for (const src of sources) {
+  const base = _base_of(basename(src));
+  if (!base) {
+    continue;
+  }
+  const meta = await sharp(src).metadata();
+  if (!meta.width || !meta.height) {
+    continue;
+  }
+  const prev = dimensions[base];
+  if (!prev || meta.width > prev.w) {
+    dimensions[base] = { w: meta.width, h: meta.height };
+  }
+}
+
+const sorted_dimensions = Object.fromEntries(
+  Object.keys(dimensions).sort().map((k) => [k, dimensions[k]]),
+);
+writeFileSync(DIMENSIONS_OUT, `${JSON.stringify(sorted_dimensions, null, 2)}\n`, 'utf8');
+ok(`dimensions: ${Object.keys(sorted_dimensions).length} base(s) → ${rel(DIMENSIONS_OUT)}`);
 
 const errored = results.some((r) => r && r.error);
 process.exit(errored ? 1 : 0);
