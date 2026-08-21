@@ -13,7 +13,16 @@ import { retainImageUrl, warmImageViewer, warmProjectCard } from '@composables/u
 import { warmYoutube } from '@composables/use-youtube-warmup';
 import { BRAND_ICON_IDS } from '@data/brand-icons';
 import { TECH_BY_ID } from '@data/data';
-import { DEFAULT_FEATURED_STATUS,DEFAULT_NOW_STATUS, NOW_STATUS_PRIORITY, PROJECT_STATUS, PROJECTS } from '@data/projects';
+import {
+  DEFAULT_FEATURED_STATUS,
+  DEFAULT_NOW_STATUS,
+  getFeaturedKeys,
+  getFeaturedMap,
+  getProjectDescription,
+  getShowcaseKeys,
+  getShowcaseMap,
+  PROJECT_STATUS,
+} from '@data/projects';
 import { normaliseMediaEntry } from '@data/youtube';
 import BrandIcon from '@ui/brand-icon.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
@@ -22,18 +31,6 @@ import UiSectionHeader from '@ui/section-header.vue';
 import UiStateGrid from '@ui/state-grid.vue';
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-/* sm breakpoint = 48em = 768px. Below that, show 3 cards per page so the
- * single-column mobile grid doesn't produce 6 stacked rows per tile. */
-const _mobile_mq = typeof window !== 'undefined'
-  ? window.matchMedia('(max-width: 767px)')
-  : null;
-const _is_mobile = ref(_mobile_mq?.matches ?? false);
-if (_mobile_mq) {
-  _mobile_mq.addEventListener('change', (e) => {
-    _is_mobile.value = e.matches; 
-  });
-}
 
 /* Modal + image-viewer + youtube facade chunks load on first card-open
    instead of shipping with the initial bundle. `ModalLoading` ships
@@ -54,13 +51,18 @@ const YoutubeFacade = defineAsyncComponent(() => import('@ui/youtube-facade.vue'
 
 const { t, te, locale } = useI18n();
 
-const PAGE_SIZE = computed(() => _is_mobile.value ? 3 : 6);
-const FEATURED_MAX = 9;
+const showcase_map = getShowcaseMap();
+const showcase_keys = getShowcaseKeys();
+const featured_map = getFeaturedMap();
+const featured_keys = getFeaturedKeys();
 
 
+/* Only the three showcase filenames — a wildcard glob would ship every
+ * project image even when the page never renders them. Keep in lockstep
+ * with SHOWCASE_KEYS in @data/projects. */
 const _image_url_map = (() => {
   const modules = import.meta.glob(
-    '@assets/projects/*.{jpg,jpeg,png,webp,avif}',
+    '@assets/projects/{kyo-blog,org2html,reckit}.{jpg,jpeg,png,webp,avif}',
     { eager: true, query: '?url', import: 'default' },
   );
   const map = {};
@@ -256,16 +258,8 @@ const GLYPH_FEATURED = '\uF005';
 const GLYPH_PREV     = '\uF053';
 const GLYPH_NEXT     = '\uF054';
 
-
-const now_keys = Object.keys(PROJECTS).filter(
-  (k) => NOW_STATUS_PRIORITY[PROJECTS[k].status] !== undefined,
-);
-const countdowns = useProjectCountdowns(now_keys);
-
-const _deadline_ms = (project) => {
-  const next = _next_future_deadline(project);
-  return next ? next.ms : Number.POSITIVE_INFINITY;
-};
+const now_keys = showcase_keys;
+const countdowns = useProjectCountdowns(now_keys, showcase_map);
 
 const _status_color = (status_id) =>
   PROJECT_STATUS[status_id]?.color || 'primary';
@@ -309,7 +303,7 @@ const _modal_description_key = (key) =>
 const _has_modal_description = (key) => te(_modal_description_key(key));
 
 const buildNowCard = (key) => {
-  const project = PROJECTS[key];
+  const project = showcase_map[key];
   const cd = countdowns.value[key];
   const status_id = project.status || DEFAULT_NOW_STATUS;
   const ended = cd && !cd.countdown && status_id !== 'WORKING_ON';
@@ -323,7 +317,7 @@ const buildNowCard = (key) => {
   const url        = project.url || '';
   const has_link   = Boolean(url);
   const has_modal  = media_urls.length > 0 || _has_modal_description(key);
-  const description      = project.description || '';
+  const description      = getProjectDescription(project, locale.value);
   const explicit_milestone = project.milestone ? project.milestone.toUpperCase() : '';
   const has_own_label    = Boolean(cd?.label || next?.label || explicit_milestone);
   return {
@@ -371,19 +365,19 @@ const _card_hit_label = (card) =>
   `${card.name}, ${t('kyo-web.landing.projects.view-details')}`;
 
 const buildFeaturedCard = (key) => {
-  const project = PROJECTS[key];
+  const project = featured_map[key];
   const status_id = project.status || DEFAULT_FEATURED_STATUS;
   const status_label = t(_status_label_key(status_id));
   const version = project.version || project.modality || '';
-  /* Mirrors every visible text node inside the card so WCAG 2.5.3 passes:
-     scanners traverse the DOM for visible text and would otherwise diverge
-     from the accname computed across <header>/<h4>/.kyo-chip children. */
+  /* Mirrors every visible text node so WCAG 2.5.3 passes: scanners
+     traverse the DOM for visible text and would otherwise diverge from
+     the accname computed across status / name / version children. */
   const aria_label = [status_label, project.name, version].filter(Boolean).join(' ');
   return {
     key,
-    name:        project.name,
-    url:         project.url || '',
-    has_link:    Boolean(project.url),
+    name:         project.name,
+    url:          project.url || '',
+    has_link:     Boolean(project.url),
     version,
     status_id,
     status_color: _status_color(status_id),
@@ -392,87 +386,12 @@ const buildFeaturedCard = (key) => {
   };
 };
 
-const _sorted_now_cards = computed(() =>
-  now_keys
-    .map(buildNowCard)
-    .sort((a, b) => {
-      const a_done = a.status_id === 'DONE';
-      const b_done = b.status_id === 'DONE';
-      if (a_done !== b_done) {
-        return a_done ? 1 : -1;
-      }
-      if (a.is_working_on !== b.is_working_on) {
-        return a.is_working_on ? -1 : 1;
-      }
-      if (a.ended !== b.ended) {
-        return a.ended ? 1 : -1;
-      }
-      const pa = NOW_STATUS_PRIORITY[a.status_id] ?? 99;
-      const pb = NOW_STATUS_PRIORITY[b.status_id] ?? 99;
-      if (pa !== pb) {
-        return pa - pb;
-      }
-      return _deadline_ms(PROJECTS[a.key]) - _deadline_ms(PROJECTS[b.key]);
-    }),
+const main_cards = computed(() =>
+  now_keys.map(buildNowCard),
 );
 
-const page_count = computed(() => Math.max(1, Math.ceil(_sorted_now_cards.value.length / PAGE_SIZE.value)));
-const page_idx = ref(0);
-const page_dir = ref(1);
-
-/* Reset to first page whenever PAGE_SIZE switches (mobile ↔ desktop). */
-watch(PAGE_SIZE, () => {
-  page_idx.value = 0; 
-});
-
-const main_cards = computed(() => {
-  const ps = PAGE_SIZE.value;
-  const start = page_idx.value * ps;
-  return _sorted_now_cards.value.slice(start, start + ps);
-});
-
-const padded_main_cards = computed(() => {
-  const ps = PAGE_SIZE.value;
-  const cards = main_cards.value;
-  if (cards.length >= ps) {
-    return cards;
-  }
-  return [...cards, ...Array(ps - cards.length).fill(null)];
-});
-
-/* Fire once per page mount (the <ul> key forces a remount on every page
-   change, resetting the .once listener). Warms modal chunk + images for
-   every modal-bound card on the NEXT page so navigation feels instant. */
-const preload_next_page = () => {
-  const ps = PAGE_SIZE.value;
-  if (page_count.value <= 1) {
-    return;
-  }
-  const start = ((page_idx.value + 1) % page_count.value) * ps;
-  _sorted_now_cards.value.slice(start, start + ps).filter(c => c.has_modal).forEach(warmProjectCard);
-};
-
-const page_next = () => {
-  page_dir.value = 1;
-  page_idx.value = (page_idx.value + 1) % page_count.value;
-};
-const page_prev = () => {
-  page_dir.value = -1;
-  page_idx.value = (page_idx.value - 1 + page_count.value) % page_count.value;
-};
-const page_goto = (idx) => {
-  if (idx === page_idx.value) {
-    return;
-  }
-  page_dir.value = idx > page_idx.value ? 1 : -1;
-  page_idx.value = idx;
-};
-
 const featured_cards = computed(() =>
-  Object.keys(PROJECTS)
-    .filter((k) => PROJECTS[k].featured)
-    .slice(0, FEATURED_MAX)
-    .map(buildFeaturedCard),
+  featured_keys.map(buildFeaturedCard),
 );
 
 const modal_cards = computed(() => main_cards.value.filter((c) => c.has_modal));
@@ -603,7 +522,11 @@ const _warm_modal = (key) => {
 
 const section_ref = ref(null);
 useInViewport(section_ref);
-useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .now-projects-section__featured-item:not(.is-static)');
+useProximityHover(
+  section_ref,
+  '.now-projects-section__card:not(.is-static), .now-projects-section__featured-item:not(.is-static)',
+  { mobileFocus: true },
+);
 
 </script>
 
@@ -623,216 +546,175 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
       :subtitle="t('kyo-web.landing.projects.subtitle')"
     />
 
-    <Transition :name="`page-${page_dir > 0 ? 'fwd' : 'bck'}`" mode="out-in">
-      <ul
-        :key="page_idx"
-        class="now-projects-section__cards"
-        :class="{ 'now-projects-section__cards--no-pager': page_count <= 1 }"
-        role="list"
-        @pointerenter.once="preload_next_page"
+    <ul
+      class="now-projects-section__cards"
+      role="list"
+    >
+      <li
+        v-for="(card, idx) in main_cards"
+        :key="card.key"
+        class="now-projects-section__card-wrap"
       >
-        <li
-          v-for="(card, idx) in padded_main_cards"
-          :key="card ? card.key : `ghost-${idx}`"
-          class="now-projects-section__card-wrap"
+        <component
+          :is="_card_root_tag(card)"
+          v-bind="_card_root_attrs(card)"
+          class="now-projects-section__card element-flare"
+          :class="_card_root_class(card)"
+          :style="{
+            '--state-color': `var(--clr-${card.status_color}-100)`,
+            '--element-flare-delay': `${idx * 0.6}s`,
+          }"
+          @pointerenter="card.has_modal && warmProjectCard(card)"
+          @focusin="card.has_modal && warmProjectCard(card)"
         >
-          <div
-            v-if="!card"
-            class="now-projects-section__card now-projects-section__card--ghost"
-            aria-hidden="true"
+          <button
+            v-if="card.has_modal"
+            type="button"
+            class="now-projects-section__card-hit-area"
+            :aria-label="_card_hit_label(card)"
+            @click="open_modal(card.key)"
           />
-          <component
-            :is="_card_root_tag(card)"
-            v-else
-            v-bind="_card_root_attrs(card)"
-            class="now-projects-section__card element-flare"
-            :class="_card_root_class(card)"
-            :style="{
-              '--state-color': `var(--clr-${card.status_color}-100)`,
-              '--element-flare-delay': `${idx * 0.6}s`,
-            }"
-            @pointerenter="card.has_modal && warmProjectCard(card)"
-            @focusin="card.has_modal && warmProjectCard(card)"
+          <a
+            v-else-if="card.has_link"
+            :href="card.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="now-projects-section__card-hit-area"
+            :aria-label="card.name"
+          />
+
+          <header class="now-projects-section__card-header">
+            <span class="now-projects-section__status">
+              <span
+                v-if="card.status_id === 'DONE'"
+                class="icon-glyph"
+                :data-text="GLYPH_ENDED"
+                aria-hidden="true"
+              />
+              <UiStateGrid v-else-if="card.status_id === 'WORKING_ON' || card.status_id === 'IN_PROGRESS'" />
+              <span v-else class="state-square" aria-hidden="true" />
+              {{ card.status_label }}
+            </span>
+            <span class="now-projects-section__index-num" :data-text="`#${String(idx + 1).padStart(2, '0')}`" aria-hidden="true" />
+          </header>
+
+          <div class="now-projects-section__name-block">
+            <h3 class="now-projects-section__name">
+              {{ card.name }}
+            </h3>
+            <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
+          </div>
+
+          <p class="now-projects-section__milestone">
+            {{ `// ${card.label.toUpperCase()}` }}
+          </p>
+          <p
+            v-if="_has_modal_description(card.key)"
+            v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
+            class="sr-only"
+            v-html="t(_modal_description_key(card.key))"
+          />
+          <div v-if="card.is_working_on" class="now-projects-section__countdown">
+            <div class="now-projects-section__countdown-head">
+              <span class="now-projects-section__countdown-label">
+                {{ t('kyo-web.landing.projects.started-in-prefix') }}
+              </span>
+              <span v-if="card.started_text" class="now-projects-section__countdown-date">
+                {{ card.started_text }}
+              </span>
+            </div>
+            <div class="now-projects-section__countdown-segments">
+              <span
+                v-for="seg in elapsed_segments(card.started_ms)"
+                :key="seg"
+                class="now-projects-section__segment"
+              >{{ seg }}</span>
+            </div>
+            <span class="now-projects-section__countdown-tz">
+              {{ t('kyo-web.landing.projects.timezone-label') }}
+            </span>
+          </div>
+          <div v-else-if="!card.ended && card.countdown" class="now-projects-section__countdown">
+            <div class="now-projects-section__countdown-head">
+              <span class="now-projects-section__countdown-label">
+                {{ t('kyo-web.landing.projects.ends-in-prefix') }}
+              </span>
+              <span v-if="card.deadline_text" class="now-projects-section__countdown-date">
+                {{ card.deadline_text }}
+              </span>
+            </div>
+            <div class="now-projects-section__countdown-segments">
+              <span
+                v-for="seg in segments(card.countdown)"
+                :key="seg"
+                class="now-projects-section__segment"
+              >{{ seg }}</span>
+            </div>
+            <span class="now-projects-section__countdown-tz">
+              {{ t('kyo-web.landing.projects.timezone-label') }}
+            </span>
+          </div>
+          <div v-else-if="card.ended" class="now-projects-section__countdown">
+            <div class="now-projects-section__countdown-head">
+              <span class="now-projects-section__countdown-label">{{ t('kyo-web.landing.projects.ended-in-prefix') }}</span>
+            </div>
+            <div class="now-projects-section__countdown-segments">
+              <span
+                v-for="seg in card.ended_segs"
+                :key="seg"
+                class="now-projects-section__segment now-projects-section__segment--ended"
+              >{{ seg }}</span>
+            </div>
+            <span class="now-projects-section__countdown-tz">{{ t('kyo-web.landing.projects.timezone-label') }}</span>
+          </div>
+          <div v-else class="now-projects-section__countdown">
+            <div class="now-projects-section__countdown-head">
+              <span class="now-projects-section__countdown-label">{{ t('kyo-web.landing.projects.ended-in-prefix') }}</span>
+            </div>
+            <div class="now-projects-section__countdown-segments">
+              <span
+                v-for="seg in card.completed_segs"
+                :key="seg"
+                class="now-projects-section__segment now-projects-section__segment--ended"
+              >{{ seg }}</span>
+            </div>
+            <span class="now-projects-section__countdown-tz">{{ t('kyo-web.landing.projects.timezone-label') }}</span>
+          </div>
+
+          <p v-if="card.show_description" class="now-projects-section__card-description">
+            {{ card.description }}
+          </p>
+
+          <a
+            v-if="card.has_modal && card.has_link"
+            :href="card.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="now-projects-section__link is-corner"
+            :aria-label="`${t('kyo-web.landing.projects.view-repo')}, ${card.name}`"
           >
-            <button
-              v-if="card.has_modal"
-              type="button"
-              class="now-projects-section__card-hit-area"
-              :aria-label="_card_hit_label(card)"
-              @click="open_modal(card.key)"
-            />
-            <a
-              v-else-if="card.has_link"
-              :href="card.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="now-projects-section__card-hit-area"
-              :aria-label="card.name"
-            />
+            <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
+            <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
+            <span class="icon-glyph now-projects-section__link-external" :data-text="GLYPH_LINK" aria-hidden="true" />
+          </a>
+          <span v-else-if="!card.has_modal && card.has_link" class="now-projects-section__link">
+            <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
+            <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
+            <span class="icon-glyph now-projects-section__link-external" :data-text="GLYPH_LINK" aria-hidden="true" />
+          </span>
+          <span v-else class="now-projects-section__no-link">
+            {{ t('kyo-web.landing.projects.no-link') }}
+          </span>
+        </component>
+      </li>
+    </ul>
 
-            <header class="now-projects-section__card-header">
-              <span class="now-projects-section__status">
-                <span
-                  v-if="card.status_id === 'DONE'"
-                  class="icon-glyph"
-                  :data-text="GLYPH_ENDED"
-                  aria-hidden="true"
-                />
-                <UiStateGrid v-else-if="card.status_id === 'WORKING_ON' || card.status_id === 'IN_PROGRESS'" />
-                <span v-else class="state-square" aria-hidden="true" />
-                {{ card.status_label }}
-              </span>
-              <span class="now-projects-section__index-num" :data-text="`#${String(page_idx * PAGE_SIZE + idx + 1).padStart(2, '0')}`" aria-hidden="true" />
-            </header>
-
-            <div class="now-projects-section__name-block">
-              <h3 class="now-projects-section__name">
-                {{ card.name }}
-              </h3>
-              <span v-if="card.version" class="now-projects-section__version kyo-chip">{{ card.version }}</span>
-            </div>
-
-            <p class="now-projects-section__milestone">
-              {{ `// ${card.label.toUpperCase()}` }}
-            </p>
-            <p
-              v-if="_has_modal_description(card.key)"
-              v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
-              class="sr-only"
-              v-html="t(_modal_description_key(card.key))"
-            />
-            <div v-if="card.is_working_on" class="now-projects-section__countdown">
-              <div class="now-projects-section__countdown-head">
-                <span class="now-projects-section__countdown-label">
-                  {{ t('kyo-web.landing.projects.started-in-prefix') }}
-                </span>
-                <span v-if="card.started_text" class="now-projects-section__countdown-date">
-                  {{ card.started_text }}
-                </span>
-              </div>
-              <div class="now-projects-section__countdown-segments">
-                <span
-                  v-for="seg in elapsed_segments(card.started_ms)"
-                  :key="seg"
-                  class="now-projects-section__segment"
-                >{{ seg }}</span>
-              </div>
-              <span class="now-projects-section__countdown-tz">
-                {{ t('kyo-web.landing.projects.timezone-label') }}
-              </span>
-            </div>
-            <div v-else-if="!card.ended && card.countdown" class="now-projects-section__countdown">
-              <div class="now-projects-section__countdown-head">
-                <span class="now-projects-section__countdown-label">
-                  {{ t('kyo-web.landing.projects.ends-in-prefix') }}
-                </span>
-                <span v-if="card.deadline_text" class="now-projects-section__countdown-date">
-                  {{ card.deadline_text }}
-                </span>
-              </div>
-              <div class="now-projects-section__countdown-segments">
-                <span
-                  v-for="seg in segments(card.countdown)"
-                  :key="seg"
-                  class="now-projects-section__segment"
-                >{{ seg }}</span>
-              </div>
-              <span class="now-projects-section__countdown-tz">
-                {{ t('kyo-web.landing.projects.timezone-label') }}
-              </span>
-            </div>
-            <div v-else-if="card.ended" class="now-projects-section__countdown">
-              <div class="now-projects-section__countdown-head">
-                <span class="now-projects-section__countdown-label">{{ t('kyo-web.landing.projects.ended-in-prefix') }}</span>
-              </div>
-              <div class="now-projects-section__countdown-segments">
-                <span
-                  v-for="seg in card.ended_segs"
-                  :key="seg"
-                  class="now-projects-section__segment now-projects-section__segment--ended"
-                >{{ seg }}</span>
-              </div>
-              <span class="now-projects-section__countdown-tz">{{ t('kyo-web.landing.projects.timezone-label') }}</span>
-            </div>
-            <div v-else class="now-projects-section__countdown">
-              <div class="now-projects-section__countdown-head">
-                <span class="now-projects-section__countdown-label">{{ t('kyo-web.landing.projects.ended-in-prefix') }}</span>
-              </div>
-              <div class="now-projects-section__countdown-segments">
-                <span
-                  v-for="seg in card.completed_segs"
-                  :key="seg"
-                  class="now-projects-section__segment now-projects-section__segment--ended"
-                >{{ seg }}</span>
-              </div>
-              <span class="now-projects-section__countdown-tz">{{ t('kyo-web.landing.projects.timezone-label') }}</span>
-            </div>
-
-            <p v-if="card.show_description" class="now-projects-section__card-description">
-              {{ card.description }}
-            </p>
-
-            <a
-              v-if="card.has_modal && card.has_link"
-              :href="card.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="now-projects-section__link is-corner"
-              :aria-label="`${t('kyo-web.landing.projects.view-repo')}, ${card.name}`"
-            >
-              <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
-              <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
-              <span class="icon-glyph now-projects-section__link-external" :data-text="GLYPH_LINK" aria-hidden="true" />
-            </a>
-            <span v-else-if="!card.has_modal && card.has_link" class="now-projects-section__link">
-              <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
-              <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
-              <span class="icon-glyph now-projects-section__link-external" :data-text="GLYPH_LINK" aria-hidden="true" />
-            </span>
-            <span v-else class="now-projects-section__no-link">
-              {{ t('kyo-web.landing.projects.no-link') }}
-            </span>
-          </component>
-        </li>
-      </ul>
-    </Transition>
-
-    <div v-if="page_count > 1" class="now-projects-section__pagination">
-      <button
-        type="button"
-        class="now-projects-section__pagination-nav"
-        :aria-label="t('kyo-web.landing.projects.carousel-prev')"
-        @click="page_prev"
-      >
-        <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_PREV" aria-hidden="true" />
-      </button>
-      <div
-        class="now-projects-section__pagination-dots"
-        role="group"
-        :aria-label="t('kyo-web.landing.projects.label')"
-      >
-        <button
-          v-for="(_, i) in page_count"
-          :key="`pgdot-${i}`"
-          type="button"
-          class="now-projects-section__pagination-dot"
-          :class="{ 'is-active': page_idx === i }"
-          :aria-current="page_idx === i ? 'true' : undefined"
-          :aria-label="`${i + 1} / ${page_count}`"
-          @click="page_goto(i)"
-        />
-      </div>
-      <button
-        type="button"
-        class="now-projects-section__pagination-nav"
-        :aria-label="t('kyo-web.landing.projects.carousel-next')"
-        @click="page_next"
-      >
-        <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_NEXT" aria-hidden="true" />
-      </button>
-    </div>
-
-    <div class="now-projects-section__featured" role="region" aria-labelledby="now-projects-featured-label">
+    <div
+      v-if="featured_cards.length"
+      class="now-projects-section__featured"
+      role="region"
+      aria-labelledby="now-projects-featured-label"
+    >
       <h3 id="now-projects-featured-label" class="now-projects-section__featured-label">
         <span class="icon-glyph" :data-text="GLYPH_FEATURED" aria-hidden="true" />
         {{ t('kyo-web.landing.projects.featured-label') }}
@@ -859,7 +741,10 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
           </div>
           <div class="now-projects-section__featured-name-block">
             <span class="now-projects-section__featured-name">{{ card.name }}</span>
-            <span v-if="card.version" class="now-projects-section__featured-version">{{ card.version }}</span>
+            <span
+              v-if="card.version"
+              class="now-projects-section__featured-version"
+            >{{ card.version }}</span>
           </div>
           <a
             v-if="card.has_link"
@@ -879,7 +764,7 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
       :title="active_card.name"
       :subtitle="active_card.version ? `// ${active_card.version}` : ''"
       :close-label="t('kyo-web.landing.modal.close')"
-      size="lg"
+      size="prose"
       @close="close_modal"
       @keydown="onModalKeydown($event, active_card.media_urls.length)"
     >
@@ -1054,15 +939,16 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
 
   &__cards {
     list-style: none;
-    margin: 0 0 1.25rem;
-
-    &--no-pager { margin-bottom: 3rem; }
+    margin: 0 0 3rem;
     padding: 0;
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.25rem;
 
-    @include min-media-query(md) {
+    /* Go 2-up at the sm (768px) tablet band — portrait tablets were left on
+       the mobile single-column, stretching each card full width with content
+       only filling the left half. 3-up stays a desktop (lg) treatment. */
+    @include min-media-query(sm) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1.5rem;
     }
@@ -1072,81 +958,6 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
   }
 
   &__card-wrap { display: contents; }
-
-  &__pagination {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 4rem;
-  }
-
-  &__pagination-nav {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    flex-shrink: 0;
-    background: var(--clr-neutral-500);
-    border: 1px solid var(--clr-primary-100);
-    color: var(--clr-primary-100);
-    cursor: pointer;
-    transition: transform 0.2s ease;
-
-    &:hover, &:focus-visible {
-      background: color-mix(in srgb, var(--clr-primary-100) 12%, var(--clr-neutral-500));
-      transform: translateY(-2px);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--clr-primary-100);
-      outline-offset: 2px;
-    }
-  }
-
-  &__pagination-dots {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    justify-content: center;
-  }
-
-  /* 27px touch target (>=24px, WCAG 2.5.8; root is 12px) — small visible pip via ::before */
-  &__pagination-dot {
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-
-    &::before {
-      content: "";
-      width: 0.6rem;
-      height: 0.6rem;
-      border: 1px solid var(--clr-primary-100);
-      background: transparent;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-
-    &.is-active::before {
-      background: var(--clr-primary-100);
-      transform: scale(1.25);
-    }
-
-    &:hover::before, &:focus-visible::before {
-      background: color-mix(in srgb, var(--clr-primary-100) 40%, transparent);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--clr-primary-100);
-      outline-offset: 2px;
-    }
-  }
 
   &__card {
     position: relative;
@@ -1182,15 +993,6 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
       border-color: var(--state-color, var(--clr-primary-100));
       transform: translateY(-4px);
       --element-flare-opacity: 0.06;
-    }
-
-    &--ghost {
-      pointer-events: none;
-      cursor: default;
-      border-style: dashed;
-      background: color-mix(in srgb, var(--clr-neutral-500) 40%, transparent);
-      opacity: 0.25;
-      min-height: 310.34px;
     }
 
     &:not(.has-modal) {
@@ -1259,6 +1061,11 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
     letter-spacing: 0.02em;
     margin: 0;
     line-height: 1.4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
   }
 
   &__milestone {
@@ -1462,7 +1269,9 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
     grid-template-columns: 1fr;
     gap: 0.75rem;
 
-    @include min-media-query(md) {
+    /* 3-up from the sm tablet band so portrait tablets do not stack
+       three chips in a sparse single column. */
+    @include min-media-query(sm) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 1rem;
     }
@@ -1478,7 +1287,11 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
     color: var(--clr-neutral-50);
     text-decoration: none;
     cursor: pointer;
-    border-color: color-mix(in srgb, var(--clr-primary-100) calc(var(--prox, 0) * 100%), var(--clr-border-100));
+    border-color: color-mix(
+      in srgb,
+      var(--clr-primary-100) calc(var(--prox, 0) * 100%),
+      var(--clr-border-100)
+    );
     transform: translateY(calc(-2px * var(--prox, 0)));
     transition: transform 0.2s ease;
     isolation: isolate;
@@ -1490,13 +1303,15 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
     &.is-static {
       cursor: default;
 
-      &:hover, &:focus-visible {
+      &:hover,
+      &:focus-visible {
         transform: none;
         border-color: var(--clr-border-100);
       }
     }
 
-    &:hover, &:focus-visible {
+    &:hover,
+    &:focus-visible {
       border-color: var(--clr-primary-100);
       transform: translateY(-2px);
       --element-flare-color: var(--clr-primary-100);
@@ -1510,10 +1325,8 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
     color: var(--state-color, var(--clr-primary-100));
   }
 
-  /* Stretched-link pattern: empty anchor overlays the whole featured card so
-     it stays the click target / focus target / hover affordance, while the
-     visible text lives in sibling block elements. An empty link has no
-     innerText, so WCAG 2.5.3 passes trivially (aria-label is the accname). */
+  /* Stretched overlay: empty <a> is the whole-chip target. No innerText,
+     so WCAG 2.5.3 passes (aria-label is the accname). */
   &__featured-hit {
     position: absolute;
     inset: 0;
@@ -1716,6 +1529,7 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
 
   &__description {
     font-size: var(--fs-400);
+    max-width: var(--kyo-measure);
     margin: 0;
   }
 
@@ -1770,17 +1584,4 @@ useProximityHover(section_ref, '.now-projects-section__card:not(.is-static), .no
     --icon-glyph-size: 0.85em;
   }
 }
-
-/* Page transition — slide from the direction of navigation */
-.page-fwd-enter-active,
-.page-fwd-leave-active,
-.page-bck-enter-active,
-.page-bck-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
-.page-fwd-enter-from  { opacity: 0; transform: translateX(24px); }
-.page-fwd-leave-to    { opacity: 0; transform: translateX(-24px); }
-.page-bck-enter-from  { opacity: 0; transform: translateX(-24px); }
-.page-bck-leave-to    { opacity: 0; transform: translateX(24px); }
 </style>
