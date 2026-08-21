@@ -366,7 +366,8 @@ export default defineConfig(({ mode }) => {
       // Derived from the same signed browserslist floor — never hardcode an esN here.
       target: browserslistToEsbuild(),
       cssCodeSplit: true,
-      sourcemap: true,
+      // Maps are a dev aid; production ships none (public .map = source disclosure).
+      sourcemap: mode !== 'production',
       /* Subset fonts (e.g. SymbolsNerdFontMono → 2.7 KB) would otherwise
          fall under Vite's 4 KB inline threshold and be embedded as
          data: URLs inside the render-blocking CSS. We need them as

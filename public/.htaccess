@@ -72,12 +72,19 @@ AddDefaultCharset UTF-8
   <FilesMatch "\.(html|xml|json|webmanifest|txt)$">
     Header set Cache-Control "public, max-age=300, must-revalidate"
   </FilesMatch>
+  # CV PDFs: stable unhashed URLs, republished content — cache a day, then revalidate.
+  <FilesMatch "\.pdf$">
+    Header set Cache-Control "public, max-age=86400, must-revalidate"
+  </FilesMatch>
 
   # === Security headers =====================================================
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+  # Partial CSP: no script-src — the deferred-CSS onload handlers need inline execution.
+  Header always set Content-Security-Policy "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
 
   # HSTS apex only: 1y max-age, no includeSubDomains/preload (future subdomains opt in on their own).
   Header always set Strict-Transport-Security "max-age=31536000"
