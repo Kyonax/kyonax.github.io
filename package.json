@@ -18,6 +18,7 @@
     "check:trans": "node scripts/check-trans-attrs.mjs",
     "check:color": "node scripts/check-color-usage.mjs",
     "check:aliases": "node scripts/check-aliases.mjs",
+    "check:browser-support": "node scripts/check-browser-support.mjs",
     "check:licenses": "node scripts/check-license-headers.mjs",
     "check:json-ld": "node scripts/check-json-ld.mjs",
     "check:nerd-glyphs": "node scripts/check-nerd-glyphs.mjs",

@@ -30,8 +30,78 @@
 #+EMAIL: kyonax.corp@gmail.com
 #+DATE: May 14, 2026
 #+FILETAGS: :KYO:WEB:CHANGELOG:
-#+LAST_UPDATE: May 14, 2026
+#+LAST_UPDATE: June 11, 2026
 #+OPTIONS: toc:nil num:nil H:4
+
+* [Unreleased] — 2026-08-20 :: Cross-browser floor signed, Lightning CSS pipeline, browser-support gate
+
+*Summary:* Split the meta copy by audience (EN tuned for international and US conversion intent,
+ES tuned for the national Colombian market with multi-city search coverage), eliminated layout
+shift by shipping intrinsic image dimensions, added an SVG favicon, ratcheted HSTS on the apex,
+and gave the privacy pages reciprocal hreflang. Then signed the browserslist floor (candidate B:
+=defaults and fully supports css-lch-lab=), made the toolchain obey it through Lightning CSS and
+a browserslist-derived esbuild target, and added a five-check =check-browser-support= gate, each
+check proven by reintroducing its bug. Main CSS 11.46 to 11.34 KB gzip, main JS 178.02 to 177.94.
+
+** Added
+- =scripts/check-browser-support.mjs= — the cross-browser gate: query drift against the committed
+  fixture, caniuse data-rot (183-day limit), a dist CSS feature registry (fails on features above
+  the signed floor outside =@supports=), a dist JS builtin registry (Vue 3.5's inert reactive-array
+  wrapper shape allowlisted), and target honesty (no hardcoded =es20xx=). Wired into precheck
+  (10 gates) and exposed as =npm run check:browser-support=.
+- =scripts/targets.lock.txt= — the resolved 27-target floor (chrome 120, firefox 140 ESR,
+  safari/iOS 18.5, samsung 29, opera 127), stamped with its caniuse-lite version and generation
+  date; regenerated via =--write-lock=.
+- devDependencies =browserslist= 4.28.8, =lightningcss= 1.33.0, =browserslist-to-esbuild= 2.1.1.
+- =public/favicon.svg= — SVG favicon that embeds the existing =favicon.png= mark; linked in
+  =index.html= between the =.ico= and =.png= icons so modern browsers prefer it.
+- =src/data/image-dimensions.generated.json= — generated map of intrinsic image dimensions
+  (basename to width/height), emitted by =convert-images.mjs= from sharp metadata during
+  =predev= / =prebuild=.
+
+** Changed
+- =src/data/snippets.js= — EN =meta.description= rewritten for international and US conversion
+  intent (benefit-first, no client names); ES =meta.title= and =meta.description= refocused on
+  the national market with city coverage (Bogotá, Medellín, Cali, toda Colombia); ES =og-title=
+  aligned to the new title; EN and ES =og-image-alt= realigned to their respective audiences.
+  Impersonal third-person voice kept consistent across both locales.
+- =src/composables/use-image-manifest.js= — derives =height= from the source aspect ratio so
+  every =<img>= ships both =width= and =height= and reserves its box (removes CLS).
+- =scripts/convert-images.mjs= — emits the image-dimensions sidecar alongside the WebP/AVIF
+  transcode pass.
+- =scripts/generate-sitemap.mjs= — privacy URLs now carry reciprocal =en= / =es= / =x-default=
+  hreflang alternates; the alternate-block builder was factored into a shared helper.
+- =public/sitemap.xml= — regenerated with the privacy hreflang alternates.
+- =public/.htaccess= — HSTS ratcheted to =max-age=31536000= (apex only; no =includeSubDomains=
+  or =preload=).
+- =src/views/components/sections/hero.vue= — dropped =external= from the contact CTA so the
+  obfuscated =mailto= no longer renders =target="_blank"=.
+- =package.json= — browserslist query replaced (was =>0.5%, last 2 versions, not dead=, which
+  dragged in Opera Mini at 0.00 percent usage) with the signed
+  =defaults and fully supports css-lch-lab=.
+- =vite.config.js= — =css.transformer: 'lightningcss'= with targets from browserslist;
+  =build.target= now =browserslistToEsbuild()= replacing the hardcoded =es2020=.
+- =src/views/components/sections/hero-data-feed.vue= — two =.at(i)= reads became =[i]= (indices
+  already modulo-normalised), removing the last post-es2020 builtin from our own code.
+
+** Decided
+- HSTS kept apex-only (no =includeSubDomains= / =preload=) so future Hostinger subdomains are
+  never forced to HTTPS before their certificates are live.
+- =meta.description= is reused as =Person.description=, =og:description=, and
+  =twitter:description=, so each locale's copy reads cleanly as both a SERP snippet and as
+  structured data.
+- ES city SEO is distributed across four surfaces (meta description, =og:image= alt, JSON-LD
+  =areaServed=, and the visible hero summary) rather than stuffed into any single one.
+- *Candidate B floor over keeping the old query:* the old query declared support for six targets
+  (chrome 109, UC, QQ, KaiOS, Opera Mini) that render no palette today and cannot be made whole
+  by any tool (99 of 103 =color-mix()= calls take =var()= arguments; Opera Mini has no CSS custom
+  properties). B gives up 1.30 coverage points and in exchange everything declared actually works.
+- *Lightning CSS over the PostCSS pipeline:* measured by A/B on the built CSS, preset-env cost
+  +2,608 B gzip under the old targets against Lightning's +563 B for the same guarded palette,
+  and under the signed floor Lightning shrinks main CSS by 120 B where preset-env adds 67 B.
+  One native Vite config key, no new pipeline stage.
+- *No Babel, no core-js:* no target in the signed floor needs them; the esbuild target change is
+  byte-noise in both directions (es2022 saves 104 B, es2017 would cost 1,437 B).
 
 * [v2.1.0] — 2026-06-04 :: Hire-intent SEO, testimonials carousel, WCAG fixes, section copy
 

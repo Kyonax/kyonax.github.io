@@ -27,6 +27,7 @@ const CHECKS = [
   { id: 'trans',         script: 'scripts/check-trans-attrs.mjs',     label: 'no [trans=] / banned refs' },
   { id: 'color',         script: 'scripts/check-color-usage.mjs',     label: 'color tokens / 60-30-10' },
   { id: 'aliases',       script: 'scripts/check-aliases.mjs',         label: 'vite ↔ eslint aliases' },
+  { id: 'browser-support', script: 'scripts/check-browser-support.mjs', label: 'signed browserslist floor' },
   { id: 'licenses',      script: 'scripts/check-license-headers.mjs', label: 'CCS license headers' },
   { id: 'json-ld',       script: 'scripts/check-json-ld.mjs',         label: 'JSON-LD @graph integrity' },
   { id: 'projects-media',script: 'scripts/check-projects-media.mjs',  label: 'PROJECTS[*].images integrity' },
