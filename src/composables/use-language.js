@@ -5,7 +5,7 @@
 
 import { SUPPORTED_LANGUAGES } from '@data/data';
 import { STORAGE_KEY } from '@i18n/detect-locale';
-import { ROUTE_BY_LOCALE } from '@seo/routes';
+import { localeSwapTarget } from '@seo/routes';
 import { useI18n } from 'vue-i18n';
 import { useRoute,useRouter } from 'vue-router';
 
@@ -29,7 +29,11 @@ export const useLanguage = () => {
     if (!SUPPORTED_LANGUAGES.includes(code)) {
       return;
     }
-    const target = ROUTE_BY_LOCALE[code];
+    /* Stay on the page you are on: switching language from any secondary page
+       must land on that page's other locale, not bounce back to the landing.
+       The route-family table lives in @seo/routes so a new localised page is
+       registered once instead of adding a branch here. */
+    const target = localeSwapTarget(route.path, code);
     _persist(code);
     if (route.path !== target) {
       router.push({ path: target, hash: route.hash });

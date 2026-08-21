@@ -4,12 +4,38 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import useCursorTooltip from '@composables/use-cursor-tooltip';
+import usePageKind from '@composables/use-page-kind';
+import { CV_URL } from '@data/data';
+import AppIcon from '@ui/app-icon.vue';
 import UiButton from '@ui/button.vue';
+import CursorTooltip from '@ui/cursor-tooltip.vue';
+import UiLink from '@ui/link.vue';
 import LanguageToggle from '@widgets/language-toggle.vue';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
+
+/*
+ * The nav has three modes, one per page kind:
+ *   landing  — section links, skip link and the mobile drawer.
+ *   resume   — stripped: the section links anchor into the landing and would
+ *              dead-link here, so only the brand (back to landing), the CV
+ *              download, the language toggle and the socials show.
+ *   privacy  — the same stripped nav WITHOUT the CV download. A policy page is
+ *              not a place to offer a résumé, and the button is icon-only, so
+ *              its meaning depends entirely on being on the CV page.
+ * The brand is the way back for both document kinds.
+ */
+const { isLanding, isResume, isDocument } = usePageKind();
+const landing_href = computed(() => (locale.value === 'es' ? '/es' : '/'));
+/* On a document page the brand is the way back; on the landing it is the
+   scroll-to-top anchor. */
+const brand_href = computed(() => (isDocument.value ? landing_href.value : '#hero'));
+const cv_href = computed(() => (locale.value === 'es' ? CV_URL.es : CV_URL.en));
+const cv_filename = computed(() =>
+  `Cristian-Moreno-Senior-Software-Engineer-${locale.value === 'es' ? 'ES' : 'EN'}.pdf`);
 
 const NAV_LINKS = [
   { id: 'hero',       key: 'kyo-web.landing.nav.hero' },
@@ -17,7 +43,7 @@ const NAV_LINKS = [
   { id: 'projects',   key: 'kyo-web.landing.nav.projects' },
   { id: 'skills',     key: 'kyo-web.landing.nav.skills' },
   { id: 'faq',        key: 'kyo-web.landing.nav.faq' },
-  // contact: add back once contact section is built
+  { id: 'contact',    key: 'kyo-web.landing.nav.contact' },
 ];
 
 /* Sections that exist in the DOM but have no nav link — mapped to the
@@ -33,9 +59,19 @@ const GLYPH_CLOSE    = '\uF00D';
 const GLYPH_GITHUB   = '\uF09B';
 const GLYPH_LINKEDIN = '\uF0E1';
 
+/* The CV button is icon-only, so nothing on screen says what it does — the
+   tooltip is the label. Same cursor-following tooltip the hero links use. */
+const cv_ref = ref(null);
+const {
+  visible: cv_tooltip_visible,
+  x: cv_tip_x,
+  y: cv_tip_y,
+} = useCursorTooltip(cv_ref);
+
 const scrolled = ref(false);
 const mobile_open = ref(false);
 const active_section = ref('hero');
+const header_ref = ref(null);
 
 let _scroll_frame = 0;
 let _last_scroll_run = 0;
@@ -107,6 +143,17 @@ const onKeydown = (event) => {
   }
 };
 
+/* Phones have no Escape key, so a tap anywhere outside the open drawer is the
+   primary dismiss affordance. Registered only while the drawer is open (see
+   the watch below). Capture phase so it still fires if a child stops
+   propagation; inert main/footer fall through to <body>, which is outside the
+   header and therefore closes as expected. */
+const onPointerDownOutside = (event) => {
+  if (header_ref.value && !header_ref.value.contains(event.target)) {
+    closeMobile();
+  }
+};
+
 /* Mark the page chrome inert while the drawer is open so focus stays inside the
    menu (Tab can't leak into hero/skills/footer content). Restored on close. */
 const INERT_TARGETS = ['main', '.site-footer'];
@@ -123,6 +170,12 @@ watch(mobile_open, (open) => {
       }
     }
   }
+
+  if (open) {
+    document.addEventListener('pointerdown', onPointerDownOutside, true);
+  } else {
+    document.removeEventListener('pointerdown', onPointerDownOutside, true);
+  }
 });
 
 onMounted(() => {
@@ -134,6 +187,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll);
   window.removeEventListener('keydown', onKeydown);
+  document.removeEventListener('pointerdown', onPointerDownOutside, true);
   if (_scroll_frame) {
     cancelAnimationFrame(_scroll_frame);
   }
@@ -150,15 +204,16 @@ onBeforeUnmount(() => {
 
 <template>
   <header
+    ref="header_ref"
     class="hud-nav"
     :class="{ 'hud-nav--scrolled': scrolled, 'hud-nav--open': mobile_open }"
     role="banner"
   >
-    <a class="hud-nav__skip-link" href="#hero">{{ t('kyo-web.landing.nav.skip-to-content') }}</a>
+    <a v-if="isLanding" class="hud-nav__skip-link" href="#hero">{{ t('kyo-web.landing.nav.skip-to-content') }}</a>
 
     <div class="hud-nav__bar">
       <a
-        href="#hero"
+        :href="brand_href"
         class="hud-nav__brand"
         :aria-label="t('kyo-web.landing.nav.aria.brand')"
         @click="onAnchorClick"
@@ -167,6 +222,7 @@ onBeforeUnmount(() => {
       </a>
 
       <nav
+        v-if="isLanding"
         id="hud-nav-menu"
         class="hud-nav__links"
         :class="{ 'is-open': mobile_open }"
@@ -187,6 +243,26 @@ onBeforeUnmount(() => {
       </nav>
 
       <div class="hud-nav__actions">
+        <UiLink
+          v-if="isResume"
+          ref="cv_ref"
+          :href="cv_href"
+          :download="cv_filename"
+          variant="primary"
+          size="sm"
+          class="hud-nav__cv"
+          :aria-label="t('kyo-web.resume.download-aria')"
+        >
+          <AppIcon name="printer" class="hud-nav__cv-icon" />
+        </UiLink>
+        <CursorTooltip
+          v-if="isResume"
+          :visible="cv_tooltip_visible"
+          :x="cv_tip_x"
+          :y="cv_tip_y"
+        >
+          {{ t('kyo-web.resume.tooltip.download') }}
+        </CursorTooltip>
         <LanguageToggle class="hud-nav__lang" />
         <span class="hud-nav__separator" aria-hidden="true" />
         <div class="hud-nav__social-group">
@@ -210,6 +286,7 @@ onBeforeUnmount(() => {
           </a>
         </div>
         <UiButton
+          v-if="isLanding"
           variant="ghost"
           size="md"
           class="hud-nav__menu-toggle"
@@ -436,6 +513,36 @@ onBeforeUnmount(() => {
   &__social-icon {
     font-size: 1.1rem;
     transform: translateY(0);
+  }
+
+  /* CV download, shown only on the resume pages. It is the SAME component and
+     variant/size as the language-toggle trigger (UiLink/UiButton primary-sm),
+     so the two boxes share border, background and hover exactly — the earlier
+     hand-rolled box drifted from the toggle on every one of those. Deltas are
+     only what an icon-only button needs: square padding, the neutral icon
+     colour the toggle also layers over `primary`, and the 44px tap target the
+     toggle uses below md. It never hides — this is the page's only download. */
+  &__cv {
+    color: var(--clr-neutral-50);
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+
+    @include max-media-query(md) {
+      height: 44px;
+      min-height: 44px;
+    }
+  }
+
+  /* Inline SVG, NOT a Nerd Font glyph: an icon font only paints once that exact
+     subset reaches the browser, and a cached older copy silently renders tofu.
+     The sprite ships in the document, so it cannot miss. Sized to the toggle's
+     text box (fs-200, line-height 1) so both buttons stay the same height.
+     The fill/stroke flip overrides AppIcon's stroked default — this glyph is
+     the solid Font Awesome shape, matching the GitHub/LinkedIn icons. */
+  &__cv &__cv-icon {
+    font-size: var(--fs-200);
+    fill: currentColor;
+    stroke: none;
   }
 
   

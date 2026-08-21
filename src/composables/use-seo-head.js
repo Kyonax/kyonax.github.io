@@ -16,15 +16,43 @@ import { useI18n } from 'vue-i18n';
 
 const OG_LOCALE = { en: 'en_US', es: 'es_CO' };
 
-export const useSeoHead = () => {
+/*
+ * `opts` lets a secondary prerendered page (e.g. the resume pages) reuse the
+ * whole meta block without duplicating it:
+ *   keyPrefix — i18n namespace holding title / description / og-title / og-image-alt
+ *   urls      — { en, es } canonical map for that page
+ *   alternates— hreflang rows for that page
+ *   ogImage   — { en, es } (or a single path) social card for that page; the
+ *               landing banner is the fallback. A page whose card advertises
+ *               different content than the page holds is a share-preview lie.
+ *   ogType    — og:type for that page. Defaults to `profile`, which is right
+ *               for the landing and the CV (both are about the person) and
+ *               WRONG for a policy page, which is a document about the site.
+ *               The profile:* properties follow it, since they only mean
+ *               anything on a profile object.
+ * Omitting `opts` yields the landing-page behaviour unchanged.
+ */
+export const useSeoHead = (opts = {}) => {
   const { t, locale } = useI18n();
 
-  const title       = computed(() => t('kyo-web.landing.meta.title'));
-  const description = computed(() => t('kyo-web.landing.meta.description'));
-  const ogTitle     = computed(() => t('kyo-web.landing.meta.og-title'));
-  const ogImageAlt  = computed(() => t('kyo-web.landing.meta.og-image-alt'));
-  const canonical   = computed(() => LOCALE_URL[locale.value] || LOCALE_URL.en);
-  const ogImageAbs  = computed(() => absoluteUrl(SEO.ogImage));
+  const prefix     = opts.keyPrefix || 'kyo-web.landing.meta';
+  const urls       = opts.urls || LOCALE_URL;
+  const alternates = opts.alternates || HREFLANG_ALTERNATES;
+  const og_type    = opts.ogType || 'profile';
+  const is_profile = og_type === 'profile';
+
+  const title       = computed(() => t(`${prefix}.title`));
+  const description = computed(() => t(`${prefix}.description`));
+  const ogTitle     = computed(() => t(`${prefix}.og-title`));
+  const ogImageAlt  = computed(() => t(`${prefix}.og-image-alt`));
+  const canonical   = computed(() => urls[locale.value] || urls.en);
+  const ogImageAbs  = computed(() => {
+    const img = opts.ogImage;
+    if (!img) {
+      return absoluteUrl(SEO.ogImage);
+    }
+    return absoluteUrl(typeof img === 'string' ? img : (img[locale.value] || img.en));
+  });
 
   useHead({
     title,
@@ -33,7 +61,7 @@ export const useSeoHead = () => {
     },
     link: [
       { rel: 'canonical', href: canonical },
-      ...HREFLANG_ALTERNATES.map((alt) => ({
+      ...alternates.map((alt) => ({
         rel: 'alternate', hreflang: alt.hreflang, href: alt.href,
       })),
     ],
@@ -50,7 +78,7 @@ export const useSeoHead = () => {
       { name: 'apple-mobile-web-app-title',        content: 'Kyonax' },
       { name: 'apple-mobile-web-app-status-bar-style', content: 'black' },
 
-      { property: 'og:type',          content: 'profile' },
+      { property: 'og:type',          content: og_type },
       { property: 'og:site_name',     content: 'Kyonax' },
       { property: 'og:title',         content: ogTitle },
       { property: 'og:description',   content: description },
@@ -62,9 +90,11 @@ export const useSeoHead = () => {
       { property: 'og:image:alt',     content: ogImageAlt },
       { property: 'og:locale',        content: computed(() => OG_LOCALE[locale.value] || OG_LOCALE.en) },
       { property: 'og:locale:alternate', content: computed(() => OG_LOCALE[locale.value === 'en' ? 'es' : 'en']) },
-      { property: 'profile:first_name',  content: 'Cristian' },
-      { property: 'profile:last_name',   content: 'Moreno' },
-      { property: 'profile:username',    content: 'kyonax' },
+      ...(is_profile ? [
+        { property: 'profile:first_name',  content: 'Cristian' },
+        { property: 'profile:last_name',   content: 'Moreno' },
+        { property: 'profile:username',    content: 'kyonax' },
+      ] : []),
 
       { name: 'twitter:card',         content: 'summary_large_image' },
       { name: 'twitter:site',         content: AUTHOR_INFO.twitter },

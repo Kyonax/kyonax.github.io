@@ -52,6 +52,56 @@ for (const key of all) {
   }
 }
 
+/*
+ * ARRAY PARITY. flattenI18nKeys() walks objects but STOPS at arrays, so every
+ * string held in one — the privacy policy's sections, the CV's contact row,
+ * education rows and per-entry orgs — is invisible to the parity check above.
+ * A locale missing a whole policy section, or an org row missing its href,
+ * would pass every gate and ship. Arrays are positional, so parity here means
+ * the same LENGTH and the same per-index KEY SHAPE in every locale.
+ */
+function collectArrays(obj, prefix = '', out = new Map()) {
+  for (const [k, v] of Object.entries(obj)) {
+    const path = prefix ? `${prefix}.${k}` : k;
+    if (Array.isArray(v)) {
+      out.set(path, v.map((row) => (row && typeof row === 'object'
+        ? Object.keys(row).sort().join('|')
+        : typeof row)));
+    } else if (v && typeof v === 'object') {
+      collectArrays(v, path, out);
+    }
+  }
+  return out;
+}
+
+const arrays = Object.fromEntries(locales.map((l) => [l, collectArrays(loaded.data[l])]));
+const base_locale = locales[0];
+let array_count = 0;
+for (const [path, shape] of arrays[base_locale]) {
+  array_count += 1;
+  for (const l of locales.slice(1)) {
+    const other = arrays[l].get(path);
+    if (!other) {
+      failures.push(`array missing in ${c('yellow', l)}: ${path}`);
+    } else if (other.length !== shape.length) {
+      failures.push(
+        `array length differs at ${path}: `
+        + `${base_locale}=${shape.length} vs ${l}=${other.length}`,
+      );
+    } else {
+      shape.forEach((row, i) => {
+        if (other[i] !== row) {
+          failures.push(
+            `array shape differs at ${path}[${i}]: `
+            + `${base_locale}={${row}} vs ${l}={${other[i]}}`,
+          );
+        }
+      });
+    }
+  }
+}
+ok(`i18n arrays checked for length + shape parity: ${array_count}`);
+
 const rawHtml = await loadRawHtmlKeys();
 if (rawHtml) {
   ok(`RAW_HTML_KEYS allowlist size: ${rawHtml.size}`);
@@ -77,6 +127,35 @@ if (rawHtml) {
     }
   }
   ok(`v-html literal keys scanned: ${vhtml_hits}`);
+
+  /* DYNAMIC v-html keys. These used to be skipped outright, which is exactly how
+     `...experience.${entry.id}.bullets` shipped: `bullets` exists in no locale, so
+     t() returned the key PATH and rendered it as visible text into the crawlable
+     HTML of both landing pages. A dynamic key cannot be resolved exactly without
+     evaluating the component, but its STATIC SUFFIX can: walk every branch under
+     the static prefix and require at least one to carry that leaf. */
+  const dyn_re = /v-html\s*=\s*"\s*t\s*\(\s*`([^`]*\$\{[^`]*)`\s*\)\s*"/g;
+  let dyn_hits = 0;
+  for (const file of sfc_files) {
+    const text = readFileSync(file, 'utf8');
+    for (const m of text.matchAll(dyn_re)) {
+      const raw = m[1];
+      const prefix = raw.slice(0, raw.indexOf('${')).replace(/\.$/, '');
+      const suffix = raw.slice(raw.lastIndexOf('}') + 1).replace(/^\./, '');
+      if (!prefix || !suffix) {
+        continue;
+      }
+      dyn_hits += 1;
+      const candidates = [...all].filter((k) => k.startsWith(`${prefix}.`) && k.endsWith(`.${suffix}`));
+      if (candidates.length === 0) {
+        failures.push(
+          `v-html dynamic key resolves to NOTHING in ${file.replace(`${REPO_ROOT  }/`, '')}: `
+          + `${prefix}.*.${suffix} matches no key in any locale`,
+        );
+      }
+    }
+  }
+  ok(`v-html dynamic keys resolved: ${dyn_hits}`);
 }
 
 if (failures.length) {

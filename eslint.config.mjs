@@ -226,6 +226,9 @@ export default [
           'App', 'Home', 'Index', 'Default',
           'button', 'card', 'icon', 'image', 'link', 'modal',
           'experience', 'faq', 'hero', 'skills',
+          /* Document pages and their chrome. `resume` was missing here, which
+             is why the CV view has been failing this rule since it landed. */
+          'breadcrumbs', 'privacy', 'resume',
         ],
       }],
       'vue/component-name-in-template-casing': ['error', 'PascalCase', {

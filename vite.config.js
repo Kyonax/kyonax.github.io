@@ -301,8 +301,11 @@ export default defineConfig(({ mode }) => {
       /* Emit dist/<path>/index.html so /es and /es/ both resolve cleanly
          via Apache + DirectorySlash Off + strip-slash rule. */
       dirStyle: 'nested',
+      /* Explicit prerender list. Keep in lockstep with src/router.js ROUTES and
+         the URL lists in scripts/generate-sitemap.mjs — a route missing here is
+         silently NOT prerendered and ships as an empty shell to crawlers. */
       includedRoutes() {
-        return ['/', '/es'];
+        return ['/', '/es', '/resume', '/es/hoja-de-vida', '/privacy', '/es/privacy'];
       },
     },
 

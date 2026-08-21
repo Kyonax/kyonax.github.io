@@ -12,6 +12,33 @@
     "gzip": true
   },
   {
+    "name": "document shell chunk (JS+CSS)",
+    "path": [
+      "dist/assets/document-page-*.js",
+      "dist/assets/document-page-*.css"
+    ],
+    "limit": "3 KB",
+    "gzip": true
+  },
+  {
+    "name": "resume view chunk (JS+CSS)",
+    "path": [
+      "dist/assets/resume-*.js",
+      "dist/assets/resume-*.css"
+    ],
+    "limit": "3 KB",
+    "gzip": true
+  },
+  {
+    "name": "privacy view chunk (JS+CSS)",
+    "path": [
+      "dist/assets/privacy-*.js",
+      "dist/assets/privacy-*.css"
+    ],
+    "limit": "2 KB",
+    "gzip": true
+  },
+  {
     "name": "now-projects chunk (JS+CSS)",
     "path": [
       "dist/assets/now-projects-section-*.js",
