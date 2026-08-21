@@ -27,6 +27,17 @@
      Edit here to retune every hover/expand/animation in one place. */
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
+  /* Readable line length for continuous prose — see §7.4. `ch` resolves
+     against each consumer's own font-size, so one value serves the 15px
+     body and the 18px modal alike. Opt-in: `.kyo-prose` carries the type
+     treatment, this caps the measure, and short leads take neither. */
+  --kyo-measure: 68ch;
+
+  /* Backdrop blur as a token: each surface names its own radius, and the one
+     media query below turns every blur off at once. `none` drops the
+     compositor layer entirely, so the GPU cost goes with the effect. */
+  --kyo-backdrop: blur(var(--kyo-backdrop-r, 8px));
+
   @each $screen-size, $font-size in $typo-scale {
     @if $screen-size == small {
       @each $size, $value in $font-size {
@@ -42,6 +53,12 @@
       --fs-#{$size}: #{$value};
     }
   }
+}
+
+/* A user who asks for less transparency is asking for exactly this effect to
+   stop; every consumer of --kyo-backdrop honours it from this one rule. */
+@media (prefers-reduced-transparency: reduce) {
+  :root { --kyo-backdrop: none; }
 }
 
 @include min-media-query(lg) {
@@ -425,6 +442,11 @@
   border-radius: 4px;
   white-space: nowrap;
   transform: translate(10px, 16px);
+}
+
+/* Near the right viewport edge the tooltip opens bottom-left instead. */
+.kyo-cursor-tooltip--flip {
+  transform: translate(calc(-100% - 10px), 16px);
 }
 
 .kyo-ct-leave-active {

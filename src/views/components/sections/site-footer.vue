@@ -77,7 +77,6 @@ useInViewport(footer_ref);
 
 <template>
   <footer
-    id="contact"
     ref="footer_ref"
     class="site-footer"
     role="contentinfo"

@@ -88,6 +88,16 @@
   }
 }
 
+/* Half-open band [$from, $to) — the upper bound backs off one 16px step so
+   it can never collide with the min-media-query that starts at $to. */
+@mixin between-media-query($from, $to) {
+  $min: map.get($breakpoints, $from);
+  $max: map.get($breakpoints, $to) - 0.0625em;
+  @media only screen and (min-width: $min) and (max-width: $max) {
+    @content;
+  }
+}
+
 /* ────────────────────────────────────────────────────────────────────────────
  * cyberpunk-glow — animated halo around an element.
  *

@@ -153,7 +153,12 @@ const setItemRef = (el, idx) => {
 <style lang="scss" scoped>
 .language-toggle {
   position: relative;
-  display: inline-block;
+  /* inline-FLEX, not inline-block: as a block the wrapper picks up the line
+     box's leading and ends ~2px taller than the button it holds, so the button
+     rendered off-centre against its flex siblings in the nav (visible once the
+     CV button sat beside it). Flex removes the baseline gap; `relative` still
+     anchors the dropdown. */
+  display: inline-flex;
   font-family: "SpaceMono", monospace;
 
   &__button {

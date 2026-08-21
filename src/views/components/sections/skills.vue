@@ -16,7 +16,7 @@ import { useI18n } from 'vue-i18n';
 
 const section_ref = ref(null);
 useInViewport(section_ref);
-useProximityHover(section_ref, '.skills__item', 0.05);
+useProximityHover(section_ref, '.skills__item');
 
 const { t, locale } = useI18n();
 
