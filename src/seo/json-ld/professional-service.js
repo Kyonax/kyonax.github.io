@@ -8,7 +8,7 @@
  * intent, and there is no reader-side UX cost.
  */
 
-import { SITE_ORIGIN } from '@data/data';
+import { AUTHOR_INFO, SITE_ORIGIN } from '@data/data';
 
 import { PERSON_ID } from './identifiers';
 
@@ -41,13 +41,13 @@ const SERVICE_TYPES_ES = [
 ];
 
 const SERVICE_NAME = {
-  en: 'Senior Full-Stack and Frontend Web Development',
-  es: 'Desarrollo Web Full-Stack y Frontend Senior',
+  en: 'Senior Software Engineering and Full-Stack Web Development',
+  es: 'Ingeniería de Software Senior y Desarrollo Web Full-Stack',
 };
 
 const SERVICE_DESCRIPTION = {
-  en: 'Remote Senior Full-Stack and Frontend Web Development for e-commerce, SaaS, and consumer-facing web applications. Based in Colombia, serving teams across Latin America and the United States.',
-  es: 'Desarrollo Web Senior Full-Stack y Frontend 100% remoto para e-commerce, SaaS y aplicaciones web de cara al consumidor. Desde Colombia, atendiendo equipos en Latinoamérica y Estados Unidos.',
+  en: 'Remote LATAM Full-Stack Web Development and Senior Software Engineering for e-commerce, SaaS, and consumer-facing web applications. Based in Colombia, serving teams across Latin America and the United States.',
+  es: 'Desarrollador Web y Programador Full-Stack 100% remoto desde Villavicencio, Colombia, para e-commerce, SaaS y aplicaciones web de cara al consumidor. Atendiendo equipos en Latinoamérica y Estados Unidos.',
 };
 
 export const buildProfessionalServiceJsonLd = (locale) => ({
@@ -68,6 +68,16 @@ export const buildProfessionalServiceJsonLd = (locale) => ({
     { '@type': 'Language', name: 'English', alternateName: 'en' },
     { '@type': 'Language', name: 'Spanish', alternateName: 'es' },
   ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: `mailto:${AUTHOR_INFO.email}`,
+    contactType: 'sales',
+    url: `${SITE_ORIGIN}/#contact`,
+    availableLanguage: [
+      { '@type': 'Language', name: 'English', alternateName: 'en' },
+      { '@type': 'Language', name: 'Spanish', alternateName: 'es' },
+    ],
+  },
 });
 
 export default buildProfessionalServiceJsonLd;

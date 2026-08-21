@@ -38,17 +38,30 @@
     <!-- Stop iOS Safari from auto-linking date strings (e.g. 01/2018) as phone numbers. -->
     <meta name="format-detection" content="telephone=no" />
 
+    <!--
+      Cross-document view transitions (ad-w23) are declared in src/scss/base/_global.scss,
+      NOT inline here. Both placements were A/B tested against Chrome with a real
+      navigation and a `pagereveal` probe: the transition fires identically either way,
+      because the entry stylesheet is render-blocking and is therefore parsed before the
+      incoming document's first render. Inlining it here additionally made vite-ssg's
+      jsdom emit three "Could not parse CSS stylesheet" errors per build — jsdom cannot
+      parse the @view-transition at-rule (the ::view-transition-* pseudo rules and
+      color-mix() parse fine). Same behaviour, noisier build, so the stylesheet wins.
+      Do not "improve" this by moving the rule back into an inline <style>.
+    -->
+
     <%- lcpPreload %>
     <%- fontPreload %>
 
     <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
-    <title>Cristian D. Moreno, Senior Full-Stack &amp; Frontend Engineer</title>
+    <title>Cristian D. Moreno, Senior Software Engineer (Full-Stack)</title>
   </head>
 
   <body>

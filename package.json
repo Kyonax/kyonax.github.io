@@ -18,6 +18,7 @@
     "check:trans": "node scripts/check-trans-attrs.mjs",
     "check:color": "node scripts/check-color-usage.mjs",
     "check:aliases": "node scripts/check-aliases.mjs",
+    "check:browser-support": "node scripts/check-browser-support.mjs",
     "check:licenses": "node scripts/check-license-headers.mjs",
     "check:json-ld": "node scripts/check-json-ld.mjs",
     "check:nerd-glyphs": "node scripts/check-nerd-glyphs.mjs",
@@ -26,6 +27,7 @@
     "check:lighthouse": "lhci autorun",
     "precheck": "node scripts/precheck.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "generate:og": "node scripts/generate-og-resume.mjs",
     "convert:fonts": "./scripts/convert-fonts.sh",
     "convert:fonts:subset": "./scripts/convert-fonts.sh --subset",
     "convert:fonts:symbols": "./scripts/convert-fonts.sh --subset --symbols-glyphs=scripts/_nerd-font-glyphs.txt --only=Symbols",
@@ -82,6 +84,8 @@
     "@size-limit/file": "^12.1.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/test-utils": "^2.4.6",
+    "browserslist": "4.28.8",
+    "browserslist-to-esbuild": "2.1.1",
     "eslint": "^9.17.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsdoc": "^50.6.3",
@@ -91,6 +95,7 @@
     "eslint-plugin-vue": "^9.32.0",
     "globals": "^15.14.0",
     "happy-dom": "^15.11.7",
+    "lightningcss": "1.33.0",
     "sass": "^1.81.0",
     "sharp": "^0.34.5",
     "size-limit": "^12.1.0",
@@ -101,8 +106,6 @@
     "vue-eslint-parser": "^9.4.3"
   },
   "browserslist": [
-    ">0.5%",
-    "last 2 versions",
-    "not dead"
+    "defaults and fully supports css-lch-lab"
   ]
 }

@@ -14,8 +14,6 @@ import BlastImage from '@components/blast-image.vue';
 import useInViewport from '@composables/use-in-viewport';
 import useTestimonials from '@composables/use-testimonials';
 import BrandIcon from '@ui/brand-icon.vue';
-import UiHudDeco from '@ui/hud-deco.vue';
-import UiRatingStars from '@ui/rating-stars.vue';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -56,10 +54,6 @@ const go = (n) => {
     class="t-proof kyo-section"
     :aria-label="t('kyo-web.landing.testimonials.section-aria')"
   >
-    <UiHudDeco variant="tr" text="// PROOF :: VERIFIED" />
-    <UiHudDeco variant="bl" text="// 推薦状" />
-    <UiHudDeco variant="watermark" text="信頼" class="t-proof__watermark" />
-
     <div class="t-proof__top">
       <h2 class="t-proof__lead kyo-prose">
         {{ t('kyo-web.landing.testimonials.lead') }}
@@ -97,13 +91,6 @@ const go = (n) => {
           class="t-proof__item"
         >
           <article class="t-proof__card">
-            <UiRatingStars
-              v-if="item.rating"
-              class="t-proof__stars"
-              :rating="item.rating"
-              :label="t('kyo-web.landing.testimonials.rated-aria', { rating: item.rating })"
-            />
-
             <blockquote class="t-proof__quote kyo-prose" :cite="recsUrl">
               {{ item.quote }}
             </blockquote>
@@ -185,11 +172,6 @@ const go = (n) => {
 
 <style lang="scss" scoped>
 .t-proof {
-  &__watermark {
-    top: 2rem; right: -1.5rem;
-    @include min-media-query(md) { top: 3rem; right: 1rem; }
-  }
-
   /* ── Lead + nav (Pager placement) ──────────────────────────────────── */
   &__top {
     display: flex;
@@ -203,7 +185,6 @@ const go = (n) => {
     margin: 0;
     font-size: var(--fs-300);
     font-weight: 400;
-    max-width: 60ch;
   }
 
   &__nav { display: flex; gap: 0.5rem; flex-shrink: 0; }
@@ -258,7 +239,6 @@ const go = (n) => {
     border: 1px solid var(--clr-border-100);
   }
 
-  &__stars { margin-bottom: -0.35rem; }
 
   &__quote {
     margin: 0;
@@ -368,8 +348,8 @@ const go = (n) => {
     letter-spacing: 0.07em;
     color: var(--clr-neutral-300);
     background: color-mix(in srgb, var(--clr-neutral-900) 72%, transparent);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    --kyo-backdrop-r: 6px;
+    backdrop-filter: var(--kyo-backdrop);
     border: 1px solid color-mix(in srgb, var(--clr-neutral-100) 15%, transparent);
     line-height: 1;
   }

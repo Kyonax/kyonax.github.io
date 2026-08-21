@@ -17,17 +17,18 @@
  * Counts:
  *   $colors      → 8 families × 5–7 shades = 50 tokens
  *   $typo-scale  → 8 sizes × 3 breakpoint tiers = 24 tokens
- *   $breakpoints → 4 keys
+ *   $breakpoints → 5 keys
  */
 
 /* ────────────────────────────────────────────────────────────────────────────
- * Breakpoints — mobile-first. Consumed by min-media-query / max-media-query.
+ * Breakpoints — mobile-first. Consumed by min-/max-/between-media-query.
  * ──────────────────────────────────────────────────────────────────────────── */
 $breakpoints: (
-  sm: 48em,      /* 768px  — Landscape phones */
-  md: 64em,      /* 1024px — Tablets */
-  lg: 75em,      /* 1200px — Desktops */
-  xl: 100em,     /* 1600px — Wide displays */
+  sm: 48em,        /* 768px  — Landscape phones */
+  tab: 50.625em,   /* 810px  — Portrait tablets, feed moves beside the frame */
+  md: 64em,        /* 1024px — Tablets */
+  lg: 75em,        /* 1200px — Desktops */
+  xl: 100em,       /* 1600px — Wide displays */
 );
 
 /* ────────────────────────────────────────────────────────────────────────────

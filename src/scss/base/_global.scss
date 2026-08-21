@@ -88,3 +88,50 @@ body {
     scroll-behavior:           auto   !important;
   }
 }
+
+/* Cross-document view transitions — SITE-WIDE RULE, every document opts in.
+ *
+ * The landing and the resume pages are separate prerendered documents linked
+ * by plain <a href>, so moving between them is a full navigation. The browser
+ * tries to hold the outgoing frame until the incoming document paints, but
+ * FCP is gated by the render-blocking entry CSS, so paint-holding times out
+ * and the visitor sees white. Opting into a cross-document view transition
+ * hands the browser a captured frame of the outgoing page to hold instead,
+ * and the gap disappears.
+ *
+ * BOTH documents must carry this rule or the transition is skipped for that
+ * pair — a one-sided opt-in is the same as none. The static pages in public/
+ * (privacy EN + ES, the five error pages) never load this stylesheet, so they
+ * repeat these two rules inline. Any new page MUST opt in the same way.
+ *
+ * WHY HERE AND NOT INLINE IN index.html: both were A/B tested against Chrome
+ * with a real navigation and a `pagereveal` probe — the transition fires
+ * identically, because this stylesheet is render-blocking and is parsed before
+ * the incoming document's first render. Inlining it ALSO made vite-ssg's jsdom
+ * emit "Could not parse CSS stylesheet" three times per build (jsdom cannot
+ * parse the @view-transition at-rule; the pseudo rules and color-mix() are
+ * fine). Same behaviour, noisier build. Do not move it inline.
+ *
+ * Straight cut, not a fade. `animation: none` drops the UA cross-fade. The
+ * held frame comes from the transition machinery, not from the animation, so
+ * removing the animation removes the effect without bringing the blank back.
+ * That also makes this correct under prefers-reduced-motion for free — there
+ * is no motion left to reduce, which is why it sits outside the block above
+ * (::view-transition-* pseudo-elements are not matched by `*` anyway).
+ *
+ * SUPPORT: Chromium 126+ and Safari 18.2+. Firefox has NOT shipped cross-
+ * document view transitions (Bugzilla 1860854: NEW, unassigned, 32 open
+ * blockers) — it has same-document only, so it ignores this and keeps the old
+ * behaviour. There the blank is paint-holding timing out, not a missing
+ * feature, so the Firefox lever is faster first paint (WORK BOARD C6, critical
+ * CSS). Progressive enhancement, no JS, cannot fail closed. It hides the gap
+ * rather than shortening it — the document still has to load, which is why the
+ * use-warm-route document prefetch (ad-w18) stays. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}

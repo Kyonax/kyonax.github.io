@@ -38,6 +38,9 @@ import { fileURLToPath, URL } from 'node:url';
 
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import vue from '@vitejs/plugin-vue';
+import browserslist from 'browserslist';
+import browserslistToEsbuild from 'browserslist-to-esbuild';
+import { browserslistToTargets } from 'lightningcss';
 import { defineConfig } from 'vite';
 import { createHtmlPlugin } from 'vite-plugin-html';
 
@@ -301,8 +304,11 @@ export default defineConfig(({ mode }) => {
       /* Emit dist/<path>/index.html so /es and /es/ both resolve cleanly
          via Apache + DirectorySlash Off + strip-slash rule. */
       dirStyle: 'nested',
+      /* Explicit prerender list. Keep in lockstep with src/router.js ROUTES and
+         the URL lists in scripts/generate-sitemap.mjs — a route missing here is
+         silently NOT prerendered and ships as an empty shell to crawlers. */
       includedRoutes() {
-        return ['/', '/es'];
+        return ['/', '/es', '/resume', '/es/hoja-de-vida', '/privacy', '/es/privacy'];
       },
     },
 
@@ -330,6 +336,11 @@ export default defineConfig(({ mode }) => {
     },
 
     css: {
+      // Prefixing + down-levelling follow the signed browserslist floor (scripts/targets.lock.txt).
+      transformer: 'lightningcss',
+      lightningcss: {
+        targets: browserslistToTargets(browserslist()),
+      },
       preprocessorOptions: {
         scss: {
           // SASS needs its own resolver hint — Vite's resolve.alias is JS-only.
@@ -352,7 +363,8 @@ export default defineConfig(({ mode }) => {
     },
 
     build: {
-      target: 'es2020',
+      // Derived from the same signed browserslist floor — never hardcode an esN here.
+      target: browserslistToEsbuild(),
       cssCodeSplit: true,
       sourcemap: true,
       /* Subset fonts (e.g. SymbolsNerdFontMono → 2.7 KB) would otherwise

@@ -25,22 +25,25 @@ const LINKEDIN_ORG = {
   sameAs: 'https://www.linkedin.com',
 };
 
-const _review = ({ id, author_name, author_url, body_en, body_es, date }) => ({
-  '@type': 'Review',
-  '@id': `${SITE_ORIGIN}/#review-${id}`,
-  url:           LINKEDIN_RECS_URL,
-  datePublished: date,
-  itemReviewed:  { '@id': PERSON_ID },
-  publisher:     LINKEDIN_ORG,
-  reviewRating:  { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' },
-  author: {
-    '@type': 'Person',
-    name:    author_name,
-    url:     author_url,
-    sameAs:  author_url,
-  },
-  reviewBody: { en: body_en, es: body_es },
-});
+/* Recommendations are prose-only: no reviewRating is ever emitted, so the
+   markup cannot claim a score the page does not show. */
+const _review = ({ id, author_name, author_url, body_en, body_es, date }) => {
+  return {
+    '@type': 'Review',
+    '@id': `${SITE_ORIGIN}/#review-${id}`,
+    url:           LINKEDIN_RECS_URL,
+    datePublished: date,
+    itemReviewed:  { '@id': PERSON_ID },
+    publisher:     LINKEDIN_ORG,
+    author: {
+      '@type': 'Person',
+      name:    author_name,
+      url:     author_url,
+      sameAs:  author_url,
+    },
+    reviewBody: { en: body_en, es: body_es },
+  };
+};
 
 const REVIEWS_DATA = [
   _review({
@@ -69,7 +72,7 @@ const REVIEWS_DATA = [
   }),
 ];
 
-/* Referenced by person.js to build Person.review + Person.aggregateRating */
+/* Referenced by person.js to build Person.review */
 export const REVIEW_IDS = REVIEWS_DATA.map((r) => ({ '@id': r['@id'] }));
 
 export const buildTestimonialsJsonLd = (locale = 'en') =>

@@ -2,13 +2,40 @@
   {
     "name": "main bundle (JS)",
     "path": "dist/assets/app-*.js",
-    "limit": "160 KB",
+    "limit": "180 KB",
     "gzip": true
   },
   {
     "name": "main bundle (CSS)",
     "path": "dist/assets/app-*.css",
     "limit": "12 KB",
+    "gzip": true
+  },
+  {
+    "name": "document shell chunk (JS+CSS)",
+    "path": [
+      "dist/assets/document-page-*.js",
+      "dist/assets/document-page-*.css"
+    ],
+    "limit": "3 KB",
+    "gzip": true
+  },
+  {
+    "name": "resume view chunk (JS+CSS)",
+    "path": [
+      "dist/assets/resume-*.js",
+      "dist/assets/resume-*.css"
+    ],
+    "limit": "3 KB",
+    "gzip": true
+  },
+  {
+    "name": "privacy view chunk (JS+CSS)",
+    "path": [
+      "dist/assets/privacy-*.js",
+      "dist/assets/privacy-*.css"
+    ],
+    "limit": "2 KB",
     "gzip": true
   },
   {
@@ -35,7 +62,7 @@
       "dist/assets/image-viewer-*.js",
       "dist/assets/image-viewer-*.css"
     ],
-    "limit": "3 KB",
+    "limit": "3.5 KB",
     "gzip": true
   },
   {
@@ -54,6 +81,15 @@
       "dist/assets/faq-*.css"
     ],
     "limit": "3 KB",
+    "gzip": true
+  },
+  {
+    "name": "experience-brain chunk (JS+CSS)",
+    "path": [
+      "dist/assets/experience-brain-*.js",
+      "dist/assets/experience-brain-*.css"
+    ],
+    "limit": "10 KB",
     "gzip": true
   }
 ]

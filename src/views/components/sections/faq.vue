@@ -211,10 +211,14 @@ useInViewport(section_ref);
     border-top: 1px dashed color-mix(in srgb, var(--clr-border-100) 50%, transparent);
     margin-top: 0.25rem;
     font-size: var(--fs-300);
+    /* border-box, so the horizontal padding is added back on top of the
+       measure — the dashed rule above spans the panel, the prose does not. */
+    max-width: calc(var(--kyo-measure) + 2.3rem);
 
     @include min-media-query(md) {
       font-size: var(--fs-400);
       padding: 1.25rem 1.4rem 1.55rem;
+      max-width: calc(var(--kyo-measure) + 2.8rem);
     }
   }
 

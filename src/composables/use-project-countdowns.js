@@ -17,7 +17,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
  * use `countdowns.value[key]` in JS and `countdowns.<key>` in templates (auto-unwrap).
  * @returns {import('vue').Ref<Record<string, {label: string, countdown: string|null, utc_ts: number}>>}
  */
-export const useProjectCountdowns = (keys) => {
+export const useProjectCountdowns = (keys, catalog = PROJECTS) => {
   const countdowns = ref({});
 
   let worker = null;
@@ -30,7 +30,7 @@ export const useProjectCountdowns = (keys) => {
       countdowns.value = event.data;
     };
     worker.addEventListener('message', message_handler);
-    worker.postMessage({ projects: PROJECTS, keys });
+    worker.postMessage({ projects: catalog, keys });
 
     visibility_handler = () => {
       if (!worker) {

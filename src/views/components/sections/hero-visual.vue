@@ -5,6 +5,7 @@
  */
 
 import { warmImageViewer } from '@composables/use-warm-modal';
+import HeroDataFeed from '@sections/hero-data-feed.vue';
 import UiImage from '@ui/image.vue';
 
 defineProps({
@@ -17,31 +18,34 @@ defineEmits(['open']);
 
 <template>
   <div class="hero-visual">
-    <button
-      type="button"
-      class="hero-visual__frame"
-      :aria-label="ariaLabel"
-      @click="$emit('open')"
-      @pointerenter="warmImageViewer"
-      @focus="warmImageViewer"
-    >
-      <UiImage
-        img="kyonax_portrait"
-        :alt="alt"
-        aspect="3 / 4"
-        :size="{ sm: 240, md: 300, lg: 360, xl: 420 }"
-        fit="cover"
-        position="top center"
-        sizes="(max-width: 768px) 70vw, 380px"
-        eager
-      />
-      <div class="hero-visual__inner" aria-hidden="true" />
-    </button>
-    <div class="hero-visual__meta" aria-hidden="true">
-      <span class="hero-visual__meta-frame">
-        <span class="ccs-glyph">▣</span>
-      </span>
-      <span class="hero-visual__meta-handle" />
+    <div class="hero-visual__unit">
+      <div class="hero-visual__meta" aria-hidden="true">
+        <span class="hero-visual__meta-frame">
+          <span class="ccs-glyph">▣</span>
+        </span>
+        <span class="hero-visual__meta-handle" />
+      </div>
+      <button
+        type="button"
+        class="hero-visual__frame"
+        :aria-label="ariaLabel"
+        @click="$emit('open')"
+        @pointerenter="warmImageViewer"
+        @focus="warmImageViewer"
+      >
+        <UiImage
+          img="kyonax_portrait"
+          :alt="alt"
+          aspect="1 / 1"
+          :size="{ sm: 240, md: 300, lg: 360, xl: 420 }"
+          fit="cover"
+          position="top center"
+          sizes="(max-width: 768px) 70vw, 380px"
+          eager
+        />
+        <div class="hero-visual__inner" aria-hidden="true" />
+      </button>
+      <HeroDataFeed />
     </div>
   </div>
 </template>
@@ -52,12 +56,47 @@ defineEmits(['open']);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
   justify-self: center;
 
   @include max-media-query(lg) {
     justify-self: stretch;
     width: 100%;
+  }
+
+  /* Frame + data feed share one continuous outline: the feed draws its own
+     side/bottom borders with border-top: 0, so the frame's bottom hairline
+     doubles as the divider and the whole unit reads as one instrument. */
+  &__unit {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    @include max-media-query(lg) {
+      width: 100%;
+      max-width: 320px;
+      margin-inline: auto;
+    }
+
+    /* 810-1023px the hero is one column and the 320px unit leaves ~300px dead
+       on each side, so the feed moves beside the frame. Grid, not flex: the
+       meta strip must stay above the frame while the feed spans neither. */
+    @include between-media-query(tab, md) {
+      display: grid;
+      /* px, not rem: the unit's own max-width is px and the root font-size
+         drops to 12px in this band, which would shrink the portrait. */
+      grid-template-columns: 320px minmax(0, 1fr);
+      max-width: 704px;
+    }
+  }
+
+  /* Column 1 keeps the meta strip stacked over the frame; the feed takes
+     column 2 on the frame's row only, so their top and bottom edges align. */
+  @include between-media-query(tab, md) {
+    &__meta { grid-column: 1; grid-row: 1; }
+
+    &__frame { grid-column: 1; grid-row: 2; }
+
+    :deep(.hero-data-feed) { grid-column: 2; grid-row: 2; }
   }
 
   &__frame {
@@ -87,8 +126,6 @@ defineEmits(['open']);
     @include max-media-query(lg) {
       display: block;
       width: 100%;
-      max-width: 320px;
-      margin-inline: auto;
 
       :deep(.ui-image) {
         width: 100%;
@@ -101,22 +138,6 @@ defineEmits(['open']);
         max-width: none !important;
       }
     }
-
-    &::before,
-    &::after {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      border: 1px solid var(--clr-border-100);
-      pointer-events: none;
-      z-index: 2;
-      transition: border-color 0.2s ease;
-    }
-    &::before { top: -5px; left: -5px;  border-right: 0; border-bottom: 0; }
-    &::after  { bottom: -5px; right: -5px; border-left: 0;  border-top: 0; }
-    &:hover::before,
-    &:hover::after { border-color: var(--clr-primary-100); }
   }
 
   &__inner {
@@ -138,13 +159,24 @@ defineEmits(['open']);
     z-index: 1;
   }
 
+  /* Inside __unit so both lines end exactly on the frame's right edge at
+     every breakpoint — the unit is the width authority, not a magic number. */
   &__meta {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 380px;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+
+    /* Beside the frame the strip reads as the unit's masthead, so it hangs
+       off the left edge instead of trailing the portrait's right. */
+    @include between-media-query(tab, md) {
+      align-items: flex-start;
+      text-align: left;
+    }
+    margin-bottom: 0.75rem;
     font-family: "SpaceMono", monospace;
     font-size: var(--fs-100);
+    line-height: 1.5;
     color: var(--clr-neutral-300);
     letter-spacing: 0.08em;
 

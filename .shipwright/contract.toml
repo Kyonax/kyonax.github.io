@@ -1,0 +1,100 @@
+# =============================================================================
+# shipwright contract — kyo-web-online
+# =============================================================================
+# Fingerprinted. Change any byte and shipwright refuses this repo until:
+#     shipwright approve <repo>
+# =============================================================================
+
+schema = 1
+
+[repo]
+# Short name for notifications, the ledger and `status`. The GitHub remote is
+# Kyonax/kyonax.github.io (the Pages repo); this is the working name.
+name = "kyo-web-online"
+default_branch = "main"
+remote = "origin"
+hot_window_min = 10
+
+[commit]
+# Derived from the last 30 subjects, which use exactly feat / fix / chore.
+# refactor, build, docs and test are deliberately ABSENT: the history has never
+# used them, and a closed list is what stops an unattended run inventing one.
+# Add refactor here once a hand-written commit has actually introduced it.
+types = ["feat", "fix", "chore"]
+
+scope_required = true
+
+# Derived from the same 30 subjects. Multi-scope subjects already appear in the
+# history (feat(seo,ux,perf)), so these compose.
+scopes = ["ux", "seo", "perf", "content", "css", "styling", "build", "ci", "eslint"]
+
+split_by_scope = true
+
+# RAISED from the default 25 by the owner, 2026-08-20, specifically so the
+# seven-sitting backlog (125 paths) can publish in one run instead of being
+# deferred. This is a deliberate one-time widening: normal forward work in this
+# repo touches ~20 files, so consider lowering it back to 25 once the backlog
+# has landed, which restores the "anything large gets a human first" property.
+max_files = 150
+
+trailer = true
+
+[flow]
+# Owner's choice, 2026-08-20. `main` is protected on GitHub (1 approving review
+# required), so this behaves identically to pr-always today; it only becomes
+# meaningful if protection is ever removed.
+mode = "pr-on-protected"
+branch_prefix = "auto/"
+pr_draft = false
+pr_reviewers = []
+
+[gates]
+# All four commands that actually pass as of 2026-08-20 evening: lint reached
+# 0 errors and check:size 11/11 in the production-readiness pass, so both are
+# wired in — the upgrade path the earlier contract named.
+#
+# Deliberately NOT wired:
+#   npm test           exits 0 with ZERO test files found. It asserts nothing,
+#                      and a surface reporting success while asserting nothing
+#                      is the exact failure shape shipwright already paid for.
+#
+# check:size reads dist/, so it must follow the build in pre_push.
+pre_commit = ["npm run precheck", "npm run lint"]
+pre_push   = ["npm run build", "npm run check:size"]
+timeout_s  = 900
+
+[tag]
+enabled = false
+when = "never"
+manifest = "package.json"
+pattern = "v{version}"
+push_tag = false
+
+[paths]
+# The mandatory secret floor is unioned in automatically. These are additions:
+# build output that must never be tracked even if an ignore rule regresses.
+never_commit = ["dist/**", "dist-ssr/**", "node_modules/**"]
+
+# Owner's choice, 2026-08-20. A workflow change alters what CI is allowed to do,
+# and vite.config.js now carries the signed browserslist/lightningcss migration
+# (css.transformer + build.target) — changing it silently changes what every
+# browser receives.
+require_pr = [".github/**", "vite.config.js"]
+
+[repair]
+process = true
+
+# Owner's choice, 2026-08-20, matching the posture used across the queue: this
+# is software, not notes, so a conflict is a decision about behaviour. A run
+# that conflicts simply fails and leaves the worktree untouched.
+conflicts = false
+
+max_attempts = 2
+
+[schedule]
+# Owner's choice, 2026-08-20: one end-of-day sweep, plus on-demand runs.
+# A repo is skipped unless the run's slot is listed here, so an ad-hoc run must
+# name the slot explicitly:
+#     shipwright run --repo kyo-web-online --slot 23:00 [--dry-run]
+slots = ["23:00"]
+min_interval_min = 0

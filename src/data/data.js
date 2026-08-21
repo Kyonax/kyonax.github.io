@@ -6,9 +6,12 @@
 export const DEFAULT_LANGUAGE = 'en';
 export const SUPPORTED_LANGUAGES = ['en', 'es'];
 
+/* Identity + contact block. Must stay in lockstep with the contact line of the
+   verified CVs (EN 3afb94d4 / ES e7d13e27) and every landed professional profile. */
 export const AUTHOR_INFO = {
   name:  'Cristian D. Moreno (Kyonax)',
-  email: 'work@kyonax.com',
+  email: 'kyonax.corp@gmail.com',
+  phone: '+57 302 253 9479',
   twitter: '@kyonax_on_tech',
   github:  'https://github.com/Kyonax',
   orcid:   'https://orcid.org/0009-0006-4459-5538',
@@ -18,22 +21,41 @@ export const AUTHOR_INFO = {
 export const SEO = {
   keywords: [
     'Cristian D. Moreno', 'Kyonax', 'KYO-T', 'kyonax_on_tech', '京',
-    'Frontend Engineer', 'Full Stack Developer', 'Full-Stack Engineer', 'Vue 3', 'TypeScript',
+    'Frontend Engineer', 'Full Stack Developer', 'Full-Stack Engineer', 'Vue.js', 'TypeScript',
     'Web Performance', 'AgileEngine', 'Madison Reed', 'Zerønet Labs',
     'Bogotá Developer', 'Colombia Frontend', 'Senior Software Engineer',
     'Remote Developer', 'LATAM Developer', 'Colombia Software Engineer', 'JavaScript Developer',
+    'Web Developer', 'Full Stack Web Developer', 'Software Developer',
+    'Nearshore Developer', 'LATAM Full Stack Developer', 'Hire LATAM Developer',
+    'Desarrollador Web', 'Desarrollador Full Stack', 'Programador Web',
+    'Desarrollador Web Villavicencio', 'Desarrollador Web Colombia', 'Ingeniero de Software',
   ],
   ogImage:        '/og-banner.jpg',
+  /* Resume pages carry their own banner — the landing card shows the portrait
+     composite, which says nothing about the CV being the page's content. */
+  resumeOgImage: Object.freeze({
+    en: '/og-resume-en.jpg',
+    es: '/og-resume-es.jpg',
+  }),
   ogImageWidth:   1200,
   ogImageHeight:  630,
   ogImageType:    'image/jpeg',
-  ogImageAltFallback: 'Cristian D. Moreno (Kyonax), Frontend & Full-Stack Engineer',
+  ogImageAltFallback: 'Cristian D. Moreno (Kyonax), Senior Software Engineer (Full-Stack)',
 };
 
 export const THEME_SETTINGS = {
   themeColor: '#f9cd26',
   msApplicationTileColor: '#000000',
 };
+
+/* CV PDFs live in public/cv/ so they get STABLE, unhashed URLs. Vite content-hashes
+   anything imported from src/assets, and that hash changes on every rebuild — which
+   breaks whatever URL Google has indexed. Search engines index PDFs directly, so the
+   URL must never move. Referenced by the sitemap; do not rename these files. */
+export const CV_URL = Object.freeze({
+  en: '/cv/Cristian-Moreno-Senior-Software-Engineer-EN.pdf',
+  es: '/cv/Cristian-Moreno-Senior-Software-Engineer-ES.pdf',
+});
 
 export const SITE_ORIGIN = 'https://kyonax.com';
 
@@ -63,7 +85,7 @@ export const TECHNOLOGIES = [
   { id: 'aws',     name: { en: 'AWS (Cloud)',    es: 'AWS (Nube)'     }, iconGlyph: '', iconClass: '' },
   { id: 'jest',    name: { en: 'Jest (Testing)', es: 'Jest (Pruebas)' }, iconGlyph: '',       iconClass: '' },
   { id: 'vite',          name: { en: 'Vite',            es: 'Vite'            }, iconGlyph: '', iconClass: '' },
-  { id: 'nest',          name: { en: 'Nest.js',         es: 'Nest.js'         }, iconGlyph: '', iconClass: '' },
+  { id: 'nest',          name: { en: 'NestJS',         es: 'NestJS'         }, iconGlyph: '', iconClass: '' },
   { id: 'postgresql',    name: { en: 'PostgreSQL',      es: 'PostgreSQL'      }, iconGlyph: '', iconClass: '' },
   { id: 'mongodb',       name: { en: 'MongoDB',         es: 'MongoDB'         }, iconGlyph: '', iconClass: '' },
   { id: 'githubactions', name: { en: 'GitHub Actions',  es: 'GitHub Actions'  }, iconGlyph: '', iconClass: '' },
@@ -89,3 +111,25 @@ export const TECHNOLOGIES = [
 export const TECH_BY_ID = Object.freeze(
   Object.fromEntries(TECHNOLOGIES.map((tech) => [tech.id, tech])),
 );
+
+/* Contact section configuration. WARNING: flipping isActivelyLooking to false
+   removes the hire-intent copy (status headline, criteria, philosophy) from
+   the prerendered HTML — keep it true while open to work. Set whatsappNumber
+   to the real number in '573001234567' shape (country code, no + or spaces)
+   to reveal the WhatsApp CTA; while it stays 'TODO' the CTA is hidden. */
+export const CONTACT_CONFIG = Object.freeze({
+  isActivelyLooking: true,
+  whatsappNumber:    'TODO',
+  bookingUrl:        'https://cal.com/k-cristian/30min', // 'TODO' hides the CTA
+});
+
+export const CONTACT_SERVICES = Object.freeze([
+  'web-dev',
+  'seo',
+  'performance',
+  'full-stack',
+  'consulting',
+  'other',
+]);
+
+export const CONTACT_CRITERIA_NUMS = Object.freeze(['01', '02', '03']);

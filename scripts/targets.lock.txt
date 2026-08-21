@@ -1,0 +1,31 @@
+# targets.lock.txt — resolved browserslist targets (the SIGNED audience floor).
+# query: defaults and fully supports css-lch-lab   (signed 2026-08-20, candidate B)
+# generated: 2026-08-20 · caniuse-lite 1.0.30001809 · browserslist 4.28.8
+# regenerate: npx update-browserslist-db@latest && node scripts/check-browser-support.mjs --write-lock
+and_chr 151
+and_ff 153
+android 151
+chrome 151
+chrome 150
+chrome 149
+chrome 148
+chrome 145
+chrome 120
+edge 151
+edge 150
+edge 149
+firefox 153
+firefox 152
+firefox 140
+ios_saf 26.5
+ios_saf 26.4
+ios_saf 26.3
+ios_saf 18.5-18.7
+op_mob 80
+opera 131
+opera 127
+safari 26.5
+safari 26.4
+safari 26.3
+samsung 30
+samsung 29

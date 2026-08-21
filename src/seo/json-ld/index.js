@@ -17,6 +17,8 @@ import buildVideoObjectsJsonLd        from './videos';
 import buildWebSiteJsonLd             from './website';
 
 export { buildFaqJsonLd } from './faq-page';
+export { buildPrivacyJsonLd } from './privacy-page';
+export { buildResumeJsonLd } from './resume-page';
 export { buildVideoObjectsJsonLd } from './videos';
 
 export const buildSiteJsonLd = ({ locale = 'en' } = {}) => ({
@@ -27,7 +29,7 @@ export const buildSiteJsonLd = ({ locale = 'en' } = {}) => ({
     buildPersonJsonLd(locale),
     buildProfessionalServiceJsonLd(locale),
     ...buildVideoObjectsJsonLd({ locale }),
-    ...buildProjectsJsonLd(),
+    ...buildProjectsJsonLd(locale),
     ...buildTestimonialsJsonLd(locale),
   ],
 });
