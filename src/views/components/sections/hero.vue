@@ -4,21 +4,18 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import cv_en_url from '@assets/cv/Cristian-Moreno-Senior-Software-Engineer-EN.pdf?url';
-import cv_es_url from '@assets/cv/Cristian-Moreno-Senior-Software-Engineer-ES.pdf?url';
 import useCursorTooltip from '@composables/use-cursor-tooltip';
 import useInViewport from '@composables/use-in-viewport';
 import useObfuscatedEmail from '@composables/use-obfuscated-email';
 import { vProseLinks } from '@composables/use-prose-links';
-import { TECHNOLOGIES } from '@data/data';
-import { PROJECTS } from '@data/projects';
+import { warmRoute } from '@composables/use-warm-route';
 import HeroVisual from '@sections/hero-visual.vue';
+import { RESUME_ROUTE_BY_LOCALE } from '@seo/routes';
 import AppIcon from '@ui/app-icon.vue';
-import BrandIcon from '@ui/brand-icon.vue';
+import CursorTooltip from '@ui/cursor-tooltip.vue';
 import UiHudDeco from '@ui/hud-deco.vue';
 import UiLink from '@ui/link.vue';
 import ModalLoading from '@ui/modal-loading.vue';
-import UiStateGrid from '@ui/state-grid.vue';
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -34,28 +31,28 @@ const UiImageViewer = defineAsyncComponent({
 
 const { t, locale } = useI18n();
 
-const cv_href = computed(() => (locale.value === 'es' ? cv_es_url : cv_en_url));
-const cv_filename = computed(() => 'Cristian-Moreno-Senior-Software-Engineer-CV.pdf');
+/* Primary CTA -> the HTML resume page, not the PDF. The page carries the same
+   content in crawlable HTML (and offers the PDF from its own nav), so sending
+   visitors there keeps them on-site and gives the CV a rankable destination. */
+const cv_href = computed(() => RESUME_ROUTE_BY_LOCALE[locale.value] || RESUME_ROUTE_BY_LOCALE.en);
+
+/* Hover/focus is a strong signal the visitor is about to open the CV, so the
+   resume document is prefetched before the click. warmRoute dedups, so binding
+   it on every pointerenter costs nothing after the first. */
+const warmResume = () => warmRoute(cv_href.value);
 const cv_label = computed(() =>
   t(locale.value === 'es' ? 'kyo-web.content-data.download.cv-es' : 'kyo-web.content-data.download.cv-en'),
 );
 
-const active_projects = computed(
-  () => (PROJECTS ? Object.keys(PROJECTS).length : 0),
-);
-const stack_count = computed(() => TECHNOLOGIES.length);
-
-const years_suffix = computed(() => locale.value === 'es' ? 'AÑOS' : 'YEARS');
-
-const ccs_tag_ref = ref(null);
-const { visible: ccs_tooltip_visible, x: ccs_x, y: ccs_y } = useCursorTooltip(ccs_tag_ref);
-
-const orcid_ref = ref(null);
-const { visible: orcid_tooltip_visible, x: orcid_x, y: orcid_y } = useCursorTooltip(orcid_ref);
-
 const summary_ref = ref(null);
 const { visible: zeronet_tooltip_visible, x: zeronet_x, y: zeronet_y } = useCursorTooltip(
   () => summary_ref.value?.querySelector('a[href*="zeronet-labs"], a[href*="kyonax"]') ?? null,
+);
+const { visible: mr_tooltip_visible, x: mr_x, y: mr_y } = useCursorTooltip(
+  () => summary_ref.value?.querySelector('a[href*="madison-reed"]') ?? null,
+);
+const { visible: ae_tooltip_visible, x: ae_x, y: ae_y } = useCursorTooltip(
+  () => summary_ref.value?.querySelector('a[href*="agileengine"]') ?? null,
 );
 
 const portrait_viewer_open = ref(false);
@@ -76,23 +73,21 @@ const portrait_aria = computed(() =>
    content) so mobile keyboard users tab visual-first. The desktop instance
    sits after .hero__content (content → visual) so desktop tab order is
    content-first, matching the grid layout. */
-/* 1200px = SCSS `lg` token. Keep in lockstep with the grid's
-   `@include min-media-query(lg)` in the SCSS below — otherwise the
-   v-show branch and the grid layout disagree at iPad-landscape
-   (1024-1199px), producing content-first / image-below order. */
+/* 1024px = SCSS `md` token. Keep in lockstep with the grid's
+   `@include min-media-query(md)` in the SCSS below — otherwise the
+   v-show branch and the grid layout disagree across the 768-1023px
+   portrait-tablet band, producing content-first / image-below order. */
 /* is_desktop initializes to false on BOTH SSR and CSR so the hydration
    diff is empty. _viewport_mq is read inside onMounted (post-hydration)
    and the visible instance flips reactively. */
 const is_desktop = ref(false);
-const is_mounted = ref(false);
 let _viewport_mq = null;
 const _on_viewport_change = (event) => {
   is_desktop.value = event.matches;
 };
 
 onMounted(() => {
-  is_mounted.value = true;
-  _viewport_mq = window.matchMedia('(min-width: 1200px)');
+  _viewport_mq = window.matchMedia('(min-width: 1024px)');
   is_desktop.value = _viewport_mq.matches;
   _viewport_mq.addEventListener('change', _on_viewport_change);
 });
@@ -101,7 +96,7 @@ onBeforeUnmount(() => _viewport_mq?.removeEventListener('change', _on_viewport_c
 
 const GLYPH_ARROW = '\uF063';
 
-const contact_email_href = useObfuscatedEmail('work', 'kyonax.com');
+const contact_email_href = useObfuscatedEmail('kyonax.corp', 'gmail.com');
 
 const section_ref = ref(null);
 useInViewport(section_ref);
@@ -114,7 +109,6 @@ useInViewport(section_ref);
     class="hero"
     :aria-label="t('kyo-web.landing.hero.section-aria')"
   >
-    <UiHudDeco variant="tr" text="// HANDSHAKE :: VERIFIED" />
     <UiHudDeco variant="bl" text="// VECTOR :: KYO-001" />
     <div class="hero__inner">
       <HeroVisual
@@ -126,53 +120,6 @@ useInViewport(section_ref);
       />
 
       <div class="hero__content">
-        <div class="hero__tag-row">
-          <a
-            ref="ccs_tag_ref"
-            class="hero__tag"
-            href="https://github.com/ccs-devhub"
-            target="_blank"
-            rel="noopener noreferrer"
-            :aria-label="t('kyo-web.landing.hero.tag-aria')"
-          >
-            <UiStateGrid />
-            <span v-html="t('kyo-web.landing.hero.tag')" />
-          </a>
-          <Teleport v-if="is_mounted" to="body">
-            <Transition name="kyo-ct">
-              <div
-                v-if="ccs_tooltip_visible"
-                class="kyo-cursor-tooltip"
-                :style="{ left: ccs_x + 'px', top: ccs_y + 'px' }"
-              >
-                {{ t('kyo-web.landing.hero.tooltip.ccs') }}
-              </div>
-            </Transition>
-          </Teleport>
-          <a
-            ref="orcid_ref"
-            class="hero__orcid"
-            href="https://orcid.org/0009-0006-4459-5538"
-            target="_blank"
-            rel="noopener noreferrer"
-            :aria-label="t('kyo-web.landing.hero.orcid-aria')"
-          >
-            <BrandIcon class="hero__orcid-icon" name="orcid" aria-hidden="true" />
-            <span class="hero__orcid-label">ORCID</span>
-          </a>
-          <Teleport v-if="is_mounted" to="body">
-            <Transition name="kyo-ct">
-              <div
-                v-if="orcid_tooltip_visible"
-                class="kyo-cursor-tooltip"
-                :style="{ left: orcid_x + 'px', top: orcid_y + 'px' }"
-              >
-                {{ t('kyo-web.landing.hero.tooltip.orcid') }}
-              </div>
-            </Transition>
-          </Teleport>
-        </div>
-
         <h1 class="hero__title">
           <span class="hero__name">{{ t('kyo-web.persistent-data.name') }}</span>
           <span class="hero__alias">A.K.A. KYONAX<sup lang="ja">京</sup></span>
@@ -185,41 +132,18 @@ useInViewport(section_ref);
         <p
           ref="summary_ref"
           v-prose-links="t('kyo-web.landing.modal.opens-new-tab')"
-          class="hero__summary"
+          class="hero__summary kyo-prose"
           v-html="t('kyo-web.landing.hero.summary')"
         />
-        <Teleport v-if="is_mounted" to="body">
-          <Transition name="kyo-ct">
-            <div
-              v-if="zeronet_tooltip_visible"
-              class="kyo-cursor-tooltip"
-              :style="{ left: zeronet_x + 'px', top: zeronet_y + 'px' }"
-            >
-              {{ t('kyo-web.landing.hero.tooltip.zeronet') }}
-            </div>
-          </Transition>
-        </Teleport>
-
-        <dl class="hero__stats">
-          <div class="hero__stat">
-            <dt>{{ t('kyo-web.landing.hero.stats.years-label') }}</dt>
-            <dd>
-              {{ t('kyo-web.landing.hero.stats.years-value') }}<span class="hero__stat-suffix">{{ years_suffix }}</span>
-            </dd>
-          </div>
-          <div class="hero__stat">
-            <dt>{{ t('kyo-web.landing.hero.stats.stack-label') }}</dt>
-            <dd>{{ stack_count }}</dd>
-          </div>
-          <div class="hero__stat">
-            <dt>{{ t('kyo-web.landing.hero.stats.projects-label') }}</dt>
-            <dd>{{ active_projects }}</dd>
-          </div>
-          <div class="hero__stat">
-            <dt>{{ t('kyo-web.landing.hero.stats.languages-label') }}</dt>
-            <dd>{{ t('kyo-web.landing.hero.stats.languages-value') }}</dd>
-          </div>
-        </dl>
+        <CursorTooltip :visible="zeronet_tooltip_visible" :x="zeronet_x" :y="zeronet_y">
+          {{ t('kyo-web.landing.hero.tooltip.zeronet') }}
+        </CursorTooltip>
+        <CursorTooltip :visible="mr_tooltip_visible" :x="mr_x" :y="mr_y">
+          {{ t('kyo-web.landing.hero.tooltip.madison-reed') }}
+        </CursorTooltip>
+        <CursorTooltip :visible="ae_tooltip_visible" :x="ae_x" :y="ae_y">
+          {{ t('kyo-web.landing.hero.tooltip.agileengine') }}
+        </CursorTooltip>
 
         <div class="hero__meta">
           <div class="hero__meta-item hero__meta-item--location">
@@ -247,7 +171,8 @@ useInViewport(section_ref);
             :href="cv_href"
             variant="cyber"
             size="lg"
-            :download="cv_filename"
+            @pointerenter="warmResume"
+            @focus="warmResume"
           >
             {{ cv_label }}
           </UiLink>
@@ -255,7 +180,6 @@ useInViewport(section_ref);
             :href="contact_email_href"
             variant="cyber-outline"
             size="lg"
-            external
           >
             {{ t('kyo-web.landing.hero.secondary-cta') }}
           </UiLink>
@@ -311,9 +235,6 @@ useInViewport(section_ref);
   @include max-media-query(md) {
     padding-bottom: 5rem;
 
-    :deep(.hud-deco--tr) {
-      top: 0.6rem;
-    }
     :deep(.hud-deco--bl) {
       bottom: 1.75rem;
     }
@@ -346,7 +267,7 @@ useInViewport(section_ref);
     gap: 3rem;
     align-items: center;
 
-    @include min-media-query(lg) {
+    @include min-media-query(md) {
       grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.85fr);
       gap: 4rem;
 
@@ -356,46 +277,6 @@ useInViewport(section_ref);
       & > .hero__visual  { grid-column: 2; grid-row: 1; justify-self: end; }
     }
   }
-
-  &__tag-row {
-    display: inline-flex;
-    align-items: stretch;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  &__tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: "SpaceMono", monospace;
-    font-size: var(--fs-200);
-    letter-spacing: 0.12em;
-    color: var(--clr-neutral-200);
-    border: 1px solid var(--clr-border-100);
-    padding: 0.4rem 0.8rem;
-    background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
-    text-decoration: none;
-    cursor: pointer;
-    width: fit-content;
-
-    &:hover,
-    &:focus,
-    &:focus-visible,
-    &:active {
-      color: var(--clr-neutral-200);
-      border-color: var(--clr-border-100);
-      background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
-      outline: none;
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--clr-primary-100);
-      outline-offset: 3px;
-    }
-  }
-
 
   &__title {
     font-family: "Geomanist", sans-serif;
@@ -421,48 +302,6 @@ useInViewport(section_ref);
     @media (max-width: 558px) {
       text-align-last: right;
     }
-  }
-
-  &__orcid {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: "SpaceMono", monospace;
-    font-size: var(--fs-200);
-    letter-spacing: 0.12em;
-    font-weight: 700;
-    color: var(--clr-success-100);
-    background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
-    border: 1px solid var(--clr-success-100);
-    padding: 0.4rem 0.8rem;
-    text-decoration: none;
-    cursor: pointer;
-
-    &:hover,
-    &:focus,
-    &:focus-visible,
-    &:active {
-      color: var(--clr-success-100);
-      border-color: var(--clr-success-100);
-      background: color-mix(in srgb, var(--clr-neutral-500) 60%, transparent);
-      outline: none;
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--clr-success-100);
-      outline-offset: 3px;
-    }
-  }
-
-  &__orcid-icon {
-    font-size: 1.1em;
-    line-height: 1;
-    color: inherit;
-    transform: translateY(0.06em);
-  }
-
-  &__orcid-label {
-    line-height: 1;
   }
 
   &__alias {
@@ -494,87 +333,15 @@ useInViewport(section_ref);
     text-transform: uppercase;
   }
 
+  /* Type comes from .kyo-prose; only size, rhythm and measure are local. */
   &__summary {
-    font-family: "Geomanist", sans-serif;
     font-size: var(--fs-400);
-    line-height: 1.55;
-    letter-spacing: 0.012em;
-    word-spacing: 0.05em;
-    color: var(--clr-neutral-50);
     margin: 0 0 2rem;
     max-width: 100%;
 
     @include min-media-query(lg) {
       max-width: 80ch;
     }
-
-    :deep(strong) {
-      font-family: "SpaceMono", monospace;
-      font-weight: 700;
-      color: var(--clr-neutral-100);
-    }
-
-    :deep(strong a) {
-      color: inherit;
-      text-decoration: underline;
-      text-decoration-thickness: 1px;
-      text-underline-offset: 0.2em;
-      transition: color 0.2s ease;
-
-      &:hover,
-      &:focus-visible {
-        color: var(--clr-primary-100);
-      }
-    }
-  }
-
-  &__stats {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
-    margin: 0 0 1.5rem;
-    padding: 0;
-
-    @include min-media-query(sm) {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  &__stat {
-    border: 1px solid var(--clr-border-100);
-    background: color-mix(in srgb, var(--clr-neutral-500) 70%, transparent);
-    padding: 0.75rem;
-    display: grid;
-    gap: 0.25rem;
-    contain: layout paint;
-
-    dt {
-      font-family: "SpaceMono", monospace;
-      font-size: var(--fs-200);
-      color: var(--clr-neutral-200);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin: 0;
-    }
-
-    dd {
-      font-family: "Geomanist", sans-serif;
-      font-size: var(--fs-600);
-      color: var(--clr-neutral-100);
-      margin: 0;
-      line-height: 1;
-      font-weight: 700;
-    }
-  }
-
-  &__stat-suffix {
-    font-family: "SpaceMono", monospace;
-    font-size: 0.45em;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    margin-left: 0.2em;
-    vertical-align: 0.85em;
-    color: var(--clr-neutral-100);
   }
 
   &__meta {
@@ -582,6 +349,10 @@ useInViewport(section_ref);
     flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
+    /* Owns the stacking context so the dot's radar pseudo (z-index -1) drops
+       BEHIND every item in this row — the flag and the status label included —
+       instead of only behind the dot itself. */
+    isolation: isolate;
     margin-bottom: 1.75rem;
     font-family: "SpaceMono", monospace;
     font-size: var(--fs-100);
@@ -622,6 +393,7 @@ useInViewport(section_ref);
   }
 
   &__meta-dot {
+    position: relative;
     flex-shrink: 0;
     width: 6px;
     height: 6px;
@@ -629,7 +401,35 @@ useInViewport(section_ref);
     margin-right: 0.5rem;
     background: var(--clr-success-100);
     border-radius: 50%;
-    box-shadow: 0 0 6px var(--clr-success-100);
+
+    /* Radar ping instead of a static glow. Three things keep it smooth, and
+       each replaces a defect in the first cut:
+         · z-index -1 — the disc passes BEHIND the core, so the dot no longer
+           brightens as the ping crosses it (it read as a flicker);
+         · inset -7px + scale 0.3 -> 1 — the layer rasterises at its LARGEST
+           size and is scaled DOWN, where the first cut magnified a 6px raster
+           3.4x and stair-stepped the edge;
+         · opacity ramps from 0 and returns to 0 at 100% — the first cut
+           snapped 0 -> 0.5 at the loop boundary, which read as a blink.
+       transform + opacity only, so it still composites off the main thread. */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -7px;
+      z-index: -1;
+      border-radius: inherit;
+      /* A HARD disc in the family's SHADOW shade — not a translucent bright green
+         and not a blur. The reference halo sits 19% of the way from the page
+         background to the dot, which in OKLCH lightness is L=25.1%;
+         --clr-success-500 is L=26.1%, so the token IS the shadow colour and the
+         disc can render at full opacity with a crisp edge. */
+      background: var(--clr-success-500);
+      /* Base state is invisible, so under reduced motion — where the global
+         reduce block collapses the animation to one 0.01ms pass — the ring
+         resolves to nothing and the dot degrades to a plain dot. */
+      opacity: 0;
+      animation: hero-radar 2s linear infinite;
+    }
   }
 
   &__ctas {
@@ -674,5 +474,26 @@ useInViewport(section_ref);
 @keyframes hero-bounce {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(4px); }
+}
+
+/* Holds at 0 through the tail so the ping reads as a sweep, not a heartbeat. */
+/* Starts and ends at opacity 0, so the loop boundary is invisible.
+   THE PACING IS THE WHOLE POINT. A 6px dot only gives ~12px of radius travel, so
+   spreading that over a full 2.4s linear cycle moved the edge 0.097px per frame —
+   it crossed a pixel boundary about once every ten frames, which is what read as a
+   bad frame rate even at a measured 59.9fps. The sweep is therefore FRONT-LOADED
+   into the first third of the cycle (0.63px/frame over the first 160ms, ~6x) and
+   the rest of the cycle is a deliberate rest beat. The extra stops do the easing
+   rather than a cubic-bezier, because a timing function applies per KEYFRAME
+   SEGMENT, not across the whole animation. */
+@keyframes hero-radar {
+  0%   { transform: scale(0.3);  opacity: 0; }
+  4%   { opacity: 1; }
+  8%   { transform: scale(0.6); }
+  18%  { transform: scale(0.84); opacity: 0.7; }
+  35%  { transform: scale(1);    opacity: 0; }
+  /* No 100% stop on purpose: the element's own base is already `transform: none`
+     (the identity, i.e. scale(1)) and `opacity: 0`, so 35%->100% interpolates
+     between identical values and holds the rest beat for free. */
 }
 </style>
