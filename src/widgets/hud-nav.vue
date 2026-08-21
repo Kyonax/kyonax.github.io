@@ -342,8 +342,8 @@ onBeforeUnmount(() => {
     position: absolute;
     inset: 0;
     z-index: -1;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    --kyo-backdrop-r: 12px;
+    backdrop-filter: var(--kyo-backdrop);
     opacity: 0;
     transition: opacity 0.25s ease;
     pointer-events: none;
@@ -574,8 +574,8 @@ onBeforeUnmount(() => {
       position: absolute;
       inset: 100% 0 auto 0;
       background: color-mix(in srgb, var(--clr-neutral-500) 92%, transparent);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      --kyo-backdrop-r: 12px;
+      backdrop-filter: var(--kyo-backdrop);
       border-bottom: 1px solid var(--clr-border-100);
       padding: 0.25rem 0;
 

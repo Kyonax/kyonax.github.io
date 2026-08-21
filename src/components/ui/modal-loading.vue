@@ -47,8 +47,8 @@ const { t } = useI18n();
     position: absolute;
     inset: 0;
     background: color-mix(in srgb, var(--clr-neutral-500) 78%, transparent);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    --kyo-backdrop-r: 8px;
+    backdrop-filter: var(--kyo-backdrop);
     transform: translateZ(0);
     will-change: transform;
   }

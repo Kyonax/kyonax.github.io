@@ -348,8 +348,8 @@ const go = (n) => {
     letter-spacing: 0.07em;
     color: var(--clr-neutral-300);
     background: color-mix(in srgb, var(--clr-neutral-900) 72%, transparent);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    --kyo-backdrop-r: 6px;
+    backdrop-filter: var(--kyo-backdrop);
     border: 1px solid color-mix(in srgb, var(--clr-neutral-100) 15%, transparent);
     line-height: 1;
   }

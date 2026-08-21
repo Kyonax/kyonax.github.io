@@ -168,8 +168,8 @@ onMounted(() => {
   background: color-mix(in srgb, var(--clr-neutral-500) 88%, transparent);
   border: 1px solid var(--clr-border-100);
   border-radius: 0;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  --kyo-backdrop-r: 8px;
+  backdrop-filter: var(--kyo-backdrop);
   transform: translateZ(0);
   will-change: transform;
   font-family: "SpaceMono", monospace;

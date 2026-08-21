@@ -239,12 +239,18 @@ const dialog_label = computed(() =>
     color: var(--clr-neutral-200);
     background: color-mix(in srgb, var(--clr-neutral-500) 80%, transparent);
     padding: 0.35rem 0.6rem;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    --kyo-backdrop-r: 4px;
+    backdrop-filter: var(--kyo-backdrop);
     transform: translateZ(0);
     will-change: transform;
     pointer-events: none;
     line-height: 1;
+    opacity: 1;
+    transition: opacity 0.2s ease;
   }
+
+  /* Fade the filename chip out while zoomed so it never overlaps the panned
+     region the user is inspecting. */
+  &.is-zoomed &__name { opacity: 0; }
 }
 </style>

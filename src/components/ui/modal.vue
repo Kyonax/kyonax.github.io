@@ -192,10 +192,20 @@ const GLYPH_CLOSE = '\uF00D';
     justify-content: center;
     padding: 1rem;
     background: color-mix(in srgb, var(--clr-neutral-500) 35%, transparent);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    --kyo-backdrop-r: 8px;
+    backdrop-filter: var(--kyo-backdrop);
     transform: translateZ(0);
     will-change: transform;
+
+    /* The only backdrop on the site thin enough to need the blur: at 35% the
+       page still reads through it. Every other surface is already 70-92%. */
+    @supports not (backdrop-filter: blur(1px)) {
+      background: color-mix(in srgb, var(--clr-neutral-500) 92%, transparent);
+    }
+
+    @media (prefers-reduced-transparency: reduce) {
+      background: color-mix(in srgb, var(--clr-neutral-500) 92%, transparent);
+    }
 
     @include max-media-query(md) {
       padding: 0.5rem;
@@ -317,8 +327,8 @@ const GLYPH_CLOSE = '\uF00D';
       width: 40px;
       height: 40px;
       background: color-mix(in srgb, var(--clr-neutral-500) 80%, transparent);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      --kyo-backdrop-r: 4px;
+      backdrop-filter: var(--kyo-backdrop);
       transform: translateZ(0);
       will-change: transform;
     }
