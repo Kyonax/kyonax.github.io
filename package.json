@@ -39,7 +39,7 @@
     "convert:images:force": "node scripts/convert-images.mjs --force",
     "predev": "npm run convert:ascii && npm run convert:images -- --quiet && npm run generate:sitemap",
     "prebuild": "npm run convert:ascii && npm run convert:images && npm run generate:sitemap && npm run precheck",
-    "postbuild": "node scripts/defer-async-css.mjs && node scripts/seo-audit.mjs"
+    "postbuild": "node scripts/defer-async-css.mjs && node scripts/seo-audit.mjs && rm -rf dist/.vite"
   },
   "repository": {
     "type": "git",
