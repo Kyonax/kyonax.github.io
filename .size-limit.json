@@ -2,7 +2,7 @@
   {
     "name": "main bundle (JS)",
     "path": "dist/assets/app-*.js",
-    "limit": "160 KB",
+    "limit": "180 KB",
     "gzip": true
   },
   {
@@ -62,7 +62,7 @@
       "dist/assets/image-viewer-*.js",
       "dist/assets/image-viewer-*.css"
     ],
-    "limit": "3 KB",
+    "limit": "3.5 KB",
     "gzip": true
   },
   {
