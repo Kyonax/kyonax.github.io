@@ -363,7 +363,8 @@ export default defineConfig(({ mode }) => {
     },
 
     build: {
-      target: 'es2020',
+      // Derived from the same signed browserslist floor — never hardcode an esN here.
+      target: browserslistToEsbuild(),
       cssCodeSplit: true,
       sourcemap: true,
       /* Subset fonts (e.g. SymbolsNerdFontMono → 2.7 KB) would otherwise
