@@ -5,31 +5,42 @@
 
 export const RAW_HTML_KEYS = new Set([
   'kyo-web.content-data.about-me.description',
+
+  /* Privacy policy (/privacy, /es/privacy). The per-section bodies live in
+     `privacy.sections[]`; arrays are not flattened into keys, so they are
+     covered by the array-parity check instead of by this allowlist. */
+  'kyo-web.privacy.lead',
+
+  /* Resume page (/resume, /es/hoja-de-vida) */
+  'kyo-web.resume.summary',
+  'kyo-web.resume.role-line',
+  'kyo-web.resume.tech.agile-engine',
+  'kyo-web.resume.tech.zeronet',
+  'kyo-web.resume.tech.softtek',
+  'kyo-web.resume.tech.cabeza-rota',
+
   'kyo-web.content-data.experience.agile-engine.description',
   'kyo-web.content-data.experience.agile-engine.specs',
   'kyo-web.content-data.experience.agile-engine.tools',
-  'kyo-web.content-data.experience.agile-engine.bullets',
-  'kyo-web.content-data.experience.cr-growth.description',
-  'kyo-web.content-data.experience.cr-growth.specs',
-  'kyo-web.content-data.experience.cr-growth.tools',
-  'kyo-web.content-data.experience.cr-growth.bullets',
-  'kyo-web.content-data.experience.cr-senior-fullstack.description',
-  'kyo-web.content-data.experience.cr-senior-fullstack.specs',
-  'kyo-web.content-data.experience.cr-senior-fullstack.tools',
-  'kyo-web.content-data.experience.cr-senior-fullstack.bullets',
-  'kyo-web.content-data.experience.cr-web-dev.description',
-  'kyo-web.content-data.experience.cr-web-dev.specs',
-  'kyo-web.content-data.experience.cr-web-dev.tools',
-  'kyo-web.content-data.experience.cr-web-dev.bullets',
+  'kyo-web.content-data.experience.agile-engine.activities',
+  'kyo-web.content-data.experience.agile-engine.impact',
+  'kyo-web.content-data.experience.cabeza-rota.description',
+  'kyo-web.content-data.experience.cabeza-rota.specs',
+  'kyo-web.content-data.experience.cabeza-rota.tools',
+  'kyo-web.content-data.experience.cabeza-rota.activities',
+  'kyo-web.content-data.experience.cabeza-rota.impact',
   'kyo-web.content-data.experience.softtek.description',
   'kyo-web.content-data.experience.softtek.specs',
   'kyo-web.content-data.experience.softtek.tools',
-  'kyo-web.content-data.experience.softtek.bullets',
+  'kyo-web.content-data.experience.softtek.activities',
+  'kyo-web.content-data.experience.softtek.impact',
   'kyo-web.content-data.experience.zeronet.description',
   'kyo-web.content-data.experience.zeronet.specs',
   'kyo-web.content-data.experience.zeronet.tools',
-  'kyo-web.content-data.experience.zeronet.bullets',
+  'kyo-web.content-data.experience.zeronet.activities',
+  'kyo-web.content-data.experience.zeronet.impact',
 
+  'kyo-web.content-data.projects.kyo-blog.description',
   'kyo-web.content-data.projects.webcam2ascii.description',
   'kyo-web.content-data.projects.reckit.description',
   'kyo-web.content-data.projects.org2html.description',
@@ -38,7 +49,6 @@ export const RAW_HTML_KEYS = new Set([
   'kyo-web.content-data.projects.cyber-code-syndicate.description',
 
   'kyo-web.landing.nav.logo',
-  'kyo-web.landing.hero.tag',
   'kyo-web.landing.hero.summary',
   'kyo-web.landing.footer.signoff',
 

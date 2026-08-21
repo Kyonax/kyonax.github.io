@@ -2,13 +2,11 @@
  * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
- * Emits one VideoObject per YouTube entry across PROJECTS[*].images for the
- * given locale. Required schema.org fields (name, thumbnailUrl, uploadDate)
- * always present. Schema validator at https://validator.schema.org owns the
- * final spec check.
+ * Emits one VideoObject per YouTube entry across the landing showcase only.
+ * Required schema.org fields (name, thumbnailUrl, uploadDate) always present.
  */
 
-import { PROJECTS } from '@data/projects';
+import { getProjectDescription, getShowcaseMap } from '@data/projects';
 import { classifyMediaEntry, resolveLocalizedTitle } from '@data/youtube';
 
 import { WEBSITE_ID } from './identifiers';
@@ -32,10 +30,10 @@ const _video_payload = (entry, locale, project) => {
   };
 };
 
-/** Emit one VideoObject per YouTube entry across `PROJECTS[*].images` for the given locale. */
+/** Emit one VideoObject per YouTube entry across the landing showcase. */
 export const buildVideoObjectsJsonLd = ({ locale = 'en' } = {}) => {
   const items = [];
-  for (const [key, project] of Object.entries(PROJECTS)) {
+  for (const [key, project] of Object.entries(getShowcaseMap())) {
     const arr = project.images || [];
     for (const entry of arr) {
       const v = _video_payload(entry, locale, project);
@@ -46,7 +44,7 @@ export const buildVideoObjectsJsonLd = ({ locale = 'en' } = {}) => {
         '@type':       'VideoObject',
         '@id':         `${WEBSITE_ID.replace(/#website$/, '')}#video-${v.id}-${locale}`,
         name:          v.title,
-        description:   stripHtml(project.description || v.title),
+        description:   stripHtml(getProjectDescription(project, locale) || v.title),
         thumbnailUrl:  [
           `https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`,
           `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,

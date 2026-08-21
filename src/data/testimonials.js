@@ -21,11 +21,9 @@ export const TESTIMONIAL_SOURCES = {
 };
 
 /*
- * `source` labels the platform the recommendation came from and `rating` is the
- * star value the reviewer gave (1-5) or null when the platform has no rating
- * concept. LinkedIn recommendations are prose-only, so rating is null and no
- * stars render; future Google / other reviews can set a rating and the stars
- * appear automatically (see <UiRatingStars> + the variant components).
+ * `source` labels the platform the recommendation came from. Recommendations
+ * are prose-only by design: a personal site has no sensible star-rating
+ * concept, so no rating field exists and no rating markup is ever emitted.
  */
 export const TESTIMONIALS = [
   {
@@ -36,7 +34,6 @@ export const TESTIMONIALS = [
     flag:     '🇨🇴',
     date:     '2025-07',
     source:   'linkedin',
-    rating:   null,
   },
   {
     id:       'mo-osburn',
@@ -46,7 +43,6 @@ export const TESTIMONIALS = [
     flag:     '🇺🇸',
     date:     '2025-07',
     source:   'linkedin',
-    rating:   null,
   },
   {
     id:       'diego-yair',
@@ -56,6 +52,5 @@ export const TESTIMONIALS = [
     flag:     '🇲🇽',
     date:     '2025-06',
     source:   'linkedin',
-    rating:   null,
   },
 ];

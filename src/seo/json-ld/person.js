@@ -25,10 +25,24 @@ const EMPLOYERS = {
     { name: 'Zerønet Labs', url: 'https://github.com/zeronet-labs' },
   ],
   past: [
-    { name: 'Softtek',     url: 'https://www.softtek.com/' },
-    { name: 'Cabeza Rota', url: 'https://cabezarota.com/' },
+    { name: 'Softtek',     url: 'https://softtek.com' },
+    { name: 'Cabeza Rota', url: 'https://cabezarota.co' },
   ],
 };
+
+/* EDUCATION rows of the verified CVs, verbatim. */
+const EDUCATION = [
+  {
+    '@type': 'CollegeOrUniversity',
+    name: 'Universidad de Los Llanos',
+    address: { '@type': 'PostalAddress', addressLocality: 'Villavicencio', addressRegion: 'Meta', addressCountry: 'CO' },
+  },
+  {
+    '@type': 'CollegeOrUniversity',
+    name: 'Universidad de Caldas',
+    address: { '@type': 'PostalAddress', addressLocality: 'Villavicencio', addressRegion: 'Meta', addressCountry: 'CO' },
+  },
+];
 
 const COMMUNITY = { name: 'Cyber Code Syndicate', url: 'https://github.com/ccs-devhub' };
 
@@ -70,6 +84,7 @@ export const buildPersonJsonLd = (locale) => ({
   image: `${SITE_ORIGIN}${SEO.ogImage}`,
   url: LOCALE_URL[locale] || LOCALE_URL.en,
   email: `mailto:${AUTHOR_INFO.email}`,
+  telephone: AUTHOR_INFO.phone,
   nationality: { '@type': 'Country', name: 'Colombia' },
   address: {
     '@type': 'PostalAddress',
@@ -99,27 +114,46 @@ export const buildPersonJsonLd = (locale) => ({
       url: AUTHOR_INFO.orcid,
     },
   ],
+  /* One EmployeeRole per \cventry row of the verified CVs (EN 3afb94d4 / ES e7d13e27).
+     Dates, role names and employers are taken from those entries verbatim. */
   worksFor: [
     {
       '@type': 'EmployeeRole',
-      roleName: 'Senior Frontend Engineer',
-      startDate: '2025',
+      roleName: 'Senior Software Engineer (Frontend)',
+      startDate: '2025-10',
       endDate: '2026-05',
       worksFor: _org(EMPLOYERS.current[0]),
     },
-    _org(EMPLOYERS.current[1]),
+    {
+      '@type': 'EmployeeRole',
+      roleName: 'Independent Full-Stack Engineer',
+      startDate: '2018-01',
+      worksFor: _org(EMPLOYERS.current[1]),
+    },
+    {
+      '@type': 'EmployeeRole',
+      roleName: 'Senior Full-Stack Engineer',
+      startDate: '2023-11',
+      endDate: '2025-07',
+      worksFor: _org(EMPLOYERS.past[0]),
+    },
+    {
+      '@type': 'EmployeeRole',
+      roleName: 'Senior Frontend & Growth Engineer',
+      startDate: '2020-10',
+      endDate: '2023-11',
+      worksFor: _org(EMPLOYERS.past[1]),
+    },
   ],
-  alumniOf: EMPLOYERS.past.map(_org),
+  /* alumniOf is EDUCATIONAL institutions (schema.org). It previously held former
+     employers, which told entity resolvers that Softtek and Cabeza Rota were schools.
+     Now carries the two EDUCATION rows of the CVs. */
+  alumniOf: EDUCATION,
   memberOf: _org(COMMUNITY),
   hasCreatedWork: PROJECT_IDS,
+  /* Prose-only recommendations: no aggregateRating, ever — a personal site has
+     no rating concept, so any score here would be fabricated markup. */
   review: REVIEW_IDS,
-  aggregateRating: {
-    '@type':       'AggregateRating',
-    ratingValue:   '5',
-    reviewCount:   '3',
-    bestRating:    '5',
-    worstRating:   '1',
-  },
 });
 
 export default buildPersonJsonLd;

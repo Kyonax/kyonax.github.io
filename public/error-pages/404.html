@@ -10,6 +10,12 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
   <style>
+    /* Cross-document view transitions, site-wide rule. Repeated inline because
+       this page never loads the app stylesheet. BOTH documents in a navigation
+       must opt in or the pair falls back to the white paint gap. Straight cut,
+       no fade, so no reduced-motion guard is needed. */
+    @view-transition{navigation:auto}
+    ::view-transition-old(root),::view-transition-new(root){animation:none}
     *{box-sizing:border-box;margin:0;padding:0}
     :root{
       --bg:#0a0a0a;
