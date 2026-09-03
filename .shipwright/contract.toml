@@ -11,9 +11,17 @@ schema = 1
 # Short name for notifications, the ledger and `status`. The GitHub remote is
 # Kyonax/kyonax.github.io (the Pages repo); this is the working name.
 name = "kyo-web-online"
+
+# Tier: mine, but reviewed. Declaring it makes the minimum binding —
+# a pull-request mode, or a require_pr list naming what must be looked at.
+tier = "guarded"
 default_branch = "main"
 remote = "origin"
-hot_window_min = 10
+hot_window_min = 1
+# Seconds, not minutes. A whole minute of sitting on finished work is a
+# long time; this is the wait that stops a run landing on top of an edit
+# you are still making, and 30s is enough for that.
+hot_window_s = 30
 
 [commit]
 # Derived from the last 30 subjects, which use exactly feat / fix / chore.
