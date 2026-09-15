@@ -34,23 +34,51 @@
  *
  * The lead slot only exists on page 1 — on later pages every post is an
  * ordinary row, or the newest article would repeat down the archive.
+ *
+ * ABOVE THE ARCHIVE, THE VALIDATED LANDING (2026-09-11, docs/plans/
+ * blog-landing-design/): the Galaxy hero, a marquee of the corpus's own
+ * numbers and the three pipeline drawings. All three are monochrome and read
+ * `corpus` from the blog manifest, which the build recounts every time; with
+ * no corpus block they show no numbers at all rather than stale ones.
  */
 import { loadBlogIndex } from '@composables/use-blog';
 import useSeoHead from '@composables/use-seo-head';
+import manifest from '@data/blog/manifest.json';
 import { BLOG_INDEX_URLS, blogAlternatesFor, blogUrlsFor } from '@seo/blog-routes';
 import { buildBlogJsonLd } from '@seo/json-ld';
 import UiSectionHeader from '@ui/section-header.vue';
 import { useHead } from '@unhead/vue';
 import BlogCard from '@views/components/blog/blog-card.vue';
+import BlogHero from '@views/components/blog/blog-hero.vue';
 import BlogPagination from '@views/components/blog/blog-pagination.vue';
 import BlogSearch from '@views/components/blog/blog-search.vue';
 import DocumentPage from '@views/components/document-page.vue';
-import { computed } from 'vue';
+import { computed, defineAsyncComponent, hydrateOnIdle } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
 const { t, locale } = useI18n();
 const route = useRoute();
+
+/* The corpus block (files, bytes, lines, headings, words, minutes, engine,
+   builtAt). sync-blog's empty fallback manifest has none, hence the null. */
+const corpus = manifest.corpus || null;
+
+/* THE MARQUEE AND THE DRAWINGS ARE THEIR OWN CHUNKS. The band's three SVGs
+   alone are ~2 KB gzip, and both together would more than double the index
+   chunk. Neither needs JavaScript to show: vite-ssg awaits async components
+   at build, so both ship in the prerendered HTML, the marquee moves by CSS
+   and the drawings by SMIL. The client code only pauses the drawings under
+   reduced motion, so it hydrates when the browser is idle, not on the
+   critical path. */
+const BlogMarquee = defineAsyncComponent({
+  loader: () => import('@views/components/blog/blog-marquee.vue'),
+  hydrate: hydrateOnIdle(),
+});
+const BlogPipelineBand = defineAsyncComponent({
+  loader: () => import('@views/components/blog/blog-pipeline-band.vue'),
+  hydrate: hydrateOnIdle(),
+});
 
 /* Top-level await — <Suspense> in App.vue makes vite-ssg wait for it, so the
    archive ships as HTML rather than appearing after hydration. */
@@ -107,15 +135,11 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
 <template>
   <DocumentPage id="main" width="index" align="left">
     <template #header>
-      <!-- The page head, and the archive's ONLY heading furniture besides
-           "All posts". No ordinal: the tag is the band's accent mark and this
-           page spends none. -->
-      <UiSectionHeader
-        level="1"
-        class="blog-archive__masthead"
-        :title="t('kyo-web.blog.title')"
-        :subtitle="t('kyo-web.blog.meta.description')"
-      />
+      <!-- The page head: the h1 and its subtitle beside the galaxy. No eyebrow,
+           no buttons, no accent — the archive below keeps those for state. -->
+      <BlogHero :corpus="corpus" />
+      <BlogMarquee :corpus="corpus" />
+      <BlogPipelineBand />
     </template>
 
     <p v-if="!page || page.posts.length === 0" class="doc-rich blog-archive__empty">
@@ -147,9 +171,15 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
           <a
             class="blog-lead__cta"
             :href="page.featured.url"
-            :aria-label="`${t('kyo-web.blog.read-more')}: ${page.featured.title}`"
           >
-            {{ t('kyo-web.blog.read-more') }}
+            <!-- The headline rides INSIDE the link, visually hidden, not in
+                 an aria-label: the accessible name is the same, but a crawler
+                 reads a link by its text, and "Read more" alone fails
+                 Lighthouse's descriptive-link audit (SEO 0.92 on /blog). The
+                 span hugs the label so no space lands before the colon. -->
+            {{ t('kyo-web.blog.read-more') }}<span
+              class="sr-only"
+            >: {{ page.featured.title }}</span>
             <span class="blog-lead__arrow" data-text="›" aria-hidden="true" />
           </a>
         </div>
@@ -170,7 +200,9 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
       </ul>
 
       <!-- The one labelled band. -->
-      <section class="blog-all" :aria-label="t('kyo-web.blog.all-posts')">
+      <!-- The id is where an article's tag chips land (?q=<tag>#all-posts):
+           on the search and its results, not on the hero above. -->
+      <section id="all-posts" class="blog-all" :aria-label="t('kyo-web.blog.all-posts')">
         <UiSectionHeader :title="t('kyo-web.blog.all-posts')" />
 
         <BlogSearch :locale="locale" />
@@ -182,7 +214,12 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
                 <span class="blog-all__title">{{ post.title }}</span>
                 <span class="blog-all__excerpt">{{ post.description }}</span>
               </span>
-              <time class="blog-all__date" :datetime="post.date">{{ date_fmt(post.date) }}</time>
+              <span class="blog-all__meta">
+                <time class="blog-all__date" :datetime="post.date">{{ date_fmt(post.date) }}</time>
+                <span v-if="post.readingTime" class="blog-all__reading">
+                  {{ post.readingTime }} {{ t('kyo-web.blog.reading-time') }}
+                </span>
+              </span>
             </a>
           </li>
         </ul>
@@ -195,25 +232,20 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
 
 <style lang="scss" scoped>
 /*
- * TWO RULES ON THE WHOLE PAGE. UiSectionHeader draws one under whatever it
- * heads, and the archive heads exactly two things — the page itself and "All
- * posts". Everything between them is spacing, which is why the lead and the
- * card row carry no header component at all.
+ * THE ARCHIVE SPENDS ONE RULE. The hero, the marquee and the band above it
+ * draw their own hairlines (the validated landing); below them UiSectionHeader
+ * draws one under "All posts", and everything else between is spacing, which
+ * is why the lead and the card row carry no header component at all.
  */
 
 .blog-archive__empty { margin-top: 1rem; }
 
-/* The page title outranks the band title. UiSectionHeader emits one size for
-   every level, which is right on the landing where every band is a peer and
-   wrong here, where the masthead is the document's <h1>.
-
-   AT EVERY WIDTH, not only from `md`. Gated at `md`, the promise held on a
-   desktop and broke on every phone: below 1024px the title fell back to the
-   band's own `--fs-700` and the two were the same 28.5px. `--fs-800` already
-   steps down by itself (72 → 48 → 37.5px), so it needs no breakpoint. */
-.blog-archive__masthead {
-  :deep(.ui-section-header__title) { font-size: var(--fs-800); }
-}
+/* The hero's top hairline IS the line under the nav in the validated design,
+   at every width; the document shell's 3.5rem top padding floated it 42px
+   below. Only the archive's board width loses it — every other document page
+   keeps its breathing room. Two classes so it outranks the shell's own rule
+   whichever of the two chunks' stylesheets lands last. */
+.doc.doc--index { padding-top: 0; }
 
 /* --- the lead article --------------------------------------------------- */
 
@@ -477,9 +509,26 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
   overflow: hidden;
 }
 
-.blog-all__date {
+/* THE READING TIME STACKS UNDER THE DATE, it does not follow it on the line.
+   Inline, "Aug 14, 2026 · 6 min read" doubled the date column and at 390px
+   squeezed the title beside it into three lines; stacked, the column keeps the
+   date's width and both read as one right-aligned unit. */
+.blog-all__meta {
+  display: grid;
   flex: 0 0 auto;
+  gap: 0.3rem;
+  justify-items: end;
+}
+
+.blog-all__date,
+.blog-all__reading {
   white-space: nowrap;
   transition: color 0.2s ease;
+}
+
+.blog-all__reading {
+  color: var(--clr-neutral-300);
+  font-family: "SpaceMono", monospace;
+  font-size: var(--fs-200);
 }
 </style>

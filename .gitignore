@@ -183,3 +183,8 @@ public/blog/o2h.js
 # Article-body images, served at the deployed path the documents reference.
 public/blog/media/
 src/assets/blog/
+# RSS per locale and llms.txt, written from the synced index by
+# scripts/generate-feeds.mjs on every predev / precheck / build.
+public/blog/feed.xml
+public/es/blog/feed.xml
+public/llms.txt

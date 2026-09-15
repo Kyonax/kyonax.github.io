@@ -39,6 +39,10 @@ const index = ref(null);
 const query = ref('');
 
 onMounted(async () => {
+  /* An article's tag chips link here as ?q=<tag>. Every blog link is a full
+     page load, so reading it once on mount is enough; the field and the
+     results appear already filtered when the index lands. */
+  query.value = new URLSearchParams(window.location.search).get('q') || '';
   const code = typeof props.locale === 'string' ? props.locale : props.locale.value;
   try {
     const res = await fetch(`/blog-search/blog-search-${code}.json`);

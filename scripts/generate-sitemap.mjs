@@ -128,20 +128,35 @@ ${block(pairs, abs((first || page).url))}
     }
   }
 
-  /* Articles. lastmod is the post's own date, not the build date — a sitemap
-     that claims every article changed today teaches a crawler to ignore the
-     field. */
-  for (const post of m.posts || []) {
+  /* Articles — the manifest's `routes` ({ url, locale, key }), their locale
+     twins from `families`. This loop used to read `m.posts`, a key the
+     manifest never carried, and wrote no article at all. lastmod is the
+     post's own date — the route's YYYY-MM-DD prefix, which IS its #+DATE by
+     construction — not the build date: a sitemap that claims every article
+     changed today teaches a crawler to ignore the field. */
+  const archive_rows = rows.length;
+  for (const post of m.routes || []) {
     const family = (m.families || {})[post.key] || {};
     const pairs = Object.entries(family).map(([l, u]) => ({ locale: l, loc: abs(u) }));
     const x_default = family[m.defaultLocale] || post.url;
+    const date = (post.url.match(/\/(\d{4}-\d{2}-\d{2})-/) || [])[1];
     rows.push(`    <url>
         <loc>${abs(post.url)}</loc>
-        <lastmod>${post.date || lastmod}</lastmod>
+        <lastmod>${date || lastmod}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
 ${block(pairs, abs(x_default))}
     </url>`);
+  }
+
+  /* A SITEMAP THAT DROPS ARTICLES MUST NOT BUILD. Every article the manifest
+     routes has to reach the sitemap; a silent zero is how the whole blog went
+     missing from it once already. */
+  const routed = (m.routes || []).length;
+  const written = rows.length - archive_rows;
+  if (written !== routed) {
+    console.error(`✘ generate-sitemap: the manifest routes ${routed} article(s) but ${written} reached the sitemap`);
+    process.exit(1);
   }
 
   return rows.join('\n');

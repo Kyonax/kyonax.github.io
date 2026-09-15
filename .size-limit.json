@@ -57,12 +57,12 @@
     "gzip": true
   },
   {
-    "name": "image-viewer chunk (JS+CSS)",
+    "name": "image-viewer chunk (JS+CSS: the picture plus the zoom toolbar, keys, drag and focus handling; 4.89 kB measured 2026-09-12)",
     "path": [
       "dist/assets/image-viewer-*.js",
       "dist/assets/image-viewer-*.css"
     ],
-    "limit": "3.5 KB",
+    "limit": "5.25 KB",
     "gzip": true
   },
   {
@@ -93,19 +93,58 @@
     "gzip": true
   },
   {
-    "name": "blog index chunk",
+    "name": "blog index chunk (archive + the landing hero: h1, chip, galaxy slot; the ?q= tag prefill; 7.02 kB measured 2026-09-11, the hero ~1.1 KB of it)",
     "path": [
       "dist/assets/blog-*.{js,css}",
       "!dist/assets/blog-post-*",
-      "!dist/assets/blog-footer-*"
+      "!dist/assets/blog-footer-*",
+      "!dist/assets/blog-marquee-*",
+      "!dist/assets/blog-pipeline-band-*",
+      "!dist/assets/blog-support-*"
     ],
+    "limit": "7.25 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog marquee (the corpus ticker, one async chunk; 1.64 KB measured 2026-09-11)",
+    "path": "dist/assets/blog-marquee-*.{js,css}",
+    "limit": "2 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog pipeline band (three SMIL drawings + the made-with line, one async chunk; 3.44 KB measured 2026-09-11)",
+    "path": "dist/assets/blog-pipeline-band-*.{js,css}",
+    "limit": "4 KB",
+    "gzip": true
+  },
+  {
+    "name": "share sheet (the nav's share popup: six networks, copy, the system sheet; fetched on first open, warmed on intent; 5.80 kB measured 2026-09-12)",
+    "path": "dist/assets/share-sheet-*.{js,css}",
     "limit": "6 KB",
     "gzip": true
   },
   {
-    "name": "blog post chunk (JS+CSS: host styles for the TOC, charts, footnotes; the author line; the TOC comparison hook)",
+    "name": "article enhance (the WRAP toggles and the equation fit; fetched after an article mounts; 1.24 kB measured 2026-09-12)",
+    "path": "dist/assets/article-enhance-*.js",
+    "limit": "1.5 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog support (the article's support block; fetched only once SUPPORT.url is set)",
+    "path": "dist/assets/blog-support-*.{js,css}",
+    "limit": "1 KB",
+    "gzip": true
+  },
+  {
+    "name": "ascii galaxy (the hero's animated pre, one async chunk; 1.78 KB measured 2026-09-11)",
+    "path": "dist/assets/ascii-galaxy-*.{js,css}",
+    "limit": "2 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog post chunk (JS+CSS: host styles for the TOC, charts, the whole-note footnote, the phone code wrap and its WRAP look, the phone math size; the author line; tags, h-entry, the support mount; the Lane 5.3 host rules; 6.72 kB measured 2026-09-12)",
     "path": "dist/assets/blog-post-*.{js,css}",
-    "limit": "6 KB",
+    "limit": "6.75 KB",
     "gzip": true
   },
   {
@@ -115,18 +154,15 @@
     "gzip": true
   },
   {
-    "name": "blog footer chunk",
-    "path": "dist/assets/blog-footer-*.{js,css}",
-    "limit": "2.5 KB",
+    "name": "analytics opt-out (the privacy page's toggle, one async chunk; 667 B measured 2026-09-11)",
+    "path": "dist/assets/analytics-opt-out-*.{js,css}",
+    "limit": "1 KB",
     "gzip": true
   },
   {
-    "name": "toc lab (TEMPORARY: the table-of-contents comparison, ?toc-lab only; delete with it)",
-    "path": [
-      "dist/assets/toc-lab-*.js",
-      "dist/assets/toc-lab-*.css"
-    ],
-    "limit": "3 KB",
+    "name": "blog footer chunk",
+    "path": "dist/assets/blog-footer-*.{js,css}",
+    "limit": "2.5 KB",
     "gzip": true
   },
   {

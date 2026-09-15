@@ -272,6 +272,27 @@ onBeforeUnmount(() => {
   }
 
   /*
+   * THE ARTICLE'S PAGE BOX IS A CONTAINER, AND NOTHING IN IT MAY PUSH THE PAGE.
+   *
+   * `container-type` makes this box the one the breakouts in `.blog-rich` below
+   * measure with `cqw`: its content box is the width between the page gutters —
+   * the column itself on a phone, and the room a breakout may take wherever the
+   * page is wider than the column. The page box and not the sheet, on purpose:
+   * measured against the sheet, `.org-wide` could never leave the column at any
+   * width, and breaking out of it is what the class is for.
+   *
+   * `overflow-x: clip` is the backstop: anything that still reaches past the
+   * screen edge is cut there rather than scrolling the page sideways. `clip`,
+   * not `hidden`, so no scroll container is made; and on this box rather than
+   * the sheet, so a focus ring or the contents' hover lift at the column's edge
+   * still paints into the gutter instead of being sliced off with it.
+   */
+  &--article {
+    container-type: inline-size;
+    overflow-x: clip;
+  }
+
+  /*
    * THE BLOG READS IN THREE TIERS, NOT TWO.
    *
    * The site's scale has a medium tier, but it starts at `md` — so from 768 to
@@ -435,5 +456,30 @@ onBeforeUnmount(() => {
      Declared here rather than left to the book because it is a property of
      THIS shell's width, not of the article. */
   .org-table-scroll { overflow-x: auto; }
+
+  /*
+   * A BREAKOUT MEASURES THE PAGE BOX, NOT THE SCREEN — (b). UPSTREAM CANDIDATE:
+   * the engine's own pair (styles.css, BREAKOUTS · LAST WORD) with `vw` turned
+   * into `cqw` against `.doc--article` above.
+   *
+   * In `vw` a breakout nested in a section reached the glass on a phone:
+   * `.org-wide` sat 0px from both screen edges from 320 to 430px, with no
+   * gutter at all, and `100vw` counts a classic scrollbar, so a full-bleed was
+   * a scrollbar wider than the page. Against the page box `.org-wide` stays in
+   * the column on a phone with the page gutter intact, keeps its breakout on a
+   * wide screen, and a full-bleed stops at the gutter instead of the glass.
+   * The doubled class is the engine's own device: (0,4,0) here outranks every
+   * construct rule in the book, whichever sheet loads last.
+   */
+  .org-full-bleed.org-full-bleed {
+    width: 100cqw;
+    margin-inline: calc(50% - 50cqw);
+  }
+
+  .org-wide.org-wide {
+    width: min(100cqw - 2 * var(--o2h-gutter), var(--o2h-measure-wide));
+    margin-inline:
+      calc(50% - min(50cqw - var(--o2h-gutter), var(--o2h-measure-wide) / 2));
+  }
 }
 </style>

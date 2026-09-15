@@ -64,19 +64,36 @@ const _blogTargets = () => {
       out.push({
         path: toPath(page.url), locale, kind: 'page',
         canonical: `${origin}${page.url}`, alts,
+        /* /blog and /es/blog advertise their own locale's feed, which
+           generate-feeds.mjs writes beside the archive. */
+        ...(page.number === 1 ? { feed: `${page.url}/feed.xml` } : {}),
       });
     }
   }
 
-  for (const post of m.posts || []) {
+  /* Articles — the manifest's `routes`, twinned through `families`, exactly as
+     the article head builds its hreflang set (en, es, x-default = the default
+     locale's twin). This loop used to read `m.posts`, a key the manifest never
+     carried, so not one article page was ever audited and the gate could not
+     fail; the count check below keeps it from going quiet again. */
+  let articles = 0;
+  for (const post of m.routes || []) {
+    const family = (m.families || {})[post.key] || {};
     const alts = {};
-    for (const row of post.alternates || []) {
-      alts[row.hreflang] = row.href;
+    for (const [l, u] of Object.entries(family)) {
+      alts[l] = `${origin}${u}`;
+    }
+    if (family[m.defaultLocale]) {
+      alts['x-default'] = `${origin}${family[m.defaultLocale]}`;
     }
     out.push({
       path: toPath(post.url), locale: post.locale, kind: 'page',
       canonical: `${origin}${post.url}`, alts,
     });
+    articles += 1;
+  }
+  if (articles !== (m.routes || []).length) {
+    throw new Error(`seo-audit: the manifest routes ${(m.routes || []).length} article(s) but ${articles} were queued for audit`);
   }
 
   return out;
@@ -140,6 +157,17 @@ for (const t of TARGETS) {
     `${t.path}: og:image:width missing`);
   _assert(/<meta\s+[^>]*property="og:image:height"[^>]*content="\d+"/.test(html),
     `${t.path}: og:image:height missing`);
+
+  /* RSS autodiscovery. The <link> is how a reader handed the archive's URL
+     finds its feed; a head that lost it would still build green. Exactly
+     one, so a page can never offer the other locale's feed as well. */
+  if (t.feed) {
+    const feeds = html.match(/<link\s[^>]*type="application\/rss\+xml"[^>]*>/g) || [];
+    const tag = feeds.length === 1 ? feeds[0] : '';
+    const href = (tag.match(/\shref="([^"]*)"/) || [])[1];
+    _assert(/\srel="alternate"/.test(tag) && /\stitle="[^"]+"/.test(tag) && href === t.feed,
+      `${t.path}: expected one <link rel="alternate" type="application/rss+xml" title="…" href="${t.feed}">, found ${feeds.length ? feeds.join(' ') : '(none)'}`);
+  }
 
   if (t.kind === 'landing') {
     const ldMatches = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>/g) || [];

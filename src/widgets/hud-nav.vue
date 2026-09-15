@@ -14,7 +14,9 @@ import UiButton from '@ui/button.vue';
 import CursorTooltip from '@ui/cursor-tooltip.vue';
 import UiLink from '@ui/link.vue';
 import LanguageToggle from '@widgets/language-toggle.vue';
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import {
+  computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
@@ -33,6 +35,8 @@ const { t, locale } = useI18n();
  *              from the landing, so they need a way out: Home and Blog, both
  *              real routes rather than the landing's in-page anchors. The
  *              landing nav carries a BLOG item for the same reason in reverse.
+ *              Where the résumé keeps its download, the blog keeps a share
+ *              button.
  * The brand is the way back for every document kind.
  */
 const { isLanding, isResume, isBlog, isDocument } = usePageKind();
@@ -41,9 +45,12 @@ const blog_href = computed(() => BLOG_INDEX_URLS[locale.value] || BLOG_INDEX_URL
 /* On a document page the brand is the way back; on the landing it is the
    scroll-to-top anchor. */
 const brand_href = computed(() => (isDocument.value ? landing_href.value : '#hero'));
-const cv_href = computed(() => (locale.value === 'es' ? CV_URL.es : CV_URL.en));
+/* The CV's own language: EN for anything that is not ES. The href, the file
+   name and the download event's `lang` all read it, so they cannot disagree. */
+const cv_lang = computed(() => (locale.value === 'es' ? 'es' : 'en'));
+const cv_href = computed(() => (cv_lang.value === 'es' ? CV_URL.es : CV_URL.en));
 const cv_filename = computed(() =>
-  `Cristian-Moreno-Senior-Software-Engineer-${locale.value === 'es' ? 'ES' : 'EN'}.pdf`);
+  `Cristian-Moreno-Senior-Software-Engineer-${cv_lang.value.toUpperCase()}.pdf`);
 
 /*
  * `id` is an in-page anchor and takes part in the active-section algorithm;
@@ -122,6 +129,52 @@ const {
 const scrolled = ref(false);
 const mobile_open = ref(false);
 const header_ref = ref(null);
+
+/*
+ * THE SHARE BUTTON — the CV button's twin, on every blog page.
+ *
+ * It replaced a text button at the end of an article's meta row that said
+ * SHARE and did one of two invisible things. Here it is where the résumé keeps
+ * its one page action, it reads as "share" from its glyph (Font Awesome
+ * Free's share nodes, CC BY 4.0, in the sprite as `share`), and the tooltip is
+ * its visible label, as the CV button's is. It shows on the archive as well as
+ * on every article: the ask was to share the blog, not one article of it.
+ *
+ * THE BUTTON IS PRERENDERED; THE SHEET IS NOT. The button's box is in the HTML,
+ * so the nav never shifts when the page hydrates. The sheet can only act
+ * through script, so it is its own chunk (@widgets/share-sheet.vue), requested
+ * on the first open and warmed the moment a pointer or focus arrives on the
+ * button, so it is usually on its way before the click lands. `v-if` on the
+ * open state, so every open reads the page afresh and every close removes its
+ * listeners.
+ */
+const loadShareSheet = () => import('@widgets/share-sheet.vue');
+const ShareSheet = defineAsyncComponent(loadShareSheet);
+let _share_warmed = false;
+const warmShare = () => {
+  if (_share_warmed) {
+    return;
+  }
+  _share_warmed = true;
+  loadShareSheet().catch(() => {
+    _share_warmed = false;
+  });
+};
+
+const share_ref = ref(null);
+const share_open = ref(false);
+const {
+  visible: share_tooltip_visible,
+  x: share_tip_x,
+  y: share_tip_y,
+} = useCursorTooltip(share_ref);
+
+/* The drawer and the sheet both drop from the bar, so only one is ever down;
+   a press on the menu button is outside the sheet, and closes it that way. */
+const toggleShare = () => {
+  mobile_open.value = false;
+  share_open.value = !share_open.value;
+};
 
 /*
  * "Which section am I in?" now has ONE implementation, in
@@ -276,15 +329,25 @@ onBeforeUnmount(() => {
       </nav>
 
       <div class="hud-nav__actions">
+        <!-- target="_blank" IS FOR THE TRACKER, not for a new tab. Umami
+             catches a same-tab <a> that carries data-umami-event, cancels the
+             click and re-navigates with location.href, which drops `download`
+             and opens the PDF over this page. A _blank link is the one kind
+             it leaves alone, so the native download still runs, and with
+             `download` set no tab opens. -->
         <UiLink
           v-if="isResume"
           ref="cv_ref"
           :href="cv_href"
           :download="cv_filename"
+          target="_blank"
+          rel="noopener"
           variant="primary"
           size="sm"
           class="hud-nav__cv"
           :aria-label="t('kyo-web.resume.download-aria')"
+          data-umami-event="cv-download"
+          :data-umami-event-lang="cv_lang"
         >
           <AppIcon name="printer" class="hud-nav__cv-icon" />
         </UiLink>
@@ -295,6 +358,36 @@ onBeforeUnmount(() => {
           :y="cv_tip_y"
         >
           {{ t('kyo-web.resume.tooltip.download') }}
+        </CursorTooltip>
+        <!-- A BUTTON, NOT A LINK: it opens something on this page rather
+             than going anywhere. The wrapper is the sheet's anchor from the
+             `nav` fold up; see `&__share` below. -->
+        <div v-if="isBlog" class="hud-nav__share">
+          <UiButton
+            ref="share_ref"
+            variant="primary"
+            size="sm"
+            class="hud-nav__share-button"
+            aria-haspopup="dialog"
+            aria-controls="share-sheet"
+            :aria-expanded="String(share_open)"
+            :aria-label="t('kyo-web.blog.share-aria')"
+            @pointerenter="warmShare"
+            @focus="warmShare"
+            @click="toggleShare"
+          >
+            <AppIcon name="share" class="hud-nav__share-icon" />
+          </UiButton>
+          <ShareSheet v-if="share_open" @close="share_open = false" />
+        </div>
+        <!-- Silent while the sheet is open: the sheet says "Share" itself. -->
+        <CursorTooltip
+          v-if="isBlog"
+          :visible="share_tooltip_visible && !share_open"
+          :x="share_tip_x"
+          :y="share_tip_y"
+        >
+          {{ t('kyo-web.blog.share-aria') }}
         </CursorTooltip>
         <LanguageToggle class="hud-nav__lang" />
         <span class="hud-nav__separator" aria-hidden="true" />
@@ -570,9 +663,15 @@ onBeforeUnmount(() => {
      hand-rolled box drifted from the toggle on every one of those. Deltas are
      only what an icon-only button needs: square padding, the neutral icon
      colour the toggle also layers over `primary`, and the 44px tap target the
-     toggle uses below md. It never hides — this is the page's only download. */
-  &__cv {
+     toggle uses below md. It never hides — this is the page's only download.
+     The blog's share button is the same box on the same terms, so the two
+     page actions are one rule and cannot drift apart either.
+     The 24px floor is WCAG 2.5.8's: the medium type tier (1024-1199px) sets
+     the icon at 12px, and padding plus border then came to 23.6px. */
+  &__cv,
+  &__share-button {
     color: var(--clr-neutral-50);
+    min-height: 24px;
     padding-left: 0.55rem;
     padding-right: 0.55rem;
 
@@ -582,13 +681,36 @@ onBeforeUnmount(() => {
     }
   }
 
+  /* Open is a state, and state is what the accent is for: the button's rule
+     takes it while its sheet is down, so the reader can see which control the
+     panel belongs to. The fill stays the page's until a hover inverts it. */
+  &__share-button[aria-expanded="true"] {
+    border-color: var(--clr-primary-100);
+  }
+
+  /*
+   * THE SHEET'S ANCHOR, AND ONLY FROM THE FOLD UP — share-sheet.vue holds the
+   * other half of this. From `nav` the wrapper is positioned, so the sheet
+   * hangs off the button's right edge like the language menu. Below it the
+   * wrapper stays static, which makes the sticky header the sheet's containing
+   * block, and the sheet drops under the whole bar like the drawer does.
+   * inline-flex for the language toggle's reason: no line-box leading under
+   * the button.
+   */
+  &__share {
+    display: inline-flex;
+
+    @include min-media-query(nav) { position: relative; }
+  }
+
   /* Inline SVG, NOT a Nerd Font glyph: an icon font only paints once that exact
      subset reaches the browser, and a cached older copy silently renders tofu.
      The sprite ships in the document, so it cannot miss. Sized to the toggle's
      text box (fs-200, line-height 1) so both buttons stay the same height.
      The fill/stroke flip overrides AppIcon's stroked default — this glyph is
      the solid Font Awesome shape, matching the GitHub/LinkedIn icons. */
-  &__cv &__cv-icon {
+  &__cv &__cv-icon,
+  &__share-button &__share-icon {
     font-size: var(--fs-200);
     fill: currentColor;
     stroke: none;

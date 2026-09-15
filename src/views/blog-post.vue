@@ -40,6 +40,7 @@
 import { dressBlogToc, loadBlogPost } from '@composables/use-blog';
 import { useBlogLightbox, vBlogLightbox } from '@composables/use-blog-lightbox';
 import useSeoHead from '@composables/use-seo-head';
+import { SUPPORT } from '@data/data';
 import { BLOG_INDEX_URLS, blogAlternatesFor, blogUrlsFor } from '@seo/blog-routes';
 import { buildBlogJsonLd } from '@seo/json-ld';
 import { ROUTE_BY_LOCALE } from '@seo/routes';
@@ -48,7 +49,9 @@ import { useHead } from '@unhead/vue';
 import BlogPostNav from '@views/components/blog/blog-post-nav.vue';
 import BlogSeries from '@views/components/blog/blog-series.vue';
 import DocumentPage from '@views/components/document-page.vue';
-import { computed, defineAsyncComponent, nextTick, onMounted, ref } from 'vue';
+import {
+  computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
@@ -96,8 +99,41 @@ const post = await loadBlogPost(route.path);
  */
 const SectionRail = defineAsyncComponent(() => import('@widgets/section-rail.vue'));
 
+/*
+ * THE SUPPORT BLOCK IS A CHUNK OF ITS OWN, for the rail's reason: the article
+ * chunk is budgeted, and it is not the words. It sits below the body, and the
+ * prerender awaits it, so vite-ssg modulepreloads it and a set support url
+ * ships in the HTML.
+ *
+ * SHARING LIVES IN THE NAV NOW, as the resume's download does: an icon in the
+ * bar on every blog page (hud-nav.vue), not a word at the end of the meta row.
+ */
+const BlogSupport = defineAsyncComponent(() => import('@views/components/blog/blog-support.vue'));
+
 const prose_ref = ref(null);
 const sections = ref([]);
+
+/*
+ * CODE THAT WRAPS AND EQUATIONS THAT FIT — see article-enhance.js. Fetched once
+ * the article is on screen, never ahead of the words, and never by a reader of
+ * a route with no article to enhance.
+ */
+let stop_enhance = null;
+onMounted(() => {
+  import('@composables/article-enhance').then(({ enhanceArticle }) => {
+    if (prose_ref.value && !stop_enhance) {
+      stop_enhance = enhanceArticle(prose_ref.value, {
+        wrapLabel: t('kyo-web.blog.code-wrap'),
+        wrapAria: t('kyo-web.blog.code-wrap-aria'),
+      });
+    }
+  });
+});
+onBeforeUnmount(() => {
+  if (stop_enhance) {
+    stop_enhance();
+  }
+});
 
 const collectSections = async () => {
   await nextTick();
@@ -113,27 +149,21 @@ const collectSections = async () => {
 
 onMounted(collectSections);
 
-/*
- * TEMPORARY — the table-of-contents comparison. `?toc-lab` on any article
- * opens a switcher between three designs and remembers it until closed; see
- * @widgets/toc-lab.vue, which carries designs B and C in its own chunk. This
- * hook goes, with that file, when the owner has picked.
- */
-const TocLab = defineAsyncComponent(() => import('@widgets/toc-lab.vue'));
-const toc_lab = ref(false);
-
-onMounted(() => {
-  let remembered = false;
-  try {
-    remembered = window.localStorage.getItem('kyo:toc-lab') === '1';
-  } catch {
-    /* private mode */
-  }
-  toc_lab.value = remembered || new URLSearchParams(window.location.search).has('toc-lab');
-});
-
 const blog_href = computed(() => BLOG_INDEX_URLS[locale.value] || BLOG_INDEX_URLS.en);
 const home_href = computed(() => ROUTE_BY_LOCALE[locale.value] || ROUTE_BY_LOCALE.en);
+
+/*
+ * THE TAGS ARE A SEARCH, NOT A PAGE PER TAG. Each chip opens this locale's
+ * archive with `?q=<tag>`, and blog-search.vue reads `q` on mount and runs the
+ * search it already has — so a tag goes somewhere without the site growing a
+ * route per tag. The engine files a post's #+FILETAGS under its seo sidecar;
+ * a top-level `tags` wins if the engine ever lifts them. The #all-posts hash
+ * lands the reader on the search and its results, not on the archive's hero,
+ * and the path is the archive's canonical form (no trailing slash), which
+ * production serves without the .htaccess 301 the slashed form costs.
+ */
+const tags = (post && (post.tags || post.seo?.tags)) || [];
+const tagHref = (tag) => `${blog_href.value}?q=${encodeURIComponent(tag)}#all-posts`;
 
 /* The engine's HTML with its table of contents in the article's language and
    counted — see dressBlogToc in use-blog.js. */
@@ -258,11 +288,20 @@ const formatted_date = computed(() => {
     id="main"
     width="article"
     align="left"
+    class="h-entry"
     :crumbs="crumbs"
     :crumbs-label="t('kyo-web.breadcrumb.aria')"
   >
     <template #header>
-      <h1 class="doc__title">
+      <!--
+        AN h-entry, FOR THE INDIEWEB READERS — zero bytes of script. The
+        classes ride on elements that already exist: p-name on the headline,
+        p-author h-card on the byline, dt-published on the <time>, p-category
+        on each tag, e-content on the body. The root class lands on
+        DocumentPage's <main>, the nearest element this view renders that
+        wraps all five; the <article> inside it belongs to the shared shell.
+      -->
+      <h1 class="doc__title p-name">
         {{ post ? post.title : t('kyo-web.blog.not-found') }}
       </h1>
       <p v-if="post" class="blog-post__meta">
@@ -273,7 +312,11 @@ const formatted_date = computed(() => {
              from here but the nav. -->
         <span v-if="post.author" class="blog-post__author">
           {{ t('kyo-web.blog.by') }}
-          <a :href="home_href" rel="author" class="blog-post__author-name">{{ post.author }}</a>
+          <a
+            :href="home_href"
+            rel="author"
+            class="blog-post__author-name p-author h-card"
+          >{{ post.author }}</a>
         </span>
         <span
           v-if="post.author"
@@ -281,7 +324,10 @@ const formatted_date = computed(() => {
           aria-hidden="true"
           data-text="·"
         />
-        <time :datetime="post.date">{{ formatted_date }}</time>
+        <time
+          class="dt-published"
+          :datetime="post.date"
+        >{{ formatted_date }}</time>
         <span
           v-if="post.readingTime"
           class="blog-post__dot"
@@ -292,6 +338,19 @@ const formatted_date = computed(() => {
           {{ post.readingTime }} {{ t('kyo-web.blog.reading-time') }}
         </span>
       </p>
+      <ul
+        v-if="tags.length"
+        class="blog-post__tags"
+        role="list"
+        :aria-label="t('kyo-web.blog.tags')"
+      >
+        <li v-for="tag in tags" :key="tag">
+          <a
+            class="blog-post__tag p-category"
+            :href="tagHref(tag)"
+          ><span class="blog-post__tag-word">{{ tag }}</span></a>
+        </li>
+      </ul>
     </template>
 
     <template v-if="post">
@@ -316,7 +375,7 @@ const formatted_date = computed(() => {
       <div
         ref="prose_ref"
         v-blog-lightbox="open_viewer"
-        class="blog-rich"
+        class="blog-rich e-content"
         :data-chart-zoom-label="t('kyo-web.blog.chart-zoom')"
         v-html="body_html"
       />
@@ -330,22 +389,25 @@ const formatted_date = computed(() => {
         :label="t('kyo-web.landing.nav.on-this-page')"
       />
 
-      <TocLab v-if="toc_lab" @close="toc_lab = false" />
-
       <!--
         THE CLOSING ORDER IS THE OWNER'S, AND IT READS OUTWARD.
 
         Series first, because a reader who just finished part 3 wants part 4
-        before anything else; then related reading; then the previous/next
-        pager as the last, narrowest step. The series block used to sit ABOVE
-        the article, which put a table of contents for six posts between the
-        headline and the first sentence.
+        before anything else; then the support ask; then related reading; then
+        the previous/next pager as the last, narrowest step. The series block
+        used to sit ABOVE the article, which put a table of contents for six
+        posts between the headline and the first sentence.
+
+        The support block is gated HERE as well as inside itself, so while
+        SUPPORT.url is empty its chunk is never requested.
 
         Comments come after the pager when they arrive. They are PARKED on
         evidence today (see kyo-blog's README), so nothing is rendered for
         them rather than an empty shell being left behind.
       -->
       <BlogSeries v-if="post.relations && post.relations.series" :series="post.relations.series" />
+
+      <BlogSupport v-if="SUPPORT.url" />
 
       <BlogPostNav v-if="post.relations" :relations="post.relations" />
     </template>
@@ -472,6 +534,18 @@ const formatted_date = computed(() => {
     --host-fs-h2: #{fs-step(medium, 600)};
     --host-fs-h3: #{fs-step(medium, 500)};
   }
+
+  /*
+   * CODE, AT A SIZE A PHONE CAN HOLD A LINE OF. The book sets code at a flat
+   * 14px, and inside its 24px padding and 24px line-number gutter a 360px
+   * phone showed 27 characters of a line before the block had to scroll. 13px
+   * is the floor the audit holds code to (constructs.spec.js (d)); the clamp
+   * is back at the book's own 14px from 600px, so a tablet and a desktop read
+   * exactly as before. The padding and the gutter, which eat the same line,
+   * are cut below `sm` with the code-block rules further down. On :root for
+   * the band's reason above.
+   */
+  --host-fs-code: clamp(13px, 11px + 0.5vw, 14px);
 }
 
 /*
@@ -499,21 +573,31 @@ const formatted_date = computed(() => {
 .org-root > p.org-paragraph { margin-block: 0; }
 
 /*
- * A HEADING MUST BE ALLOWED TO BREAK A WORD — THE SAME STOPGAP SHAPE.
+ * THE MASTHEAD MUST BE ALLOWED TO BREAK A WORD.
  *
- * `.org-heading` has no `overflow-wrap`, so a single word set at display size
- * on a narrow screen has nowhere legal to break and runs off the page, taking
- * the document's scroll width with it: measured 41px of sideways scroll on a
- * Spanish article at BOTH 320px and 342px — identical at both, which is the
- * signature of one fixed-size string rather than a layout that fails to
- * scale. Fixed at the source in kwo.css; this duplicates it so the fix ships
- * before the engine is republished, and it goes when that lands.
- *
- * `.doc__title` is the SITE's own h1 and is not the engine's to fix, so its
- * rule stays here permanently — it has exactly the same exposure.
+ * One word set at display size on a narrow screen has nowhere legal to break,
+ * so it runs off the page and takes the document's scroll width with it —
+ * measured 41px of sideways scroll on a Spanish article at both 320px and
+ * 342px, the signature of one fixed-size string. `.doc__title` is the SITE's
+ * own h1, so this rule is the site's for good. Its twin for the engine's
+ * headings is retired: kwo carries `overflow-wrap: anywhere` on `.org-heading`
+ * itself now.
  */
-.org-root .org-heading,
 .doc__title { overflow-wrap: anywhere; }
+
+/*
+ * NOR MAY AN INLINE TOKEN — (a) and (f). UPSTREAM CANDIDATE.
+ *
+ * A long identifier in `code` or `=verbatim=`, or a bare URL as a link, is one
+ * unbreakable word: the paragraph wrapped around it while the token ran on,
+ * 280px past its paragraph at 320px, and a footnote's GitHub URL took the page
+ * 743px sideways. They break where they must now, only when a line cannot hold
+ * them. Math is not in this list: nothing in it overflows, and an inline math
+ * box that scrolled would lose its baseline.
+ */
+.org-root .org-code,
+.org-root .org-verbatim,
+.org-root .org-link { overflow-wrap: anywhere; }
 
 /*
  * THE READING-PROGRESS BAR IS NOT A FEATURE THIS SITE WANTS.
@@ -541,7 +625,8 @@ const formatted_date = computed(() => {
  * that opens a viewer with no cursor change gives the reader nothing to go on.
  * `use-blog-lightbox` already marks every image it upgrades, so the mark is
  * what carries the affordance — which also means an image the viewer does NOT
- * claim (the hero, a facade poster) correctly keeps its own cursor.
+ * claim (a facade's poster, which plays the embed) correctly keeps its own
+ * cursor.
  */
 .org-root img[data-blog-lightbox="on"] { cursor: zoom-in; }
 
@@ -591,23 +676,167 @@ const formatted_date = computed(() => {
 }
 
 /*
- * THE TABLE OF CONTENTS — THREE DESIGNS ON TRIAL, AND THIS IS THE DEFAULT.
+ * A VERTICAL SWIPE OVER A DIAGRAM SCROLLS THE PAGE — (g). UPSTREAM CANDIDATE.
  *
- * The owner turned down the hairline-rows version and asked for three to choose
- * between, the same way the section rail was chosen. What is shared lives here:
- * a reset that takes the book's box, stripe and indents off, so each design
- * starts from nothing rather than fighting the last one. Then design A, which is
- * what every reader sees until a choice is made.
+ * kwo sets `touch-action: none` on the frame o2h.js upgrades, so the runtime
+ * can pan the drawing with pointer events — which also meant a thumb that
+ * landed on a diagram mid-scroll dragged the drawing and stopped the article
+ * dead. `pan-y pinch-zoom` hands the vertical swipe and the pinch back to the
+ * page; a sideways drag still reaches the runtime's handlers and pans the
+ * drawing. On touch the reader gives up dragging it up or down and the
+ * runtime's own two-finger zoom; its zoom buttons and keys do both still.
+ * (0,4,0), so it outranks kwo's (0,3,0) whichever sheet loads last.
+ */
+.org-root .org-diagram .org-diagram-scroll.is-interactive {
+  touch-action: pan-y pinch-zoom;
+}
+
+/*
+ * A CODE BLOCK ON A PHONE — (c) and (d). UPSTREAM CANDIDATE.
  *
- * B and C are NOT in this chunk. They ship with the comparison switcher
- * (@widgets/toc-lab.vue), which only loads behind `?toc-lab`, so a reader who is
- * not comparing downloads one design, not three. When the owner picks, the
- * winner moves here, the other two and the switcher are deleted in one change,
- * and the `html[data-toc]` scoping below goes with them.
+ * With the 13px floor on :root, the line still lost 48px to the book's padding
+ * and 24px more to the gap after the line numbers; 14px and 12px below `sm`
+ * give a 360px phone 34 characters. `sm` itself keeps the book's values, so the
+ * band is written as the complement of `min-media-query(sm)` rather than with
+ * `max-media-query`, which would include 768px. `pre.` makes the gutter rule
+ * (0,3,2), past the base sheet's (0,3,1).
  *
- * All three keep the site's law: square, hairlines, no radius, mono for
- * furniture and the editorial face for the words, and accent on state — plus
- * the one mark the landing's section headers also carry.
+ * The COPY button was 21.5px tall; 24px is WCAG 2.5.8's floor, reached with a
+ * min-height so its padding and label stay the book's. And the <pre> is
+ * focusable (tabindex="0", so a keyboard can scroll it) while `.org-src-block`
+ * clips to its box, which cut the site's outward focus ring off entirely — so
+ * on the <pre> it is drawn inside, as `#persistent-data` already does for the
+ * same reason.
+ */
+@media only screen and (max-width: 47.9375em) {
+  .org-root .org-src { padding-inline: 14px; }
+  .org-root pre.org-src--numbered .line::before { margin-right: 12px; }
+}
+
+.org-root .org-src-copy { min-height: 24px; }
+
+.org-root .org-src-block > .org-src:focus-visible { outline-offset: -2px; }
+
+/*
+ * CODE ON A PHONE WRAPS, AND A TOGGLE SAYS SO — UPSTREAM CANDIDATE.
+ *
+ * At 360px a block shows 34 characters of a line, and the kitchen-sink's
+ * longest runs 220: six of its eight blocks scrolled sideways, with no bar on a
+ * phone to say there was more, and the owner found no way to read them. Below
+ * `sm` long lines now wrap by DEFAULT — CSS, not script, so the block arrives
+ * at its final height and nothing moves when the page hydrates. A WRAP button
+ * beside COPY (article-enhance.js; only on a block whose longest line does not
+ * fit) flips it either way on any screen, and the choice is the reader's for
+ * the whole article and the next one: `.is-code-wrap` / `.is-code-nowrap` on
+ * the body.
+ *
+ * A wrapped numbered line HANGS: the continuation starts under the code, not
+ * under the number, which is what keeps a wrapped block readable as code. That
+ * needs each .line to be a block, and in `pre-wrap` the newline between two
+ * block lines would print as an empty line — so the <code> becomes a flex
+ * column, which drops whitespace-only text between its children. The numbers'
+ * own box keeps a zero indent, or it would inherit the hanging one.
+ */
+@mixin blog-code-wrap {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+
+  &.org-src--numbered code {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &.org-src--numbered .line {
+    padding-left: calc(2.5ch + var(--blog-code-gap));
+    text-indent: calc(-2.5ch - var(--blog-code-gap));
+  }
+
+  &.org-src--numbered .line::before { text-indent: 0; }
+}
+
+.org-root pre.org-src { --blog-code-gap: var(--o2h-space-3); }
+
+@media only screen and (max-width: 47.9375em) {
+  .org-root pre.org-src { --blog-code-gap: 12px; }
+
+  .blog-rich:not(.is-code-nowrap) .org-root pre.org-src {
+    @include blog-code-wrap;
+  }
+}
+
+.blog-rich.is-code-wrap .org-root pre.org-src { @include blog-code-wrap; }
+
+/* The COPY button's look, restated: sharing its class would hand this button to
+   o2h.js's copy handler. It takes over COPY's `margin-left: auto` while it is
+   shown, so the two sit together at the header's right edge. Pressed is ink,
+   not accent — on a phone every block starts pressed, and a yellow chip on
+   each one would be accent at rest.
+
+   HERE, NOT IN article-enhance.js's CHUNK. Moved there it saved this chunk
+   0.10 kB and cost that one 0.31 kB plus a request — every article reader pays
+   both — because these rules compress against the book's tokens right here. */
+.org-root .blog-code-wrap {
+  min-height: 24px;
+  margin-left: auto;
+  padding: 2px var(--o2h-space-1);
+  border: 1px solid var(--o2h-line-soft);
+  border-radius: 0;
+  background: none;
+  color: var(--o2h-mute);
+  font: inherit;
+  font-size: var(--o2h-chip-size);
+  letter-spacing: var(--o2h-chip-track);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+
+  &[aria-pressed="true"] {
+    border-color: var(--o2h-ink);
+    color: var(--o2h-ink);
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--o2h-accent);
+    color: var(--o2h-accent);
+  }
+}
+
+.org-root .blog-code-wrap:not([hidden]) + .org-src-copy { margin-left: 0; }
+
+/*
+ * AN EQUATION FITS ITS COLUMN — UPSTREAM CANDIDATE.
+ *
+ * The book sets display math at 1.25em inside a frame that scrolls sideways,
+ * so nothing ever leaves the page — but on a phone that scroll has no bar, and
+ * the aligned derivation in the kitchen-sink looked cut off: 412px of it in a
+ * 330px column in Firefox, 345px in Chromium. Below `sm` it starts a step
+ * smaller, which fits most equations before any script runs, and
+ * article-enhance.js sets whatever still overflows to exactly its column, down
+ * to 65% of the book's size. Past that the frame's own scroll takes over.
+ */
+@media only screen and (max-width: 47.9375em) {
+  .blog-rich .org-root .org-math-display math { font-size: 1.1em; }
+}
+
+/*
+ * THE TABLE OF CONTENTS — THE LEDGER, PICKED FROM THREE.
+ *
+ * The owner turned down the hairline-rows version, compared three on a real
+ * article the way the section rail was chosen, and kept the ledger. It is two
+ * layers: a reset that takes the book's box, stripe and indents off, so the
+ * design starts from nothing rather than fighting the book, then the ledger.
+ *
+ * THE ORDER IS LOAD-BEARING. Four ledger rules — the nav, the label, the list
+ * and the link — carry exactly the reset's specificity and win only because
+ * they come later in this block, so the reset stays above them. Both layers
+ * still outrank every `.org-toc` rule in the book — its strongest, the link's
+ * hover, focus and current state, are (0,3,0) — so which sheet loads last
+ * never decides it.
+ *
+ * The site's law holds: square, hairlines, no radius, mono for furniture and
+ * the editorial face for the words, and accent on state — plus the one mark
+ * the landing's section headers also carry.
  */
 .org-root nav.org-toc {
   --blog-toc-lift: color-mix(in srgb, var(--clr-neutral-100) 3%, transparent);
@@ -644,6 +873,10 @@ const formatted_date = computed(() => {
     font-weight: 400;
     line-height: 1.35;
     text-decoration: none;
+    /* An entry is its heading's words, and a heading may hold one word longer
+       than a phone: the heading breaks it (kwo), so the entry must too, or it
+       runs off the screen — 173px at 320px on the kitchen-sink article. */
+    overflow-wrap: anywhere;
     transition: background-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
   }
 
@@ -654,14 +887,14 @@ const formatted_date = computed(() => {
 }
 
 /*
- * A — LEDGER. The contents as a numbered index, in the voice of the landing's
+ * THE LEDGER. The contents as a numbered index, in the voice of the landing's
  * section headers: a `// CONTENTS` label in the index accent, the count of
  * sections set against it on the right, and every entry hung off a mono number
  * column so the titles form one clean edge. Subsections take their parent's
  * number (03.1, 03.2) at a step down in size and tone. Open — no box — with a
  * hairline above and below, like a ruled page.
  */
-:is(html:not([data-toc]), html[data-toc="a"]) .org-root nav.org-toc {
+.org-root nav.org-toc {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
@@ -738,56 +971,103 @@ const formatted_date = computed(() => {
 }
 
 /*
- * A FOOTNOTE'S WAY BACK IS A BUTTON-SIZED TARGET, NOT ONE GLYPH.
+ * A FOOTNOTE IS ONE TARGET: THE WHOLE NOTE GOES BACK. UPSTREAM CANDIDATE.
  *
- * The back-link was the bare `↩` — measured 8×20px, well under WCAG 2.5.8's
- * 24px floor, and on most systems it painted as a colour emoji. It is a square
- * now, one hairline and no radius like every control on the site, 27px (33px
- * under a coarse pointer), and it hangs in its own column so the note's text
- * keeps a clean left edge instead of flowing around it. `font-variant-emoji`
- * asks for the text presentation of the arrow. UPSTREAM CANDIDATE, for the same
- * reason as the chart margin above.
+ * The back-link was the bare `↩`, 8×20px, then a 27px hairline square the owner
+ * turned down: a box beside every note said "button" louder than the note said
+ * anything. The arrow is a MARK now — muted, unboxed, in the note's own left
+ * column — and the target is the whole note: the link's ::after is stretched
+ * over the <li> (the nearest positioned box, since the link itself stays in the
+ * flow), so a tap on the words goes back as well as a tap on the arrow.
+ *
+ * The arrow hangs in the note's padding with a negative margin, the way hanging
+ * punctuation does: the padding is the note's inset and the words keep that
+ * edge. The link's own box stays a 24px square, so it is a WCAG 2.5.8 target
+ * even before the stretch (constructs.spec.js (c) measures it).
+ *
+ * A LINK INSIDE THE NOTE STILL WORKS: it is lifted above the stretched target,
+ * so the parser's GitHub URL in note 1 opens GitHub, not the reference. What
+ * the stretch costs is selecting a note's text with a mouse drag — a fair trade
+ * for a list whose one job is the way back.
+ *
+ * The pointer gets the site's answer for every list of links, the 3% lift,
+ * with the fill hanging past the column the way the ledger's does. `(0,3,0)`,
+ * so the book's `.org-root .org-footnote-back` margin loses whichever sheet
+ * loads last.
  */
 .org-root .org-footnote {
+  --blog-note-lift: color-mix(in srgb, var(--clr-neutral-100) 3%, transparent);
+
   position: relative;
-  min-height: 2.25rem;
-  padding-left: 3rem;
+  padding-left: 2rem;
 }
 
-.org-root .org-footnote-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  margin: 0;
-  border: var(--o2h-border);
-  color: var(--o2h-slate);
+.org-root .org-footnote > .org-footnote-back {
+  display: inline-block;
+  width: 2rem;
+  min-height: 2rem;
+  margin: 0 0 0 -2rem;
+  color: var(--o2h-mute);
   font-variant-emoji: text;
-  line-height: 1;
   text-decoration: none;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  vertical-align: top;
+  transition: color 0.15s ease;
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    content: "";
+  }
 
   &:hover,
   &:focus-visible {
-    border-color: var(--o2h-accent);
+    outline: none;
     color: var(--o2h-accent);
   }
 
-  @media (pointer: coarse) {
-    width: 2.75rem;
-    height: 2.75rem;
+  &:hover::after,
+  &:focus-visible::after {
+    background-color: var(--blog-note-lift);
+    box-shadow:
+      -0.75rem 0 0 var(--blog-note-lift),
+      0.75rem 0 0 var(--blog-note-lift);
   }
+
+  &:focus-visible::after { outline: 2px solid var(--o2h-accent); }
 }
 
-@media (pointer: coarse) {
-  .org-root .org-footnote {
-    min-height: 2.75rem;
-    padding-left: 3.5rem;
-  }
+.org-root .org-footnote a:not(.org-footnote-back) {
+  position: relative;
+  z-index: 1;
+}
+
+/*
+ * A CAROUSEL DOT IS A 24PX TARGET WITH THE SAME 7PX DOT IN IT — (c).
+ * UPSTREAM CANDIDATE.
+ *
+ * o2h.js builds one <button> per slide and kwo paints the button itself as a
+ * 0.6rem square: 7.2px here, a third of WCAG 2.5.8's floor. The button is 24px
+ * now, and the square the reader sees is drawn inside it: a transparent
+ * 0.7rem border rings a 0.6rem padding box, the fill is clipped to that box,
+ * and the hairline is a 1px inset shadow on its edge. Same size, same
+ * hairline, and kwo's own state fills still mark the current and the hovered
+ * slide — this rule is (0,4,0), so their `background` shorthand cannot widen
+ * the clip back to the whole button. The targets carry the spacing, so the
+ * rail's gap and top margin go: the dots sit 24px apart instead of 15px, and
+ * the row's centre stays where it was under the strip.
+ */
+.org-root .org-carousel .org-carousel-rail {
+  gap: 0;
+  margin-top: 0;
+}
+
+.org-root .org-carousel .org-carousel-rail .org-carousel-dot {
+  width: 24px;
+  height: 24px;
+  border: 0.7rem solid transparent;
+  background-clip: padding-box;
+  box-shadow: inset 0 0 0 1px var(--o2h-accent);
 }
 </style>
 
@@ -837,5 +1117,79 @@ const formatted_date = computed(() => {
 
   &:hover,
   &:focus-visible { color: var(--clr-primary-100); }
+}
+
+/*
+ * THE TAGS, AS SQUARE CHIPS. The meta row's mono at its size, one hairline,
+ * no radius — and NO ACCENT AT REST: the yellow is state, so only hover and
+ * focus take it, and the border follows the ink through currentColor. The row
+ * wraps and never scrolls, and the first chip starts on the headline's edge.
+ *
+ * A CHIP IS ONE LINE. It used to carry `overflow-wrap: anywhere` so a long tag
+ * could never push a phone sideways — but that lets the word break after ANY
+ * letter, and Firefox took the offer inside an inline-flex box that had room
+ * to spare: `ci` stacked as c/i and `build` as buil/d, every chip two lines
+ * tall, at every width. The word now never wraps; a tag longer than the row
+ * ellipsizes inside its chip instead, which is the only way one could still
+ * outrun a 320px screen.
+ *
+ * The `#` is drawn, not written: its alt text is empty, so a screen reader
+ * hears the tag and the chip's text is the bare word the search matches. It
+ * is set a step dimmer than the word — the mark says "tag", the word is the
+ * content — and joins the word's colour on hover. 27px tall, 33px under a
+ * coarse pointer.
+ */
+.blog-post__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  font-family: 'SpaceMono', monospace;
+  font-size: var(--fs-200);
+  list-style: none;
+
+  li {
+    display: flex;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+.blog-post__tag {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--clr-border-100);
+  color: var(--clr-neutral-200);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+
+  &::before {
+    color: var(--clr-neutral-300);
+    transition: color 0.15s ease;
+    content: "#" / "";
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: currentColor;
+    color: var(--clr-primary-100);
+
+    &::before { color: currentColor; }
+  }
+
+  @media (pointer: coarse) { min-height: 2.75rem; }
+}
+
+.blog-post__tag-word {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

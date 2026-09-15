@@ -38,14 +38,16 @@
 import { warmImageViewer } from '@composables/use-warm-modal';
 import { ref } from 'vue';
 
-/* Images the engine emits for content. .org-hero-image is excluded: the hero
-   is already presented at full width and is not a detail to zoom into.
-   Carousel and gallery tiles are included because o2h's lightbox used to be
-   the only thing offering them a zoom; taking that away without picking them
-   up here would be a silent regression. */
+/* Images the engine emits for content — EVERY one, the hero included. The hero
+   used to be left out as "already full width, not a detail to zoom into"; the
+   owner asked for it back, and a cover is exactly the image a reader wants to
+   see whole on a phone, where the column crops it to a strip. Carousel and
+   gallery tiles are here because o2h's lightbox used to be the only thing
+   offering them a zoom. A facade's poster is NOT: it is the play target of an
+   embed, and a viewer would steal the tap that starts the video. */
 const SELECTOR = [
   '.org-figure img',
-  '.org-image:not(.org-hero-image)',
+  '.org-image',
   '.org-carousel-strip img',
   '[data-component="gallery"] img',
 ].join(', ');

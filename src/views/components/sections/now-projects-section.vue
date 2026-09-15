@@ -370,6 +370,10 @@ const _card_root_class = (card) => ({
 const _card_hit_label = (card) =>
   `${card.name}, ${t('kyo-web.landing.projects.view-details')}`;
 
+/* Umami reads the event off the clicked link; every org2html link carries
+   the same one, the rest of the cards none (null drops the attribute). */
+const _repo_event = (card) => (card?.key === 'org2html' ? 'org2html-github' : null);
+
 const buildFeaturedCard = (key) => {
   const project = featured_map[key];
   const status_id = project.status || DEFAULT_FEATURED_STATUS;
@@ -587,6 +591,7 @@ useProximityHover(
             rel="noopener noreferrer"
             class="now-projects-section__card-hit-area"
             :aria-label="card.name"
+            :data-umami-event="_repo_event(card)"
           />
 
           <header class="now-projects-section__card-header">
@@ -698,6 +703,7 @@ useProximityHover(
             rel="noopener noreferrer"
             class="now-projects-section__link is-corner"
             :aria-label="`${t('kyo-web.landing.projects.view-repo')}, ${card.name}`"
+            :data-umami-event="_repo_event(card)"
           >
             <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
             <span class="now-projects-section__link-text">{{ t('kyo-web.landing.projects.view-repo') }}</span>
@@ -759,6 +765,7 @@ useProximityHover(
             rel="noopener noreferrer"
             :aria-label="card.aria_label"
             class="now-projects-section__featured-hit"
+            :data-umami-event="_repo_event(card)"
           />
         </div>
       </div>
@@ -903,6 +910,7 @@ useProximityHover(
           target="_blank"
           rel="noopener noreferrer"
           class="project-modal__repo-cta"
+          :data-umami-event="_repo_event(active_card)"
         >
           <span class="icon-glyph icon-glyph--lg" :data-text="GLYPH_REPO" aria-hidden="true" />
           <span>{{ t('kyo-web.landing.projects.view-repo') }}</span>

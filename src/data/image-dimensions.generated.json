@@ -23,6 +23,10 @@
     "w": 96,
     "h": 96
   },
+  "everything-org2html-renders": {
+    "w": 1280,
+    "h": 720
+  },
   "from-org-to-ast": {
     "w": 1280,
     "h": 720

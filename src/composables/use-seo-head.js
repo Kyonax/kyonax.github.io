@@ -9,12 +9,38 @@ import {
   SEO,
   THEME_SETTINGS,
 } from '@data/data';
+import { BLOG_INDEX_URLS, isBlogPath } from '@seo/blog-routes';
 import { absoluteUrl,HREFLANG_ALTERNATES } from '@seo/routes';
 import { useHead } from '@unhead/vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 
 const OG_LOCALE = { en: 'en_US', es: 'es_CO' };
+
+/*
+ * RSS AUTODISCOVERY, on blog routes and nowhere else. Each locale's feed sits
+ * beside the archive it syndicates (scripts/generate-feeds.mjs writes
+ * <archive>/feed.xml), so its URL is the archive's plus a file name and cannot
+ * drift from it. The route decides, not an option: blog.vue and blog-post.vue
+ * need no change, and no other page can advertise a feed by accident. `key`
+ * collapses the two entries that coexist while <Suspense> swaps one article
+ * for the next.
+ */
+const feedLink = (path, locale, t) => {
+  const archive = computed(() =>
+    BLOG_INDEX_URLS[locale.value] || BLOG_INDEX_URLS.en);
+  if (!isBlogPath(path) || !archive.value) {
+    return [];
+  }
+  return [{
+    key: 'kyo-blog-feed',
+    rel: 'alternate',
+    type: 'application/rss+xml',
+    title: computed(() => t('kyo-web.blog.rss-title')),
+    href: computed(() => `${archive.value}/feed.xml`),
+  }];
+};
 
 /*
  * `opts` lets a secondary prerendered page (e.g. the resume pages) reuse the
@@ -42,6 +68,7 @@ const OG_LOCALE = { en: 'en_US', es: 'es_CO' };
  */
 export const useSeoHead = (opts = {}) => {
   const { t, locale } = useI18n();
+  const route = useRoute();
 
   const prefix     = opts.keyPrefix || 'kyo-web.landing.meta';
   const urls       = opts.urls || LOCALE_URL;
@@ -72,6 +99,7 @@ export const useSeoHead = (opts = {}) => {
       ...alternates.map((alt) => ({
         rel: 'alternate', hreflang: alt.hreflang, href: alt.href,
       })),
+      ...feedLink(route.path, locale, t),
     ],
     meta: [
       { name: 'description',          content: description },

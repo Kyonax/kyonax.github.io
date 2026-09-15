@@ -35,8 +35,22 @@ const INLINED = [
 const PAD = 24;
 const FOOT = 56;
 
-/* Twice the box, so the browser rasterises it at a size worth zooming into;
-   the viewer scales it back down to fit. */
+/*
+ * TWICE THE BOX, SO THE CHART OPENS LARGE — and that is all this number does.
+ * It is the picture's natural size, which the viewer caps at the screen: at 1×
+ * a 720-unit chart would open 768px wide on a desktop, at 2× it fills the
+ * frame.
+ *
+ * IT IS NOT WHAT KEEPS A ZOOM SHARP. The picture stays an SVG, and both
+ * engines re-rasterise an SVG image at its TRANSFORMED size, so the viewer's
+ * CSS scale never stretches a bitmap. Measured at 800% (1280px, and a 390px
+ * phone at DPR 3; Chromium and Firefox; wheel and the animated "+"), the
+ * viewer matched the same drawing laid out at 8× — under one grey level of
+ * 255 apart on average, the same edge sharpness — while a 2× PNG of it under
+ * the same transform came out about six times softer. Raising this changes
+ * nothing once the viewer's cap is reached; flattening the chart to a PNG or
+ * a canvas "for speed" would cost exactly that sharpness.
+ */
 const RASTER = 2;
 
 const styleOf = (node) => {

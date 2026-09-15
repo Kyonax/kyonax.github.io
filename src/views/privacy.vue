@@ -20,9 +20,10 @@
  * point of --kyo-measure: the container comes down to meet the line length
  * instead of stranding a void beside every paragraph.
  *
- * COPY: lives in `kyo-web.privacy.*`, ported VERBATIM from the two static
- * files it replaces. `@` is written `&#64;` because a literal `@` in an i18n
- * message source is a vue-i18n linked-message token, not text.
+ * COPY: lives in `kyo-web.privacy.*` (@data/snippets-privacy), rewritten on
+ * 2026-09-11 for cookieless Umami analytics; the visible "Last updated" line
+ * and the JSON-LD dateModified move together. `@` is written `&#64;` because a
+ * literal `@` in an i18n message source is a vue-i18n linked-message token.
  */
 
 import useSeoHead from '@composables/use-seo-head';
@@ -30,8 +31,16 @@ import { TRANSLATIONS_PRIVACY } from '@data/snippets-privacy';
 import { useMessageSlice } from '@i18n/use-message-slice';
 import { PRIVACY_HREFLANG_ALTERNATES, PRIVACY_URL, ROUTE_BY_LOCALE } from '@seo/routes';
 import DocumentPage from '@views/components/document-page.vue';
-import { computed } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+/* The analytics opt-out is its own chunk, not part of this one. It renders
+   nothing until mounted (it reads localStorage), so a lazy load costs the
+   reader nothing, and it keeps this chunk inside its 3.5 KB budget, which the
+   policy copy alone now nearly fills. */
+const AnalyticsOptOut = defineAsyncComponent(() => {
+  return import('@components/analytics-opt-out.vue');
+});
 
 /* The privacy page's body copy is not in the main bundle — it rides in this
    view's own chunk and is merged in before anything reads a key from it. */
@@ -57,6 +66,12 @@ const crumbs = computed(() => [
 
 const sections = computed(() => tm('kyo-web.privacy.sections')
   .map((s) => ({ title: rt(s.title), body: rt(s.body) })));
+
+/* The analytics opt-out renders inside the third section, "Storage in your
+   browser", whose copy points at it ("the toggle below"). Sections are
+   positional and check:i18n holds both locales to the same order and length,
+   so an index is stable — move it only if the sections are reordered. */
+const OPT_OUT_SECTION = 2;
 </script>
 
 <template>
@@ -77,11 +92,16 @@ const sections = computed(() => tm('kyo-web.privacy.sections')
 
     <p class="doc-prose kyo-prose privacy__lead" v-html="t('kyo-web.privacy.lead')" />
 
-    <section v-for="section in sections" :key="section.title" class="doc-block">
+    <section
+      v-for="(section, i) in sections"
+      :key="section.title"
+      class="doc-block"
+    >
       <h2 class="doc-block__title">
         {{ section.title }}
       </h2>
       <div class="doc-rich kyo-prose" v-html="section.body" />
+      <AnalyticsOptOut v-if="i === OPT_OUT_SECTION" />
     </section>
   </DocumentPage>
 </template>

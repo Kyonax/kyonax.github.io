@@ -32,7 +32,7 @@ const props = defineProps({
   mediaOnly: { type: Boolean, default: false },
 });
 
-const { locale } = useI18n();
+const { t, locale } = useI18n();
 
 const media = computed(() => blogCardImage(props.post));
 
@@ -83,7 +83,12 @@ const date_label = computed(() => {
         />
       </span>
 
-      <time class="blog-card__date" :datetime="post.date">{{ date_label }}</time>
+      <span class="blog-card__meta">
+        <time class="blog-card__date" :datetime="post.date">{{ date_label }}</time>
+        <span v-if="post.readingTime" class="blog-card__reading">
+          · {{ post.readingTime }} {{ t('kyo-web.blog.reading-time') }}
+        </span>
+      </span>
       <h3 class="blog-card__title">{{ post.title }}</h3>
     </a>
   </article>
@@ -140,11 +145,18 @@ const date_label = computed(() => {
 /* One step up from `--fs-100`, which was the smallest size in the scale and
    read as a caption rather than as the card's own second line. Still two
    steps under `.blog-card__title`. */
-.blog-card__date {
-  color: var(--clr-neutral-200);
+.blog-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5ch;
   font-family: "SpaceMono", monospace;
   font-size: var(--fs-200);
 }
+
+.blog-card__date { color: var(--clr-neutral-200); }
+
+/* The reading time rides on the date's line, a step quieter than the date. */
+.blog-card__reading { color: var(--clr-neutral-300); }
 
 .blog-card__title {
   margin: 0;

@@ -37,8 +37,18 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
   },
+  /*
+   * FIREFOX RUNS WHAT ONLY FIREFOX BROKE. The owner reads the site in Firefox,
+   * and two defects he reported on 2026-09-12 never reproduced in Chromium: tag
+   * chips breaking their words inside a roomy inline-flex box, and MathML set
+   * 25% wider than Chromium sets it. A Chromium-only gate passed both. Those
+   * tests carry `@firefox` in their title and run in both engines; everything
+   * else stays Chromium-only, so the suite does not double for checks where the
+   * two engines agree.
+   */
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] }, grep: /@firefox/ },
   ],
   webServer: {
     command: `npx vite preview --port ${PORT} --strictPort --host 127.0.0.1`,

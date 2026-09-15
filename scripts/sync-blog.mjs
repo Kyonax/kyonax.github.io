@@ -182,13 +182,36 @@ for (const locale of m.locales) {
  * this script keeps. It only reaches the wire on an article route, and with no
  * corpus there are no article routes.
  */
+/*
+ * THE BOOK'S @font-face RULES ARE DROPPED ON THE WAY IN. The book declares its two
+ * families — Geomanist and SpaceMono, the same names this site serves — at
+ * `/blog/fonts/`, where org2html writes its own copies. This site owns its faces
+ * (its SpaceMono is re-cut against its own corpus) and hands them to the book
+ * through `--host-font-*`, so those copies are never synced and the rules pointed
+ * at nothing: every article asked for four fonts and received the SPA's HTML page
+ * for each, ~207 KB apiece, in both engines (found 2026-09-12). Syncing the files
+ * instead would download a second set of the same families on every article.
+ */
 const bookSrc = join(SRC, 'blog', 'styles.css');
 if (existsSync(bookSrc)) {
   const raw = readFileSync(bookSrc);
-  const { code } = transform({ filename: 'style-book.css', code: raw, minify: true });
+  let dropped = 0;
+  const { code } = transform({
+    filename: 'style-book.css',
+    code: raw,
+    minify: true,
+    visitor: {
+      Rule: {
+        'font-face'() {
+          dropped += 1;
+          return [];
+        },
+      },
+    },
+  });
   mkdirSync(DEST_BOOK_DIR, { recursive: true });
   writeFileSync(DEST_BOOK, code);
-  line(`style book ${(raw.length / 1024).toFixed(0)} KB -> ${(code.length / 1024).toFixed(0)} KB minified`);
+  line(`style book ${(raw.length / 1024).toFixed(0)} KB -> ${(code.length / 1024).toFixed(0)} KB minified, ${dropped} @font-face rule(s) dropped — the site serves its own faces`);
 } else {
   warn('no styles.css in the blog build — articles will render unstyled');
 }

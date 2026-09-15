@@ -153,6 +153,10 @@ export default [
       '.cache/**',
       'public/**',
       'src/assets/**',
+      /* Plans carry design generators (Node scripts whose output is the
+         validated artboard); they are specs, never shipped, and a lint
+         fix would have to be proven byte-identical in its output. */
+      'docs/plans/**',
     ],
   },
 

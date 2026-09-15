@@ -27,6 +27,19 @@ const ES = ROUTES.find((r) => r.name === 'article ES').path;
 
 const strip = (p) => p.replace(/\/$/, '');
 
+/* The site appends the Umami tracker after mount. It is answered with an
+   empty script and every other Umami request is aborted, the net
+   analytics.spec.js casts, so no run reaches the network or the dashboard. */
+const UMAMI_HOST = /(^|\.)umami\.(is|dev)$/;
+
+test.beforeEach(async ({ page }) => {
+  await page.route((url) => UMAMI_HOST.test(url.hostname), (route) => (
+    new URL(route.request().url()).pathname === '/script.js'
+      ? route.fulfill({ status: 200, contentType: 'application/javascript', body: '' })
+      : route.abort()
+  ));
+});
+
 const chooseLanguage = async (page, code) => {
   await page.locator('.language-toggle__button:visible').first().click();
   await page.locator(`#language-option-${code}:visible`).first().click();
@@ -41,6 +54,11 @@ for (const width of [390, 1280]) {
     await page.goto(ES);
     await settle(page);
     const esTitle = (await page.locator('h1').first().textContent()).trim();
+    /* The nav's share button is named only by its aria-label — it is an icon —
+       so that name has to follow the toggle as well. */
+    const share = page.locator('.hud-nav button[aria-controls="share-sheet"]');
+    await expect(share, 'the ES article renders no share button in the nav to compare').toHaveCount(1);
+    const esShare = await share.getAttribute('aria-label');
     await page.goto(EN);
     await settle(page);
     const enTitle = (await page.locator('h1').first().textContent()).trim();
@@ -53,6 +71,7 @@ for (const width of [390, 1280]) {
     await expect(page.locator('h1').first(), 'the headline stayed in English').toHaveText(esTitle);
     await expect(page.locator('.org-root .org-paragraph').first(), 'the body stayed in English')
       .not.toHaveText(enFirst);
+    await expect(share, 'the share button stayed in English').toHaveAttribute('aria-label', esShare);
 
     /* Back is a client-side move too, and must bring the English article back. */
     await page.goBack();
@@ -71,6 +90,17 @@ for (const width of [390, 1280]) {
  */
 const archiveState = (page) => page.evaluate(() => {
   const text = (sel) => [...document.querySelectorAll(sel)].map((el) => el.textContent.trim());
+  /* The hero's chip and the marquee's screen-reader sentence are the corpus's
+     numbers in the page's language, so they must follow the toggle like the
+     rest. A missing one THROWS: two archives that both lack the chip would
+     compare equal and prove nothing. */
+  const said = (sel) => {
+    const el = document.querySelector(sel);
+    if (!el) {
+      throw new Error(`the archive renders no ${sel}`);
+    }
+    return el.textContent.replace(/\s+/g, ' ').trim();
+  };
   const img = document.querySelector('.blog-lead img, .blog-lead__media img');
   return {
     h1: text('h1'),
@@ -78,6 +108,8 @@ const archiveState = (page) => page.evaluate(() => {
     cards: text('.blog-card__title'),
     rows: text('.blog-all__title'),
     image: img ? (img.getAttribute('alt') || '') : null,
+    chip: said('.blog-hero__chip'),
+    marqueeSr: said('.blog-marquee__sr'),
   };
 });
 

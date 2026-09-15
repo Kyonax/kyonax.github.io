@@ -4,7 +4,7 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import CookieConsent from '@components/cookie-consent.vue';
+import useAnalytics from '@composables/use-analytics';
 import usePageKind from '@composables/use-page-kind';
 import useSeoHead from '@composables/use-seo-head';
 import useStructuredData from '@composables/use-structured-data';
@@ -101,6 +101,11 @@ if (isLanding.value) {
   useSeoHead();
 }
 useStructuredData({ page: kind.value });
+
+/* Umami Cloud, once per page load and on every route, from here because App
+   mounts once. It registers an onMounted and nothing else: the tracker follows
+   the router's pushState on its own, so there is no router hook. */
+useAnalytics();
 
 /* WCAG 3.1.1 — keep <html lang> in sync with the active i18n locale across
    every locale-change path: user toggle, direct /es/ URL hit, browser back/
@@ -202,8 +207,6 @@ watch(locale, (next) => {
   <Suspense v-else-if="isBlog">
     <BlogFooter />
   </Suspense>
-
-  <CookieConsent />
 </template>
 
 <style lang="scss" scoped>

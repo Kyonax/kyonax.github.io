@@ -42,8 +42,121 @@ and gave the privacy pages reciprocal hreflang. Then signed the browserslist flo
 =defaults and fully supports css-lch-lab=), made the toolchain obey it through Lightning CSS and
 a browserslist-derived esbuild target, and added a five-check =check-browser-support= gate, each
 check proven by reintroducing its bug. Main CSS 11.46 to 11.34 KB gzip, main JS 178.02 to 177.94.
+Then (2026-09-11, blog overhaul Lanes 1 and 2) replaced Google Analytics and its cookie banner with
+cookieless Umami Cloud, rewrote the privacy policy around it with an opt-out toggle, and retired
+the table-of-contents lab, keeping design A (the ledger) as the only table of contents. Then
+(Lane 3) built the validated blog landing: the Galaxy hero, a marquee of the corpus's own numbers
+recounted on every build, and three animated pipeline drawings, all prerendered and monochrome;
+and (Lane 4.1) put the reading time on the archive rows and the recent cards. Then (Lane 4) gave
+the article a share button, a tags row that searches the archive, a support block waiting on its
+vendor, h-entry microformats and rel=me, added RSS per locale and llms.txt, and fixed a sitemap
+that had never listed a single article. Then (Lane 5) published a kitchen-sink reference post in
+both locales, audited it at all fourteen widths (154 failures, run red first) and fixed every one
+site-side: the article's layout shift went from 0.32 to 0.002 and its Lighthouse performance score
+from 0.83 to 0.99. Then (2026-09-12) refined the article from the owner's phone and Firefox
+report: sharing moved to a nav icon and a designed popup, tag chips stop breaking their words,
+code wraps on a phone with a WRAP toggle, equations fit their column, a footnote is one target,
+the viewer gained a zoom toolbar, the cover opens in it, and (engine-side) chart labels wrap.
 
 ** Added
+- =src/views/components/blog/blog-hero.vue= — the archive's new head: the h1 and its subtitle
+  beside a hairline-split panel holding the chip ("12 .org files parsed · 67 KB → HTML", from the
+  manifest, absent when there is no corpus) and the galaxy. On a phone the panel leads, with no
+  rule between it and the title; the hero's top hairline is the line under the nav.
+- =src/composables/ascii-galaxy-frame.js=, =use-ascii-galaxy.js=,
+  =src/views/components/blog/ascii-galaxy.vue= — the animated monochrome ASCII spiral (96 by 42
+  characters, 36 frames, 7.2 s), every frame byte-identical to the design generator's. The frame
+  function is pure, so vite-ssg prerenders frame 0; the client redraws at 5 fps and stops when the
+  tab is hidden, when the galaxy is off-screen and under reduced motion (frame 0 only). Its own
+  async chunk, 1.78 KB gzip.
+- =src/views/components/blog/blog-marquee.vue= — the corpus ticker: last build, articles per
+  locale, KB of Org source, lines, headings, words, minutes of reading, and the engine version
+  when the manifest knows it (the gates figure is never shown: it is not known at build). A
+  screen-reader sentence carries the same facts; reduced motion stops it on one ellipsized copy.
+- =src/views/components/blog/blog-pipeline-band.vue= — the three wordless drawings (parse,
+  integrate, deploy) in SMIL on a 12 px dot grid, transcribed from the generator, and the "Made
+  with org2html" line linking the GitHub repository. Reduced motion pauses them on the one frame
+  where all three scenes are complete; off-screen pauses them too.
+- =--clr-neutral-350= (=oklch(54% 0 0)=) — the galaxy's dim glyphs; decorative only, not a text
+  token.
+- Size entries for the new async chunks (marquee 2 KB, band 4 KB, galaxy 2 KB); both the marquee
+  and the band hydrate on idle, since neither needs JavaScript to show.
+- =tests/e2e/landing-hero.spec.js= (11 checks) and new checks in =layout.spec.js= (28: the
+  marquee and galaxy stay inside their clipping boxes, the chip keeps its inset, at all fourteen
+  widths) and =locale.spec.js= (the toggle swaps the chip and the marquee sentence). Frame 0 and
+  the three drawings ship in the prerendered HTML, the galaxy animates and holds still under
+  reduced motion, the phone order, the made-with link, and the chip's numbers equal the
+  manifest's. All 40 ran red on the previous build first.
+- =src/composables/use-analytics.js= — loads the Umami Cloud tracker once per page load, client
+  side, after mount: =defer=, =data-do-not-track=, =data-exclude-search=, and =data-domains= set to
+  =kyonax.com,www.kyonax.com= so local previews, Playwright runs and any staging host send nothing.
+  Injects nothing when =localStorage['umami.disabled']= is set, when storage throws, or when the
+  website id is empty. Umami follows SPA navigation itself, so there is no router hook.
+- =src/data/data.js= — =ANALYTICS= (provider, host, public website id, domains); the one place the
+  tracker is configured.
+- =src/components/analytics-opt-out.vue= — the privacy page's toggle for =umami.disabled=, rendered
+  only after mount, grey at rest and accented only on hover, focus and pressed. Loaded as its own
+  async chunk (0.72 KB gzip, new 1 KB size-limit entry) so the privacy chunk stays inside 3.5 KB.
+- Umami events by attribute, never by code: =cv-download= (with the CV's locale) on the resume's CV
+  link, =language-toggle= (with the target locale), =youtube-play= (with the video id), =outbound=
+  (with the URL) on every footer profile link, =org2html-github= on every org2html link (footer
+  note, landing project card and modal, project descriptions).
+- =tests/e2e/analytics.spec.js= — 42 checks over ten routes in both locales: no cookie banner, no
+  request to Google even for a visitor who accepted the old banner, exactly one Umami tracker after
+  hydration, none once =umami.disabled= is set, none added by a client-side locale switch, and
+  nothing writing =kyo:consent= or a cookie. Hermetic: the tracker is stubbed and every Umami or
+  Google request is aborted and counted. Ran red on the GA build first, 42 of 42.
+- =src/views/components/blog/blog-share.vue= — the article's share button, at the end of the meta
+  row: the Web Share sheet where the browser has one, otherwise it copies the canonical URL and
+  says "Copied" for 1.4 s. Client-only (renders nothing until mounted), a button so the analytics
+  event never intercepts a navigation, 24 px or more. Its own async chunk (0.92 kB).
+- The tags row under the article title: plain square chips (no accent at rest), each a search of
+  the locale's archive (=?q=<tag>#all-posts=); =blog-search.vue= prefills and runs the query on
+  mount, and the archive's "All posts" section carries the =all-posts= id the chips land on.
+- =src/views/components/blog/blog-support.vue= and =SUPPORT= in =data.js= — "Help me keep writing",
+  one sentence, one new-tab link; renders nothing (and its chunk is never fetched) while
+  =SUPPORT.url= is empty. The vendor is the owner's to name.
+- h-entry on the article (=p-name=, =e-content=, =dt-published=, =p-author h-card=, =p-category=
+  per tag) and =rel="me"= on the footers' GitHub, LinkedIn and X profile links.
+- =scripts/generate-feeds.mjs= — RSS 2.0 per locale (=/blog/feed.xml=, =/es/blog/feed.xml=, the
+  20 newest, dates at 00:00 Colombia time, byte-stable) and =/llms.txt=, written from the synced
+  index on every predev, precheck and build; the archive and article heads advertise the locale's
+  feed, the blog footer links it, and =index.html= links llms.txt.
+- =scripts/check-feeds.mjs= — the eleventh precheck gate: a strict XML parse (jsdom, already a
+  dependency), RSS 2.0 shape, item links equal to the index's newest per locale, absolute https,
+  RFC 822 dates with the right weekday. Proven red on nine kinds of broken copy.
+- =tests/e2e/article.spec.js= (share, tags, support, h-entry), =layout.spec.js= (the tags keep
+  the gutter) and =locale.spec.js= (the share label swaps): 23 new checks, red on the previous
+  build first.
+- =tests/e2e/constructs.spec.js= — the responsive audit of the kitchen-sink reference post
+  (kyo-blog's "Everything org2html Renders" / "Todo lo que org2html renderiza"): eight families
+  (sideways scroll, 12 px construct inset, 24 px controls, code size and line length, chart
+  legibility, inline overflow, diagram touch-action, text-size-adjust) at all fourteen widths in
+  both locales, 226 checks. It ran red first (154 failures, identical per locale) and is green
+  with the fixes below; commit it together with them.
+- Site-side construct fixes, each behind its red audit check, the engine-shaped ones marked
+  UPSTREAM CANDIDATE for the engine once 1.2.0 ships: long inline code, verbatim and links break
+  anywhere (the page scrolled 743 px sideways at 320); the article page is a size container so
+  =.org-wide= and =.org-full-bleed= measure against it (=cqw=, not =vw=): on a phone a wide table,
+  figure or embed sits in the column with its gutter, on a wide screen it still breaks out; the
+  code copy button and the carousel dots are 24 px targets (the dot keeps its 7 px square); code
+  never drops below 13 px and a phone shows 34 characters a line (14 px padding, 12 px line-number
+  gap below =sm=); a code block's focus ring is no longer clipped; a vertical swipe over a
+  diagram scrolls the page (=touch-action: pan-y pinch-zoom=; horizontal drags still pan it);
+  =html= pins =text-size-adjust: 100%=; the table of contents breaks a long heading word.
+- =scripts/defer-async-css.mjs= — on article pages the post and document-shell stylesheets now
+  block rendering instead of loading after first paint, so the book no longer paints its desktop
+  defaults first: article CLS 0.32 to 0.002, Lighthouse performance 0.83 to 0.99, LCP flat. The
+  archive keeps the deferral (blocking the shell there alone pushed its CLS to 0.89).
+- =docs/analytics.md= — why Umami Cloud, what is tracked and where it lives, how to test, and the
+  documented (not built) migration to a self-hosted Umami behind the Cloudflare tunnel.
+- =docs/plans/2026-09-11-blog-overhaul-plan.org= — the plan of record for the blog overhaul
+  (Umami replaces Google Analytics and the cookie banner, the Galaxy blog landing, the article
+  additions, the kitchen-sink reference post and its responsive audit, the engine release), mirrored
+  as the brain PLAN node =blog-overhaul-plan=.
+- =docs/plans/blog-landing-design/= — the validated blog-landing design: a self-contained generator
+  (=blog-landing.design.mjs=, every value is the spec) that rebuilds the two Claude Design artboards,
+  its =canvas.json=, and four Playwright renders at 1440 and 390.
 - =scripts/check-browser-support.mjs= — the cross-browser gate: query drift against the committed
   fixture, caniuse data-rot (183-day limit), a dist CSS feature registry (fails on features above
   the signed floor outside =@supports=), a dist JS builtin registry (Vue 3.5's inert reactive-array
@@ -58,6 +171,24 @@ check proven by reintroducing its bug. Main CSS 11.46 to 11.34 KB gzip, main JS 
 - =src/data/image-dimensions.generated.json= — generated map of intrinsic image dimensions
   (basename to width/height), emitted by =convert-images.mjs= from sharp metadata during
   =predev= / =prebuild=.
+- =src/widgets/share-sheet.vue= (2026-09-12) — the share popup under the nav's new share icon, on
+  every blog page: X, Bluesky, Mastodon (the reader's server, asked once and remembered in
+  =kyo:mastodon-server=), LinkedIn, Hacker News, Reddit, copy link, and the system share sheet
+  where one exists. A non-modal dialog in the language menu's panel, anchored to the button from
+  700 px up and a full-width panel under the bar below it; the URL and title are read from the
+  page's canonical link and h1 when it opens. Its own async chunk, fetched on the first open and
+  warmed on hover and focus, 5.80 kB. Every destination is a =share= event with its =to=.
+- =src/composables/article-enhance.js= — an article's WRAP toggles (beside COPY, only on a block
+  whose longest line does not fit; one choice for the article, persisted in =kyo:code-wrap=) and
+  the equation fit (a display equation wider than its column is set smaller, in steps, down to
+  65% of the book's size). Fetched after the article mounts, 1.24 kB.
+- =src/assets/icons/share.svg= — the share-nodes glyph (Font Awesome Free, CC BY 4.0) in the sprite.
+- =tests/e2e/share.spec.js= (32 checks) and =tests/e2e/viewer.spec.js= (12); new checks in
+  =article.spec.js= (a footnote's words go back and its links stay links, the cover opens, one
+  WRAP press unwraps every block and survives a reload, and, in Firefox too, tag chips on one line
+  and equations that fit) and two new families in =constructs.spec.js=: (i) every display
+  equation fits its column and (j) code wraps on a phone and offers WRAP where it does not fit, at
+  all fourteen widths. 41 of them ran red on the previous build first.
 
 ** Changed
 - =src/data/snippets.js= — EN =meta.description= rewritten for international and US conversion
@@ -83,6 +214,91 @@ check proven by reintroducing its bug. Main CSS 11.46 to 11.34 KB gzip, main JS 
   =build.target= now =browserslistToEsbuild()= replacing the hardcoded =es2020=.
 - =src/views/components/sections/hero-data-feed.vue= — two =.at(i)= reads became =[i]= (indices
   already modulo-normalised), removing the last post-es2020 builtin from our own code.
+- =src/data/snippets-privacy.js= — the policy rewritten in EN and ES for cookieless analytics: what
+  is collected (Umami Cloud, hosted in the United States under Umami's DPA), what is not, storage in
+  the browser (=kyo:lang=, =kyo:yt-consent=, the =umami.disabled= opt-out), embedded videos, rights,
+  contact, and a visible "Last updated" line; =privacy-page.js= gains the matching =dateModified=.
+  The privacy meta description now names cookieless analytics (EN 151, ES 152 characters).
+- =src/components/ui/youtube-facade.vue= — its click-to-play consent no longer updates gtag and
+  lives under its own key, =kyo:yt-consent=.
+- =src/widgets/hud-nav.vue= — the CV link opens with =target="_blank"=: Umami intercepts a
+  same-tab link that carries an event and re-navigates with =location.href=, which drops
+  =download=.
+- Every org2html link points at =github.com/Kyonax/org2html=: the project descriptions' npm links
+  (EN and ES), the project card URL's casing, and the JSON-LD =SoftwareApplication= =url= (npm
+  =sameAs= dropped).
+- =src/views/blog-post.vue= — the table of contents' rules lose the =html[data-toc]= variant
+  prefix. Every declaration still wins: a computed-style diff of the TOC over all twelve articles
+  at four setups (592 snapshots, including forced hover, focus and current states) found zero
+  differences.
+- =eslint.config.mjs= — ignores =docs/plans/**=: plans carry design generators whose output is the
+  validated spec, not shipped code.
+- =src/views/blog.vue= — the masthead becomes the hero, marquee and band; the archive below is
+  unchanged except for the reading time, which stacks under each row's date (inline it doubled
+  the date column and squeezed the title at 390px) and follows the date on each recent card.
+  The index shell drops its top padding so the hero meets the nav. The blog index chunk entry
+  moves from 6 to 7 KB (6.93 kB measured; the hero is about 1.1 KB of it).
+- The archive lead's "Read more" carries the headline as visually hidden text inside the link
+  instead of in an =aria-label=: the accessible name is unchanged, but a crawler judges a link by
+  its text, and "Read more" alone failed Lighthouse's descriptive-link audit (SEO 0.92 on /blog).
+- The article's reading time shows again: the meta row always had the markup, but the post body
+  JSON never carried =readingTime= (only the archive's index rows did), so every article rendered
+  none. kyo-blog's =ci/generate-manifest.mjs= now writes =readingTime= and =wordCount= into each
+  post file; a new =article.spec.js= check ("an article states its reading time") ran red first.
+- =scripts/generate-sitemap.mjs= and =scripts/seo-audit.mjs= — both looped over =manifest.posts=,
+  a key the blog manifest never carried (it has =routes= and =families=), so the sitemap listed
+  no article and the SEO audit never opened one: a gate that could not fail. They read =routes=
+  now, twin the locales through =families=, and take =lastmod= from each route's date; each
+  refuses to finish when an article the manifest routes does not reach it (proven red: "routes
+  12 article(s) but 0 reached the sitemap"). The sitemap goes from 10 URLs to 24 (all fourteen
+  articles, both kitchen-sinks included), and every article page passes the audit.
+- =.size-limit.json= — the blog index entry moves to 7.25 KB (7.02 kB with the tag prefill) and
+  the blog post entry to 6.25 KB (6.01 kB with the tags row, h-entry and the two async mounts);
+  new entries for the share (1.25 KB) and support (1 KB) chunks, both excluded from the index
+  glob.
+- =src/fonts/SpaceMono/SpaceMonoNerdFont-{Regular,Bold}.woff2= — re-cut from =Original/= against
+  =scripts/_latin-corpus.txt=, which they no longer matched: they had been cut from a trimmed TTF
+  and carried 91 of the corpus's glyphs, so =/=, =_=, =|=, brackets, quotes, the em-dash,
+  =·= and the Spanish punctuation fell back to another face wherever SpaceMono was set. Now 117
+  glyphs, the corpus plus =→= and =↗=; every glyph the old files had is identical in outline and
+  advance, verified after decomposition. +1.2 KB per weight.
+- =.github/SECURITY.md=, the CI secret-scan comment, =index.html='s header comment,
+  =docs/styling.md= and =README.org= — name Umami instead of Google Analytics; the cookie banner's
+  styling section is gone from =docs/styling.md=.
+- =src/views/blog-post.vue= (2026-09-12, the owner's refinement round):
+  - the tag chips hold their word on one line. =overflow-wrap: anywhere= let Firefox break
+    words letter by letter inside a roomy inline-flex box (=ci= as c/i, =build= as buil/d, every
+    chip two lines tall); a tag longer than the row now ellipsizes instead, and the =#= is a step
+    dimmer than the word;
+  - a footnote is one target: the hairline square is gone, the arrow is a muted mark hanging in
+    the note's padding, and the back-link's =::after= is stretched over the whole note, links
+    inside it lifted above; the pointer gets the 3% lift;
+  - below =sm= code wraps by default with a hanging indent under the line numbers (the =<code>=
+    becomes a flex column, so =pre-wrap= prints no blank line between block lines);
+  - below =sm= display math starts at 1.1em instead of the book's 1.25em;
+  - the share button left the meta row.
+- =src/composables/use-blog-lightbox.js= — the hero image opens in the viewer like every other
+  picture; only an embed facade's poster stays out, because it is the embed's play target.
+- =src/components/ui/image-viewer.vue=, =src/composables/use-image-zoom.js= — the viewer gains
+  the diagram viewer's toolbar (=−= · the zoom readout · =+= · FIT) in a row under the picture, an
+  8× maximum, 1.35 steps, keys (=+= =-= =0= and arrows), a mouse drag with pointer capture and
+  grab cursors; the dialog now takes focus on open and returns it on close, and a double tap on
+  a zoomed picture zooms back out.
+- =src/widgets/hud-nav.vue= — a share icon on every blog page, the CV button's twin, before the
+  language toggle; =src/widgets/language-toggle.vue= keeps a 24 px floor at the 12 px type tier.
+- =playwright.config.js= — a =firefox= project that runs only the =@firefox= tests;
+  =.github/workflows/ci.yml= installs Firefox beside Chromium.
+- =.size-limit.json= — the blog post budget 6.25 → 6.75 KB (6.72 measured) and the image viewer
+  3.5 → 5.25 KB (4.89 measured); the blog-share entry and exclusion are gone.
+
+** Removed
+- =src/components/cookie-consent.vue= and Google Analytics with it (GA4 =G-6M3P3M2HG5=, Consent
+  Mode v2, the =googletagmanager.com= loader, =kyo:consent=), and its five =landing.consent.*= keys
+  in both locales. Umami sets no cookies, so there is no banner to show.
+- =src/widgets/toc-lab.vue=, the =?toc-lab= switcher in =blog-post.vue=, its size-limit entry and
+  its e2e comparison test. Designs B (track) and C (panel) are gone.
+- =src/views/components/blog/blog-share.vue= (the meta row's SHARE button), its size entry and
+  its two article.spec checks — sharing moved to the nav's share sheet.
 
 ** Decided
 - HSTS kept apex-only (no =includeSubDomains= / =preload=) so future Hostinger subdomains are
@@ -102,6 +318,39 @@ check proven by reintroducing its bug. Main CSS 11.46 to 11.34 KB gzip, main JS 
   One native Vite config key, no new pipeline stage.
 - *No Babel, no core-js:* no target in the signed floor needs them; the esbuild target change is
   byte-noise in both directions (es2022 saves 104 B, es2017 would cost 1,437 B).
+- *Umami Cloud Hobby over Google Analytics:* cookieless, so the consent banner goes entirely; the
+  website id is a public identifier (like the GA measurement id was) and lives in =data.js=, not an
+  env var. A self-hosted Umami is documented in =docs/analytics.md= and not built.
+- *The opt-out fails closed:* when =localStorage= is unavailable the tracker is not loaded.
+- *Table of contents:* design A, the ledger, is the only one; B and C were deleted in one change.
+- *The landing's numbers are real or absent:* the chip and the marquee read the manifest's
+  =corpus= block, recounted by kyo-blog's =generate-manifest.mjs= on every build (the engine
+  version from the binary that actually built the posts, passed as =--engine-version=); with no
+  block they render nothing. The gates figure from the design is left out: it is not knowable at
+  build time and is never faked.
+- *Split, then raise:* the band and the marquee became their own chunks before any budget moved;
+  only the hero, which carries the page's h1, stays in the index chunk.
+- *Share lives in the nav (2026-09-12):* the owner's ask was the resume's download pattern — an
+  icon in the bar — on every blog page, the archive included, since the ask was to share the
+  blog. Six networks chosen for a technical blog (X, Bluesky, Mastodon, LinkedIn, Hacker News,
+  Reddit) plus copy and, where it exists, the system sheet. Mastodon asks for the reader's server
+  and remembers it: there is no universal intent, and no third-party share service is used.
+- *A footnote is one target:* the whole note returns to its reference; the arrow is a mark. What
+  it costs is selecting a note's text with a mouse drag, accepted for a list whose job is the way
+  back. Links inside a note are lifted above the target and stay links.
+- *A phone's code wraps by default:* below =sm= long lines wrap, in CSS so nothing shifts at
+  hydration; the WRAP toggle turns it off (or on, on a desktop) for the whole article and the
+  choice persists. Horizontal scrolling on a phone has no visible bar, which is why the owner
+  found no way to read the blocks.
+- *An equation is fitted, not scrolled:* the book's frame already scrolled, but with no bar on a
+  phone it read as cut off. Fitted down to 65% of the book's size; past that it scrolls again.
+- *The viewer's toolbar sits under the picture, not over it:* over it, a corner box hid the
+  chart's labels at 100% on a phone, where nothing can be panned into view.
+- *Firefox runs what only Firefox broke:* two of the owner's reports never reproduced in
+  Chromium, so their tests are tagged =@firefox= and a Firefox project runs exactly those.
+- *Measured, then raised:* moving the WRAP toggle's CSS into its lazy chunk saved the article
+  chunk 0.10 kB and cost the lazy one 0.31 kB plus a request, so it stayed and the article budget
+  moved to 6.75 KB (6.72 measured); the viewer's to 5.25 KB (4.89 measured, the toolbar).
 
 * [v2.1.0] — 2026-06-04 :: Hire-intent SEO, testimonials carousel, WCAG fixes, section copy
 

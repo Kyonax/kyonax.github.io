@@ -60,6 +60,7 @@ $colors: (
     100: oklch(98.5% 0     0),        /* accent foreground — headings / emphasis (AAA on neutral-500) */
     200: oklch(78%   0.014 286.375),  /* secondary text (subtle cool cast) — bumped 2026-05-20 from L=70.5% so it stays visually distinct from the now-bumped 300 (~6.0:1 AA pass) */
     300: oklch(70%   0.016 285.938),  /* muted text — bumped 2026-05-20 from L=55.2% (Tailwind zinc-500) which failed WCAG AA (~3.2:1). New value ~4.9:1 on neutral-500; the OKLCH PR inherited the zinc-500 reference without contrast-verification, and Lighthouse flagged it on .skills__item-name / .skills__category-count */
+    350: oklch(54%   0     0),        /* the blog galaxy's dim glyphs — decorative, aria-hidden ASCII art only (NOT a text token: ~3:1 on neutral-500 fails AA for text). Added 2026-09-11 with the validated blog landing design. */
     400: oklch(37%   0.013 285.805),  /* zinc-700 — dark surfaces / card backgrounds (NOT a text token) */
     500: oklch(14.5% 0     0),        /* page background */
     900: oklch(0%    0     0),        /* pure black — modal / image-viewer overlays */

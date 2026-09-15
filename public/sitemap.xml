@@ -3,7 +3,7 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>https://kyonax.com/</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/"/>
@@ -12,7 +12,7 @@
     </url>
     <url>
         <loc>https://kyonax.com/es</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/"/>
@@ -21,7 +21,7 @@
     </url>
     <url>
         <loc>https://kyonax.com/resume</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/resume"/>
@@ -30,7 +30,7 @@
     </url>
     <url>
         <loc>https://kyonax.com/es/hoja-de-vida</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/resume"/>
@@ -39,19 +39,19 @@
     </url>
     <url>
         <loc>https://kyonax.com/cv/Cristian-Moreno-Senior-Software-Engineer-EN.pdf</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://kyonax.com/cv/Cristian-Moreno-Senior-Software-Engineer-ES.pdf</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
         <loc>https://kyonax.com/privacy</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/privacy"/>
@@ -60,7 +60,7 @@
     </url>
     <url>
         <loc>https://kyonax.com/es/privacy</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/privacy"/>
@@ -69,7 +69,7 @@
     </url>
     <url>
         <loc>https://kyonax.com/blog</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog"/>
@@ -78,11 +78,137 @@
     </url>
     <url>
         <loc>https://kyonax.com/es/blog</loc>
-        <lastmod>2026-09-11</lastmod>
+        <lastmod>2026-09-15</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog"/>
         <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/blog/engineering/2026-06-05-a-style-book-not-a-framework</loc>
+        <lastmod>2026-06-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-06-05-a-style-book-not-a-framework"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-05-un-libro-de-estilos-no-un-framework"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-06-05-a-style-book-not-a-framework"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/blog/engineering/2026-06-05-un-libro-de-estilos-no-un-framework</loc>
+        <lastmod>2026-06-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-06-05-a-style-book-not-a-framework"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-05-un-libro-de-estilos-no-un-framework"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-06-05-a-style-book-not-a-framework"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/blog/engineering/2026-07-17-mathematics-at-build-time</loc>
+        <lastmod>2026-07-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-07-17-mathematics-at-build-time"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-07-17-matematicas-en-tiempo-de-compilacion"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-07-17-mathematics-at-build-time"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/blog/engineering/2026-07-17-matematicas-en-tiempo-de-compilacion</loc>
+        <lastmod>2026-07-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-07-17-mathematics-at-build-time"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-07-17-matematicas-en-tiempo-de-compilacion"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-07-17-mathematics-at-build-time"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/blog/engineering/2026-08-13-everything-org2html-renders</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-08-13-everything-org2html-renders"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-08-13-todo-lo-que-org2html-renderiza"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-08-13-everything-org2html-renders"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/blog/engineering/2026-05-15-from-org-to-ast</loc>
+        <lastmod>2026-05-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-05-15-from-org-to-ast"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-05-15-de-org-al-ast"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-05-15-from-org-to-ast"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/blog/engineering/2026-05-15-de-org-al-ast</loc>
+        <lastmod>2026-05-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-05-15-from-org-to-ast"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-05-15-de-org-al-ast"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-05-15-from-org-to-ast"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/blog/engineering/2026-06-26-embeds-that-respect-the-reader</loc>
+        <lastmod>2026-06-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-06-26-embeds-that-respect-the-reader"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-26-incrustaciones-que-respetan-al-lector"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-06-26-embeds-that-respect-the-reader"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/blog/engineering/2026-06-26-incrustaciones-que-respetan-al-lector</loc>
+        <lastmod>2026-06-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-06-26-embeds-that-respect-the-reader"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-26-incrustaciones-que-respetan-al-lector"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-06-26-embeds-that-respect-the-reader"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/blog/engineering/2026-08-14-shipping-a-static-site-that-stays-fast</loc>
+        <lastmod>2026-08-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-08-14-shipping-a-static-site-that-stays-fast"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-08-14-publicar-un-sitio-estatico-que-siga-rapido"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-08-14-shipping-a-static-site-that-stays-fast"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/blog/engineering/2026-08-14-publicar-un-sitio-estatico-que-siga-rapido</loc>
+        <lastmod>2026-08-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-08-14-shipping-a-static-site-that-stays-fast"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-08-14-publicar-un-sitio-estatico-que-siga-rapido"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-08-14-shipping-a-static-site-that-stays-fast"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/blog/engineering/2026-08-13-todo-lo-que-org2html-renderiza</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-08-13-everything-org2html-renders"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-08-13-todo-lo-que-org2html-renderiza"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-08-13-everything-org2html-renders"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/blog/engineering/2026-05-01-why-org-mode-beats-markdown</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-05-01-why-org-mode-beats-markdown"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-05-01-por-que-org-mode-le-gana-a-markdown"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-05-01-why-org-mode-beats-markdown"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/blog/engineering/2026-05-01-por-que-org-mode-le-gana-a-markdown</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-05-01-why-org-mode-beats-markdown"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-05-01-por-que-org-mode-le-gana-a-markdown"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-05-01-why-org-mode-beats-markdown"/>
     </url>
 </urlset>

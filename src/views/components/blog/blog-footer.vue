@@ -55,14 +55,24 @@ const blog_href = computed(() => BLOG_INDEX_URLS[locale.value] || BLOG_INDEX_URL
  * the footer cannot drift from the router — `/es/hoja-de-vida` in particular is
  * a localised slug nobody should be retyping.
  *
- * Every label already exists in the catalogue as a breadcrumb, so naming these
- * four costs no new eager bytes.
+ * The first four labels already exist in the catalogue as breadcrumbs, so
+ * naming them costs no new eager bytes; RSS is the one new word.
+ *
+ * THE FEED SITS BESIDE THE ARCHIVE it syndicates: scripts/generate-feeds.mjs
+ * writes <archive>/feed.xml per locale, so its map is the archive's plus a
+ * file name. It is a same-tab internal link like the rest of this column, so
+ * it carries no analytics event.
  */
+const FEED_URLS = Object.fromEntries(
+  Object.entries(BLOG_INDEX_URLS).map(([l, url]) => [l, `${url}/feed.xml`]),
+);
+
 const PAGES = [
   { id: 'home',    map: ROUTE_BY_LOCALE,           key: 'kyo-web.breadcrumb.home' },
   { id: 'blog',    map: null,                      key: 'kyo-web.blog.breadcrumb' },
   { id: 'resume',  map: RESUME_ROUTE_BY_LOCALE,    key: 'kyo-web.resume.breadcrumb' },
   { id: 'privacy', map: PRIVACY_ROUTE_BY_LOCALE,   key: 'kyo-web.privacy.breadcrumb' },
+  { id: 'rss',     map: FEED_URLS,                 key: 'kyo-web.blog.rss' },
 ];
 
 const page_links = computed(() => PAGES.map((p) => ({
@@ -139,14 +149,22 @@ const SOCIALS = [
 
       <!-- PROFILES, not SOCIAL and no longer ELSEWHERE: these are this
            person's accounts on other platforms, which is true of a code host
-           and a professional network alike. -->
+           and a professional network alike. `me` says exactly that to a
+           machine: the rel=me identity link, which a profile that links back
+           here can use to verify the site (IndieAuth, Mastodon). -->
       <nav class="blog-footer__col" :aria-label="t('kyo-web.landing.footer.col-profiles')">
         <h2 class="blog-footer__col-title">
           {{ t('kyo-web.landing.footer.col-profiles') }}
         </h2>
         <ul role="list">
           <li v-for="s in SOCIALS" :key="s.id">
-            <a :href="s.url" target="_blank" rel="noopener noreferrer">{{ s.label }}</a>
+            <a
+              :href="s.url"
+              target="_blank"
+              rel="me noopener noreferrer"
+              data-umami-event="outbound"
+              :data-umami-event-url="s.url"
+            >{{ s.label }}</a>
           </li>
         </ul>
       </nav>

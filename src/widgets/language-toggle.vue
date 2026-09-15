@@ -131,6 +131,9 @@ const setItemRef = (el, idx) => {
         :key="code"
         role="none"
       >
+        <!-- Only the OTHER language is an Umami event: picking the one you
+             are already in changes nothing (setLanguage does not push), so it
+             is not a toggle and is not counted as one. -->
         <button
           :id="`language-option-${code}`"
           :ref="(el) => setItemRef(el, idx)"
@@ -140,6 +143,8 @@ const setItemRef = (el, idx) => {
           :tabindex="open ? 0 : -1"
           class="language-toggle__item"
           :class="{ 'is-active': locale === code }"
+          :data-umami-event="locale === code ? undefined : 'language-toggle'"
+          :data-umami-event-to="code"
           @click="select(code)"
           @keydown="onItemKeydown($event, idx)"
         >
@@ -167,8 +172,10 @@ const setItemRef = (el, idx) => {
     padding-left: 0.7rem;
     padding-right: 0.7rem;
     white-space: nowrap;
+    /* WCAG 2.5.8's 24px floor at every width: the 12px type tier between
+       `md` and `lg` left the button 23.6px tall. */
+    min-height: 24px;
 
-    
     /* The phone tap target, for as long as the nav is in its phone mode —
        which ends at the `nav` fold, not at `md`. */
     @include max-media-query(nav) {

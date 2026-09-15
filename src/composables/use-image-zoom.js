@@ -3,32 +3,50 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
-const MAX_SCALE     = 4;
+/* Eight, not four: a chart is a vector drawing, and the reader who opens one is
+   reading its smallest labels, not glancing at it. The CSS scale stays sharp
+   at eight because the chart is still an SVG (measured: see RASTER in
+   chart-picture.js). A photograph is only as sharp as the file it came in. */
+const MAX_SCALE     = 8;
+const STEP          = 1.35;  // "+", "-" and the keys: the diagram viewer's
 const ZOOM_STEP     = 2;     // double-tap / double-click target scale
+const PAN_KEY       = 0.12;  // an arrow key moves the frame 12% of its size
+const PERCENT       = 100;
 const DOUBLE_TAP_MS = 300;
 const DOUBLE_TAP_PX = 30;
+const TAP_SLOP_PX   = 10;    // a finger that drifts less than this still taps
 const WHEEL_FACTOR  = 1.15;
+/* A wheel's pixels to a zoom factor. A mouse notch (~100px) saturates at
+   WHEEL_FACTOR, exactly as before; a trackpad sends dozens of 2-10px events
+   a second, and taking each as a full notch flung the picture to the limit. */
+const WHEEL_RATE    = 0.0025;
+const LINE_PX       = 16;    // deltaMode 1 — Firefox's mouse wheel, in lines
+const PAGE_PX       = 400;   // deltaMode 2
 /* How long after a finger lifts a `dblclick` is taken to be the browser's echo
    of that touch rather than a mouse. Comfortably longer than DOUBLE_TAP_MS. */
 const TOUCH_ECHO_MS = 700;
 
 /*
- * Pinch-zoom, double-tap (and double-click) zoom, and drag-to-pan for a single
- * image inside a lightbox. The gesture surface owns ALL of its touch input
- * (the container carries `touch-action: none`), so the browser's native page
- * pinch-zoom is never triggered here — it stays fully available everywhere
- * else on the page (WCAG 1.4.4 is untouched).
+ * Pinch-zoom, double-tap (and double-click) zoom, wheel zoom, drag-to-pan, the
+ * toolbar's steps and the keyboard, for a single image inside a lightbox. The
+ * gesture surface owns ALL of its touch input (the viewer around it carries
+ * `touch-action: none`), so the browser's native page pinch-zoom is never
+ * triggered here — it stays fully available everywhere else on the page (WCAG
+ * 1.4.4 is untouched).
  *
- * `containerRef` is the stable wrapper; the transformed element is resolved by
- * `selector` on each gesture start, so swapping the lightbox source is safe.
- * Transform is written imperatively (not through a reactive ref) because
- * pinch/pan fire at pointer frequency — a ref would thrash Vue's scheduler
- * (same rationale as use-proximity-hover's CSS-var writes).
+ * `containerRef` is the frame that clips the picture; the transformed element
+ * is resolved by `selector` on each gesture start, so swapping the lightbox
+ * source is safe. Transform is written imperatively (not through a reactive
+ * ref) because pinch/pan fire at pointer frequency — a ref would thrash Vue's
+ * scheduler (same rationale as use-proximity-hover's CSS-var writes). The two
+ * reactive values, `isZoomed` and `percent`, change only when the zoom does,
+ * so a pan never reaches Vue at all.
  */
 export default function useImageZoom(containerRef, selector) {
   const is_zoomed = ref(false);
+  const percent = ref(PERCENT);
 
   let scale = 1;
   let tx = 0;
@@ -57,6 +75,7 @@ export default function useImageZoom(containerRef, selector) {
   let last_tap_x = 0;
   let last_tap_y = 0;
   let moved = false;
+  let one_finger = false; // this touch began as the only finger down
   let last_touch_end = 0; // when a finger last lifted — see on_dblclick
 
   let mode = 'idle';      // 'idle' | 'pinch' | 'pan'
@@ -71,15 +90,19 @@ export default function useImageZoom(containerRef, selector) {
     return root ? root.querySelector(selector) : null;
   }
 
-  /* Recover the element's untransformed geometry from its live rect. With
-     transform-origin 0 0: rect.topLeft = origin + translate, and
-     rect.size = base * scale — so both invert cleanly at any transform. */
-  function _measure(target) {
-    const r = target.getBoundingClientRect();
-    origin_x = r.left - tx;
-    origin_y = r.top - ty;
-    base_w = r.width / scale;
-    base_h = r.height / scale;
+  /*
+   * THE FRAME IS MEASURED, NOT THE PICTURE. The frame shrink-wraps the picture
+   * and never transforms, so its rect IS the picture's untransformed box at any
+   * zoom. Reading the picture's own rect and inverting the transform works
+   * only at rest: a "+" pressed while the last one's eased zoom is still in
+   * flight would read a half-finished transform, and the picture would jump.
+   */
+  function _measure() {
+    const r = containerRef.value.getBoundingClientRect();
+    origin_x = r.left;
+    origin_y = r.top;
+    base_w = r.width;
+    base_h = r.height;
   }
 
   /* Keep the scaled image covering its own box (no empty gutters). At scale 1
@@ -89,6 +112,22 @@ export default function useImageZoom(containerRef, selector) {
     ty = Math.min(0, Math.max(base_h * (1 - scale), ty));
   }
 
+  /* The cursor says what a press will do: at 100% a double click zooms, past
+     it the picture can be taken hold of, and during a drag it is held. */
+  function _cursor() {
+    const root = containerRef.value;
+    if (!root) {
+      return;
+    }
+    if (dragging) {
+      root.style.cursor = 'grabbing';
+    } else {
+      root.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
+    }
+  }
+
+  /* Every zoom path — buttons, wheel, pinch, double tap, keys — ends here, so
+     the readout can never disagree with the picture. */
   function _apply(animate) {
     if (!el) {
       return;
@@ -96,20 +135,25 @@ export default function useImageZoom(containerRef, selector) {
     el.style.transformOrigin = '0 0';
     el.style.transition = (animate && !_reduced()) ? 'transform 0.25s ease' : 'none';
     el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
-    el.style.cursor = scale > 1 ? 'grab' : '';
+    _cursor();
     is_zoomed.value = scale > 1;
+    percent.value = Math.round(scale * PERCENT);
   }
 
   /* Zoom to `target_scale` while keeping the content point under (sx, sy)
-     anchored to that same screen position. */
+     anchored to that same screen position. A step back down that lands a
+     hair above 1 (1.35 in, 1.35 out) is 1. */
   function _zoom_to(target_scale, sx, sy, animate) {
     if (!el) {
       return;
     }
-    _measure(el);
+    _measure();
     const cx = (sx - origin_x - tx) / scale;
     const cy = (sy - origin_y - ty) / scale;
     scale = Math.min(MAX_SCALE, Math.max(1, target_scale));
+    if (scale < 1 + 1 / PERCENT / 2) {
+      scale = 1;
+    }
     tx = sx - origin_x - scale * cx;
     ty = sy - origin_y - scale * cy;
     _clamp();
@@ -120,8 +164,66 @@ export default function useImageZoom(containerRef, selector) {
     scale = 1;
     tx = 0;
     ty = 0;
-    el = el || _target();
+    el = _target() || el;
     _apply(animate);
+  }
+
+  /* ---------- toolbar and keyboard ---------- */
+
+  /* No pointer to anchor on, so the middle of the frame stays put. */
+  function _zoom_centre(factor) {
+    el = _target();
+    if (!el) {
+      return;
+    }
+    _measure();
+    const mid_x = origin_x + base_w / 2;
+    const mid_y = origin_y + base_h / 2;
+    _zoom_to(scale * factor, mid_x, mid_y, true);
+  }
+
+  const zoomIn = () => _zoom_centre(STEP);
+  const zoomOut = () => _zoom_centre(1 / STEP);
+  const fit = () => reset(true);
+
+  /* Which way the PICTURE moves, so the view moves the way the arrow points. */
+  const PAN_KEYS = new Map([
+    ['ArrowLeft', [1, 0]],
+    ['ArrowRight', [-1, 0]],
+    ['ArrowUp', [0, 1]],
+    ['ArrowDown', [0, -1]],
+  ]);
+
+  /*
+   * The diagram viewer's keys: + and = in, - and _ out, 0 back to fit, the
+   * arrows pan once zoomed. A chord with ctrl, cmd or alt is the browser's
+   * (ctrl + is page zoom) and is left alone. Returns whether the key was
+   * spent, so an unused one keeps its default.
+   */
+  function onKeydown(event) {
+    if (event.ctrlKey || event.metaKey || event.altKey || !_target()) {
+      return false;
+    }
+    const { key } = event;
+    const pan = PAN_KEYS.get(key);
+    if (key === '+' || key === '=') {
+      zoomIn();
+    } else if (key === '-' || key === '_') {
+      zoomOut();
+    } else if (key === '0') {
+      fit();
+    } else if (pan && scale > 1) {
+      el = _target();
+      _measure();
+      tx += pan[0] * base_w * PAN_KEY;
+      ty += pan[1] * base_h * PAN_KEY;
+      _clamp();
+      _apply(true);
+    } else {
+      return false;
+    }
+    event.preventDefault();
+    return true;
   }
 
   /* ---------- touch ---------- */
@@ -144,10 +246,11 @@ export default function useImageZoom(containerRef, selector) {
       return;
     }
     moved = false;
+    one_finger = event.touches.length === 1;
     if (event.touches.length === 2) {
       event.preventDefault();
       mode = 'pinch';
-      _measure(el);
+      _measure();
       start_dist = _dist(event.touches) || 1;
       start_scale = scale;
       const m = _mid(event.touches);
@@ -155,6 +258,7 @@ export default function useImageZoom(containerRef, selector) {
       pivot_y = (m.y - origin_y - ty) / scale;
     } else if (event.touches.length === 1 && scale > 1) {
       mode = 'pan';
+      _measure();
       pan_x = event.touches[0].clientX;
       pan_y = event.touches[0].clientY;
       pan_tx = tx;
@@ -176,9 +280,11 @@ export default function useImageZoom(containerRef, selector) {
       _apply(false);
     } else if (mode === 'pan' && event.touches.length === 1) {
       event.preventDefault();
-      moved = true;
-      tx = pan_tx + (event.touches[0].clientX - pan_x);
-      ty = pan_ty + (event.touches[0].clientY - pan_y);
+      const dx = event.touches[0].clientX - pan_x;
+      const dy = event.touches[0].clientY - pan_y;
+      moved = moved || Math.hypot(dx, dy) > TAP_SLOP_PX;
+      tx = pan_tx + dx;
+      ty = pan_ty + dy;
       _clamp();
       _apply(false);
     }
@@ -186,8 +292,15 @@ export default function useImageZoom(containerRef, selector) {
 
   function on_touch_end(event) {
     last_touch_end = Date.now();
-    /* Clean, non-moving single tap → double-tap detection. */
-    if (!moved && mode === 'idle' && event.changedTouches.length === 1) {
+    /*
+     * A clean single tap → double-tap detection. On a zoomed picture every
+     * finger starts a pan — that is how one finger takes hold — and the check
+     * used to demand an idle gesture, so a double tap could zoom in but never
+     * back out, and the dblclick that would have (below) is the touch echo it
+     * ignores. A pan that never travelled past TAP_SLOP_PX is a tap.
+     */
+    if (!moved && one_finger && mode !== 'pinch'
+        && event.touches.length === 0 && event.changedTouches.length === 1) {
       const t = event.changedTouches[0];
       const now = Date.now();
       if (now - last_tap < DOUBLE_TAP_MS
@@ -257,26 +370,46 @@ export default function useImageZoom(containerRef, selector) {
       return;
     }
     event.preventDefault();
-    const factor = event.deltaY < 0 ? WHEEL_FACTOR : 1 / WHEEL_FACTOR;
-    _zoom_to(scale * factor, event.clientX, event.clientY, false);
+    let px = event.deltaY;
+    if (event.deltaMode === 1) {
+      px *= LINE_PX;
+    } else if (event.deltaMode === 2) {
+      px *= PAGE_PX;
+    }
+    const factor = Math.exp(-px * WHEEL_RATE);
+    const step = Math.min(WHEEL_FACTOR, Math.max(1 / WHEEL_FACTOR, factor));
+    _zoom_to(scale * step, event.clientX, event.clientY, false);
   }
 
-  function on_mousedown(event) {
-    if (scale <= 1) {
+  /*
+   * THE MOUSE DRAGS THROUGH POINTER EVENTS, captured. Capture keeps the drag —
+   * and its grabbing cursor — alive when the pointer leaves the frame, which
+   * the old window-level mousemove could move but could not dress. Touch
+   * pointers are ignored here: the touch path above owns them, and its
+   * double-tap guard is built on touch events.
+   */
+  function on_pointer_down(event) {
+    if (event.pointerType !== 'mouse' || event.button !== 0 || scale <= 1) {
       return;
     }
     el = _target();
     if (!el) {
       return;
     }
+    _measure();
     dragging = true;
     pan_x = event.clientX;
     pan_y = event.clientY;
     pan_tx = tx;
     pan_ty = ty;
-    el.style.cursor = 'grabbing';
+    try {
+      containerRef.value.setPointerCapture(event.pointerId);
+    } catch {
+      /* drag without it: it only stops at the frame's edge */
+    }
+    _cursor();
   }
-  function on_mousemove(event) {
+  function on_pointer_move(event) {
     if (!dragging) {
       return;
     }
@@ -285,44 +418,53 @@ export default function useImageZoom(containerRef, selector) {
     _clamp();
     _apply(false);
   }
-  function on_mouseup() {
+  function on_pointer_up() {
     if (!dragging) {
       return;
     }
     dragging = false;
-    if (el) {
-      el.style.cursor = scale > 1 ? 'grab' : '';
-    }
+    _cursor();
   }
 
-  onMounted(() => {
-    const root = containerRef.value;
-    if (!root) {
-      return;
-    }
-    root.addEventListener('touchstart', on_touch_start, { passive: false });
-    root.addEventListener('touchmove', on_touch_move, { passive: false });
-    root.addEventListener('touchend', on_touch_end, { passive: true });
-    root.addEventListener('dblclick', on_dblclick);
-    root.addEventListener('wheel', on_wheel, { passive: false });
-    root.addEventListener('mousedown', on_mousedown);
-    window.addEventListener('mousemove', on_mousemove, { passive: true });
-    window.addEventListener('mouseup', on_mouseup, { passive: true });
-  });
+  /* An <img> is natively draggable: the first drag of a zoomed picture lifted
+     a ghost copy of it off the page instead of moving it. */
+  function on_drag_start(event) {
+    event.preventDefault();
+  }
 
-  onBeforeUnmount(() => {
-    const root = containerRef.value;
-    if (root) {
-      root.removeEventListener('touchstart', on_touch_start);
-      root.removeEventListener('touchmove', on_touch_move);
-      root.removeEventListener('touchend', on_touch_end);
-      root.removeEventListener('dblclick', on_dblclick);
-      root.removeEventListener('wheel', on_wheel);
-      root.removeEventListener('mousedown', on_mousedown);
-    }
-    window.removeEventListener('mousemove', on_mousemove);
-    window.removeEventListener('mouseup', on_mouseup);
-  });
+  const LISTENERS = [
+    ['touchstart', on_touch_start, { passive: false }],
+    ['touchmove', on_touch_move, { passive: false }],
+    ['touchend', on_touch_end, { passive: true }],
+    ['dblclick', on_dblclick],
+    ['wheel', on_wheel, { passive: false }],
+    ['pointerdown', on_pointer_down],
+    ['pointermove', on_pointer_move, { passive: true }],
+    ['pointerup', on_pointer_up],
+    ['pointercancel', on_pointer_up],
+    ['dragstart', on_drag_start],
+  ];
 
-  return { isZoomed: is_zoomed, reset };
+  /* Bound to whichever frame the ref holds: the viewer renders none for a
+     YouTube embed, whose iframe handles its own input. Nothing is bound to
+     `window`, so an unmounted viewer leaves nothing behind. */
+  watch(containerRef, (root, previous) => {
+    for (const [type, handler, options] of LISTENERS) {
+      previous?.removeEventListener(type, handler, options);
+      root?.addEventListener(type, handler, options);
+    }
+    _cursor();
+  }, { flush: 'post' });
+
+  return {
+    isZoomed: is_zoomed,
+    percent,
+    canZoomIn: computed(() => percent.value < MAX_SCALE * PERCENT),
+    canZoomOut: computed(() => percent.value > PERCENT),
+    zoomIn,
+    zoomOut,
+    fit,
+    reset,
+    onKeydown,
+  };
 }
