@@ -239,12 +239,14 @@ export const buildBlogJsonLd = ({ locale = 'en', post = null, page = null } = {}
         authorNode(locale),
         blogNode(postLocale),
         posting,
-        /* The parent crumb is the blog, named as the archive's <h1> is. */
+        /* The parent crumb is named as the visible trail names it ("Blog"),
+           the owner's review of 2026-09-15; the Blog node keeps the full
+           name. */
         buildBreadcrumbJsonLd({
           id: crumbId,
           locale,
           currentName: post.title,
-          parent: { key: 'blog.title', url: indexUrl(locale) },
+          parent: { key: 'blog.breadcrumb', url: indexUrl(locale) },
         }),
       ],
     };
