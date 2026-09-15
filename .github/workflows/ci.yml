@@ -128,7 +128,9 @@ jobs:
           path: dist/
       # Playwright ships its own browser rather than hoping for a system one;
       # no other job here installs a browser, so this step is not optional.
-      - run: npx playwright install --with-deps chromium
+      # Firefox runs only the `@firefox` tests (playwright.config.js): the
+      # defects that never reproduced in Chromium.
+      - run: npx playwright install --with-deps chromium firefox
       - run: npm run test:e2e
       - name: Upload failure traces
         if: failure()
@@ -266,10 +268,10 @@ jobs:
 
           echo ""
           echo "=== Scanning for hardcoded tokens/secrets ==="
-          # GA4 measurement IDs (G-XXXX) are public identifiers, not
-          # secrets; do not match them. The 'gtag' config call site is
-          # excluded by virtue of the regex requiring a quoted value
-          # right after the colon/equals.
+          # The Umami website id (a UUID, in src/data/data.js) is a
+          # public identifier, not a secret; do not match it. The regex
+          # does not: it needs one of the keywords below right before
+          # the colon/equals, and `websiteId:` carries none of them.
           HITS=$(grep -rn --include='*.js' --include='*.mjs' --include='*.vue' \
                --exclude-dir='node_modules' --exclude-dir='dist' --exclude-dir='.cache' \
                -iE '(token|secret|api_key|password|apikey|api_secret)\s*[=:]\s*["\x27`]' . || true)
