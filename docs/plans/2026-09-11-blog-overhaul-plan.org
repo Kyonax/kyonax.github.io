@@ -1,0 +1,371 @@
+#+TITLE: Plan Blog Overhaul — Umami, the Galaxy Landing, Article Additions and the Kitchen-Sink Audit
+#+SUBTITLE: One session, six lanes, every gate green, the owner commits
+#+AUTHOR: Cristian D. Moreno (Kyonax)
+#+DATE: 2026-09-11
+#+STATUS: active
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+This is the plan of record for the blog overhaul decided on 2026-09-11 with the owner, written to be RUN BY ANOTHER SESSION in one shot. The brain holds the same plan as a PLAN node (id =a1b28ad7-6d06-422e-b457-0c37fb74ca05=, key =blog-overhaul-plan=, linked from the session node =Session Org-2-Html=, id =15edb81b-e422-4f55-8945-edb3f1936e4c=); this file is the repo copy. Where the two disagree, the brain node is current.
+
+THE DESIGN IS VALIDATED AND LIVES IN THREE PLACES: the Claude Design canvas https://claude.ai/code/artifact/3b4c2df0-4c85-4d4b-b5a5-0b90ba1c64ca (Version 5, two artboards: desktop 1440 and phone 390); the generator =docs/plans/blog-landing-design/blog-landing.design.mjs= (every value is the spec — run it from the repo root to regenerate the artboards); and the four renders beside it (=desktop-1440-hero.png=, =desktop-1440-drawings.png=, =phone-390-hero.png=, =phone-390-full.png=). Build what the renders show. Do not re-open the design.
+
+* STATE
+
+Decided 2026-09-11, all by the owner:
+
+- Table of contents: *A LEDGER* stays; B Track and C Panel are deleted (Lane 1).
+- Analytics: Google Analytics goes; *Umami Cloud Hobby* comes (free: 100K events/month, one website, six-month retention). The cookie banner is REMOVED entirely — Umami sets no cookies. A future migration to a self-hosted Umami on the VPS is DOCUMENTED, not built (Lane 2).
+- Blog landing: the *Galaxy* hero — an animated monochrome ASCII spiral, a chip stating what was parsed, a marquee of the project's own numbers, three wordless drawings (parse → integrate → deploy) in a hairline band, a "Made with org2html" line linking GitHub, phone order animation → title → marquee → drawings. The archive below the drawings is unchanged and validated (Lane 3).
+- Article additions: reading time on the archive rows and cards, a share button, a tags row, a support block (vendor still to be named by the owner; the component reads one config object), RSS per locale, llms.txt, h-entry microformats and rel=me, Umami events. *No newsletter. No licence line. No live-visitors widget. Comments stay parked* (Lane 4).
+- Kitchen-sink article: a *public reference post* in EN and ES exercising every construct org2html parses, then a responsive audit against it at the fourteen widths, then the fixes — site-side now, engine-side after v1.2.0 ships (Lane 5).
+- Every org2html link on the site points at *github.com/Kyonax/org2html*, never npm.
+- The engine release (the five red version literals, PR #15, npm 1.2.0) is the OWNER's lane; the plan carries it as gated steps (Lane 6).
+- The owner runs every git operation. The session writes code, docs and this plan's log; it never commits.
+
+* SCOPE
+
+IN: kyo-web-online (site), kyo-blog (content + manifest + CI), org-2-html (engine — Lane 5.4 upstream candidates only, and Lane 6's owner steps). OUT: the resume, the privacy page's layout (its copy changes), the home landing, comments, newsletter, licence, live visitors, design-sync, a self-hosted Umami.
+
+* HOW TO READ THIS PLAN (start here)
+
+This section exists because the session that runs the plan may be a smaller model than the one that wrote it. Nothing here is optional reading.
+
+** The words
+
+- *The three repos.* ENGINE = =org-2-html= (the org2html converter, TypeScript, publishes to npm as =@kyonax/org2html=). CONTENT = =kyo-blog= (the =.org= articles under =content/=, the CI scripts under =ci/=, the manifest generator). SITE = =kyo-web-online= (the Vue 3 + Vite + vite-ssg site that renders kyonax.com; its GitHub repo is named =kyonax.github.io=). All three sit side by side under =/run/media/kyonax/Da_ Disk/dev/github-kyonax/= — the space in =Da_ Disk= is real, quote every path.
+- *The owner* — Cristian D. Moreno (Kyonax). He runs every git command himself. You never run =git commit=, =git push=, =git checkout=, =git stash=, =git reset= or any =gh= write. You leave clean diffs and tell him what they are.
+- *Lane* — one chunk of work with its own files, its own gates and its own log row. *Wave* — a set of tasks that run at the same time because they touch different files.
+- *Gate* — a command that must exit 0 before a lane is done. Measure the exit code directly: =cmd > log 2>&1; echo "EXIT=$?"= — never =cmd | tail=, which reports =tail='s status.
+- *Red first* — write the automated check for a defect BEFORE fixing it, run it, watch it FAIL on the current build, then fix, then watch it pass. A check that was never red proves nothing.
+- *SSG / prerender* — vite-ssg renders every route to a static HTML file at build time (=dist/**/index.html=). *Hydration* — the browser then attaches Vue to that HTML; the server HTML and the first client render must be identical, so anything that depends on the browser (=window=, =localStorage=, the time) renders nothing until =onMounted=. The site's =client-only.vue= is the pattern.
+- *i18n parity* — every user-facing string lives in =src/data/snippets-core.js= (or a slice) under an EN key and an ES key with the same shape; =npm run check:i18n= fails on any asymmetry, =check:i18n-keys= fails on a =t('…')= call whose key does not exist. Add the key and its call in the same change. A literal =@= inside a string is written ={'@'}= (vue-i18n treats =@= as syntax).
+- *size-limit* — =.size-limit.json= caps the gzip size of each built chunk; =npm run check:size= fails past a cap, and ALSO fails when an entry's glob matches nothing. Raising a cap is a decision: measure first, write the measurement in the entry's name.
+- *e2e* — the Playwright specs in =tests/e2e/=; they serve =dist/= on port 4180, so build first, and never run two at once.
+- *The book and the runtime* — the engine ships a stylesheet ("kwo", copied to =public/blog/style-book.css=) and a script ("o2h", =public/blog/o2h.js=) that style and enhance the article HTML; the site steers the book through =--host-*= CSS variables set on =:root= in =blog-post.vue='s UNSCOPED style block.
+- *Tokens and tiers* — colours are =--clr-<family>-<shade>= (OKLCH; =primary-100= is the yellow accent, =neutral-500= the page background, =border-100= the hairline); type sizes are =--fs-100 … --fs-800= in three tiers (small below 1024px, medium from 1024, large from 1200). The root font size is 12px, so =1rem= = 12px. Breakpoints: nav 700, sm 768, tab 810, md 1024, lg 1200, xl 1600 (em-based, resolving against 16px).
+- *UPSTREAM CANDIDATE* — a fix applied in the site that really belongs in the engine; it is marked so it can move later. *Stopgap* — a site rule that becomes unnecessary once the engine is republished.
+- *SMIL* — animation elements inside SVG (=<animate>=, =<animateTransform>=, =<animateMotion>=). CSS =animation: none= does NOT stop them; call =svg.pauseAnimations()= from JavaScript for reduced motion.
+- *The frame strip* — the galaxy's animation technique in the design generator: every frame is a block of text lines; the site implementation does NOT ship the strip, it computes one frame at a time in the browser from the density function.
+- *The design generator* — =docs/plans/blog-landing-design/blog-landing.design.mjs=: a Node script whose output is the two validated artboards. Every number in it (sizes, colours, timings, copy) is the spec. When the plan says "as validated", open this file.
+
+** The loop for every task
+
+1. Read the lane in PLAN MAP, then open every file it names at the line numbers it gives (=sed -n 'A,Bp' file=). Line numbers were measured on 2026-09-11; if a file changed, search for the quoted text instead.
+2. Write the red check (a Playwright assertion, a node gate, or an =assert-build= line). Run it. It must fail.
+3. Implement the smallest change that makes it pass. Keep the site's laws: square corners, accent for state only, text starts on the edge of the thing above it, EN and ES together.
+4. Run the check green, then the lane's gates, then =kyo-preview.sh --no-serve= and a screenshot at 390 and 1280 (Playwright, not the Firefox devtools tab — that tab is hidden and paints stale frames).
+5. Write the CHANGELOG.org entry in the touched repo (=[Unreleased]=, the repo's own format), and one row in the session node's activity log: =brain-edit.sh append-table-row --id 15edb81b-e422-4f55-8945-edb3f1936e4c --path "SECTION 6: ACTIVITY LOG" --table-index 1 --at top --row '| YYYY-MM-DD HH:MM | 0.0h | implementation | this | *TITLE.* what changed, what was measured, what is next |' --write=.
+6. Tell the owner, in plain words: what changed, which gates ran, what he should commit, what is next.
+
+If a step is unclear, re-read the file it points at. If still unclear, ask the owner ONE specific question and keep going with everything that does not depend on the answer.
+
+* PLAN MAP
+
+** LANE 0 — Ground, build, gates (read first)
+
+*** The trees, as last measured 2026-09-11
+
+| Repo | Path | Branch | Head | Dirty |
+|------+------+--------+------+-------|
+| ENGINE | <dev>/org-2-html | auto/2026-09-09-77bcf5 | a9a7547 | 0 |
+| CONTENT | <dev>/kyo-blog | main | 7a74f68 | 20 — the ten documents, six covers, three edits: THE CORPUS, uncommitted |
+| SITE | <dev>/kyo-web-online | seo-locale-meta-and-fixes | 36722ef | this plan + docs/plans/blog-landing-design/ |
+
+=<dev>= = =/run/media/kyonax/Da_ Disk/dev/github-kyonax= — the space is real, quote it. Re-run =git log --oneline -5= and =git status --porcelain= in all three before trusting any count: the owner commits while sessions run.
+
+*** How to build and see it
+
+- =kyo-preview.sh= (source in the session node, SESSION MAP 3.24): preflight → engine (when src/ or templates/ is newer than dist/) → blog with the LOCAL engine → site → preview on :4173. Flags =-q=, =--e2e=, =--engine=, =--no-serve=. A full run is 13–15 s.
+- Manual: =cd org-2-html && npm run build=; then in kyo-blog =node ../org-2-html/dist/cli/index.mjs build content -o dist/blog --include-root includes --base-url https://kyonax.com/blog --asset-base /blog && node ci/copy-media.mjs && node ci/generate-manifest.mjs dist/blog -o dist/blog-manifest.json --posts-dir dist/posts --base /blog --origin https://kyonax.com=; then in kyo-web-online =npm run build= (prebuild runs sync:blog from ../kyo-blog/dist) and =npx vite preview --port 4173 --strictPort --host 127.0.0.1=.
+- *NEVER* =npm run blog:verify= or =blog:build= after a local-engine build: both call the PUBLISHED =org2html= (1.1.0) and silently overwrite the build.
+- An agent serves its own preview on another port (4190); the Firefox devtools browser blocks :4190 and only loads :4173 — Playwright probes :4190, Firefox reads :4173.
+
+*** Gates (from kyo-web-online; measure exit codes without a pipe)
+
+=npm run test:e2e= (Playwright, 175 checks in six specs, serves dist on :4180, ~1.2 min) · =npm run lint= (0 errors; ~927 warnings are noise) · =npm run precheck= (check:i18n, check:i18n-keys, check:aliases, check:color, check:trans, check:licenses, check:nerd-glyphs, check:json-ld, check:browser-support, check:projects-media) · =npm test= (vitest, no layout) · =npm run build && npm run check:size= · postbuild runs seo-audit + check-blog-prerender. kyo-blog after a local build: =node ci/assert-build.mjs dist/corpus --corpus --origin https://kyonax.com --base-path /blog && node ci/feature-surface.mjs && node ci/assert-build.mjs dist/blog --origin https://kyonax.com --base-path /blog=. Engine: =npm test && npm run typecheck=.
+
+Law: *a test that was never red proves nothing* — every new check runs RED against the unfixed build first. *Every lane ends* with all gates green, a kyo-preview screenshot at 390 and 1280, a CHANGELOG.org entry in the touched repo, and a row in the session node's activity log (=brain-edit.sh append-table-row --path "SECTION 6: ACTIVITY LOG" --table-index 1 --at top=).
+
+** LANE 1 — Table of contents: keep A Ledger, delete the lab (site)
+
+1. =src/views/blog-post.vue=: in the unscoped style, drop the variant prefix =:is(html:not([data-toc]), html[data-toc="a"])= so A's rules read =.org-root nav.org-toc …=; delete the =TocLab= async component, the =toc_lab= ref, its =onMounted= hook and =<TocLab v-if="toc_lab" …/>=.
+2. Delete =src/widgets/toc-lab.vue=.
+3. Delete the "toc lab (TEMPORARY …)" entry in =.size-limit.json= (size-limit FAILS on a glob that matches nothing).
+4. =tests/e2e/article.spec.js=: delete the "table-of-contents comparison" test; keep "starts on its label and ranks its levels" (it holds for A).
+5. Rebuild, all gates, screenshots at 390 and 1280. Two inert localStorage keys (=kyo:toc-lab=, =kyo:toc-design=) may linger in the owner's browser; nothing reads them.
+
+** LANE 2 — Google Analytics out, Umami Cloud in, the banner gone, the policy rewritten (site)
+
+*** 2.0 Owner step (before the lane)
+Create the Umami Cloud account (Hobby), add the website =kyonax.com= (the blog is the same origin), copy the *website id* (a UUID) and the script URL =https://cloud.umami.is/script.js=. The id is a public identifier, like the GA measurement id was (SECURITY.md already says so for GA — the wording moves to Umami).
+
+*** 2.1 Where GA lives today (measured)
+- =src/components/cookie-consent.vue= — the ONLY runtime surface: =G-6M3P3M2HG5= hard-coded at line 12, Consent Mode v2, =_inject_gtag()= appends =googletagmanager.com/gtag/js=, Decline still injects it with everything denied; =localStorage['kyo:consent']=.
+- =src/components/ui/youtube-facade.vue:94-120= — reads AND writes =kyo:consent= and calls =window.gtag('consent','update',…)= on accept.
+- =src/App.vue:7= imports it, =:206= renders =<CookieConsent />= on every route.
+- No events, no env vars, no CSP =script-src= (=public/.htaccess:86= has none), no preconnect to Google, no tests.
+
+*** 2.2 Code
+1. Delete =src/components/cookie-consent.vue=; remove the import and the tag in =App.vue=.
+2. New =src/composables/use-analytics.js= (client only): on mount, if =typeof window !== 'undefined'= and =!localStorage.getItem('umami.disabled')= (wrapped in try/catch), create =<script defer src="https://cloud.umami.is/script.js" data-website-id="…" data-do-not-track="true" data-exclude-search="true">= — add =data-domains="kyonax.com,www.kyonax.com"= ONLY after checking =.github/workflows/deploy-to-build-dev.yml= and =deploy-to-build-main.yml= for a preview host; if a preview host must also be counted, omit the attribute with =document.createElement('script')= + =append= (lint bans =innerHTML=/=document.write=; the old bootstrap at cookie-consent.vue:50-53 is the pattern). Idempotent (=window.__umami_loaded=). Umami tracks SPA =pushState= itself — NO router hook, NO =umami.track()= on mount (double counts).
+3. The id lives in =src/data/data.js= as =analytics: { provider: 'umami', host: 'https://cloud.umami.is', websiteId: '<uuid>' }=. Not an env var: the repo has none and the id is public.
+4. Events by attribute, never by code: =data-umami-event="cv-download" data-umami-event-lang= on the CV link in =src/widgets/hud-nav.vue=; ="language-toggle" data-umami-event-to= in =src/widgets/language-toggle.vue=; ="youtube-play" data-umami-event-id= on the facade's play; ="outbound" data-umami-event-url= on the footers' profile links (=site-footer.vue:119-121=, =blog-footer.vue:61-74=); ="org2html-github"= on every org2html link; Lane 4 adds ="share"= and ="support"=. Event names ≤ 50 chars; attribute values are strings.
+5. =youtube-facade.vue=: delete lines 104-120's gtag update; rename its key to =kyo:yt-consent= (its own click-to-play prompt stays — it is not analytics).
+6. Optional opt-out: a small =AnalyticsOptOut= component on the privacy page that sets/clears =localStorage['umami.disabled']= (hydration-safe: render nothing until =onMounted=, the =client-only.vue= pattern). Measure the privacy chunk against its 3.5 KB budget.
+
+*** 2.3 Copy (EN and ES, same section count — check:i18n compares them)
+- =src/data/snippets-core.js=: delete =kyo-web.landing.consent.*= (EN 148-154, ES 573-579) AFTER the component is gone (check:i18n-keys); rewrite =youtube-consent-body= (EN 339-342, ES 764-767) without "alongside the analytics consent"; =privacy.meta.description= (EN 68, ES twin) → "how cookieless analytics work and how to opt out" / its Spanish.
+- =src/data/snippets-privacy.js= (EN 15-41, ES 49-75) — new sections, in this order: *What we collect* (Umami Cloud, cookieless: page URL, referrer, browser, OS, device type and a country derived from the IP that is never stored; no cookies, no cross-site tracking, no personal data; hosted by Umami Software, Inc. in the US/EU under their DPA; Do Not Track is respected) · *What we don't collect* (no ad cookies, no fingerprinting, no third-party trackers, no form data unless you write) · *Storage in your browser* (=kyo:lang=, =kyo:yt-consent=; nothing from analytics; to opt out set =umami.disabled= — or use the toggle on this page) · *Embedded videos* (as today, minus the analytics sentence) · *Your rights* (clear site data; write to support) · *Contact* (mailto with =&#64;=) · a visible *Last updated: 2026-09-…* line — and ONLY then =dateModified= in =src/seo/json-ld/privacy-page.js= (its header comment forbids it without the visible line).
+
+*** 2.4 Docs and comments that name GA
+=.github/SECURITY.md:28, 47-49= · =.github/workflows/ci.yml:269-271= (the secret-grep comment) · =index.html:19-21= · =docs/styling.md:619, 632, 640-643= · =README.org:96, 254= (already stale: privacy is a route) · new =CHANGELOG.org= entry (never rewrite 223-226, 240-241, 722-724). The protected-files job will comment on SECURITY.md and CHANGELOG.org — a warning, not a failure. The security-scan job fails on any =http://= URL: write =https://= everywhere.
+
+*** 2.5 Tests (red first)
+New =tests/e2e/analytics.spec.js=: no =aside.cookie-consent= on any route; exactly one =script[src*="cloud.umami.is/script.js"][data-website-id]= after hydration; zero requests to =googletagmanager.com= or =google-analytics.com= (=page.on('request')=); =localStorage['umami.disabled']= set before load → no umami script. Lighthouse best-practices must not drop (floor 0.95).
+
+*** 2.6 The documented future: self-hosted Umami
+Write =docs/analytics.md=: why Cloud now; the migration when it comes — Docker =umami= + Postgres on the nano-vps behind the Cloudflare tunnel at =stats.kyonax.tech= (the VPS has no Postgres today; Plan B on it is held), export the Cloud data through the API/dashboard first, then switch =src= and add =data-host-url=; the ad-block bypass is a proxy of =script.js= under kyonax.com — Hostinger shared (LiteSpeed) has no =mod_proxy=, so it would be a PHP passthrough or a Cloudflare route in front of the domain. None of it is built now.
+
+** LANE 3 — The blog landing, exactly as validated (site + content manifest)
+
+*** 3.0 The design, restated
+Desktop 1440: hairline-split hero — left the h1 "My Corner of the Web" and the existing subtitle, NO eyebrow, NO buttons; right a panel with the chip "■ 12 .ORG FILES PARSED · 67 KB → HTML" top-left and the ASCII galaxy centred (96×42 characters, 36 frames, 7.2 s loop, three greys 54/78/98.5% L, a radial vignette). Under it a marquee: "// LAST BUILD 2026-09-10 ////// 12 ARTICLES · 6 EN · 6 ES ////// 67 KB OF .ORG · 1,684 LINES · 100 HEADINGS ////// 9,100 WORDS · 51 MIN OF READING ////// ENGINE ORG2HTML 1.2.0 ////// GATES 175/175 GREEN //////" (bold numbers). Under it three cells on a 12 px dot grid, hairlines between, each a 324×180 SVG at ≤ 300 px, no numbers, no titles, no captions: (1) an .org file → dashed marching line → a square engine with two concentric gears turning opposite ways → dashed line → five components appearing one by one (heading, paragraph, code, chart, image) with a 6 px gap from every line; (2) a page with dashed slots and three component cards dragged in by a cursor, one after another, the slot's dashes vanishing on drop; (3) the assembled page → packets along a dashed line (clear of both boxes) → a host with three slots whose lights come on → a progress bar → a check drawn beside the bar. Under the band one line: "MADE WITH ORG2HTML" left, "github.com/Kyonax/org2html ↗" right. Then the validated archive. Phone 390: galaxy (with the chip) → h1 + subtitle with NO divider between them → marquee → the three drawings stacked → the made-with line in two rows → archive. Everything in the hero and the band is monochrome; the archive keeps its accents.
+
+*** 3.1 Data — the numbers must be real and refresh on every build
+- =kyo-blog/ci/generate-manifest.mjs=: emit a =corpus= block in =blog-manifest.json=: ={ files, bytes, lines, headings, words, minutes, byLocale: {en, es}, engine: {name, version}, builtAt }= — files/bytes/lines/headings from =content/**/*.org=, words/minutes summed from the posts' =wordCount=/=readingTime=, =builtAt= the generation timestamp (ISO date). The engine version comes from a new =--engine-version <semver>= flag that every build script passes from the binary that ACTUALLY produced =dist/blog= (=kyo-preview.sh= and the manual line pass =$(node "$ENGINE" --version)=; the npm scripts pass =$(npx org2html --version)=) — never read =node_modules= blindly: with the local engine it is 1.2.0, on CI 1.1.0 until the release. Keep the block under 200 B: it rides in the eager manifest.
+- =kyo-web-online/scripts/sync-blog.mjs= copies it through; =src/data/blog/manifest.json= gains =corpus=. The gates figure (175/175) is NOT known at build — leave it out of production or read a =public/build-info.json= the site's own postbuild writes; decide, do not fake it.
+
+*** 3.2 Components (all under =src/views/components/blog/=)
+- =blog-hero.vue= — the two-column hero; slot for the ASCII panel; i18n =kyo-web.blog.hero.chip= ("{files} .org files parsed · {kb} KB → HTML" / "{files} archivos .org procesados · {kb} KB → HTML"), sr-only =kyo-web.blog.hero.galaxy-alt=.
+- =ascii-galaxy-frame.js= (a PURE module: no DOM, no Vue import, exports =galaxyFrame(phase) → string= so vite-ssg can render frame 0 in Node) + =use-ascii-galaxy.js= (the client loop) + =ascii-galaxy.vue=: the density function from the generator (core =exp(-r²/4.5)·1.1=, two arms =exp(-d²/0.16)·exp(-r/17)·1.35= with =d = wrap(θ − (2.31·ln(r+0.5) + k·π))=, halo =exp(-r/9)·0.1=, seeded noise ±0.045, cutoff past r = 21; x compressed by 2.05 for the character aspect; ramp =" .·:-=+*#%@"=, bright ≥ 8, mid ≥ 5). SSG prerenders FRAME 0 as static markup (the same pure function runs in Node); on the client, =requestAnimationFrame= throttled to 5 fps advances the phase by π/36 per frame and rewrites ONE frame into the =<pre>= (runs of one tone as =<b>=/=<i>= — build with =v-html= from a computed string, the codebase's own idiom; never the =innerHTML= property, lint bans it). Pauses on =document.hidden=, outside the viewport (=useInViewport=) and under =prefers-reduced-motion= (frame 0 only). Fixed metrics: font-size 11.5 px / line-height 12.5 px at ≥ lg, 6.1 / 6.6 on a phone, =overflow:hidden=, =aria-hidden=. Own async chunk =blog-galaxy-*= with a size-limit entry ≤ 2 KB.
+- =blog-marquee.vue= — one =<span>= duplicated twice, =translateX(-50%)= over 46 s linear, container =overflow:hidden=, =aria-hidden=; beside it an =sr-only= sentence with the same facts (i18n =kyo-web.blog.marquee.*= per segment, EN/ES). Reduced motion: no animation, the first copy only, =text-overflow: ellipsis=.
+- =blog-pipeline-band.vue= — the three SVGs inline (SMIL: =stroke-dashoffset= marching, =animateTransform rotate=, opacity/translate by =keyTimes=, =animateMotion= on an =<mpath>=), =aria-hidden=, then the made-with line whose link is =https://github.com/Kyonax/org2html= with =data-umami-event="org2html-github"=. SMIL ignores CSS =animation=: in =onMounted=, if =matchMedia('(prefers-reduced-motion: reduce)')= matches, call =svg.pauseAnimations()= on each. The band prerenders (no JS needed to show it).
+- =blog.vue= — replace the masthead =UiSectionHeader= with =BlogHero=; insert =BlogMarquee= and =BlogPipelineBand= before the lead; keep the three movements and =BlogFooter= untouched. The =.doc--index= shell stays (1280 px, =overflow:hidden=). Phone order by CSS =order:-1= on the panel; no =border-top= on the text block below =sm=.
+
+*** 3.3 Styling rules that gate this
+- Type: the h1 keeps =--fs-800=; the chip, marquee and made-with line use =--fs-100= mono uppercase with 0.14–0.16 em tracking; the galaxy is =aria-hidden= so =type.spec.js= skips it — the h1 must stay the largest visible heading in =main=, and =h2.ui-section-header__title= ("All posts") strictly smaller.
+- Colour: the hero and band use only neutral tokens (=--clr-neutral-*=, =--clr-border-100=); =check:color= counts =var(--clr-*)= per SFC and HARD-FAILS on a raw hex/oklch in a =<style>=. The galaxy's three greys: dim = a NEW token ~--clr-neutral-350~ set to ~oklch(54% 0 0)~, added as =350= to the =neutral= map in =src/scss/abstracts/_variables.scss= (the theme emitter loops the map, so it reaches =:root= for free), mid = =--clr-neutral-200= (78%), bright = =--clr-neutral-100= (98.5%). The drawings use =--clr-neutral-200= for strokes, =--clr-neutral-100= for the highlighted element, =--clr-neutral-500= for fills.
+- Square everything, hairlines =1px solid var(--clr-border-100)=, the dot grid is a =radial-gradient= background, 12 px.
+- Budget: the blog index chunk is 6 KB (JS + CSS of blog.vue, blog-card, blog-search, blog-pagination). The band's SVG markup alone is ~6 KB raw (~2 KB gz). Measure, then either split =blog-pipeline-band= into its own async chunk (it must still prerender — vite-ssg renders async components at build) or raise the entry with the measurement written in its name. The galaxy chunk is separate. Nothing new enters the 180 KB main bundle.
+
+*** 3.4 Tests (red first, then green)
+- =locale.spec.js= =archiveState()=: add the chip text and the marquee's sr sentence; the toggle must swap them (the archive view is keyed by =route.path= — keep it).
+- =layout.spec.js=: the marquee and the galaxy must not widen the document at any of the 14 widths (their containers clip); the chip keeps the 12 px inset.
+- New =tests/e2e/landing-hero.spec.js=: the prerendered HTML (dist/blog/index.html) contains the galaxy's frame 0 =<pre>= and the three =svg[aria-hidden]= (no-JS parity, =check-blog-prerender= style); after hydration the =<pre>= text changes within 1 s (the animation runs) and does NOT change with reduced motion emulated; at 390 the panel's box sits above the h1's box and no rule separates them; the made-with link's href is the GitHub URL; the chip's numbers equal =manifest.corpus=.
+- Screenshots at 390 and 1280 compared by eye against =docs/plans/blog-landing-design/*.png=.
+
+** LANE 4 — Inline additions for the articles (site + content)
+
+Everything here is what andros.dev's article page does well, minus what the owner declined. Order: cheap and data-backed first.
+
+*** 4.1 Reading time on the archive
+=index.json= rows already carry =readingTime= and =wordCount= (never rendered). Show "· N min" on =.blog-all__row= (after the date) and on the recent cards (with the date), using the existing =kyo-web.blog.reading-time= key. Update the locale snapshot. Article meta already shows it (=blog-post.vue:285-293=).
+
+*** 4.2 Share button (article)
+=blog-share.vue= in =.blog-post__meta=: Web Share API when =navigator.share= exists (title, url), else copy the URL to the clipboard and swap the label to "Copied" for 1.4 s; i18n =kyo-web.blog.share=, =share-copied= EN/ES; square, mono, ≥ 24 px target (=article.spec.js= asserts targets); =data-umami-event="share"=. Render nothing until mounted (hydration).
+
+*** 4.3 Tags row (article)
+Under the title: the post's =tags= as square chips with NO accent (accent is for state); each links to =/blog/?q=<tag>= and =blog-search.vue= reads =q= on mount to prefill and run the search. i18n label =kyo-web.blog.tags=.
+
+*** 4.4 Support block (article end)
+=blog-support.vue= after the body, before related reading: heading "Help me keep writing" / "Ayúdame a seguir escribiendo", one sentence "Every coffee pushes the next article out." / "Cada café empuja el siguiente artículo.", one square =UiLink variant="cyber"= "Buy me a coffee" / "Invítame un café" → =data.support.url=, =data-umami-event="support"=. =src/data/data.js= gains =support: { vendor: '', url: '', handle: '' }=; the block renders only when =url= is set. *OWNER DECISION PENDING*: the vendor and account (Ko-fi, Buy Me a Coffee, GitHub Sponsors or PayPal). Build the component; leave =url= empty until he names it. No emoji, no image.
+
+*** 4.5 Keep reading
+Related reading and the series box exist (=relations.related=, =blog-series.vue=). Verify three related items render for every post; nothing to build.
+
+*** 4.6 RSS per locale
+=scripts/generate-feeds.mjs= (runs in =prebuild= after =sync:blog=): from =src/data/blog/index.json= write =public/blog/feed.xml= (EN) and =public/es/blog/feed.xml= (ES) — RSS 2.0 with =title=, =link=, =description=, =language=, =lastBuildDate=, one =<item>= per post (=title=, =link= absolute, =guid isPermaLink="true"=, =pubDate= RFC 822 from =date= at =00:00:00 -0500= (Colombia), =description= = excerpt, =category= per tag), 20 newest. =use-seo-head.js= adds =<link rel="alternate" type="application/rss+xml" title="…" href="/blog/feed.xml">= on blog routes (per locale). =blog-footer.vue= PAGES gains "RSS" (i18n). New gate =check:feeds= (parse both files with a strict XML parser, assert item count = posts per locale, every link absolute https) wired into =precheck=; =seo-audit.mjs= asserts the =<link>= on =/blog= and =/es/blog=.
+
+*** 4.7 llms.txt
+The same script writes =public/llms.txt=: the site's one-line description, the author, the blog URL, then one line per post (=- [title](absolute url): excerpt=) newest first, EN then ES. =index.html= gains =<link rel="alternate" type="text/plain" href="/llms.txt">=. Cheap; skip if the owner objects.
+
+*** 4.8 Microformats and rel=me
+=blog-post.vue=: =article.h-entry= with =p-name= on the title, =e-content= on the body, =dt-published= on the =<time>= (=datetime= already ISO), =p-author h-card= on the author link, =p-category= on each tag. =blog-footer.vue= and =site-footer.vue=: =rel="me"= on GitHub, LinkedIn, X, YouTube. Zero bytes of JS; =check:trans= must stay green.
+
+*** 4.9 Declined, on record
+No newsletter. No licence line. No "what I used AI for" line. No live-visitors presence. Comments parked (=X_BEARER_TOKEN= stays deleted). No ads.
+
+*** 4.10 Gates for the lane
+=article.spec.js=: share and support targets ≥ 24 px at 390; tags row wraps, never scrolls sideways (=layout.spec.js= selector list gains =.blog-post__tags a=); =locale.spec.js= snapshot gains the share label. =check:i18n= parity for every new key. =.size-limit.json=: the blog post chunk (6 KB) takes share + tags + support — measure; split =blog-support= async if it costs more than ~0.6 KB.
+
+** LANE 5 — The kitchen-sink article, the responsive audit, the fixes (content → site → engine)
+
+*** 5.1 Write the article (content)
+Files: =kyo-blog/content/engineering/everything-org2html-renders.en.org= and =todo-lo-que-org2html-renderiza.es.org= (slugs differ on purpose; same =#+TRANSLATION_KEY: kitchen-sink=). Header: =#+TITLE=, =#+SUBTITLE=, =#+AUTHOR: Cristian D. Moreno=, =#+DATE=, =#+LANGUAGE=, =#+CATEGORY: Engineering=, =#+FILETAGS:= (NEVER =#+TAGS:= — inert), =#+KEYWORDS=, =#+DESCRIPTION= (60–165 chars, the manifest gate), =#+COVER_IMAGE: /blog/media/everything-org2html-renders.png= (a placeholder: copy =kyo-blog/media/a-style-book.png= — the existing stamped placeholder — to the new name; =sharp= is deliberately not installed in kyo-blog; the owner replaces it with real artwork; the ES file points at the same PNG), NO =#+SERIES= (or a new pair "Reference" / "Referencia" — one name per locale, never shared), =#+OPTIONS: toc:2 num:nil pri:t p:t c:t ^:{} -:t ':t=, =#+SIGNOFF=, and a =#+HERO_IMAGE= + =#+HERO_ALT= + =#+HERO_CAPTION= trio to exercise the hero path. Never reuse a fixture's magic id (=id="benign"= is asserted against).
+
+Body — one section per family, every variant, in this order (the exhaustive inventory is in the session node's research block and the engine source it cites):
+1. *Headings*: levels 1–6 (=h2=…=h6=, the h5/h6 collision), a level-7 low-level list, a level-15 inlinetask with =END=, a custom =#+TODO: TODO NEXT WAITING | DONE CANCELLED= sequence on headings, =[#A]= and =[#1]= priorities, =[1/3]= and =[50%]= cookies, tags =:alpha:@work:#urgent:=, a =COMMENT= heading (must vanish), =:noexport:= and =:archive:= subtrees, a heading with one 60-character unbreakable word.
+2. *Planning and clocks*: =SCHEDULED:= / =DEADLINE:= with repeaters and warnings, =CLOSED:=, a =CLOCK:= line, a =:LOGBOOK:= drawer, a =:NOTES:= drawer.
+3. *Paragraph furniture*: fixed-width =: = lines, =-----= and the three HR variants by =#+ATTR_HTML: :class=, =\\= line breaks, =---=/=--=/=...=, smart quotes, a =\-= soft hyphen inside a long word.
+4. *Lists*: =-=/=+=/indented =*=, =1.= and =1)=, three levels, a loose list, an item with a two-paragraph body, an item holding a table and a src block, =[@5]=, description terms with multi-line definitions, checkboxes =[ ]= =[X]= =[-]= nested.
+5. *Tables*: header rule, alignment cookie row =| <l> | <c> | <r10> |=, =:= alignment on a rule row, a =/= column-group row, a =#+TBLFM= line (must produce nothing), table.el =+---+= rows, =#+CAPTION= + =#+NAME=, =:highlight-row= / =:highlight-col= / =:highlight-cell=, a *ten-column* table with a 60-character single-token cell (the scroll frame), =org-wide= and =org-full-bleed= on a table, and the *bar chart* (=:chart bar :chart-axis :chart-label-col :chart-value-col :highlight-row=) with six bars and labels over 20 characters (the known overlap).
+6. *Code*: =javascript=, =typescript=, =python=, =rust=, =diff=, a plain fallback (=emacs-lisp=), =:tangle src/lexer.ts= (filename in the header), a block with a 220-character line, a block with 60 lines, a coderef =(ref:x)= + =[[(x)]]=, =#+RESULTS:= + example, inline =src_python{}=, =call_x()= (must vanish).
+7. *Blocks*: quote, =org-quote--pull=, example, verse (one 200-character line), center, all seven admonitions, =#+BEGIN_ASIDE= (generic), =#+BEGIN_COMMENT= (vanishes), =#+BEGIN_JSONLD= (vanishes from the body), =#+BEGIN: columnview= dynamic block, tabs with a quote holding an example inside a panel.
+8. *Figures and media*: captioned figure with =#+NAME= and =:main t=, bare image figure, an image inline in prose, =org-wide=, =org-full-bleed=, =org-figure--bracket=, =org-figure--hatch=, =[[link][image]]=, the carousel export block (three slides), the diagram export block (min-width 700 px), =<video controls>= and =<audio controls>= export blocks, =<details>=/=<kbd>=/=<abbr>= export block.
+9. *Embeds*: ={{< youtube >}}= plain, =wide="t"=, =bleed="t"= with =channel=; ={{< x >}}= with =poster=, =video=, =handle=; an inline ={{< badge count="3" >}}= component and a =#+BEGIN_COMPONENT Card= block.
+10. *Inline*: every emphasis marker and a nested pair, =~code~= and ==verbatim== with a 70-character token, =a_{b}= / =a^{b}=, twelve entities incl. =\vert= and =\nbsp=, =[cite:@key]=, =<<target>>= / =<<<radio>>>= + fuzzy links, every link scheme (https with a 120-character bare URL, angle, mailto, tel, ftp, file:, =[[*Heading]]=, =[[#custom-id]]=, =id:= and =roam:= — both resolve to =#=, by design), timestamps (active, inactive, time, range, repeater), macros (=#+MACRO:= with =$1=, built-ins), a =#+LINK:= abbreviation, =@@html:…@@=.
+11. *Math*: inline =$…$= and =\(…\)=, display =$$…$$= and =\[…\]=, =equation=, =align*= with a line wider than 60 characters, =pmatrix=, and a =$5 and $10= currency guard sentence.
+12. *Footnotes*: numbered, named, inline defined, anonymous; one body with a long URL.
+13. *Includes*: =#+INCLUDE= prose, =src js=, =example=, =::*Heading=, =:lines "3-9"=, =:only-contents t=, =:minlevel 2= against =includes/=.
+
+The description gate (60–165 chars), =#+FILETAGS=, one =#+SERIES= per locale, =ci/assert-build.mjs= (add assertions for the new constructs: =.org-inlinetask=, =.org-planning=, =.org-clock=, =.org-callout--danger=, =.org-tabs=, =.org-diagram=, =.org-embed--x=, =.org-hero=), =ci/feature-surface.mjs= — all green with the LOCAL engine. Register the new covers in =ci/copy-media.mjs='s expectations if it lists them.
+
+*** 5.2 The audit (site, Playwright, red first)
+New =tests/e2e/constructs.spec.js= visiting the EN and ES kitchen-sink articles at the 14 widths (=viewports.js=): (a) no horizontal document overflow, naming the widest offender (reuse =layout.spec.js='s walker that skips scrolling ancestors); (b) per-construct inset ≥ 12 px for =.org-paragraph, .org-src, .org-table-scroll, .org-quote, .org-callout, .org-footnote, .org-math-display, .org-figure, .org-embed, .org-carousel=; (c) tap targets ≥ 24 px: =.org-src-copy, .org-footnote-back, .org-carousel-dot, .org-carousel-btn, .org-tab, .org-embed-facade, .org-diagram-zoom=; (d) code text ≥ 13 px and at least 34 characters visible per line at 360 px; (e) the chart's rendered label height ≥ 9 px OR the zoom affordance present; (f) inline =.org-code=/=.org-verbatim=/=.org-link=/=.org-math= never extend past their paragraph's right edge; (g) the diagram's =touch-action= allows vertical page scroll; (h) =html= has =-webkit-text-size-adjust: 100%=. Run it RED, paste the failure list into the session node's log, then fix in 5.3 until green.
+
+*** 5.3 Site-side fixes (=blog-post.vue= unscoped block, =document-page.vue=, tokens) — each behind its red check
+- Map =--host-fs-code= (clamp 12.5–14 px below =sm=) and =--host-space-3= (24 → 14 px below =sm=) on =:root=; =.org-src= inline padding 14 px and the line-number gutter margin 12 px below =sm=; =.org-src-copy= padding to a 24 px box; =.org-src-block= must not clip the =<pre>='s focus ring (=overflow:visible= + =outline-offset:-2px= on the pre, or clip only the x axis); =.org-src= =background-attachment= fixed to one value.
+- =.org-root .org-code, .org-verbatim, .org-link, .org-footnote, .org-dd, td, th { overflow-wrap: anywhere }= and =.org-root .org-math:not(.org-math-display) { overflow-x:auto; display:inline-block; max-width:100% }= — marked UPSTREAM CANDIDATE.
+- =.doc__sheet--article { min-width:0; overflow-x:clip }= so a stray 100vw breakout cannot push the page; =.org-full-bleed= / =.org-wide= inside the article use =100cqw= (container-relative; =.doc__sheet--article= gets =container-type: inline-size=) — UPSTREAM CANDIDATE.
+- =.org-carousel-dot= and =.org-carousel-btn= a 24 px hit area via =::before=; =.org-player-bar= =flex-wrap:wrap= below =sm=; =.org-taxonomy=, =.org-headline-flags=, =.org-embed-badge= =flex-wrap:wrap=; =.org-diagram-scroll.is-interactive { touch-action: pan-y pinch-zoom }=.
+- =src/scss/base/_typography.scss=: =html { -webkit-text-size-adjust: 100%; text-size-adjust: 100% }=.
+- =scripts/defer-async-css.mjs:32=: exclude =blog-post-*= and =document-page-*= from the deferral (the =:root --host-*= band and the =.doc= gutters are render-critical; today the book paints first with its own desktop defaults) — measure LCP with =check:lighthouse= before and after; if it regresses, move the =:root= band into the main CSS instead.
+- Retire the redundant =.org-heading { overflow-wrap:anywhere }= half (the book carries it); keep =.doc__title='s.
+
+*** 5.4 Engine-side candidates (org-2-html, AFTER Lane 6 ships 1.2.0; each a CHANGELOG =[Unreleased]= line, tests in =src/renderer= specs, the corpus fixture =everything.org= gains the missing constructs)
+=.org-chart { margin-inline:0 }= · =.org-footnote-back= ≥ 24 px · =toc.ts= heading and =aria-label= follow =#+LANGUAGE= · =overflow-wrap:anywhere= on prose, code, links, footnotes, cells · =--o2h-fs-code= as a clamp and =--o2h-space-*= stepping below 600 px (the book has ZERO width media queries — add container queries on =.org-root=) · a sticky line-number gutter · =.org-src-copy= target · =.org-carousel-dot= target · =.org-player-bar= wrap · =text-size-adjust= · breakouts on =100cqw= not =100vw= · chart labels: minimum rendered size or rotation past N bars, and the silent overlap fixed · diagram =touch-action= · =.org-src-block= focus clipping · =#+TOC: headlines= support (or a loud warning) · the =#+TAGS:= warning ("did you mean #+FILETAGS").
+
+*** 5.5 Gates
+kyo-blog assertions with the local engine; =npm run test:e2e= (the new spec + the 175); lint 0 errors; precheck; sizes; kyo-preview screenshots of the kitchen-sink article at 320, 390, 768, 1280.
+
+** LANE 6 — The engine release (OWNER STEPS, gated)
+
+1. =node scripts/check-version.mjs= is RED on five literals: =README.org= =#+VERSION=, figlet banner and shields badge; =stylebook.json= for kwo and o2h. Set them to 1.2.0 (the session may prepare the edit; the owner commits).
+2. PR #15 (=auto/2026-09-09-77bcf5=, OPEN, mergeable) — the "Security Scan" red is chronic (innerHTML in o2h.js, =eval(axe.source)= in the a11y tests, =http://= strings in tests; not a regression).
+3. Merge, tag, =npm publish= 1.2.0; then in kyo-blog =npm i @kyonax/org2html@1.2.0= so =blog:build= and =blog:verify= stop reverting local fixes.
+4. Then in =blog-post.vue= delete the two load-bearing stopgaps (=.org-root > p.org-paragraph { margin-block:0 }= and the =.org-heading= half of the overflow-wrap rule) and re-run the gates.
+5. Lane 5.4 starts after this.
+
+** ORDER, TIME, DONE
+
+Lanes run 0 → 1 → 2 → 3 → 4 → 5 → 6, but inside a lane the PARALLEL EXECUTION MAP (below) says what runs at once on Opus 5 subagents. Rough sizes sequential: 1 (0.5 h), 2 (3 h), 3 (5 h), 4 (3 h), 5.1 (3 h), 5.2–5.3 (4 h), 5.4 (owner-gated, 3 h), 6 (owner) — about 21 h; with the waves, about 9–11 h of wall-clock in one sitting. DONE means: every gate green in all three repos, the design renders match =docs/plans/blog-landing-design/=, the privacy page says what the site does, CHANGELOG.org updated in each touched repo, the session node's log carries one row per lane, and the owner has a clean diff to commit per lane.
+
+* PARALLEL EXECUTION MAP — Opus 5 subagents, only where files do not overlap
+
+** The rules of delegation
+
+- The session that runs the plan is the ORCHESTRATOR. It alone owns: the builds, every gate that binds a port or writes shared output (=npm run build=, =test:e2e=, =precheck= — it runs =sync:blog=, which rewrites =src/data/blog/**= —, =vite preview=), =src/views/blog.vue=, =src/data/snippets-core.js=, =.size-limit.json=, =CHANGELOG.org=, =package.json=, the brain nodes, and the report to the owner.
+- A SUBAGENT owns a DISJOINT set of files named in its brief and touches nothing else. It may run =npx eslint <its files>= and =node= on its own scripts. It never runs an npm script, never builds, never starts a server, never edits a file it does not own, never touches git, never edits the brain.
+- Launch subagents with the Agent tool: =subagent_type: "general-purpose"=, =model: "opus"=, one call per agent, all agents of a wave in ONE message so they run at once; wait for the completion notifications; never invent a result. No =isolation: "worktree"= — the site's build reads =../kyo-blog/dist= and its =node_modules= relatively, and a worktree breaks both.
+- At most four subagents per wave. A wave ends when every agent has reported; then the orchestrator adds the i18n keys the agents asked for (EN and ES, one edit), runs the gates ONCE, screenshots, logs, and starts the next wave.
+- Every brief carries: the repo path (quoted), the owned files, the exact PLAN MAP subsection pasted in full (not summarised), the site laws, the "never" list above, and the report format below. Paste — a subagent cannot read the brain.
+- The report a subagent must return: (1) files created or changed, with one line each; (2) i18n keys it needs, as =key: "EN text" / "ES text"=; (3) tests it wrote and where; (4) anything it measured; (5) open questions. Nothing else.
+
+** The waves
+
+| Wave | Runs at once (each row = one Opus 5 subagent) | Owns (files) | The orchestrator after the wave |
+|------+-----------------------------------------------+--------------+--------------------------------|
+| A | Lane 1 TOC cleanup | =src/views/blog-post.vue= (the TOC rules and the TocLab bits only), =src/widgets/toc-lab.vue= (delete), =tests/e2e/article.spec.js= (the comparison test only) | remove the =.size-limit.json= entry, build, all gates, screenshots, log |
+| A | Lane 2.2 code | =src/components/cookie-consent.vue= (delete), =src/App.vue= (the import and the tag), =src/composables/use-analytics.js= (new), =src/components/ui/youtube-facade.vue=, =src/widgets/hud-nav.vue=, =src/widgets/language-toggle.vue=, =src/views/components/sections/site-footer.vue=, =src/views/components/blog/blog-footer.vue=, =src/data/data.js= (the =analytics= object) | — |
+| A | Lane 2.3 copy | =src/data/snippets-privacy.js=, =src/views/privacy.vue= (the opt-out component mount), =src/components/analytics-opt-out.vue= (new), =src/seo/json-ld/privacy-page.js= (=dateModified=) | the consent-key deletions and the meta description in =snippets-core.js= (orchestrator-owned file) |
+| A | Lane 2.4 + 2.5 + 2.6 docs and tests | =.github/SECURITY.md=, =.github/workflows/ci.yml= (the comment only), =index.html= (the comment only), =docs/styling.md=, =README.org=, =docs/analytics.md= (new), =tests/e2e/analytics.spec.js= (new; written, NOT run) | CHANGELOG entry, run the new spec |
+| B | Lane 3.1 manifest =corpus= block | =kyo-blog/ci/generate-manifest.mjs=, =kyo-blog/ci/assert-build.mjs= (an assertion that =corpus= exists), =kyo-web-online/scripts/sync-blog.mjs= (copy-through only) | rebuild the blog with the local engine, =sync:blog= |
+| B | Lane 3.2 galaxy | =src/composables/ascii-galaxy-frame.js= (pure, no DOM — importable in Node), =src/composables/use-ascii-galaxy.js=, =src/views/components/blog/ascii-galaxy.vue=, =src/views/components/blog/blog-hero.vue= | — |
+| B | Lane 3.2 marquee + band | =src/views/components/blog/blog-marquee.vue=, =src/views/components/blog/blog-pipeline-band.vue= (the three SVGs transcribed from the generator, with the =pauseAnimations()= hook) | — |
+| B | Lane 3.4 tests | =tests/e2e/landing-hero.spec.js= (new), the edits to =tests/e2e/locale.spec.js= and =tests/e2e/layout.spec.js= (written, NOT run) | integrate the components into =blog.vue= together with Lane 4.1 (reading time on rows and cards), add the =--clr-neutral-350= token, the i18n keys, the size-limit entries; build; run the new specs RED against the old build first if possible (stash nothing — just compare), then green; screenshots vs the renders |
+| C | Lane 4 article surface (4.2, 4.3, 4.4, 4.8) | =src/views/blog-post.vue= (meta, tags row, support mount, microformats), =src/views/components/blog/blog-share.vue= (new), =blog-support.vue= (new), =blog-search.vue= (the =q= parameter), =src/data/data.js= (the =support= object), =site-footer.vue= and =blog-footer.vue= (=rel="me"= only) | keys, gates |
+| C | Lane 4 feeds (4.6, 4.7) | =scripts/generate-feeds.mjs= (new), =scripts/check-feeds.mjs= (new), =src/composables/use-seo-head.js= (the alternate link), =index.html= (the llms link), =scripts/seo-audit.mjs= (the assertion), =blog-footer.vue= (the RSS entry — coordinate: the article-surface agent edits the same file for =rel=me=; give the RSS entry to THIS agent and tell the other one to leave the footer's link list alone) | wire =generate:feeds= into =prebuild= and =check:feeds= into =precheck= (=package.json=, orchestrator-owned), keys, gates |
+| C | Lane 5.1 EN article | =kyo-blog/content/engineering/everything-org2html-renders.en.org= (new), =kyo-blog/media/everything-org2html-renders.png= (placeholder), =kyo-blog/ci/assert-build.mjs= (the new assertions — the SAME file Wave B's agent touched; it is done by then) | build the blog with the local engine, run the blog assertions |
+| C | Lane 5.2 audit spec | =tests/e2e/constructs.spec.js= (new; written, NOT run — it needs the article built) | run it RED once the EN article builds; paste the failures into the log |
+| D | Lane 5.1 ES article | =…/todo-lo-que-org2html-renderiza.es.org= (new), translated from the EN file, same section order, same constructs, a Spanish slug and title, the same =#+TRANSLATION_KEY= | build, assertions, locale toggle check |
+| D | (orchestrator) | — | run 5.2 RED at all 14 widths; record every failure with the offending selector and width |
+| E | Lane 5.3 site fixes | =src/views/blog-post.vue= (the unscoped style block only), =src/views/components/document-page.vue=, =src/scss/base/_typography.scss=, =scripts/defer-async-css.mjs= | rerun 5.2 until green; =check:lighthouse= before/after the deferral change |
+| E | Lane 5.4 engine candidates (ONLY if Lane 6 has shipped 1.2.0, or the owner says to prepare them on a branch) | =org-2-html/templates/styles.css=, =templates/style-book/kwo.css=, =kwo-tokens.css=, =src/plugins/toc.ts=, =src/plugins/chart.ts=, =kyo-blog/ci/corpus/everything.org=, the engine's =CHANGELOG.org= =[Unreleased]= | =npm test && npm run typecheck= in the engine; nothing is published |
+
+Sequential by nature, never delegated: Lane 0 (ground), every gate, every build, the =blog.vue= integration, the i18n edits, the size-limit decisions, the log, Lane 6 (the owner). Wall-clock with the waves: about 9–11 hours of one sitting instead of 21 sequential.
+
+** The brief, as a template (paste and fill)
+
+#+begin_example
+You are implementing ONE lane of a written plan inside an existing repository. Work only in
+"<repo path>". You own ONLY these files: <list>. Do not edit any other file. Do not run any
+npm script, build, server, or git command. Do not touch ~/.brain.d. You may run
+`npx eslint <your files>` and `node <your script>`.
+
+Site laws: no rounded borders; the yellow accent is for state only; text starts on the edge
+of the thing above it; every user-facing string needs an EN and an ES version (report the
+keys, do not edit snippets-core.js); a literal @ in a string is written {'@'}; no raw colours
+in a <style> block (use var(--clr-*)); no innerHTML or document.write.
+
+THE LANE, verbatim:
+<paste the PLAN MAP subsection(s) in full>
+
+Facts you need:
+<paste the measured lines/paths the lane cites, e.g. the GA inventory or the design values>
+
+When done, report exactly: (1) files created/changed, one line each; (2) i18n keys needed
+as key: "EN" / "ES"; (3) tests written and where; (4) measurements; (5) open questions.
+#+end_example
+
+* PLAN AUDIT — 2026-09-11 (what was checked, what was corrected)
+
+Audited against the four codebase reports and the validated design before handing the plan to a smaller model:
+
+- *Colour gate.* The galaxy's dim grey (54% L) has no token; =check:color= hard-fails on a raw colour in a =<style>=. Corrected in Lane 3.3: add =350: oklch(54% 0 0)= to the =neutral= family in =src/scss/abstracts/_variables.scss= (the theme emitter loops the map, so =--clr-neutral-350= appears on =:root= for free); mid = =--clr-neutral-200=, bright = =--clr-neutral-100=.
+- *SSG frame 0.* The galaxy's first frame must render at build time, so the density function must live in a file with no DOM or Vue import (=src/composables/ascii-galaxy-frame.js=) that both the SSG render and the client loop import. Corrected in Lane 3.2.
+- *Engine version in the marquee.* The manifest must record the binary that produced =dist/blog=: with the local engine that is 1.2.0, on CI 1.1.0 until the release. Corrected in Lane 3.1: the manifest generator takes =--engine-version= (the build scripts pass the binary's =--version=), never reads =node_modules= blindly.
+- *Gates figure.* Not knowable at build; Lane 3.1 says leave it out. Confirmed.
+- *Umami domains.* =data-domains= must list only production hosts; the deploy workflows (=.github/workflows/deploy-to-build-*.yml=) may publish a preview host — the Lane 2.2 agent checks them and omits the attribute if a preview host must also count.
+- *Port collisions.* =test:e2e= (4180), =vite preview= (4173/4190) and =sync:blog= (writes =src/data/blog/**=) are orchestrator-only; the PARALLEL EXECUTION MAP encodes it.
+- *Shared files across agents.* =blog-post.vue= is touched by Lanes 1, 4 and 5.3 — in three different waves, never at once. =blog-footer.vue= is touched by Lane 2 (events), Lane 4 surface (=rel=me=) and Lane 4 feeds (RSS entry) — Lane 2 is Wave A; in Wave C the RSS entry belongs to the feeds agent and the =rel=me= edit to the surface agent on different lines; the orchestrator resolves any overlap by hand. =assert-build.mjs= is touched in Wave B and Wave C, sequentially.
+- *Cover placeholder.* The existing placeholders in =kyo-blog/media/= are stamped PNGs; =sharp= is deliberately not installed in kyo-blog. Lane 5.1: copy an existing placeholder (=a-style-book.png=) to the new name and note it in the log; the owner replaces it with real artwork.
+- *RSS dates.* =pubDate= needs a time and zone: use =00:00:00 -0500= (Colombia) — stated in Lane 4.6.
+- *The 175/175 figure.* Grows with every new spec; the marquee must never hard-code it (Lane 3.1).
+- *Nothing in the plan requires the hidden Firefox devtools tab.* All measurement is Playwright.
+
+* RECOVERY COMMAND
+
+#+begin_src text
+════════════════════════════════════════════════════════════════════════════════
+ MISSION — RUN THE BLOG OVERHAUL PLAN, LANE BY LANE, IN ONE SITTING. The design
+ is validated (artifact Version 5); the decisions are made; this node IS the plan.
+ The owner runs every git operation. Never commit, never push, never blog:verify.
+════════════════════════════════════════════════════════════════════════════════
+ 0. First, before anything
+    · brain-session.sh load --id 15edb81b-e422-4f55-8945-edb3f1936e4c --mode recovery
+      (the session node: PART 0 build/gates, PART 1 the owner's design law, PART 5 traps)
+    · git log/status in org-2-html, kyo-blog, kyo-web-online — the trees move under you
+    · kyo-preview.sh --no-serve (recreate it from SESSION MAP 3.24 if the scratchpad is gone)
+ 1. Load, in this order
+    · HOW TO READ THIS PLAN (the words, the loop) · PLAN MAP · PARALLEL EXECUTION MAP
+    · docs/plans/blog-landing-design/ (generator + renders)
+    · the artifact https://claude.ai/code/artifact/3b4c2df0-4c85-4d4b-b5a5-0b90ba1c64ca
+    · the session node's PART 0 (build), PART 1 (design law), PART 5 (traps), PART 6 (engine)
+ 2. Hard rules, short form
+    · no rounded borders · accent for state only · text starts on the edge above it
+    · every new string EN + ES · every new check RED first · size-limit is a decision
+    · every org2html link → github.com/Kyonax/org2html · no newsletter, no licence
+ 3. THE NEXT ACTION: ask the owner for the Umami website id (Lane 2.0), then launch
+    WAVE A — four Opus 5 subagents at once (Lane 1; Lane 2 code; Lane 2 copy; Lane 2 docs
+    + tests), each with the brief template filled and its own files; you keep the build,
+    the gates, snippets-core.js, .size-limit.json, CHANGELOG and the brain
+ 4. Then WAVE B (Lane 3), WAVE C (Lane 4 + the EN article + the audit spec), WAVE D (the
+    ES article + the red audit), WAVE E (the site fixes; the engine candidates only if
+    1.2.0 shipped); Lane 6 is the owner's. One wave's gates before the next wave starts
+ 5. Do not: re-open the design · add CTAs/eyebrows to the hero · use yellow in the hero
+    or the band · run blog:verify · pass --summary to brain-session save · touch the
+    home landing · build a self-hosted Umami
+ 6. Traps: blog:verify reverts the local engine · the Firefox devtools tab is hidden
+    (rAF never fires; use Playwright for widths) · size-limit fails on an empty glob ·
+    SMIL ignores CSS animation (pauseAnimations) · vue-i18n eats @ (write {'@'}) ·
+    check:color hard-fails on raw colours · an unquoted heredoc eats backslashes
+ 7. Open, not blocking: the support vendor (Lane 4.4 ships with url empty) · the gates
+    figure in the marquee (leave it out unless a build-info file exists)
+#+end_src
+
+* CHANGELOG
+
+- 2026-09-11 — Plan written after five design rounds and four codebase audits; design validated as artifact Version 5; owner decisions recorded in STATE.
+- 2026-09-11 — Audited: HOW TO READ THIS PLAN (glossary + the loop) added for a smaller model; PARALLEL EXECUTION MAP (five waves of Opus 5 subagents with disjoint file ownership, the brief template, the orchestrator-only list) added; PLAN AUDIT records the corrections folded into the lanes (the neutral-350 token, the pure frame module, --engine-version, data-domains check, the placeholder cover, RSS date zone, port serialisation, shared-file waves).
+
+* REFERENCEs & SOURCEs
+
+- Artifact: https://claude.ai/code/artifact/3b4c2df0-4c85-4d4b-b5a5-0b90ba1c64ca (Version 5)
+- Design source: =docs/plans/blog-landing-design/blog-landing.design.mjs=, =canvas.json=, four PNG renders
+- Session node: =Session Org-2-Html= id =15edb81b-e422-4f55-8945-edb3f1936e4c= (research block of 2026-09-11 01:00; RECOVERY COMMAND PARTS 0–6)
+- Umami docs: https://umami.is/docs/tracker-configuration · /docs/tracker-functions · /docs/track-events · /docs/guides/track-single-page-apps · /docs/bypass-ad-blockers · /docs/exclude-my-own-visits · https://umami.is/pricing
+- Cloudflare Workers page (the drawing idiom): https://www.cloudflare.com/products/workers/
+- andros.dev article page (the additions): https://andros.dev/blog/fa617b02/justificar-a-mano-ahora-a-35-columnas/
+- svg.guide (animation techniques): https://www.svg.guide/
+- better-auth.com (the first layout reference, superseded by the galaxy)

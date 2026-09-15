@@ -21,20 +21,37 @@ import { absoluteUrl, ROUTE_BY_LOCALE } from '@seo/routes';
 
 import { i18nString } from './i18n';
 
-export const buildBreadcrumbJsonLd = ({ id, locale, currentKey }) => ({
+/*
+ * `parent` and `currentName` exist for the BLOG, and both keep this builder
+ * honest rather than bending it.
+ *
+ * An article's trail is "Blog / <the article's title>", not "Home / Blog":
+ * its parent is the archive, and the last crumb is the page you are on, which
+ * for an article is a CONTENT string with no i18n key to read. Passing the
+ * article title as `currentName` is what stops the markup from claiming every
+ * article is the page called "Blog" — which is exactly what it published
+ * before, on every post, in both locales.
+ */
+export const buildBreadcrumbJsonLd = ({
+  id,
+  locale,
+  currentKey,
+  currentName = '',
+  parent = null,
+}) => ({
   '@type': 'BreadcrumbList',
   '@id': id,
   itemListElement: [
     {
       '@type': 'ListItem',
       position: 1,
-      name: i18nString(locale, 'breadcrumb.home'),
-      item: absoluteUrl(ROUTE_BY_LOCALE[locale] || ROUTE_BY_LOCALE.en),
+      name: parent ? i18nString(locale, parent.key) : i18nString(locale, 'breadcrumb.home'),
+      item: absoluteUrl(parent ? parent.url : (ROUTE_BY_LOCALE[locale] || ROUTE_BY_LOCALE.en)),
     },
     {
       '@type': 'ListItem',
       position: 2,
-      name: i18nString(locale, currentKey),
+      name: currentName || i18nString(locale, currentKey),
     },
   ],
 });

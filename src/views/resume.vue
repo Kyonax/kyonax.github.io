@@ -32,10 +32,16 @@
 
 import useSeoHead from '@composables/use-seo-head';
 import { SEO } from '@data/data';
+import { TRANSLATIONS_RESUME } from '@data/snippets-resume';
+import { useMessageSlice } from '@i18n/use-message-slice';
 import { RESUME_HREFLANG_ALTERNATES, RESUME_URL, ROUTE_BY_LOCALE } from '@seo/routes';
 import DocumentPage from '@views/components/document-page.vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+/* The resume's body copy is not in the main bundle — it rides in this
+   view's own chunk and is merged in before anything reads a key from it. */
+useMessageSlice(TRANSLATIONS_RESUME);
 
 const { t, tm, rt, locale } = useI18n();
 
@@ -91,7 +97,9 @@ const education = computed(() => tm('kyo-web.resume.education').map((e) => ({
   >
     <!-- CV header: name, role line, contact row -->
     <template #header>
-      <h1 class="resume__name">{{ t('kyo-web.persistent-data.name') }}</h1>
+      <h1 class="resume__name">
+        {{ t('kyo-web.persistent-data.name') }}
+      </h1>
       <p class="resume__role" v-html="t('kyo-web.resume.role-line')" />
       <p class="resume__contact">
         <span v-for="(c, i) in contact" :key="i" class="resume__contact-item">
@@ -123,7 +131,9 @@ const education = computed(() => tm('kyo-web.resume.education').map((e) => ({
 
       <article v-for="entry in entries" :key="entry.id" class="resume__entry">
         <div class="resume__entry-head">
-          <h3 class="resume__entry-role">{{ entry.role }}</h3>
+          <h3 class="resume__entry-role">
+            {{ entry.role }}
+          </h3>
           <span class="resume__entry-period">{{ entry.period }}</span>
         </div>
         <p class="resume__entry-org">
@@ -142,10 +152,14 @@ const education = computed(() => tm('kyo-web.resume.education').map((e) => ({
         </p>
         <p class="doc-prose kyo-prose" v-html="entry.description" />
 
-        <h4 class="doc-sub">{{ t('kyo-web.landing.modal.activities') }}</h4>
+        <h4 class="doc-sub">
+          {{ t('kyo-web.landing.modal.activities') }}
+        </h4>
         <ul class="doc-list kyo-prose" v-html="entry.activities" />
 
-        <h4 class="doc-sub">{{ t('kyo-web.landing.modal.impact') }}</h4>
+        <h4 class="doc-sub">
+          {{ t('kyo-web.landing.modal.impact') }}
+        </h4>
         <ul class="doc-list kyo-prose" v-html="entry.impact" />
 
         <p class="resume__tech">
@@ -161,7 +175,9 @@ const education = computed(() => tm('kyo-web.resume.education').map((e) => ({
       </h2>
       <article v-for="edu in education" :key="edu.school" class="resume__entry">
         <div class="resume__entry-head">
-          <h3 class="resume__entry-role">{{ edu.school }}</h3>
+          <h3 class="resume__entry-role">
+            {{ edu.school }}
+          </h3>
           <span class="resume__entry-period">{{ edu.period }}</span>
         </div>
         <p class="resume__entry-org">

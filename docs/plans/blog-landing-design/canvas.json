@@ -1,0 +1,32 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "title": "Blog landing — desktop 1440",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 2620
+    },
+    {
+      "file": "Phone.dc.html",
+      "title": "Blog landing — phone 390",
+      "x": 1560,
+      "y": 0,
+      "w": 390,
+      "h": 4100
+    }
+  ],
+  "annotations": [
+    {
+      "id": "brief-4",
+      "x": 0,
+      "y": -220,
+      "w": 620,
+      "text": "Round four — the Galaxy hero, chosen and refined.\nThe chip now states what was parsed (12 .org files · 67 KB → HTML); nothing blinks. The marquee carries the project's own numbers: last build, articles per language, KB / lines / headings of Org, words and reading time, the engine version, the gates.\nThe three drawings tell one story with no words: 1 the .org file feeds the engine (gears turn) and components come out · 2 the components are dragged into their slots on the page · 3 the assembled page ships to the host packet by packet until the check.\nUnder them: made with org2html, linking GitHub. Phone order: animation, title, marquee, drawings. Everything below is the validated archive."
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}

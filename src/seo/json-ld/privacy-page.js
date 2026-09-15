@@ -21,9 +21,10 @@
  * a duplicate profile — a consistent subset, which is the same reasoning that
  * cleared the "duplicate #website" false positive.
  *
- * NO dateModified: neither policy states a revision date, and a build stamp
- * would assert a freshness signal that is not true. If a visible "Last
- * updated" line is ever added to the copy, mirror it here — in that order.
+ * dateModified MIRRORS THE VISIBLE "Last updated" line that closes the
+ * policy's Contact section (data/snippets-privacy.js) — never a build stamp,
+ * which would assert a freshness signal that is not true. Change the copy
+ * first, then this date, in that order; never this date alone.
  *
  * NO primaryImageOfPage: it would point at og-banner.jpg, which still advertises
  * the retired role.
@@ -58,6 +59,7 @@ export const buildPrivacyJsonLd = ({ locale = 'en' } = {}) => ({
       name: i18nString(locale, 'privacy.meta.title'),
       description: i18nString(locale, 'privacy.meta.description'),
       inLanguage: locale,
+      dateModified: '2026-09-11',
       isPartOf: { '@id': WEBSITE_ID },
       about: { '@id': PERSON_ID },
       publisher: { '@id': PERSON_ID },

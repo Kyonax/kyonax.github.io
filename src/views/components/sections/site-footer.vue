@@ -61,10 +61,14 @@ const manifest = computed(() => [
   { key: 'tz',       label: 'TZ',       value: resolved_tz.value },
 ]);
 
+/* `me` marks the rel=me identity links: "this profile is also me", which a
+   profile that links back here can use to verify the site (IndieAuth,
+   Mastodon). Instagram and TikTok stay out until the owner adds them to the
+   identity set. */
 const SOCIALS = [
-  { id: 'github',    url: 'https://github.com/kyonax',            label: 'GITHUB',    aria: 'GitHub, @kyonax' },
-  { id: 'linkedin',  url: 'https://linkedin.com/in/kyonax',       label: 'LINKEDIN',  aria: 'LinkedIn, Cristian D. Moreno' },
-  { id: 'x',         url: 'https://x.com/kyonax_on_tech',         label: 'X',         aria: 'X, @kyonax_on_tech' },
+  { id: 'github',    url: 'https://github.com/kyonax',            label: 'GITHUB',    aria: 'GitHub, @kyonax', me: true },
+  { id: 'linkedin',  url: 'https://linkedin.com/in/kyonax',       label: 'LINKEDIN',  aria: 'LinkedIn, Cristian D. Moreno', me: true },
+  { id: 'x',         url: 'https://x.com/kyonax_on_tech',         label: 'X',         aria: 'X, @kyonax_on_tech', me: true },
   { id: 'instagram', url: 'https://instagram.com/kyonax_on_tech', label: 'INSTAGRAM', aria: 'Instagram, @kyonax_on_tech' },
   { id: 'tiktok',    url: 'https://tiktok.com/@kyonax_on_tech',   label: 'TIKTOK',    aria: 'TikTok, @kyonax_on_tech' },
 ];
@@ -104,8 +108,10 @@ useInViewport(footer_ref);
               :href="s.url"
               class="site-footer__social-link"
               target="_blank"
-              rel="noopener noreferrer"
+              :rel="s.me ? 'me noopener noreferrer' : 'noopener noreferrer'"
               :aria-label="s.aria"
+              data-umami-event="outbound"
+              :data-umami-event-url="s.url"
             >{{ s.label }}</a><span
               v-if="i < SOCIALS.length - 1"
               class="site-footer__social-dot"

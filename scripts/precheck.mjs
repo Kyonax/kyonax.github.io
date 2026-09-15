@@ -32,6 +32,8 @@ const CHECKS = [
   { id: 'json-ld',       script: 'scripts/check-json-ld.mjs',         label: 'JSON-LD @graph integrity' },
   { id: 'projects-media',script: 'scripts/check-projects-media.mjs',  label: 'PROJECTS[*].images integrity' },
   { id: 'nerd-glyphs',   script: 'scripts/check-nerd-glyphs.mjs',     label: 'Nerd Font subset list ↔ source' },
+  { id: 'feeds',         script: 'scripts/check-feeds.mjs',           label: 'RSS feeds + llms.txt' },
+  { id: 'sitemap',       script: 'scripts/check-sitemap.mjs',         label: 'sitemap rows + reciprocal hreflang' },
 ];
 
 const results = [];

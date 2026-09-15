@@ -4,9 +4,13 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  *
  * Twitter-style YouTube facade. Static thumbnail + play overlay until the
- * user clicks; only then does the iframe mount. Consent is checked against
- * the global kyo:consent gate at activation time. The iframe URL uses
- * youtube-nocookie.com unconditionally.
+ * user clicks; only then does the iframe mount. The click-to-play prompt is
+ * the facade's own consent, remembered under kyo:yt-consent and read at
+ * activation time. It is not analytics consent: the site has none to ask for.
+ * The iframe URL uses youtube-nocookie.com unconditionally.
+ *
+ * The play button carries data-umami-event="youtube-play", so Umami counts the
+ * click: the intent to play, whether or not the prompt then loads the video.
  */
 
 import { vImageReady } from '@composables/use-image-ready';
@@ -90,14 +94,19 @@ const play_label = computed(() =>
 const channel_name = computed(() => props.channel?.name || '');
 const _show_channel = computed(() => props.showChannel && Boolean(channel_name.value));
 
+/* Its own key. It used to share the analytics banner's key, which went with
+   the banner; that old value is deliberately not read, because a yes given to
+   analytics is not a yes to loading YouTube. */
+const CONSENT_KEY = 'kyo:yt-consent';
+
 const _has_consent = () => {
   if (typeof localStorage === 'undefined') {
     return false;
   }
   try {
-    return localStorage.getItem('kyo:consent') === 'granted'; 
+    return localStorage.getItem(CONSENT_KEY) === 'granted';
   } catch {
-    return false; 
+    return false;
   }
 };
 
@@ -106,16 +115,8 @@ const _persist_consent = () => {
     return;
   }
   try {
-    localStorage.setItem('kyo:consent', 'granted'); 
+    localStorage.setItem(CONSENT_KEY, 'granted');
   } catch { /* private mode */ }
-  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-    window.gtag('consent', 'update', {
-      ad_storage:         'granted',
-      ad_user_data:       'granted',
-      ad_personalization: 'granted',
-      analytics_storage:  'granted',
-    });
-  }
 };
 
 const _warm = () => warmYoutube();
@@ -191,6 +192,8 @@ onBeforeUnmount(pause);
       class="youtube-facade__button"
       :class="{ 'is-loaded': poster_loaded }"
       :aria-label="play_label"
+      data-umami-event="youtube-play"
+      :data-umami-event-id="videoId"
       @click="activate"
       @pointerenter="_warm"
       @focus="_warm"

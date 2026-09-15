@@ -32,7 +32,7 @@
  *   SCSS additionalData injects @scss/abstracts globally
  */
 
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 
@@ -43,6 +43,9 @@ import browserslistToEsbuild from 'browserslist-to-esbuild';
 import { browserslistToTargets } from 'lightningcss';
 import { defineConfig } from 'vite';
 import { createHtmlPlugin } from 'vite-plugin-html';
+
+import { previewCache } from './scripts/preview-cache.mjs';
+import { ssgPreload } from './scripts/ssg-preload.mjs';
 
 /*
  * Blog routes for the prerender list. A route missing here is silently NOT
@@ -69,6 +72,23 @@ const _blogRoutePaths = () => {
 
 const r = (path) => fileURLToPath(new URL(path, import.meta.url));
 const SCSS_DIR = r('./src/scss');
+
+/*
+ * THE STYLE BOOK AND ITS RUNTIME, BY THEIR CONTENT-HASHED NAMES. sync-blog.mjs
+ * writes `style-book-<hash>.css` and `o2h-<hash>.js` into public/blog/ beside
+ * the plain names, and public/.htaccess caches the hashed ones for a year.
+ * blog-post.vue links whichever name `define` gives it below: the hashed copy,
+ * or the plain name when there is none (a bare `vite` runs no prebuild, so no
+ * sync). Read at config time, which `npm run build` reaches after its sync.
+ */
+const _blogAsset = (hashed, plain) => {
+  try {
+    const hit = readdirSync(r('./public/blog')).find((f) => hashed.test(f));
+    return `/blog/${hit || plain}`;
+  } catch {
+    return `/blog/${plain}`;
+  }
+};
 
 // Canonical routes have NO trailing slash. Any request that arrives with a
 // trailing slash is redirected to the non-slash form. `/` itself is exempt.
@@ -140,9 +160,37 @@ const applyDevMiddleware = (server) => {
 const applyPreviewMiddleware = (server) => {
   server.middlewares.use(stripTrailingSlash);
   server.middlewares.use(resolveDirIndex(r('./dist')));
+  /* public/.htaccess's Cache-Control, only when the preview is started with
+     KYO_PREVIEW_CACHE=prod (the cache specs, via playwright.config.js); any
+     other time a pass-through, and the preview answers no-cache as before.
+     After resolveDirIndex, so a route is already its index.html. */
+  server.middlewares.use(previewCache(r('./public/.htaccess')));
 };
 
+/*
+ * NO PORTRAIT ON THE BLOG (the owner's decision of 2026-09-14, Step 1b topic
+ * 5). The shell's LCP preload (lcp-preload-injector, below) is the landing's
+ * portrait, and every prerendered page is cut from that shell. No blog page
+ * shows the portrait, so there the preload was a high-priority download racing
+ * the page's own LCP. Blog routes drop it; every other page keeps it.
+ */
+const PORTRAIT_PRELOAD = /<link rel="preload" as="image"[^>]*kyonax_portrait[^>]*>/;
+const LOCALE_SEGMENT = /^[a-z]{2}$/;
+/* /blog…, or /<locale>/blog… (the same paths isBlogPath() in src/seo names). */
+const isBlogRoute = (route) => {
+  const [first = '', second = ''] = String(route).split('/').filter(Boolean);
+  return first === 'blog' || (LOCALE_SEGMENT.test(first) && second === 'blog');
+};
+const withoutBlogPortrait = (route, html) => (isBlogRoute(route)
+  ? html.replace(PORTRAIT_PRELOAD, '')
+  : html);
+
 export default defineConfig(({ mode }) => {
+  /* Each prerendered blog page's own chunk preloads (scripts/ssg-preload.mjs):
+     a plugin that learns this build's outDir, and the vite-ssg hook that reads
+     that build's ssr-manifest. `ssgPreload({ archives: false })` keeps them on
+     the articles alone. */
+  const preload = ssgPreload();
   return {
     plugins: [
       /* MUST come before createHtmlPlugin AND carry `enforce: 'pre'` —
@@ -307,6 +355,89 @@ export default defineConfig(({ mode }) => {
         },
       },
 
+      /* THE ARCHIVE SEARCH HOLD. An archive URL that carries ?search= (or the
+         old ?q=) would paint its prerendered list unfiltered until the chunks
+         hydrate, then drop to the matches: a flash and a layout shift. So
+         before first paint <html> gets `kyo-search-hold`, which keeps the
+         list, the pager and the footer visibility:hidden (_global.scss — the
+         render-blocking sheet; the archive's own CSS is deferred), and
+         blog-search.vue removes it on mount, right after it emits the
+         filtered rows. Three seconds is the failsafe. An invisible box logs
+         no layout shift, and with JavaScript off nothing is held. */
+      {
+        name: 'archive-search-hold',
+        apply: 'build',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html) {
+            const snippet = '<script>(function(){var d=document.documentElement;if(/^(\\/es)?\\/blog(\\/page\\/\\d+)?\\/?$/.test(location.pathname)&&/[?&](search|q)=[^&]/.test(location.search)){d.classList.add("kyo-search-hold");setTimeout(function(){d.classList.remove("kyo-search-hold")},3e3)}})();</script>';
+            return html.replace(/<meta name="viewport"[^>]*>/, (m) => m + snippet);
+          },
+        },
+      },
+
+      /* THE ARCHIVE'S FRAGMENTS LAND IN FIREFOX TOO. Firefox scrolls to a
+         #fragment once, about 90 ms in, before the archive's deferred
+         stylesheets swap in (~123 ms), and never corrects: /blog#all-posts
+         ended 646px off at 390 and 467px off at 1440, so every tag chip,
+         pager link and section link mis-landed. Chromium re-anchors on its
+         own, but not always: #pipeline landed 40px low (the marquee's height)
+         when the marquee's deferred CSS arrived after the load. So on `load`
+         this aligns the target, then again whenever the document resizes,
+         for 2.5 s — until the reader scrolls, types or presses, which stops
+         it at once. Archive paths only: on the landing it moved Chromium's
+         /#faq off the nav. */
+      {
+        name: 'archive-fragment-anchor',
+        apply: 'build',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html) {
+            const snippet = '<script>(function(){var h=location.hash,id;if(h.length<2||!/^(\\/[a-z]{2})?\\/blog(\\/page\\/\\d+)?\\/?$/.test(location.pathname))return;try{id=decodeURIComponent(h.slice(1))}catch(x){return}var m=0,s=function(){m=1};["wheel","touchmove","keydown","pointerdown"].forEach(function(e){addEventListener(e,s,{once:true,passive:true})});addEventListener("load",function(){var t0=Date.now(),a=function(){if(m||Date.now()-t0>2500)return;var t=document.getElementById(id);if(t)t.scrollIntoView({block:"start",behavior:"instant"})};a();if(window.ResizeObserver){var r=new ResizeObserver(a);r.observe(document.documentElement);setTimeout(function(){r.disconnect()},2500)}},{once:true})})();</script>';
+            return html.replace(/<meta name="viewport"[^>]*>/, (m) => m + snippet);
+          },
+        },
+      },
+
+      /* THE NEXT BLOG PAGE, PRERENDERED ON INTENT. Every blog link is a full
+         document load, so Chromium is handed speculation rules: at `moderate`
+         eagerness a link the reader rests on (about 200 ms) or presses is
+         prerendered in the background, and the click only has to show it.
+         Scoped to the blog's pages, /blog and /es/blog and all under them,
+         minus what is not a page (the feeds, the body media) and what the
+         reader did not ask to open here: a new tab, a download, or a link
+         under [data-no-warm], which the link warmer refuses as well. A
+         prerendered page runs its scripts unseen, so use-analytics.js holds
+         Umami until `prerenderingchange`. Other engines ignore the script.
+         Under Playwright, DevTools cancels every prerender and it downgrades
+         to a prefetch, which is what prefetch.spec.js asserts; the prerender
+         itself is checked by hand. A CSP script-src would need
+         'inline-speculation-rules' (see public/.htaccess). */
+      {
+        name: 'speculation-rules',
+        apply: 'build',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html) {
+            const rules = JSON.stringify({
+              prerender: [{
+                where: {
+                  and: [
+                    { href_matches: ['/blog', '/blog/*', '/es/blog', '/es/blog/*'] },
+                    { not: { href_matches: ['/blog/feed.xml', '/es/blog/feed.xml', '/blog/media/*'] } },
+                    { not: { selector_matches: ['[target=_blank]', '[download]', '[data-no-warm]', '[data-no-warm] a'] } },
+                  ],
+                },
+                eagerness: 'moderate',
+              }],
+            });
+            return html.replace(/<meta name="viewport"[^>]*>/, (m) => `${m}<script type="speculationrules">${rules}</script>`);
+          },
+        },
+      },
+
+      preload.plugin,
+
     ],
 
     ssgOptions: {
@@ -341,11 +472,20 @@ export default defineConfig(({ mode }) => {
           ...blog,
         ];
       },
+      /* Runs after vite-ssg's own preload links and before the minifier. */
+      onPageRendered: (route, html, ctx) => preload.onPageRendered(
+        route,
+        withoutBlogPortrait(route, html),
+        ctx,
+      ),
     },
 
     define: {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '0.0.0'),
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
+      /* `import.meta.env.*`, so no ESLint global is needed in blog-post.vue. */
+      'import.meta.env.KYO_BLOG_STYLE_BOOK': JSON.stringify(_blogAsset(/^style-book-[A-Za-z0-9_-]{8}\.css$/, 'style-book.css')),
+      'import.meta.env.KYO_BLOG_O2H': JSON.stringify(_blogAsset(/^o2h-[A-Za-z0-9_-]{8}\.js$/, 'o2h.js')),
     },
 
     resolve: {
@@ -408,7 +548,18 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           assetFileNames: 'assets/[name]-[hash][extname]',
-          chunkFileNames: 'assets/[name]-[hash].js',
+          /* THE ARCHIVE'S DATA IS NOT THE ARCHIVE'S CODE. The blog's rich index
+             (src/data/blog/index.json, every post of both locales, loaded
+             lazily) is a chunk of its own. vite 6 named it index-*.js; vite 8's
+             rolldown names a chunk built from an index file after its folder,
+             so it became blog-*.js and the "blog index chunk" size budget
+             counted 3.66 KB of DATA as view code (10.58 of 7.25 KB). Named for
+             what it is, it stays unbudgeted, as it always was. */
+          chunkFileNames: (chunk) => (
+            /\/src\/data\/blog\/index\.json$/.test(chunk.facadeModuleId || '')
+              ? 'assets/archive-index-[hash].js'
+              : 'assets/[name]-[hash].js'
+          ),
           entryFileNames: 'assets/[name]-[hash].js',
         },
       },

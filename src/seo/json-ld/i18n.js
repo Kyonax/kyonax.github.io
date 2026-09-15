@@ -10,7 +10,7 @@
  * actually say".
  */
 
-import { TRANSLATIONS } from '@data/snippets';
+import { TRANSLATIONS_CORE as TRANSLATIONS } from '@data/snippets-core';
 
 export const i18nString = (locale, path) => {
   const parts = path.split('.');

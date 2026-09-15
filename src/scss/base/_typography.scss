@@ -42,6 +42,14 @@
 /* Document base. */
 html {
   font-size: 12px;
+  /* A PHONE TURNED TO LANDSCAPE MUST NOT RE-SIZE THE TYPE. iOS Safari and
+     Chrome on Android inflate text they judge too small for the new width, and
+     they do it block by block, so one paragraph grows and its neighbour does
+     not. Pinned to 100%, the type is what the scale set, and pinch-zoom is
+     untouched. Both spellings: iOS Safari reads only the prefixed one.
+     (tests/e2e/constructs.spec.js (h)) */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {

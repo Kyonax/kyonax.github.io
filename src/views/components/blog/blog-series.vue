@@ -49,12 +49,34 @@ const { t } = useI18n();
 </template>
 
 <style lang="scss" scoped>
+/*
+ * DRESSED IN THE ENGINE'S OWN TOKENS, not the site's.
+ *
+ * The series panel is HOST chrome — relations ship as DATA [P-00], so the
+ * engine writes relations.json and this component renders the navigation. But
+ * it sits inside the article, directly against blocks the Style Book drew, so
+ * it has to be one of them. It was a 6px-rounded grey box with unstyled links
+ * that fell through to the browser's default violet: the loudest thing on the
+ * page, and in a vocabulary the book does not use anywhere.
+ *
+ * It now mirrors the book's `.org-toc` exactly — the construct it is closest
+ * to — reading `--o2h-*` directly. Those resolve on `:root` from the sheet
+ * blog-post.vue links, so the panel tracks any book or token change for free
+ * instead of drifting the way the hand-rolled copy did.
+ *
+ * NO RADIUS. The book sets `--o2h-radius: 0` because its foundation is
+ * hairlines-only, no-radius, no-gradient. Every fallback below is the site's
+ * matching token, so a missing book degrades to site styling rather than to
+ * nothing.
+ */
 .blog-series {
-  margin-block: 2rem;
-  padding: 1rem 1.25rem;
-  border: 1px solid var(--clr-border-100);
-  border-radius: 6px;
-  background-color: var(--clr-neutral-400);
+  /* The closing blocks all sit on the article's own 48px rhythm. At 24px this
+     read as part of the last paragraph rather than as the next thing. */
+  margin-block: var(--o2h-space-5, 3rem) var(--o2h-space-3, 1.5rem);
+  padding: var(--o2h-space-3, 1.25rem) var(--o2h-space-4, 1.5rem);
+  border: var(--o2h-border, 1px solid var(--clr-border-100));
+  border-radius: var(--o2h-radius, 0);
+  background: var(--o2h-card, var(--clr-neutral-400));
 }
 
 .blog-series__head {
@@ -62,40 +84,58 @@ const { t } = useI18n();
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: baseline;
-  margin: 0 0 0.75rem;
-  font-family: 'SpaceMono', monospace;
-  font-size: var(--fs-200);
+  margin: 0 0 var(--o2h-space-2, 0.75rem);
+  font-family: var(--o2h-font-mono, "SpaceMono", monospace);
+  font-size: var(--o2h-label-size, var(--fs-100));
+  letter-spacing: var(--o2h-label-track, 0.12em);
 }
 
 .blog-series__label {
-  color: var(--clr-neutral-200);
-  text-transform: uppercase;
-  letter-spacing: 0.06rem;
+  color: var(--o2h-mute, var(--clr-neutral-200));
+  text-transform: var(--o2h-label-transform, uppercase);
 }
 
-.blog-series__name { color: var(--clr-primary-100); }
-.blog-series__count { color: var(--clr-neutral-200); margin-left: auto; }
+.blog-series__name { color: var(--o2h-accent, var(--clr-primary-100)); }
+
+.blog-series__count {
+  margin-left: auto;
+  color: var(--o2h-mute, var(--clr-neutral-200));
+}
 
 .blog-series__list {
+  display: grid;
+  gap: var(--o2h-space-1, 0.5rem);
   margin: 0;
   padding: 0;
   list-style: none;
-  display: grid;
-  gap: 0.35rem;
 }
 
 .blog-series__item {
   display: flex;
   gap: 0.6rem;
   align-items: baseline;
-  font-size: var(--fs-200);
+  font-size: var(--o2h-fs-caption, var(--fs-200));
+  color: var(--o2h-fg, var(--clr-neutral-50));
 
-  &.is-current { color: var(--clr-primary-100); }
+  /* The entry you are reading is the one mark that holds the accent standing
+     still — it encodes state, it is not decoration. */
+  &.is-current { color: var(--o2h-accent, var(--clr-primary-100)); }
+}
+
+/* The book's own link treatment: ink, no underline, accent on hover. Unstyled,
+   these inherited the user-agent's violet visited colour. */
+.blog-series__item a {
+  color: var(--o2h-ink, var(--clr-neutral-100));
+  text-decoration: none;
+  transition: color 0.15s ease;
+
+  &:hover,
+  &:focus-visible { color: var(--o2h-accent, var(--clr-primary-100)); }
 }
 
 .blog-series__n {
   flex: 0 0 auto;
-  color: var(--clr-neutral-300);
-  font-family: 'SpaceMono', monospace;
+  color: var(--o2h-mute, var(--clr-neutral-300));
+  font-family: var(--o2h-font-mono, "SpaceMono", monospace);
 }
 </style>

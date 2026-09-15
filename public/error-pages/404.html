@@ -1,4 +1,8 @@
 <!doctype html>
+<!--
+  Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+  Distributed under the terms of GPL-2.0-only — see LICENSE.
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -45,6 +49,12 @@
     footer{text-align:center;margin-top:1.5rem;font-size:.58rem;color:var(--dim);letter-spacing:.3em;text-transform:uppercase;opacity:.5}
     @media (max-width:540px){.hud{display:none}body{padding:1rem}.redirect{gap:.5rem}.redirect a{padding:.6rem .9rem;font-size:.65rem}}
     @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+    @property --p{syntax:'<number>';inherits:true;initial-value:0}
+    .figlet{cursor:default;-webkit-user-select:none;user-select:none;--d:.07em}
+    .figlet>s{display:contents;text-decoration:none}
+    .figlet>s:nth-child(2){--i:1}.figlet>s:nth-child(3){--i:2}.figlet>s:nth-child(4){--i:3}.figlet>s:nth-child(5){--i:4}.figlet>s:nth-child(6){--i:5}.figlet>s:nth-child(7){--i:6}
+    .figlet i{display:inline-block;font-style:normal;--c:color-mix(in oklab,var(--accent),#000 calc(var(--i,0)*4%));transition:--p .2s ease}
+    .figlet b{display:inline-block;font-weight:inherit;pointer-events:none;--o:calc((1 - var(--p))*var(--d)/5);--x:color-mix(in oklab,var(--c),#000 60%);color:color-mix(in oklab,var(--c),var(--bg) calc(var(--p)*45%));translate:calc(var(--p)*var(--d)) calc(var(--p)*var(--d));text-shadow:var(--o) var(--o) var(--x),calc(var(--o)*2) calc(var(--o)*2) var(--x),calc(var(--o)*3) calc(var(--o)*3) var(--x),calc(var(--o)*4) calc(var(--o)*4) var(--x),calc(var(--o)*5) calc(var(--o)*5) var(--x)}
   </style>
 </head>
 <body>
@@ -73,5 +83,6 @@
   </main>
 
   <footer>// CCS &middot; KYONAX &middot; ZERONET //</footer>
+<script>{const D=document,M=q=>matchMedia(q).matches,f=D.querySelector(".figlet");if(f&&!M("(prefers-reduced-motion:reduce)")&&!M("(pointer:coarse)")){const x=D.createDocumentFragment();f.textContent.split("\n").forEach((l,n)=>{n&&x.append("\n");const s=x.appendChild(D.createElement("s"));for(const c of l)c==" "?s.append(c):s.appendChild(D.createElement("i")).appendChild(D.createElement("b")).textContent=c});f.replaceChildren(x);const I=[...f.querySelectorAll("i")],P=I.map(()=>0);let B,R,X,Y,q=0;const S=()=>{q=0;if(!B){B=I.map(e=>e.getBoundingClientRect());R=2.5*parseFloat(getComputedStyle(f).fontSize)}I.forEach((e,k)=>{const r=B[k],t=+Math.max(0,1-Math.hypot(Math.max(0,r.left-X,X-r.right),Math.max(0,r.top-Y,Y-r.bottom))/R).toFixed(3);if(t!=P[k]){P[k]=t;t?e.style.setProperty("--p",t):e.style.removeProperty("--p")}})};addEventListener("pointermove",e=>{X=e.clientX;Y=e.clientY;q||(q=requestAnimationFrame(S))},{passive:!0});D.addEventListener("pointerout",e=>{e.relatedTarget||(X=Y=-1e9,q||(q=requestAnimationFrame(S)))});addEventListener("resize",()=>B=0);addEventListener("scroll",()=>B=0,{passive:!0})}}</script>
 </body>
 </html>

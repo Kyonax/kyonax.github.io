@@ -24,8 +24,12 @@
  * layout the deploy workflow creates when it checks the content repo out.
  */
 
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+
+import { transformSync } from 'esbuild';
+import { transform } from 'lightningcss';
 
 import { head, line, ok, REPO_ROOT, warn } from './_lib.mjs';
 
@@ -37,14 +41,103 @@ const DEST_DATA = join(REPO_ROOT, 'src/data/blog');
 const DEST_MANIFEST = join(DEST_DATA, 'manifest.json');
 const DEST_POSTS = join(DEST_DATA, 'posts');
 
-/* Served, not bundled: the search index is fetched on demand so it never counts
-   against the main-bundle budget. */
-const DEST_SEARCH = join(REPO_ROOT, 'public/blog-search');
+/*
+ * THE ENGINE'S DEFAULT STYLE BOOK, served rather than bundled.
+ *
+ * org2html writes `styles.css` beside every build — the `kwo` book that dresses
+ * the `.org-*` hooks its renderer emits. The site used to hand-roll a partial
+ * copy of it in document-page.vue, which drifted and looked nothing like the
+ * engine's own output. Now the book itself is the article stylesheet.
+ *
+ * MINIFIED ON THE WAY IN: the shipped file is 199 KB of heavily commented
+ * source (50 KB gzipped, and those comments are the book's design record, so
+ * they belong in the package, not on the wire). lightningcss takes it to
+ * ~95 KB / ~16 KB gzipped. It is `public/`, so it never counts against the
+ * main-bundle budget and only an article route ever requests it.
+ */
+const DEST_BOOK_DIR = join(REPO_ROOT, 'public/blog');
+const DEST_BOOK = join(DEST_BOOK_DIR, 'style-book.css');
+
+/*
+ * THE ENGINE'S INTERACTIVE RUNTIME, served on the same terms as the book.
+ *
+ * `o2h.js` is org2html's dependency-free progressive-enhancement layer, and it is
+ * what turns the YouTube and X embeds from a poster plus a link into a real
+ * click-to-play swap. The site deliberately did not load it, so every embed in an
+ * article degraded to a plain link — correct, but not a player.
+ *
+ * NOTHING THIRD-PARTY LOADS UNTIL THE READER CLICKS. The runtime only swaps the
+ * facade for the provider's frame on demand, so `nothing the reader pays for`
+ * survives: an article whose embed is never clicked costs the reader nothing
+ * beyond this one file.
+ *
+ * MINIFIED ON THE WAY IN, for the reason the book is: the shipped file is 51 KB of
+ * hand-authored, heavily commented ES2019 (15.4 KB gzipped) and those comments are
+ * the runtime's design record, so they belong in the package rather than on the
+ * wire. esbuild takes it to ~21 KB / ~7.5 KB gzipped. It is `public/`, so it never
+ * counts against the main-bundle budget and only an article route requests it.
+ */
+const DEST_RUNTIME = join(DEST_BOOK_DIR, 'o2h.js');
+
+/* Minification drops the source header, and this is GPL-3.0-only code we redistribute
+   to every reader — the notice travels with the file. */
+const O2H_BANNER =
+  '/*! o2h.js - (c) 2026 Cristian D. Moreno (@Kyonax) - GPL-3.0-only - @kyonax/org2html'
+  + ' - https://github.com/Kyonax/org2html */';
+
+/*
+ * AND EACH ONE AGAIN UNDER A CONTENT-HASHED NAME, SO A READER'S CACHE MAY KEEP IT.
+ *
+ * The book and the runtime are the two files EVERY article loads under a URL
+ * that never changes, and no Cache-Control rule in public/.htaccess matched them.
+ * Each is now ALSO written as `style-book-<hash>.css` / `o2h-<hash>.js`: eight
+ * characters of the content's SHA-256 in base64url, which is exactly the
+ * `-[A-Za-z0-9_-]{8}` that .htaccess makes immutable for a year, the rule every
+ * Vite asset already gets. blog-post.vue links the hashed name, which
+ * vite.config.js defines, falling back to the plain name when no hashed copy
+ * exists (a bare `vite` runs no prebuild, so nothing hashed may be there).
+ *
+ * ONE OF EACH, ALWAYS. public/blog/ is never cleared (the media and the feed
+ * live there too), so every older hashed copy is deleted before the new one is
+ * written. The plain names are still written for ONE release, for the pages a
+ * browser or a crawler cached before the switch; .htaccess gives them 300 s.
+ */
+const HASHED_BOOK = /^style-book-[A-Za-z0-9_-]{8}\.css$/;
+const HASHED_RUNTIME = /^o2h-[A-Za-z0-9_-]{8}\.js$/;
+
+const writeHashed = (stem, ext, pattern, code) => {
+  const name = `${stem}-${createHash('sha256').update(code).digest('base64url').slice(0, 8)}${ext}`;
+  for (const old of readdirSync(DEST_BOOK_DIR)) {
+    if (pattern.test(old) && old !== name) {
+      rmSync(join(DEST_BOOK_DIR, old));
+    }
+  }
+  writeFileSync(join(DEST_BOOK_DIR, name), code);
+  return name;
+};
 
 /* Blog images join the site's own image pipeline, so convert-images.mjs emits their
    AVIF/WebP siblings and records intrinsic dimensions — which is what keeps the
    card grid inside the CLS <= 0.1 Lighthouse assertion. */
 const DEST_MEDIA = join(REPO_ROOT, 'src/assets/blog');
+
+/*
+ * THE SAME IMAGES AGAIN, SERVED AT THE PATH THE DOCUMENTS ACTUALLY WROTE.
+ *
+ * The pipeline copy above is for the CARD: use-blog-images.js resolves a post's
+ * `cardImage` by basename against a glob of `src/assets/blog`, so the archive gets
+ * an AVIF/WebP with known dimensions. A picture INSIDE an article body is a
+ * different problem — org2html does not copy content images and `--asset-base`
+ * does not rewrite their URLs, so the body HTML carries the literal deployed path
+ * the author typed: `/blog/media/<file>`. Nothing was serving that, so the first
+ * article to embed a figure would have shipped a 404.
+ *
+ * So the media is ALSO copied verbatim into `public/blog/`, where that exact URL
+ * resolves. The trade is stated rather than hidden: these body images skip the
+ * AVIF/WebP conversion, because optimising them would mean rewriting URLs inside
+ * rendered HTML, and a wrong rewrite is worse than an unoptimised PNG.
+ */
+const DEST_BODY_MEDIA = join(DEST_BOOK_DIR, 'media');
 
 const EMPTY = {
   generatedFrom: null,
@@ -86,7 +179,10 @@ if (!existsSync(manifestSrc)) {
 /* Replace rather than merge: a post deleted in kyo-blog must disappear here, and a
    stale body file left behind would be a route the manifest no longer lists. */
 rmSync(DEST_POSTS, { recursive: true, force: true });
-rmSync(DEST_SEARCH, { recursive: true, force: true });
+/* The archive search filters the rich index the archive already loads, so
+   nothing syncs to public/blog-search/ any more. A checkout synced before that
+   still holds a copy, and public/ ships whole into dist/, so it is swept. */
+rmSync(join(REPO_ROOT, 'public/blog-search'), { recursive: true, force: true });
 
 cpSync(manifestSrc, DEST_MANIFEST);
 
@@ -104,17 +200,69 @@ if (existsSync(join(SRC, 'posts'))) {
 
 const m = JSON.parse(readFileSync(DEST_MANIFEST, 'utf8'));
 
-mkdirSync(DEST_SEARCH, { recursive: true });
-for (const locale of m.locales) {
-  const f = join(SRC, `blog-search-${locale}.json`);
-  if (existsSync(f)) {
-    cpSync(f, join(DEST_SEARCH, `blog-search-${locale}.json`));
-  }
+/*
+ * A MISSING BOOK IS A WARNING, NOT A FAILURE — the same contract the rest of
+ * this script keeps. It only reaches the wire on an article route, and with no
+ * corpus there are no article routes.
+ */
+/*
+ * THE BOOK'S @font-face RULES ARE DROPPED ON THE WAY IN. The book declares its two
+ * families — Geomanist and SpaceMono, the same names this site serves — at
+ * `/blog/fonts/`, where org2html writes its own copies. This site owns its faces
+ * (its SpaceMono is re-cut against its own corpus) and hands them to the book
+ * through `--host-font-*`, so those copies are never synced and the rules pointed
+ * at nothing: every article asked for four fonts and received the SPA's HTML page
+ * for each, ~207 KB apiece, in both engines (found 2026-09-12). Syncing the files
+ * instead would download a second set of the same families on every article.
+ */
+const bookSrc = join(SRC, 'blog', 'styles.css');
+if (existsSync(bookSrc)) {
+  const raw = readFileSync(bookSrc);
+  let dropped = 0;
+  const { code } = transform({
+    filename: 'style-book.css',
+    code: raw,
+    minify: true,
+    visitor: {
+      Rule: {
+        'font-face'() {
+          dropped += 1;
+          return [];
+        },
+      },
+    },
+  });
+  mkdirSync(DEST_BOOK_DIR, { recursive: true });
+  writeFileSync(DEST_BOOK, code);
+  const hashed = writeHashed('style-book', '.css', HASHED_BOOK, code);
+  line(`style book ${(raw.length / 1024).toFixed(0)} KB -> ${(code.length / 1024).toFixed(0)} KB minified, ${dropped} @font-face rule(s) dropped — the site serves its own faces`);
+  line(`style book served as /blog/${hashed} (and /blog/style-book.css for one release)`);
+} else {
+  warn('no styles.css in the blog build — articles will render unstyled');
+}
+
+/* A MISSING RUNTIME IS A WARNING, NOT A FAILURE — the same contract the book keeps.
+   With no corpus there are no article routes, so there is nothing to enhance. */
+const runtimeSrc = join(SRC, 'blog', 'o2h.js');
+if (existsSync(runtimeSrc)) {
+  const raw = readFileSync(runtimeSrc, 'utf8');
+  const { code } = transformSync(raw, { loader: 'js', minify: true, target: 'es2019' });
+  const shipped = `${O2H_BANNER}\n${code}`;
+  mkdirSync(DEST_BOOK_DIR, { recursive: true });
+  writeFileSync(DEST_RUNTIME, shipped);
+  const hashed = writeHashed('o2h', '.js', HASHED_RUNTIME, shipped);
+  line(`runtime ${(raw.length / 1024).toFixed(0)} KB -> ${(code.length / 1024).toFixed(0)} KB minified`);
+  line(`runtime served as /blog/${hashed} (and /blog/o2h.js for one release)`);
+} else {
+  warn('no o2h.js in the blog build — article embeds will not click to play');
 }
 
 if (existsSync(join(SRC, 'blog', 'media'))) {
   mkdirSync(DEST_MEDIA, { recursive: true });
   cpSync(join(SRC, 'blog', 'media'), DEST_MEDIA, { recursive: true });
+  /* …and again, unconverted, at the URL the article bodies reference. */
+  mkdirSync(DEST_BODY_MEDIA, { recursive: true });
+  cpSync(join(SRC, 'blog', 'media'), DEST_BODY_MEDIA, { recursive: true });
 }
 
 ok(`synced ${m.counts.posts} post(s) from ${SRC}`);
