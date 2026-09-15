@@ -28,6 +28,8 @@
 #   New jobs MUST be added to pre-check-label needs list
 #   Security Scan excludes eslint.config.mjs (rule strings match patterns)
 #   Security Scan filters xmlns http:// URIs (XML namespace identifiers)
+#   Security Scan filters www.w3.org/ URIs (namespace constants like SVG_NS)
+#   Security Scan skips Playwright's page.$eval / page.$$eval (a DOM query API)
 #   Protected Files is advisory only, never blocks merge
 
 name: CI
@@ -87,6 +89,12 @@ jobs:
   build:
     name: Production build
     runs-on: ubuntu-latest
+    env:
+      # The same corpus deploy-to-build-main.yml builds with. Without it
+      # sync-blog.mjs writes an empty manifest, /blog is never prerendered,
+      # and Layout (e2e) and Lighthouse CI test a site with no blog. Both
+      # jobs download this job's dist, so this is the only place it is set.
+      BLOG_DIST: ${{ github.workspace }}/kyo-blog/dist
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -94,6 +102,17 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
+      - name: Checkout blog content
+        uses: actions/checkout@v4
+        with:
+          repository: Kyonax/kyo-blog
+          ref: main
+          path: kyo-blog
+      - name: Build the blog corpus
+        working-directory: kyo-blog
+        run: |
+          npm ci
+          npm run blog:build
       # Favicon generation needs ImageMagick on the runner; handled in
       # the deploy workflow instead to keep CI matrix time short.
       - run: npm run build
@@ -244,11 +263,14 @@ jobs:
           # check-*.mjs scripts and eslint.config.mjs contain the banned
           # patterns as literal strings — those ARE the rules that forbid
           # them everywhere else. Same exemption as reckit.
+          # `eval(` must not follow a `$` or a word character: Playwright's
+          # page.$eval / page.$$eval run a selector query in the browser and
+          # evaluate no string. window.eval( and a bare eval( still match.
           HITS=$(grep -rn --include='*.js' --include='*.mjs' --include='*.vue' \
                --exclude-dir='node_modules' --exclude-dir='dist' --exclude-dir='.cache' \
                --exclude='check-*.mjs' \
                --exclude='eslint.config.mjs' \
-               -E 'eval\(|[^.a-zA-Z_]Function\(|\.innerHTML\s*=|document\.write\(' . || true)
+               -E '(^|[^$a-zA-Z0-9_])eval\(|[^.a-zA-Z_]Function\(|\.innerHTML\s*=|document\.write\(' . || true)
           if [ -n "$HITS" ]; then
             annotate_hits "$HITS" "dangerous-call"
             echo "::error::Dangerous function calls detected (eval, Function, innerHTML, document.write). See annotations above."
@@ -285,13 +307,16 @@ jobs:
           echo "=== Scanning for insecure http:// URLs ==="
           # Filter out: localhost / loopback, and XML/XHTML namespace
           # URIs (xmlns="http://...") which are standardized identifiers,
-          # not fetchable URLs.
+          # not fetchable URLs. The same identifiers held in a constant
+          # (SVG_NS = 'http://www.w3.org/2000/svg') carry no xmlns, so
+          # www.w3.org/ is filtered as well.
           HITS=$(grep -rn --include='*.js' --include='*.mjs' --include='*.vue' \
                --exclude-dir='node_modules' --exclude-dir='dist' --exclude-dir='.cache' \
                -E 'http://' . \
                | grep -v 'localhost' \
                | grep -v '127.0.0.1' \
-               | grep -v 'xmlns' || true)
+               | grep -v 'xmlns' \
+               | grep -v 'www.w3.org/' || true)
           if [ -n "$HITS" ]; then
             annotate_hits "$HITS" "insecure-http"
             echo "::error::Insecure http:// URL detected — use https:// instead"
