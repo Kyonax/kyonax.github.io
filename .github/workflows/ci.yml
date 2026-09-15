@@ -122,6 +122,16 @@ jobs:
           name: dist-${{ github.sha }}
           path: dist/
           retention-days: 7
+      # The routing manifest sync-blog.mjs writes into src/data/blog/ is
+      # generated and git-ignored, so a job that only downloads dist/ has none;
+      # landing-hero.spec.js reads it to compare the chip and the marquee with
+      # the corpus they describe.
+      - name: Upload the blog manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: blog-manifest-${{ github.sha }}
+          path: src/data/blog/manifest.json
+          retention-days: 7
 
   layout-e2e:
     # THE GUTTER GATE. Every other check in this file reads source or built
@@ -145,6 +155,11 @@ jobs:
         with:
           name: dist-${{ github.sha }}
           path: dist/
+      - name: Download the blog manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: blog-manifest-${{ github.sha }}
+          path: src/data/blog/
       # Playwright ships its own browser rather than hoping for a system one;
       # no other job here installs a browser, so this step is not optional.
       # Firefox runs only the `@firefox` tests (playwright.config.js): the
