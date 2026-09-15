@@ -11,7 +11,15 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 4.5rem;
+  /* A fragment lands just under the sticky nav, which is 59.4px tall below
+     `sm` (48em) and 46.6–52.6px from it (measured at every width in
+     viewports.js). One 4.5rem (54px) left every phone landing 5.4px under
+     the nav; 5.25rem clears it, and wider screens keep 4.5rem. */
+  scroll-padding-top: 5.25rem;
+}
+
+@media only screen and (min-width: 48em) {
+  html { scroll-padding-top: 4.5rem; }
 }
 
 * {
@@ -78,6 +86,17 @@ body {
   border: 0;
 }
 
+/* THE ARCHIVE SEARCH HOLD — the `archive-search-hold` head script in
+   vite.config.js sets the class; blog-search.vue removes it once the list is
+   filtered, and the script's 3 s timer is the failsafe. The rule lives here,
+   in the render-blocking sheet, because the archive's own CSS is deferred and
+   would land after the first paint it has to cover. */
+.kyo-search-hold .blog-all__list,
+.kyo-search-hold .blog-pagination,
+.kyo-search-hold .blog-footer {
+  visibility: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -126,7 +145,7 @@ body {
  * feature, so the Firefox lever is faster first paint (WORK BOARD C6, critical
  * CSS). Progressive enhancement, no JS, cannot fail closed. It hides the gap
  * rather than shortening it — the document still has to load, which is why the
- * use-warm-route document prefetch (ad-w18) stays. */
+ * use-link-warmer.js document prefetch (ad-w18) stays. */
 @view-transition {
   navigation: auto;
 }

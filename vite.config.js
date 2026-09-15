@@ -307,6 +307,50 @@ export default defineConfig(({ mode }) => {
         },
       },
 
+      /* THE ARCHIVE SEARCH HOLD. An archive URL that carries ?search= (or the
+         old ?q=) would paint its prerendered list unfiltered until the chunks
+         hydrate, then drop to the matches: a flash and a layout shift. So
+         before first paint <html> gets `kyo-search-hold`, which keeps the
+         list, the pager and the footer visibility:hidden (_global.scss — the
+         render-blocking sheet; the archive's own CSS is deferred), and
+         blog-search.vue removes it on mount, right after it emits the
+         filtered rows. Three seconds is the failsafe. An invisible box logs
+         no layout shift, and with JavaScript off nothing is held. */
+      {
+        name: 'archive-search-hold',
+        apply: 'build',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html) {
+            const snippet = '<script>(function(){var d=document.documentElement;if(/^(\\/es)?\\/blog(\\/page\\/\\d+)?\\/?$/.test(location.pathname)&&/[?&](search|q)=[^&]/.test(location.search)){d.classList.add("kyo-search-hold");setTimeout(function(){d.classList.remove("kyo-search-hold")},3e3)}})();</script>';
+            return html.replace(/<meta name="viewport"[^>]*>/, (m) => m + snippet);
+          },
+        },
+      },
+
+      /* THE ARCHIVE'S FRAGMENTS LAND IN FIREFOX TOO. Firefox scrolls to a
+         #fragment once, about 90 ms in, before the archive's deferred
+         stylesheets swap in (~123 ms), and never corrects: /blog#all-posts
+         ended 646px off at 390 and 467px off at 1440, so every tag chip,
+         pager link and section link mis-landed. Chromium re-anchors on its
+         own, but not always: #pipeline landed 40px low (the marquee's height)
+         when the marquee's deferred CSS arrived after the load. So on `load`
+         this aligns the target, then again whenever the document resizes,
+         for 2.5 s — until the reader scrolls, types or presses, which stops
+         it at once. Archive paths only: on the landing it moved Chromium's
+         /#faq off the nav. */
+      {
+        name: 'archive-fragment-anchor',
+        apply: 'build',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html) {
+            const snippet = '<script>(function(){var h=location.hash,id;if(h.length<2||!/^(\\/[a-z]{2})?\\/blog(\\/page\\/\\d+)?\\/?$/.test(location.pathname))return;try{id=decodeURIComponent(h.slice(1))}catch(x){return}var m=0,s=function(){m=1};["wheel","touchmove","keydown","pointerdown"].forEach(function(e){addEventListener(e,s,{once:true,passive:true})});addEventListener("load",function(){var t0=Date.now(),a=function(){if(m||Date.now()-t0>2500)return;var t=document.getElementById(id);if(t)t.scrollIntoView({block:"start",behavior:"instant"})};a();if(window.ResizeObserver){var r=new ResizeObserver(a);r.observe(document.documentElement);setTimeout(function(){r.disconnect()},2500)}},{once:true})})();</script>';
+            return html.replace(/<meta name="viewport"[^>]*>/, (m) => m + snippet);
+          },
+        },
+      },
+
     ],
 
     ssgOptions: {

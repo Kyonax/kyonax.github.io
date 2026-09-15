@@ -169,6 +169,57 @@ test('a click on a footnote\'s words goes back to its reference, and the arrow d
 });
 
 /*
+ * THE NUMBER IS PART OF THE WAY BACK. The owner hovered a note and the fill
+ * began at the arrow while "1." sat outside it, in the list's 40px gutter —
+ * outside the fill and outside the click target. The stretched target now
+ * starts at the list's edge, so the number is inside both, and the marker
+ * takes the accent while its note is hovered or focused. Measured in both
+ * engines first: before the fix every point across the gutter hit the <ol>.
+ */
+for (const width of [390, 1280]) {
+  test(`at ${width}px a footnote's number is inside its way back @firefox`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(SINK_EN);
+    await settle(page);
+
+    const note = page.locator('li.org-footnote').first();
+    await note.scrollIntoViewIfNeeded();
+
+    /* Five points across the gutter, at the first line's middle. */
+    const sweep = await note.evaluate((li) => {
+      const ol = li.parentElement.getBoundingClientRect();
+      const box = li.getBoundingClientRect();
+      const y = box.top + 12;
+      return [0.1, 0.3, 0.5, 0.7, 0.9].map((f) => {
+        const x = ol.left + (box.left - ol.left) * f;
+        const top = document.elementFromPoint(x, y);
+        const a = top && top.closest('a');
+        return { x: Math.round(x), hit: a ? `${a.className}|${a.getAttribute('href')}` : String(top && top.tagName) };
+      });
+    });
+    const back = await note.locator('.org-footnote-back').getAttribute('href');
+    for (const { x, hit } of sweep) {
+      expect(hit, `x=${x}px in the number's gutter is not the note's way back`).toBe(`org-footnote-back|${back}`);
+    }
+
+    /* The hovered fill starts at the list's edge, not at the arrow. */
+    const gutter = await note.evaluate((li) => li.getBoundingClientRect().left - li.parentElement.getBoundingClientRect().left);
+    const box = await note.boundingBox();
+    const colour = () => note.evaluate((li) => getComputedStyle(li, '::marker').color);
+    const before = await colour();
+    await page.mouse.move(box.x + box.width / 2, box.y + 12);
+    const left = await note.locator('.org-footnote-back').evaluate((a) => Number.parseFloat(getComputedStyle(a, '::after').left));
+    expect(Math.round(left), 'the hovered fill still starts at the arrow').toBe(-Math.round(gutter));
+    await expect.poll(colour, { message: 'the number does not answer the hover' }).not.toBe(before);
+
+    /* And a click on the number itself goes back. */
+    const ol = await note.evaluate((li) => li.parentElement.getBoundingClientRect().left);
+    await page.mouse.click(ol + gutter / 2, box.y + 12);
+    await expect.poll(() => page.evaluate(() => location.hash), { message: 'a click on the number did not go back' }).toBe(back);
+  });
+}
+
+/*
  * THE BOOK'S FACES ARE THE SITE'S. org2html's style book declares @font-face
  * for Geomanist and SpaceMono at /blog/fonts/, and sync-blog.mjs copies the
  * book but not those files — so every article asked for four fonts and got the
@@ -387,18 +438,26 @@ for (const { path, archive } of TWINS) {
     const canonical = archive.replace(/\/$/, '');
     for (const { href, tag } of rows) {
       expect(href, `the "${tag}" chip does not search the ${archive} archive`)
-        .toBe(`${canonical}?q=${encodeURIComponent(tag)}#all-posts`);
+        .toBe(`${canonical}?search=${encodeURIComponent(tag)}#all-posts`);
     }
 
-    /* And the archive honours it: the field arrives filled and filtered. */
+    /* And the archive honours it: the field arrives filled, and All Posts
+       ITSELF is filtered — the article the chip came from is one of its rows
+       (it carries the tag), and the list holds exactly as many rows as the
+       status line counts. */
     await chips.first().click();
     await page.waitForURL((u) => u.pathname.replace(/\/$/, '') === canonical
-      && u.searchParams.get('q') === rows[0].tag);
+      && u.searchParams.get('search') === rows[0].tag);
     await settle(page);
-    await expect(page.locator('#blog-search-input'), `${archive} did not prefill the search from ?q=`)
+    await expect(page.locator('#blog-search-input'), `${archive} did not prefill the search from ?search=`)
       .toHaveValue(rows[0].tag);
-    await expect(page.locator('.blog-search__row').first(), `${archive} did not run the search for "${rows[0].tag}"`)
-      .toBeVisible();
+    const list = page.locator('section#all-posts ul.blog-all__list > li.blog-all__row');
+    await expect(list.filter({ has: page.locator(`a[href="${path}"]`) }), `${archive} did not filter All Posts to "${rows[0].tag}" — the article that carries it is not a row`)
+      .toHaveCount(1);
+    const status = page.locator('p.blog-search__status[role="status"]');
+    await expect(status, `${archive}'s status line does not count the matches for "${rows[0].tag}"`).toHaveText(/^[1-9]\d* /);
+    const counted = Number.parseInt(await status.textContent(), 10);
+    await expect(list, `${archive} lists a different number of rows than its status line counts`).toHaveCount(counted);
   });
 }
 

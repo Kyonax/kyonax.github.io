@@ -45,7 +45,7 @@ import { loadBlogIndex } from '@composables/use-blog';
 import useSeoHead from '@composables/use-seo-head';
 import manifest from '@data/blog/manifest.json';
 import { BLOG_INDEX_URLS, blogAlternatesFor, blogUrlsFor } from '@seo/blog-routes';
-import { buildBlogJsonLd } from '@seo/json-ld';
+import { archivePageHead, buildBlogJsonLd } from '@seo/json-ld/blog-page';
 import UiSectionHeader from '@ui/section-header.vue';
 import { useHead } from '@unhead/vue';
 import BlogCard from '@views/components/blog/blog-card.vue';
@@ -53,7 +53,7 @@ import BlogHero from '@views/components/blog/blog-hero.vue';
 import BlogPagination from '@views/components/blog/blog-pagination.vue';
 import BlogSearch from '@views/components/blog/blog-search.vue';
 import DocumentPage from '@views/components/document-page.vue';
-import { computed, defineAsyncComponent, hydrateOnIdle } from 'vue';
+import { computed, defineAsyncComponent, hydrateOnIdle, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
@@ -84,18 +84,30 @@ const BlogPipelineBand = defineAsyncComponent({
    archive ships as HTML rather than appearing after hydration. */
 const page = await loadBlogIndex(route.path);
 
+/* PAGE 2 AND LATER ARE LISTS: the same <h1> with "Page N of M" under it, a
+   <title> and description of their own, and none of page 1's hero — so none
+   of its chunks, since vite-ssg preloads only what a render touched. Null on
+   page 1. The graph quotes the same strings (archivePageHead). */
+const page_head = archivePageHead(locale.value, page);
+
 useSeoHead({
   keyPrefix: 'kyo-web.blog.meta',
+  title: page_head?.title,
+  description: page_head?.description,
   urls: blogUrlsFor(route.path) || BLOG_INDEX_URLS,
   alternates: blogAlternatesFor(route.path),
   ogType: 'website',
 });
 
+/* The page itself goes in: its url, number and posts are what the
+   CollectionPage and the Blog's blogPost describe. */
 useHead({
   script: [{
     key: 'kyo-site-jsonld',
     type: 'application/ld+json',
-    innerHTML: computed(() => JSON.stringify(buildBlogJsonLd({ locale: locale.value }))),
+    innerHTML: computed(() => JSON.stringify(
+      buildBlogJsonLd({ locale: locale.value, page }),
+    )),
   }],
 });
 
@@ -129,6 +141,13 @@ const has_recent = computed(() => has_lead.value && recent.value.length >= 2);
    chain. The result was ~700px of void beside a 300px ribbon of text. */
 const lead_has_media = computed(() => Boolean(page && page.featured && page.featured.cardImage));
 
+/* THE SEARCH FILTERS THE LIST BELOW ITSELF. BlogSearch emits the matching
+   rows of every archive page of the locale — or null when nothing is
+   searched, and the list is then this page's own posts. The pager steps aside
+   while a search is on: its pages number the archive, not the result. Null on
+   the server and on the first client render, so the two lists are the same. */
+const results = ref(null);
+
 
 </script>
 
@@ -137,9 +156,18 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
     <template #header>
       <!-- The page head: the h1 and its subtitle beside the galaxy. No eyebrow,
            no buttons, no accent — the archive below keeps those for state. -->
-      <BlogHero :corpus="corpus" />
-      <BlogMarquee :corpus="corpus" />
-      <BlogPipelineBand />
+      <!-- The section ids are the same in both locales (the toggle keeps the
+           hash) and ride each block's root as a fallthrough attribute. -->
+      <BlogHero
+        id="intro"
+        :corpus="corpus"
+        :compact="page_head?.compact"
+        :page-label="page_head?.label"
+      />
+      <template v-if="!page_head?.compact">
+        <BlogMarquee id="corpus" :corpus="corpus" />
+        <BlogPipelineBand id="pipeline" />
+      </template>
     </template>
 
     <p v-if="!page || page.posts.length === 0" class="doc-rich blog-archive__empty">
@@ -151,6 +179,7 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
            and this is the one piece the page is built around. -->
       <article
         v-if="has_lead"
+        id="latest"
         class="blog-lead"
         :class="{ 'blog-lead--media': lead_has_media }"
       >
@@ -193,27 +222,40 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
       </article>
 
       <!-- Three more. No heading — they read as what follows the lead. -->
-      <ul v-if="has_recent" class="blog-recent" role="list">
+      <ul
+        v-if="has_recent"
+        id="recent"
+        class="blog-recent"
+        role="list"
+      >
         <li v-for="post in recent" :key="post.url" class="blog-recent__item">
           <BlogCard :post="post" />
         </li>
       </ul>
 
       <!-- The one labelled band. -->
-      <!-- The id is where an article's tag chips land (?q=<tag>#all-posts):
-           on the search and its results, not on the hero above. -->
+      <!-- The id is where an article's tag chips land
+           (?search=<tag>#all-posts): on the search and the list it filters,
+           not on the hero above. -->
       <section id="all-posts" class="blog-all" :aria-label="t('kyo-web.blog.all-posts')">
         <UiSectionHeader :title="t('kyo-web.blog.all-posts')" />
 
-        <BlogSearch :locale="locale" />
+        <BlogSearch :posts="page.all" @results="results = $event" />
 
         <ul class="blog-all__list">
-          <li v-for="post in page.posts" :key="post.url" class="blog-all__row">
+          <li
+            v-for="post in results || page.posts"
+            :key="post.url"
+            class="blog-all__row"
+          >
             <a class="blog-all__link" :href="post.url">
-              <span class="blog-all__text">
-                <span class="blog-all__title">{{ post.title }}</span>
-                <span class="blog-all__excerpt">{{ post.description }}</span>
-              </span>
+              <!-- Each row is a heading under "All posts", so the archive has
+                   an outline for crawlers and screen readers (the owner's Step
+                   1 decision); v-text keeps the text exact for hydration. -->
+              <div class="blog-all__text">
+                <h3 class="blog-all__title" v-text="post.title" />
+                <p class="blog-all__excerpt" v-text="post.description" />
+              </div>
               <span class="blog-all__meta">
                 <time class="blog-all__date" :datetime="post.date">{{ date_fmt(post.date) }}</time>
                 <span v-if="post.readingTime" class="blog-all__reading">
@@ -224,7 +266,7 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
           </li>
         </ul>
 
-        <BlogPagination :page="page" />
+        <BlogPagination v-if="!results" :page="page" />
       </section>
     </template>
   </DocumentPage>
@@ -488,15 +530,20 @@ const lead_has_media = computed(() => Boolean(page && page.featured && page.feat
  * rather than by typeface. Geomanist ships Regular and Bold only, and Bold at
  * this size shouts, so the lead is carried by size and brightness.
  */
+/* An h3 and a p now, so the browser's heading weight and block margins are
+   taken back: the row looks exactly as it did as two spans. */
 .blog-all__title {
+  margin: 0;
   font-family: "Geomanist", sans-serif;
   font-size: var(--fs-400);
+  font-weight: 400;
   line-height: 1.3;
   color: var(--clr-neutral-100);
   transition: color 0.2s ease;
 }
 
 .blog-all__excerpt {
+  margin: 0;
   font-family: "Geomanist", sans-serif;
   line-height: 1.5;
   color: var(--clr-neutral-300);

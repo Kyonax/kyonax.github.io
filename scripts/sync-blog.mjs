@@ -40,10 +40,6 @@ const DEST_DATA = join(REPO_ROOT, 'src/data/blog');
 const DEST_MANIFEST = join(DEST_DATA, 'manifest.json');
 const DEST_POSTS = join(DEST_DATA, 'posts');
 
-/* Served, not bundled: the search index is fetched on demand so it never counts
-   against the main-bundle budget. */
-const DEST_SEARCH = join(REPO_ROOT, 'public/blog-search');
-
 /*
  * THE ENGINE'S DEFAULT STYLE BOOK, served rather than bundled.
  *
@@ -151,7 +147,10 @@ if (!existsSync(manifestSrc)) {
 /* Replace rather than merge: a post deleted in kyo-blog must disappear here, and a
    stale body file left behind would be a route the manifest no longer lists. */
 rmSync(DEST_POSTS, { recursive: true, force: true });
-rmSync(DEST_SEARCH, { recursive: true, force: true });
+/* The archive search filters the rich index the archive already loads, so
+   nothing syncs to public/blog-search/ any more. A checkout synced before that
+   still holds a copy, and public/ ships whole into dist/, so it is swept. */
+rmSync(join(REPO_ROOT, 'public/blog-search'), { recursive: true, force: true });
 
 cpSync(manifestSrc, DEST_MANIFEST);
 
@@ -168,14 +167,6 @@ if (existsSync(join(SRC, 'posts'))) {
 }
 
 const m = JSON.parse(readFileSync(DEST_MANIFEST, 'utf8'));
-
-mkdirSync(DEST_SEARCH, { recursive: true });
-for (const locale of m.locales) {
-  const f = join(SRC, `blog-search-${locale}.json`);
-  if (existsSync(f)) {
-    cpSync(f, join(DEST_SEARCH, `blog-search-${locale}.json`));
-  }
-}
 
 /*
  * A MISSING BOOK IS A WARNING, NOT A FAILURE — the same contract the rest of

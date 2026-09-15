@@ -17,9 +17,10 @@
  * carries an href; the last is the current page and renders as plain text with
  * aria-current, per the same pattern the BreadcrumbList follows (its final
  * ListItem carries no `item`).
+ *
+ * The links carry no warm-on-hover handler: the site-wide link warmer
+ * (main.js, use-link-warmer.js) warms every route link, these included.
  */
-
-import { warmRoute } from '@composables/use-warm-route';
 
 defineProps({
   items: {
@@ -33,10 +34,6 @@ defineProps({
   },
   label: { type: String, required: true },
 });
-
-/* Same prediction-prefetch the resume's back link used: these are separate
-   prerendered documents, so the byte the visitor waits on is the HTML. */
-const warm = (href) => warmRoute(href);
 </script>
 
 <template>
@@ -48,8 +45,6 @@ const warm = (href) => warmRoute(href);
           v-if="item.href"
           :href="item.href"
           class="ui-crumbs__link"
-          @pointerenter="warm(item.href)"
-          @focus="warm(item.href)"
         >{{ item.label }}</a>
         <span v-else class="ui-crumbs__current" aria-current="page">{{ item.label }}</span>
       </li>

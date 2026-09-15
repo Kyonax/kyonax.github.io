@@ -183,11 +183,12 @@ watch(locale, (next) => {
        page, including a path the manifest does not name, which then renders
        the archive's own empty state rather than landing chrome.
        KEYED BY PATH because the article awaits its post ONCE, in setup. The
-       language toggle is a client-side push from one article to its twin, and
-       without a key Vue patched the same instance: the URL, <html lang> and the
-       date went Spanish while the title and body stayed English. A new key is
-       a new instance, so Suspense holds the old article until the new one has
-       loaded, then swaps — head, JSON-LD and rail included. -->
+       language toggle used to be a client-side push from one article to its
+       twin, and without a key Vue patched the same instance: the URL, <html
+       lang> and the date went Spanish while the title and body stayed English.
+       On blog paths the toggle is a full page load now (use-language.js), so
+       no client-side move reaches this view; the key stays so that one, if it
+       ever returns, gets a new instance instead of stale text. -->
   <Suspense v-else-if="isBlogPost">
     <BlogPostView :key="route.path" />
   </Suspense>

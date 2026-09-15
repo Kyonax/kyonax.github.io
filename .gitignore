@@ -175,7 +175,6 @@ PR.org
 # Blog corpus synced from kyo-blog by scripts/sync-blog.mjs.
 # CONTENT lives in that repo; a copy here is a build artefact, never source.
 src/data/blog/
-public/blog-search/
 # The engine's Style Book, minified in by sync-blog.mjs. Owned by kyo-blog.
 public/blog/style-book.css
 # The engine's interactive runtime, minified in the same way. Owned by kyo-blog.

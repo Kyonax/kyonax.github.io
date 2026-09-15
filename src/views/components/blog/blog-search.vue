@@ -5,77 +5,170 @@
  */
 
 /*
- * Client-side archive search.
+ * The archive's search. It filters ALL POSTS ITSELF, and the URL carries it.
  *
- * The index is FETCHED, not imported: kyo-blog emits one small JSON per locale
- * carrying titles, excerpts and tags, and it is served from /blog-search/. An
- * import would bundle it into the page chunk and count against the site's
- * 180 KB main-bundle budget for every visitor, including the ones who never
- * type anything.
+ * NO FETCH AND NO RESULTS PANEL. It used to fetch its own index from
+ * /blog-search/ and draw a second list of links under the field, so a result
+ * and an archive entry were two different objects on one page. Now `posts` is
+ * every post of the locale, newest first — use-blog.js reads them from the
+ * rich index the archive has already loaded, so a search costs no request —
+ * and what this emits is the rows All Posts should show: `null` when nothing
+ * is searched (blog.vue falls back to the page's own posts), an array
+ * otherwise, spanning every archive page of the locale.
  *
- * It is also strictly PROGRESSIVE. The full archive is already on the page as
- * prerendered HTML; this only filters what is visible. With JavaScript off the
- * input never appears and the archive is untouched, which is why the control
- * is rendered only after the index has loaded.
+ * PRERENDERED, so nothing moves when it hydrates. The server renders with an
+ * EMPTY query string, which is why everything that reads the URL waits for
+ * onMounted: read in setup, the first client render would differ from the
+ * prerendered HTML.
  *
- * THE SHAPE is a framed panel, not a rounded form control: a monospace label,
- * a bordered field with a `/` prefix, and results that reuse the archive's own
- * hairline row — so a search result and an archive entry
- * read as the same object rather than two different lists of links. The prefix
- * is plain ASCII on purpose; a Nerd Font glyph here would depend on the icon
- * subset actually reaching the browser, and a cached older copy renders tofu.
+ * THE URL IS THE STATE. ?search=<term> is written back with replaceState —
+ * never push: a search refines this page, it is not a new one, so Back leaves
+ * the archive instead of replaying every word typed. vue-router's state object
+ * goes back untouched, and so do the hash and every other parameter: Umami
+ * ignores a query-only change (data-exclude-search) but counts a hash change
+ * as a pageview. An article's tag chips used to link ?q=<tag>; that alias is
+ * still read, and rewritten to ?search= on arrival.
+ *
+ * ONE DEBOUNCE FOR THE LIST, THE STATUS LINE AND THE URL (250 ms). A screen
+ * reader hears one count when the typing stops, not one per key, and the list
+ * never disagrees with the line that counts it. Enter, Esc, the clear button,
+ * leaving the field and leaving the page all settle it at once.
+ *
+ * THE SHAPE is a framed field with a plain ASCII `/` prefix — a Nerd Font
+ * glyph would depend on the icon subset reaching the browser, and a cached
+ * older copy renders tofu — and a status line that IS the gap between the
+ * field and the list, so a count appearing pushes nothing down.
  */
 
-import { computed, onMounted,ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
-  locale: { type: [String, Object], required: true },
+  posts: { type: Array, required: true },
 });
+
+const emit = defineEmits(['results']);
 
 const { t } = useI18n();
 
-const index = ref(null);
-const query = ref('');
+const MAX_LENGTH = 100;
+const DEBOUNCE_MS = 250;
+/* Set on <html> by the head script vite.config.js injects when an archive URL
+   carries ?search= or ?q=: it keeps the list, the pager and the footer
+   invisible until the list below is filtered, so the unfiltered archive never
+   flashes (and an invisible box logs no layout shift). */
+const HOLD_CLASS = 'kyo-search-hold';
 
-onMounted(async () => {
-  /* An article's tag chips link here as ?q=<tag>. Every blog link is a full
-     page load, so reading it once on mount is enough; the field and the
-     results appear already filtered when the index lands. */
-  query.value = new URLSearchParams(window.location.search).get('q') || '';
-  const code = typeof props.locale === 'string' ? props.locale : props.locale.value;
-  try {
-    const res = await fetch(`/blog-search/blog-search-${code}.json`);
-    if (res.ok) {
-      index.value = await res.json();
-    }
-  } catch {
-    /* No index, no search box. The archive below is unaffected. */
-    index.value = null;
+const query = ref('');
+const status = ref('');
+const input_ref = ref(null);
+let timer = 0;
+
+/* Accent- and case-insensitive: NFD splits "á" into "a" plus a combining mark,
+   and the class strips the whole combining block (U+0300–U+036F). */
+const fold = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+/* `search` wins over the legacy `q`; trimmed, and never longer than the field
+   would let anyone type. */
+const readQuery = () => {
+  const params = new URLSearchParams(location.search);
+  return (params.get('search') || params.get('q') || '')
+    .trim()
+    .slice(0, MAX_LENGTH);
+};
+
+/* Title, excerpt and tags, one haystack per post. The newline keeps a term
+   from matching across two fields, since a search field cannot hold one. */
+const matchPosts = (term) => {
+  const needle = fold(term);
+  return props.posts.filter((post) => fold(
+    [post.title, post.excerpt, ...(post.tags || [])].join('\n'),
+  ).includes(needle));
+};
+
+const writeQuery = (term) => {
+  const url = new URL(location.href);
+  url.searchParams.delete('q');
+  if (term) {
+    url.searchParams.set('search', term);
+  } else {
+    url.searchParams.delete('search');
   }
+  if (url.href !== location.href) {
+    history.replaceState(history.state, '', url);
+  }
+};
+
+const statusFor = (rows, term) => {
+  if (!rows) {
+    return '';
+  }
+  if (rows.length === 0) {
+    return t('kyo-web.blog.search-empty', { term });
+  }
+  return rows.length === 1
+    ? t('kyo-web.blog.search-count-one', { count: 1, term })
+    : t('kyo-web.blog.search-count-other', { count: rows.length, term });
+};
+
+const flush = () => {
+  clearTimeout(timer);
+  timer = 0;
+  const term = query.value.trim();
+  const rows = term ? matchPosts(term) : null;
+  emit('results', rows);
+  status.value = statusFor(rows, term);
+  writeQuery(term);
+};
+
+const schedule = () => {
+  clearTimeout(timer);
+  timer = setTimeout(flush, DEBOUNCE_MS);
+};
+
+/* Blur and pagehide: a reader who clicks a result mid-debounce still leaves
+   the term in the URL, so Back returns to the same filtered list. */
+const flushPending = () => {
+  if (timer) {
+    flush();
+  }
+};
+
+/* The clear button is hidden by visibility, so it leaves the tab order the
+   moment the field empties — focus goes back to the field, not to <body>. */
+const clear = () => {
+  query.value = '';
+  flush();
+  input_ref.value.focus();
+};
+
+onMounted(() => {
+  query.value = readQuery();
+  if (query.value) {
+    flush();
+  }
+  window.addEventListener('pagehide', flushPending);
+  /* Released right after the filtered rows are emitted, and that is already
+     late enough: blog.vue re-renders the list in a microtask, and every
+     microtask runs before the browser paints again. */
+  document.documentElement.classList.remove(HOLD_CLASS);
 });
 
-const fold = (s) => String(s || '')
-  .normalize('NFD')
-  .replace(/[̀-ͯ]/g, '')
-  .toLowerCase();
-
-const results = computed(() => {
-  if (!index.value || !query.value.trim()) {
-    return null;
-  }
-  const q = fold(query.value.trim());
-  return index.value.filter((row) => fold(row.title).includes(q)
-    || fold(row.excerpt).includes(q)
-    || (row.tags || []).some((tag) => fold(tag).includes(q)));
+/* Only a client-side route change unmounts this without a page load, and then
+   a pending write would land this archive's term on the next route's URL. */
+onBeforeUnmount(() => {
+  clearTimeout(timer);
+  window.removeEventListener('pagehide', flushPending);
 });
 </script>
 
 <template>
-  <div v-if="index" class="blog-search">
-    <!-- The label is the PLACEHOLDER now, not a caption stacked above the
-         field. It stays in the DOM as an sr-only <label> because a placeholder
-         is not an accessible name — it disappears the moment anyone types. -->
+  <!-- A FORM, so role=search is a landmark on every engine the floor names
+       and Enter settles the term at once. Before hydration the same Enter
+       submits ?search=<term>#all-posts natively, and that load filters. -->
+  <form class="blog-search" role="search" @submit.prevent="flush">
+    <!-- The placeholder is not an accessible name — it disappears the moment
+         anyone types — so the name is an sr-only <label>. -->
     <label class="sr-only" for="blog-search-input">
       {{ t('kyo-web.blog.search-label') }}
     </label>
@@ -84,51 +177,52 @@ const results = computed(() => {
       <span class="blog-search__prefix" data-text="/" aria-hidden="true" />
       <input
         id="blog-search-input"
+        ref="input_ref"
         v-model="query"
         class="blog-search__input"
         type="search"
+        name="search"
+        :maxlength="MAX_LENGTH"
         autocomplete="off"
         :placeholder="t('kyo-web.blog.search-placeholder')"
+        @input="schedule"
+        @blur="flushPending"
+        @keydown.esc="clear"
       />
+      <!-- VISIBILITY, not v-if and not a class: its box is always there, so
+           the field never changes width, and it is inline so it is hidden
+           before the deferred stylesheet lands. Hidden is also out of the tab
+           order and the accessibility tree. -->
+      <button
+        class="blog-search__clear"
+        type="button"
+        :style="{ visibility: query ? 'visible' : 'hidden' }"
+        :aria-label="t('kyo-web.blog.search-clear')"
+        @click="clear"
+      >
+        <span data-text="×" aria-hidden="true" />
+      </button>
     </div>
 
-    <div v-if="results" class="blog-search__results" role="status">
-      <p v-if="results.length === 0" class="blog-search__empty">
-        {{ t('kyo-web.blog.search-empty') }}
-      </p>
-      <template v-else>
-        <p class="blog-search__count">
-          {{ `${results.length} ${t('kyo-web.blog.search-results')}` }}
-        </p>
-        <ul class="blog-search__list">
-          <li v-for="row in results" :key="row.url" class="blog-search__row">
-            <a class="blog-search__link" :href="row.url">
-              <span class="blog-search__title">{{ row.title }}</span>
-              <span class="blog-search__arrow" data-text="›" aria-hidden="true" />
-            </a>
-          </li>
-        </ul>
-      </template>
-    </div>
-  </div>
+    <!-- An interpolation and nothing else, so it compiles to exactly the
+         text: no whitespace for the HTML minifier to trim out from under the
+         hydration. Empty on the server, so the live region is already in the
+         page when its first count arrives. -->
+    <p class="blog-search__status" role="status">
+      {{ status }}
+    </p>
+  </form>
 </template>
 
 <style lang="scss" scoped>
-/* Sits with the "All posts" heading, not a band away from it. */
-.blog-search { margin-bottom: 1.5rem; }
-
 /* The frame, not the input, carries the border and the focus ring — so the
-   prefix and the field read as one control instead of a glyph parked beside a
-   form element. */
+   prefix, the field and the clear button read as one control instead of
+   glyphs parked beside a form element. The padding is the gutter the list's
+   rows use, so the field's text and theirs share one edge. */
 .blog-search__field {
   display: flex;
   gap: 0.65rem;
   align-items: center;
-  /* The field sits on the SAME measure as the results beneath it — which is
-     now true because BOTH keep their padding and neither pulls it back out
-     with a negative margin. The bleed the two used to share put their text on
-     the sheet edge and was then clipped by the sheet's own `overflow: hidden`,
-     so it cost a gutter and bought nothing. */
   padding: 0.7rem 1.25rem;
   border: 1px solid var(--clr-border-100);
   transition: border-color 0.2s ease;
@@ -168,78 +262,53 @@ const results = computed(() => {
 
   &::placeholder { color: var(--clr-neutral-300); }
 
-  /* WebKit paints its own clear button in a colour the palette never chose. */
-  &::-webkit-search-cancel-button { filter: grayscale(1); }
+  /* The clear button below is the one way to empty the field; WebKit's own
+     would be a second, in a colour the palette never chose. */
+  &::-webkit-search-cancel-button { display: none; }
 }
 
-.blog-search__results { margin-top: 1rem; }
+/*
+ * THE CLEAR BUTTON FILLS THE FRAME'S END. Stretched, and pulled out over the
+ * frame's block and end padding, so the target is the field's full height
+ * and the gutter beside the glyph — about 36px square — without making the
+ * field one pixel taller than the input alone would.
+ */
+.blog-search__clear {
+  align-self: stretch;
+  margin-block: -0.7rem;
+  margin-inline-end: -1.25rem;
+  padding: 0 1.25rem;
+  border: 0;
+  background: none;
+  color: var(--clr-neutral-300);
+  font: inherit;
+  cursor: pointer;
 
-.blog-search__count,
-.blog-search__empty {
-  margin: 0 0 0.5rem;
-  color: var(--clr-neutral-200);
-  font-family: 'SpaceMono', monospace;
-  font-size: var(--fs-100);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.blog-search__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.blog-search__row + .blog-search__row { border-top: 1px solid var(--clr-border-100); }
-
-/* The archive row, at search scale — same hairline, same hover, so a result
-   and an entry are visibly the same kind of thing.
-   THE NUMBERS NOW MATCH THAT CLAIM. At 0.7rem/0.75rem they did not: the fill
-   bled 9px past the column while the text sat flush against its own edge, so a
-   result read as a grey band with the title jammed into the corner rather than
-   as a row. These are blog.vue's own values, scaled only on the block axis
-   because a result is one line where an archive entry is three. */
-.blog-search__link {
-  display: flex;
-  gap: 1rem;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-  transition: background-color 0.15s ease, color 0.15s ease;
-  text-decoration: none;
-  color: inherit;
-
-  /* 3%, the same lift as the archive rows — it was 6%, the slab the owner
-     turned down there. */
   &:hover,
-  &:focus-visible {
-    background-color: color-mix(in srgb, var(--clr-neutral-100) 3%, transparent);
-    color: var(--clr-primary-100);
+  &:focus-visible { color: var(--clr-primary-100); }
 
-    .blog-search__title { color: var(--clr-primary-100); }
-    .blog-search__arrow { transform: translateX(0.2rem); }
-  }
+  /* Inset, or the ring would sit on the frame's own border. */
+  &:focus-visible { outline-offset: -2px; }
 }
 
-/* The archive row's title, so a result reads as the same kind of thing. */
-.blog-search__title {
-  font-family: "Geomanist", sans-serif;
-  font-size: var(--fs-400);
-  line-height: 1.3;
-  color: var(--clr-neutral-100);
-  transition: color 0.2s ease;
-}
-
-/* Transformed at rest as well — the CTA's fix in blog.vue: Firefox rasterises
-   a glyph on a fractional pixel differently once a transform applies, and the
-   arrow hopped vertically at both ends of a sideways nudge. */
-.blog-search__arrow {
-  flex: 0 0 auto;
-  display: inline-block;
-  font-family: 'SpaceMono', monospace;
-  line-height: 1;
-  transform: translateX(0);
-  will-change: transform;
-  transition: transform 0.2s ease;
+/*
+ * THE STATUS LINE IS THE GAP. The 1.5rem between the field and the list is
+ * this line's box, exactly, whether it says anything or not, so a count
+ * appearing moves nothing below it. One line, clipped with an ellipsis: a
+ * hundred-character term would otherwise wrap and push the list down. No
+ * inline padding — its text starts on the field's edge. The face is the
+ * body's SpaceMono, which the archive's sheet never overrides.
+ */
+.blog-search__status {
+  overflow: hidden;
+  height: 1.5rem;
+  margin: 0;
+  color: var(--clr-neutral-200);
+  font-size: var(--fs-100);
+  line-height: 1.5rem;
+  letter-spacing: 0.12em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 </style>

@@ -27,6 +27,13 @@
  * build time, so frame 0 is in the HTML; the frame maths and the loop load
  * beside the archive instead of inside it. The slot lets a caller swap the
  * picture; nothing does today.
+ *
+ * COMPACT ON PAGE 2 AND LATER: the same <h1> and nothing beside it — no
+ * subtitle, no chip, no galaxy. A later page is a list, and the reader came
+ * for its rows. Because the panel is not RENDERED, the galaxy's chunk is
+ * neither preloaded nor fetched there: vite-ssg preloads the modules a render
+ * actually touched. `pageLabel` ("Page 2 of 3") sits under the title as its
+ * own line, never inside it, so every page has one <h1> and it is the same.
  */
 
 import { computed, defineAsyncComponent } from 'vue';
@@ -40,6 +47,10 @@ const props = defineProps({
   /* The manifest's corpus block: { files, bytes, lines, headings, words,
      minutes, byLocale, engine, builtAt }. The hero reads files and bytes. */
   corpus: { type: Object, default: null },
+  /* Page 2 and later: the title alone, in one column. */
+  compact: { type: Boolean, default: false },
+  /* Where the reader is in the archive, already translated; '' on page 1. */
+  pageLabel: { type: String, default: '' },
 });
 
 const { t, locale } = useI18n();
@@ -71,17 +82,18 @@ const chip = computed(() => {
 </script>
 
 <template>
-  <section class="blog-hero">
+  <section class="blog-hero" :class="{ 'blog-hero--compact': compact }">
     <div class="blog-hero__text">
       <h1 class="blog-hero__title">
         {{ t('kyo-web.blog.title') }}
       </h1>
-      <p class="blog-hero__subtitle">
+      <p v-if="pageLabel" class="blog-hero__page" v-text="pageLabel" />
+      <p v-if="!compact" class="blog-hero__subtitle">
         {{ t('kyo-web.blog.meta.description') }}
       </p>
     </div>
 
-    <div class="blog-hero__panel">
+    <div v-if="!compact" class="blog-hero__panel">
       <p v-if="chip" class="blog-hero__chip">
         <span class="blog-hero__chip-mark" aria-hidden="true" />
         <span>{{ chip.lead }}</span>
@@ -123,6 +135,22 @@ const chip = computed(() => {
   }
 }
 
+/*
+ * COMPACT: ONE COLUMN AT EVERY WIDTH, AND A HEAD'S HEIGHT, NOT A HERO'S. The
+ * top rule stays — it is the line under the nav on every archive page — and
+ * the block padding drops to what a list needs above it. Still no inline
+ * padding: the title starts on the sheet's edge.
+ */
+.blog-hero--compact {
+  .blog-hero__text { padding: 20px 0 24px; }
+
+  @include min-media-query(sm) {
+    grid-template-columns: minmax(0, 1fr);
+
+    .blog-hero__text { padding: 40px 0 32px; }
+  }
+}
+
 /* Flush left with no inline padding: the title starts on the sheet's edge,
    the same line everything above and below it starts on. */
 .blog-hero__text {
@@ -148,6 +176,21 @@ const chip = computed(() => {
   line-height: 1;
   letter-spacing: -0.01em;
   text-wrap: balance;
+}
+
+/* "Page 2 of 3", in the chip's voice: monospace capitals, muted. It is a
+   caption, not a state — the pager's current number is the mark that takes
+   the accent — so it stays monochrome. The title's own 16px bottom margin is
+   the gap above it. */
+.blog-hero__page {
+  margin: 0 0 16px;
+  color: var(--clr-neutral-300);
+  font-family: "SpaceMono", monospace;
+  font-size: var(--fs-200);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  &:last-child { margin-bottom: 0; }
 }
 
 .blog-hero__subtitle {

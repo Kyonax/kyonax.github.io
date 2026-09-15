@@ -20,8 +20,15 @@
  *
  * "Newer" and "Older" rather than "Previous" and "Next" — the archive is
  * ordered newest-first, and directional words are ambiguous in that order.
+ *
+ * EVERY LINK LANDS ON THE LIST (#all-posts). A reader paging through the
+ * archive wants the next rows, not page 1's hero again from the top. The
+ * manifest's prev/next and page urls are bare routes — they are also the
+ * canonicals — so the fragment is added here, at render, and nowhere else.
+ * A crawler drops it; the URL it indexes is unchanged.
  */
 
+import { LIST_HASH } from '@seo/archive-pages';
 import { blogPagesFor } from '@seo/blog-routes';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -33,6 +40,8 @@ const props = defineProps({
 const { t } = useI18n();
 
 const pages = computed(() => blogPagesFor(props.page.locale));
+
+const listHref = (url) => `${url}${LIST_HASH}`;
 </script>
 
 <template>
@@ -44,7 +53,7 @@ const pages = computed(() => blogPagesFor(props.page.locale));
     <a
       v-if="page.prev"
       class="blog-pagination__step"
-      :href="page.prev"
+      :href="listHref(page.prev)"
       rel="prev"
     >
       <span aria-hidden="true" data-text="‹" />
@@ -66,7 +75,7 @@ const pages = computed(() => blogPagesFor(props.page.locale));
         <a
           v-else
           class="blog-pagination__num"
-          :href="p.url"
+          :href="listHref(p.url)"
           :aria-label="`${t('kyo-web.blog.pagination-page')} ${p.number}`"
         >{{ p.number }}</a>
       </li>
@@ -75,7 +84,7 @@ const pages = computed(() => blogPagesFor(props.page.locale));
     <a
       v-if="page.next"
       class="blog-pagination__step"
-      :href="page.next"
+      :href="listHref(page.next)"
       rel="next"
     >
       {{ t('kyo-web.blog.pagination-next') }}

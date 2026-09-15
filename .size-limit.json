@@ -93,7 +93,7 @@
     "gzip": true
   },
   {
-    "name": "blog index chunk (archive + the landing hero: h1, chip, galaxy slot; the ?q= tag prefill; 7.02 kB measured 2026-09-11, the hero ~1.1 KB of it)",
+    "name": "blog index chunk (archive + the landing hero: h1, chip, galaxy slot; the archive search: prerendered field, ?search= URL state, status line, All Posts filter; the compact page-N header; 7.57 kB measured 2026-09-15 on vite 8, the hero ~1.1 KB of it; raised from 7.25 KB because splitting the search out would put a chunk on the critical path of every ?search= link)",
     "path": [
       "dist/assets/blog-*.{js,css}",
       "!dist/assets/blog-post-*",
@@ -103,7 +103,7 @@
       "!dist/assets/blog-support-*",
       "!dist/assets/blog-series-*"
     ],
-    "limit": "7.25 KB",
+    "limit": "7.75 KB",
     "gzip": true
   },
   {

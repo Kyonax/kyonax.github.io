@@ -69,8 +69,8 @@ const BANNER = '.cookie-consent';
 const UMAMI_HOST = /(^|\.)umami\.(is|dev)$/;
 const GOOGLE_HOST = /(^|\.)(googletagmanager\.com|google-analytics\.com|analytics\.google\.com)$/;
 
-const ARTICLE_EN = PAGES.find((r) => r.name === 'article EN').path;
-const ARTICLE_ES = PAGES.find((r) => r.name === 'article ES').path;
+const LANDING_EN = PAGES.find((r) => r.name === 'landing EN').path;
+const LANDING_ES = PAGES.find((r) => r.name === 'landing ES').path;
 
 const strip = (p) => p.replace(/\/$/, '');
 
@@ -176,21 +176,21 @@ for (const route of PAGES) {
 }
 
 /*
- * ONCE PER PAGE LOAD, NOT PER VIEW. The language toggle is the one client-side
- * move between two articles (every other blog link is a full page load), and
- * the article view is re-created on it. An injection that ran per view instead
- * of per page load would add a second tracker here.
+ * ONCE PER PAGE LOAD, NOT PER VIEW. On a blog path the language toggle is a
+ * full page load now, so the moves left inside one document are the toggle on
+ * the landing, the resume and the privacy page. An injection that ran per view
+ * instead of per page load would add a second tracker here.
  */
 test('a client-side move does not inject a second tracker', async ({ page }) => {
   await guard(page);
-  await page.goto(ARTICLE_EN);
+  await page.goto(LANDING_EN);
   await settle(page);
   const before = (await trackers(page)).length;
-  expect(before, `the article has ${before} trackers before any move, not 1`).toBe(1);
+  expect(before, `the landing has ${before} trackers before any move, not 1`).toBe(1);
 
   await page.locator('.language-toggle__button:visible').first().click();
   await page.locator('#language-option-es:visible').first().click();
-  await expect(page).toHaveURL((u) => strip(u.pathname) === strip(ARTICLE_ES));
+  await expect(page).toHaveURL((u) => strip(u.pathname) === strip(LANDING_ES));
   await settle(page);
   const after = (await trackers(page)).length;
   expect(after, `the switch to ES left ${after} trackers, not 1`).toBe(1);

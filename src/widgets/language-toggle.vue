@@ -11,7 +11,7 @@ import { nextTick,ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
-const { locale, supportedLanguages, setLanguage } = useLanguage();
+const { locale, supportedLanguages, setLanguage, warmLanguage } = useLanguage();
 
 const open = ref(false);
 const root = ref(null);
@@ -22,6 +22,11 @@ useClickOutside(root, () => {
   open.value = false; 
 });
 
+/* Every focus() here passes preventScroll. The toggle lives in the sticky
+   nav, so whatever it focuses is already on screen, yet Chromium still
+   scrolled the page to it: returning focus to the trigger after a pick threw
+   the landing ~450px (half a 900px viewport) back up, and the landing keeps
+   its client-side switch precisely so the reader stays where they were. */
 const focusItem = (idx) => {
   const els = item_refs.value;
   if (!els.length) {
@@ -30,12 +35,26 @@ const focusItem = (idx) => {
   const wrapped = (idx + els.length) % els.length;
   const target = els[wrapped];
   if (target && typeof target.focus === 'function') {
-    target.focus();
+    target.focus({ preventScroll: true });
+  }
+};
+
+/* Warm the other language the moment the reader reaches for it: the pointer
+   arriving on the toggle, or its menu opening, which is also the keyboard's
+   way in. On a blog page that switch is a full document load, so its HTML is
+   worth having in the cache before the click; everywhere else warmLanguage
+   does nothing, and it asks for each URL once however often this runs. */
+const warmOthers = () => {
+  for (const code of supportedLanguages) {
+    if (code !== locale.value) {
+      warmLanguage(code);
+    }
   }
 };
 
 const openMenu = async () => {
   open.value = true;
+  warmOthers();
   await nextTick();
   const idx = supportedLanguages.findIndex((c) => c === locale.value);
   focusItem(idx > -1 ? idx : 0);
@@ -44,7 +63,7 @@ const openMenu = async () => {
 const closeMenu = (returnFocus = true) => {
   open.value = false;
   if (returnFocus && trigger.value && typeof trigger.value.$el?.focus === 'function') {
-    trigger.value.$el.focus();
+    trigger.value.$el.focus({ preventScroll: true });
   }
 };
 
@@ -100,7 +119,7 @@ const setItemRef = (el, idx) => {
 </script>
 
 <template>
-  <div ref="root" class="language-toggle">
+  <div ref="root" class="language-toggle" @pointerenter="warmOthers">
     <UiButton
       ref="trigger"
       variant="primary"
@@ -132,8 +151,10 @@ const setItemRef = (el, idx) => {
         role="none"
       >
         <!-- Only the OTHER language is an Umami event: picking the one you
-             are already in changes nothing (setLanguage does not push), so it
-             is not a toggle and is not counted as one. -->
+             are already in changes nothing (setLanguage goes nowhere), so it
+             is not a toggle and is not counted as one. On the blog the pick
+             is a full page load and the event still lands: the tracker posts
+             it with fetch keepalive before setLanguage leaves the page. -->
         <button
           :id="`language-option-${code}`"
           :ref="(el) => setItemRef(el, idx)"

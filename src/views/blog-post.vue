@@ -171,16 +171,18 @@ const home_href = computed(() => ROUTE_BY_LOCALE[locale.value] || ROUTE_BY_LOCAL
 
 /*
  * THE TAGS ARE A SEARCH, NOT A PAGE PER TAG. Each chip opens this locale's
- * archive with `?q=<tag>`, and blog-search.vue reads `q` on mount and runs the
- * search it already has — so a tag goes somewhere without the site growing a
- * route per tag. The engine files a post's #+FILETAGS under its seo sidecar;
- * a top-level `tags` wins if the engine ever lifts them. The #all-posts hash
- * lands the reader on the search and its results, not on the archive's hero,
- * and the path is the archive's canonical form (no trailing slash), which
- * production serves without the .htaccess 301 the slashed form costs.
+ * archive with `?search=<tag>`, and blog-search.vue reads it on mount and
+ * filters All Posts by it — so a tag goes somewhere without the site growing a
+ * route per tag (the old `?q=` is still read, and rewritten, for the links
+ * already out there). The engine files a post's #+FILETAGS under its seo
+ * sidecar; a top-level `tags` wins if the engine ever lifts them. The
+ * #all-posts hash lands the reader on the search and the list it filters, not
+ * on the archive's hero, and the path is the archive's canonical form (no
+ * trailing slash), which production serves without the .htaccess 301 the
+ * slashed form costs.
  */
 const tags = (post && (post.tags || post.seo?.tags)) || [];
-const tagHref = (tag) => `${blog_href.value}?q=${encodeURIComponent(tag)}#all-posts`;
+const tagHref = (tag) => `${blog_href.value}?search=${encodeURIComponent(tag)}#all-posts`;
 
 /* The engine's HTML with its table of contents in the article's language and
    counted — see dressBlogToc in use-blog.js. */
@@ -190,7 +192,7 @@ const body_html = computed(() => (post ? dressBlogToc(post.html, t('kyo-web.blog
    Home is the site, not a step on the way here, and the row was long enough
    that the crumb that matters — which section you are reading — was third. */
 const crumbs = computed(() => [
-  { label: t('kyo-web.blog.breadcrumb'), href: blog_href.value },
+  { label: t('kyo-web.blog.title'), href: blog_href.value },
   { label: post ? post.title : t('kyo-web.blog.not-found') },
 ]);
 
@@ -1011,7 +1013,26 @@ const formatted_date = computed(() => {
  * with the fill hanging past the column the way the ledger's does. `(0,3,0)`,
  * so the book's `.org-root .org-footnote-back` margin loses whichever sheet
  * loads last.
+ *
+ * THE NUMBER IS PART OF THE WAY BACK. The owner hovered a note and the fill
+ * began at the arrow while "1." sat outside it: the number is the list's
+ * native ::marker, painted in the <ol>'s 40px gutter, outside the <li> the
+ * stretched target covered. Measured in Chromium and Firefox at 390 and 1280:
+ * every point across the gutter hit the <ol>. So the gutter becomes a named
+ * width, the target reaches back across it, and the marker takes the accent
+ * while its note is hovered or focused. The native marker stays (Safari drops
+ * list semantics under list-style: none), and the 24px link box does not move.
  */
+.org-root .org-footnotes > ol {
+  --blog-note-gutter: 40px;
+
+  padding-inline-start: var(--blog-note-gutter);
+}
+
+.org-root .org-footnote:has(> .org-footnote-back:is(:hover, :focus-visible))::marker {
+  color: var(--o2h-accent);
+}
+
 .org-root .org-footnote {
   --blog-note-lift: color-mix(in srgb, var(--clr-neutral-100) 3%, transparent);
 
@@ -1032,7 +1053,7 @@ const formatted_date = computed(() => {
 
   &::after {
     position: absolute;
-    inset: 0;
+    inset: 0 0 0 calc(var(--blog-note-gutter, 0px) * -1);
     transition: background-color 0.15s ease, box-shadow 0.15s ease;
     content: "";
   }

@@ -190,7 +190,8 @@ const rowsByUrl = (index, urls = []) => urls
 
 /**
  * Everything an archive page renders: the featured post, the rest of that
- * page's posts, and its prev/next page links.
+ * page's posts, its prev/next page links — and `all`, every post of the
+ * locale, which is what the archive's search filters.
  */
 export const loadBlogIndex = async (path) => {
   const page = blogPageAt(path);
@@ -210,7 +211,13 @@ export const loadBlogIndex = async (path) => {
   const featured = page.number === 1 ? posts[0] || null : null;
   const rest = featured ? posts.slice(1) : posts;
 
-  return { ...page, featured, rest, posts };
+  /* A SEARCH SPANS THE LOCALE, NOT THE PAGE it was opened on, and it needs no
+     request of its own: the rich index is already loaded, its `timeline` is
+     the engine's newest-first order, and its rows carry the title, excerpt
+     and tags blog-search.vue matches. The same row objects `posts` holds. */
+  const all = rowsByUrl(index, index.timeline?.[page.locale] || []);
+
+  return { ...page, featured, rest, posts, all };
 };
 
 export const blogLocales = () => BLOG_MANIFEST.locales || [];

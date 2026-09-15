@@ -52,18 +52,26 @@ const _blogTargets = () => {
 
   for (const [locale, pages] of Object.entries(m.pages || {})) {
     for (const page of pages) {
+      /* blogAlternatesFor's rule, restated: page 1 pairs every locale's
+         index; page N pairs only with a page N that EXISTS, x-default being
+         the default locale's page N, and a page N with no twin carries no
+         hreflang at all — `exactAlts` fails any row beyond these. */
+      const twins = (m.locales || [])
+        .map((l) => [l, (m.pages[l] || [])[page.number - 1]])
+        .filter(([, twin]) => twin);
       const alts = {};
-      for (const l of m.locales || []) {
-        const twin = (m.pages[l] || [])[page.number - 1] || (m.pages[l] || [])[0];
-        if (twin) {
+      if (page.number === 1 || twins.length > 1) {
+        for (const [l, twin] of twins) {
           alts[l] = `${origin}${twin.url}`;
         }
+        const xd = (m.pages[m.defaultLocale] || [])[page.number - 1];
+        if (xd) {
+          alts['x-default'] = `${origin}${xd.url}`;
+        }
       }
-      const first = (m.pages[m.defaultLocale] || [])[0];
-      alts['x-default'] = `${origin}${(first || page).url}`;
       out.push({
         path: toPath(page.url), locale, kind: 'page',
-        canonical: `${origin}${page.url}`, alts,
+        canonical: `${origin}${page.url}`, alts, exactAlts: true,
         /* /blog and /es/blog advertise their own locale's feed, which
            generate-feeds.mjs writes beside the archive. */
         ...(page.number === 1 ? { feed: `${page.url}/feed.xml` } : {}),
@@ -150,6 +158,11 @@ for (const t of TARGETS) {
   for (const [lang, href] of Object.entries(t.alts)) {
     _assert(alts[lang] === href,
       `${t.path}: hreflang=${lang} should be ${href}, found ${alts[lang] || '(missing)'}`);
+  }
+  if (t.exactAlts) {
+    const extra = Object.keys(alts).filter((lang) => !Object.hasOwn(t.alts, lang));
+    _assert(extra.length === 0,
+      `${t.path}: hreflang ${extra.join(', ')} is not part of a reciprocal pair`);
   }
   _assert(/<meta\s+[^>]*property="og:image"[^>]*content="https:\/\/[^"]+"/.test(html),
     `${t.path}: og:image must be absolute HTTPS`);
