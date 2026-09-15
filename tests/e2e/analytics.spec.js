@@ -39,7 +39,7 @@ import { settle } from './viewports.js';
  * One page of every KIND, in both languages. All of them render through
  * App.vue, which is where the banner lived and where the tracker mounts. The
  * error pages are left out on purpose: they are static files in
- * public/error-pages that load no script at all.
+ * public/error-pages that load no tracker, only one inline script.
  */
 const PAGES = [
   { name: 'landing EN', path: '/' },

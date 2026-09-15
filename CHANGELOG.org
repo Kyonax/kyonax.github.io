@@ -73,6 +73,16 @@ it, named the blog in llms.txt, and took the landing's portrait preload and hiri
 blog pages.
 
 ** Added
+- =public/error-pages/*.html= — the ASCII art presses around the pointer, one character at a
+  time: one inline script splits the art into cells and runs the landing page's proximity field
+  (=--p = max(0, 1 − d/R)=, =R= = 2.5 em, eased =.2s=); nothing changes under reduced motion, on a
+  touch screen or without JS. Each page now carries the GPL header; =.htaccess= notes a 7 KB budget.
+- =scripts/shoot-error-pages.mjs= (=npm run shoot:errors=) — 4K captures of the error pages for X:
+  3840×2160 page shots and art close-ups up to 4096 px wide, the brand font injected, any character
+  under the pointer.
+- =tests/e2e/error-pages.spec.js= — the error pages' contract: bytes, header, one inline script, the
+  split, the proximity field against its formula in Chromium and Firefox, the resets, reduced
+  motion, touch, no JS, and the layout unchanged by the split.
 - =src/views/components/blog/blog-hero.vue= — the archive's new head: the h1 and its subtitle
   beside a hairline-split panel holding the chip ("12 .org files parsed · 67 KB → HTML", from the
   manifest, absent when there is no corpus) and the galaxy. On a phone the panel leads, with no

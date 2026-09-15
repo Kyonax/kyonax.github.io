@@ -121,7 +121,7 @@ DirectoryIndex index.html
 
 # === Error pages ============================================================
 # Branded cyberpunk error pages live in /error-pages/. Each is standalone HTML
-# under 6 KB with inline CSS, noindex+nofollow, EN+ES copy, and a redirect
+# under 7 KB with inline CSS and JS, noindex+nofollow, EN+ES copy, and a redirect
 # list back into the site. The 404 surface replaces the SPA-fallback wiring
 # that previously served index.html on every miss.
 ErrorDocument 400 /error-pages/400.html
