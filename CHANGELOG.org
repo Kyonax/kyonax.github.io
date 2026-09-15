@@ -379,6 +379,10 @@ blog pages.
   the page-N header, then the cover pictures, whose URL map grows about 0.09 kB per cover); the
   section rail 2.75 → 3.5 KB (3.30 measured); new entries for the post's nav and series chunks,
   split out of the post chunk so the article stays inside its budget on vite 8.
+- =.github/workflows/ci.yml= (2026-09-15) — the Security Scan's insecure-http filter exempts
+  the sitemap protocol's namespace (=www.sitemaps.org/=) the way it exempts the W3C ones: the
+  =SITEMAP_NS= constant in =check-sitemap.mjs= is a namespace name, not a URL, and it failed the
+  scan on #146.
 
 ** Removed
 - =src/components/cookie-consent.vue= and Google Analytics with it (GA4 =G-6M3P3M2HG5=, Consent
