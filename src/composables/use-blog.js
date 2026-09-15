@@ -26,6 +26,7 @@ import {
   blogPageAt,
   blogPostAt,
   blogSiteUrl,
+  isBlogPostPath,
 } from '@seo/blog-routes';
 
 /* The RICH half of the corpus — titles, descriptions, card images, per-page
@@ -76,23 +77,48 @@ const bodyLoaderFor = (post) => {
  *
  * They are rewritten ONCE, here, so every component that renders navigation
  * stays dumb and no future component has to remember the rule.
+ *
+ * AND A LINK THAT GOES NOWHERE IS DROPPED, NOT RENDERED. The engine relates a
+ * post to the whole corpus, both languages at once, and the prefix above is
+ * the CURRENT post's locale — so a relation that crossed languages became
+ * `/blog/<spanish-slug>` or `/es/blog/<english-slug>`, a route that does not
+ * exist: 8 dead links under the articles, 6 related and a prev and a next.
+ * kyo-blog now scopes relations to the post's locale at the source; this is
+ * the host refusing to print a dead link whatever the data says. A url must
+ * be a post route, and never the post itself — except the series entry the
+ * engine marks `current`, which renders as text and is where the reader is.
+ * Filtered, never renumbered: `position` and `total` stay the engine's.
  */
 const siteRelations = (relations, locale) => {
   if (!relations) {
     return relations;
   }
+  /* `relations.url` is the engine's own route for this document. */
+  const self = blogSiteUrl(relations.url, locale);
   const link = (item) =>
     (item && item.url ? { ...item, url: blogSiteUrl(item.url, locale) } : item);
+  const live = (item) => Boolean(item && item.url)
+    && item.url !== self
+    && isBlogPostPath(item.url);
+  const linkOne = (item) => {
+    const out = link(item);
+    return live(out) ? out : null;
+  };
+  const linkAll = (items) => items
+    .map(link)
+    .filter((item) => live(item) || Boolean(item && item.current));
   return {
     ...relations,
-    prev: link(relations.prev),
-    next: link(relations.next),
-    related: Array.isArray(relations.related) ? relations.related.map(link) : relations.related,
+    prev: linkOne(relations.prev),
+    next: linkOne(relations.next),
+    related: Array.isArray(relations.related)
+      ? linkAll(relations.related)
+      : relations.related,
     series: relations.series
       ? {
         ...relations.series,
         items: Array.isArray(relations.series.items)
-          ? relations.series.items.map(link)
+          ? linkAll(relations.series.items)
           : relations.series.items,
       }
       : relations.series,

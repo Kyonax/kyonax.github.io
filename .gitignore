@@ -179,6 +179,10 @@ src/data/blog/
 public/blog/style-book.css
 # The engine's interactive runtime, minified in the same way. Owned by kyo-blog.
 public/blog/o2h.js
+# The same two under content-hashed names (style-book-<hash>.css,
+# o2h-<hash>.js), which the articles link and .htaccess caches for a year.
+public/blog/style-book-*.css
+public/blog/o2h-*.js
 # Article-body images, served at the deployed path the documents reference.
 public/blog/media/
 src/assets/blog/

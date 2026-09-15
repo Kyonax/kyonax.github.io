@@ -24,7 +24,8 @@
  * layout the deploy workflow creates when it checks the content repo out.
  */
 
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 import { transformSync } from 'esbuild';
@@ -83,6 +84,37 @@ const DEST_RUNTIME = join(DEST_BOOK_DIR, 'o2h.js');
 const O2H_BANNER =
   '/*! o2h.js - (c) 2026 Cristian D. Moreno (@Kyonax) - GPL-3.0-only - @kyonax/org2html'
   + ' - https://github.com/Kyonax/org2html */';
+
+/*
+ * AND EACH ONE AGAIN UNDER A CONTENT-HASHED NAME, SO A READER'S CACHE MAY KEEP IT.
+ *
+ * The book and the runtime are the two files EVERY article loads under a URL
+ * that never changes, and no Cache-Control rule in public/.htaccess matched them.
+ * Each is now ALSO written as `style-book-<hash>.css` / `o2h-<hash>.js`: eight
+ * characters of the content's SHA-256 in base64url, which is exactly the
+ * `-[A-Za-z0-9_-]{8}` that .htaccess makes immutable for a year, the rule every
+ * Vite asset already gets. blog-post.vue links the hashed name, which
+ * vite.config.js defines, falling back to the plain name when no hashed copy
+ * exists (a bare `vite` runs no prebuild, so nothing hashed may be there).
+ *
+ * ONE OF EACH, ALWAYS. public/blog/ is never cleared (the media and the feed
+ * live there too), so every older hashed copy is deleted before the new one is
+ * written. The plain names are still written for ONE release, for the pages a
+ * browser or a crawler cached before the switch; .htaccess gives them 300 s.
+ */
+const HASHED_BOOK = /^style-book-[A-Za-z0-9_-]{8}\.css$/;
+const HASHED_RUNTIME = /^o2h-[A-Za-z0-9_-]{8}\.js$/;
+
+const writeHashed = (stem, ext, pattern, code) => {
+  const name = `${stem}-${createHash('sha256').update(code).digest('base64url').slice(0, 8)}${ext}`;
+  for (const old of readdirSync(DEST_BOOK_DIR)) {
+    if (pattern.test(old) && old !== name) {
+      rmSync(join(DEST_BOOK_DIR, old));
+    }
+  }
+  writeFileSync(join(DEST_BOOK_DIR, name), code);
+  return name;
+};
 
 /* Blog images join the site's own image pipeline, so convert-images.mjs emits their
    AVIF/WebP siblings and records intrinsic dimensions — which is what keeps the
@@ -202,7 +234,9 @@ if (existsSync(bookSrc)) {
   });
   mkdirSync(DEST_BOOK_DIR, { recursive: true });
   writeFileSync(DEST_BOOK, code);
+  const hashed = writeHashed('style-book', '.css', HASHED_BOOK, code);
   line(`style book ${(raw.length / 1024).toFixed(0)} KB -> ${(code.length / 1024).toFixed(0)} KB minified, ${dropped} @font-face rule(s) dropped — the site serves its own faces`);
+  line(`style book served as /blog/${hashed} (and /blog/style-book.css for one release)`);
 } else {
   warn('no styles.css in the blog build — articles will render unstyled');
 }
@@ -213,9 +247,12 @@ const runtimeSrc = join(SRC, 'blog', 'o2h.js');
 if (existsSync(runtimeSrc)) {
   const raw = readFileSync(runtimeSrc, 'utf8');
   const { code } = transformSync(raw, { loader: 'js', minify: true, target: 'es2019' });
+  const shipped = `${O2H_BANNER}\n${code}`;
   mkdirSync(DEST_BOOK_DIR, { recursive: true });
-  writeFileSync(DEST_RUNTIME, `${O2H_BANNER}\n${code}`);
+  writeFileSync(DEST_RUNTIME, shipped);
+  const hashed = writeHashed('o2h', '.js', HASHED_RUNTIME, shipped);
   line(`runtime ${(raw.length / 1024).toFixed(0)} KB -> ${(code.length / 1024).toFixed(0)} KB minified`);
+  line(`runtime served as /blog/${hashed} (and /blog/o2h.js for one release)`);
 } else {
   warn('no o2h.js in the blog build — article embeds will not click to play');
 }

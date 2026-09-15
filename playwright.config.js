@@ -55,5 +55,20 @@ export default defineConfig({
     url: `http://127.0.0.1:${PORT}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
+    /*
+     * PRODUCTION'S CACHE HEADERS, ON REQUEST. vite preview answers every file
+     * `no-cache`, so nothing it serves is ever read back from the HTTP cache.
+     * KYO_PREVIEW_CACHE=prod makes it answer with public/.htaccess's
+     * Cache-Control instead (scripts/preview-cache.mjs, wired in
+     * vite.config.js), and it is what un-skips prefetch.spec.js's cache half:
+     *
+     *   KYO_PREVIEW_CACHE=prod npx playwright test prefetch
+     *
+     * Named here although the preview inherits the environment anyway, so the
+     * contract between the spec and the server is written down in one place.
+     * A preview already running on the port is REUSED as it was started: stop
+     * it first, or the cache half runs against a server that sends no-cache.
+     */
+    env: { KYO_PREVIEW_CACHE: process.env.KYO_PREVIEW_CACHE || '' },
   },
 });

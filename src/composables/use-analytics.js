@@ -18,6 +18,16 @@
  * THE OPT-OUT IS UMAMI'S OWN KEY, `umami.disabled` in localStorage, which the
  * privacy page's toggle sets. The tracker checks it before every send; checking
  * it here as well means an opted-out visitor never downloads the script.
+ *
+ * A PRERENDERED PAGE IS NOT A VISIT, YET. Chromium prerenders a blog page the
+ * reader is only resting on (the speculation rules in vite.config.js): it
+ * loads, hydrates and mounts in the background, and may never be shown.
+ * Umami's script.js has no prerender handling of its own and sends its first
+ * page view once the document is complete, so a tag added then would count a
+ * page nobody opened. So while `document.prerendering` is true the injection
+ * waits for `prerenderingchange`, the moment the page is shown, and the
+ * opt-out is read at that moment. A browser that never prerenders has no
+ * such property, and the tag goes in at mount as before.
  */
 
 import { ANALYTICS } from '@data/data';
@@ -42,6 +52,12 @@ const _inject = () => {
     return;
   }
   if (typeof window === 'undefined' || window.__umami_loaded) {
+    return;
+  }
+  /* The same function, so a second call while still prerendering adds no
+     second listener (the DOM ignores a duplicate), and `once` removes it. */
+  if (document.prerendering) {
+    document.addEventListener('prerenderingchange', _inject, { once: true });
     return;
   }
   if (_opted_out()) {

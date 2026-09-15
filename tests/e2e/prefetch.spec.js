@@ -533,8 +533,10 @@ test.describe('from the HTTP cache', () => {
        prerendered files: exactly what the warmer has to fetch ahead. */
     const archive = new Set(await assetsOf(page, ARCHIVE_EN));
     const need = [...new Set(await assetsOf(page, target))].filter((p) => !archive.has(p));
-    expect(need, 'the article no longer asks for the Style Book').toContain('/blog/style-book.css');
-    expect(need, 'the article no longer asks for o2h.js').toContain('/blog/o2h.js');
+    /* The style book and its runtime are content-hashed now (sync-blog.mjs); the
+       article links the hashed copies. */
+    expect(need.some((p) => /^\/blog\/style-book-[\w-]{8}\.css$/.test(p)), `the article no longer asks for the Style Book among ${need.join(', ')}`).toBe(true);
+    expect(need.some((p) => /^\/blog\/o2h-[\w-]{8}\.js$/.test(p)), `the article no longer asks for o2h.js among ${need.join(', ')}`).toBe(true);
     expect(need.some((p) => /^\/assets\/blog-post-[\w-]{8}\.js$/.test(p)), `no blog-post view chunk among ${need.join(', ')}`).toBe(true);
     expect(need.some((p) => /^\/assets\/blog-post-[\w-]{8}\.css$/.test(p)), `no blog-post stylesheet among ${need.join(', ')}`).toBe(true);
 

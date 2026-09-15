@@ -32,7 +32,7 @@
  *   SCSS additionalData injects @scss/abstracts globally
  */
 
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 
@@ -43,6 +43,9 @@ import browserslistToEsbuild from 'browserslist-to-esbuild';
 import { browserslistToTargets } from 'lightningcss';
 import { defineConfig } from 'vite';
 import { createHtmlPlugin } from 'vite-plugin-html';
+
+import { previewCache } from './scripts/preview-cache.mjs';
+import { ssgPreload } from './scripts/ssg-preload.mjs';
 
 /*
  * Blog routes for the prerender list. A route missing here is silently NOT
@@ -69,6 +72,23 @@ const _blogRoutePaths = () => {
 
 const r = (path) => fileURLToPath(new URL(path, import.meta.url));
 const SCSS_DIR = r('./src/scss');
+
+/*
+ * THE STYLE BOOK AND ITS RUNTIME, BY THEIR CONTENT-HASHED NAMES. sync-blog.mjs
+ * writes `style-book-<hash>.css` and `o2h-<hash>.js` into public/blog/ beside
+ * the plain names, and public/.htaccess caches the hashed ones for a year.
+ * blog-post.vue links whichever name `define` gives it below: the hashed copy,
+ * or the plain name when there is none (a bare `vite` runs no prebuild, so no
+ * sync). Read at config time, which `npm run build` reaches after its sync.
+ */
+const _blogAsset = (hashed, plain) => {
+  try {
+    const hit = readdirSync(r('./public/blog')).find((f) => hashed.test(f));
+    return `/blog/${hit || plain}`;
+  } catch {
+    return `/blog/${plain}`;
+  }
+};
 
 // Canonical routes have NO trailing slash. Any request that arrives with a
 // trailing slash is redirected to the non-slash form. `/` itself is exempt.
@@ -140,9 +160,19 @@ const applyDevMiddleware = (server) => {
 const applyPreviewMiddleware = (server) => {
   server.middlewares.use(stripTrailingSlash);
   server.middlewares.use(resolveDirIndex(r('./dist')));
+  /* public/.htaccess's Cache-Control, only when the preview is started with
+     KYO_PREVIEW_CACHE=prod (the cache specs, via playwright.config.js); any
+     other time a pass-through, and the preview answers no-cache as before.
+     After resolveDirIndex, so a route is already its index.html. */
+  server.middlewares.use(previewCache(r('./public/.htaccess')));
 };
 
 export default defineConfig(({ mode }) => {
+  /* Each prerendered blog page's own chunk preloads (scripts/ssg-preload.mjs):
+     a plugin that learns this build's outDir, and the vite-ssg hook that reads
+     that build's ssr-manifest. `ssgPreload({ archives: false })` keeps them on
+     the articles alone. */
+  const preload = ssgPreload();
   return {
     plugins: [
       /* MUST come before createHtmlPlugin AND carry `enforce: 'pre'` —
@@ -351,6 +381,45 @@ export default defineConfig(({ mode }) => {
         },
       },
 
+      /* THE NEXT BLOG PAGE, PRERENDERED ON INTENT. Every blog link is a full
+         document load, so Chromium is handed speculation rules: at `moderate`
+         eagerness a link the reader rests on (about 200 ms) or presses is
+         prerendered in the background, and the click only has to show it.
+         Scoped to the blog's pages, /blog and /es/blog and all under them,
+         minus what is not a page (the feeds, the body media) and what the
+         reader did not ask to open here: a new tab, a download, or a link
+         under [data-no-warm], which the link warmer refuses as well. A
+         prerendered page runs its scripts unseen, so use-analytics.js holds
+         Umami until `prerenderingchange`. Other engines ignore the script.
+         Under Playwright, DevTools cancels every prerender and it downgrades
+         to a prefetch, which is what prefetch.spec.js asserts; the prerender
+         itself is checked by hand. A CSP script-src would need
+         'inline-speculation-rules' (see public/.htaccess). */
+      {
+        name: 'speculation-rules',
+        apply: 'build',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html) {
+            const rules = JSON.stringify({
+              prerender: [{
+                where: {
+                  and: [
+                    { href_matches: ['/blog', '/blog/*', '/es/blog', '/es/blog/*'] },
+                    { not: { href_matches: ['/blog/feed.xml', '/es/blog/feed.xml', '/blog/media/*'] } },
+                    { not: { selector_matches: ['[target=_blank]', '[download]', '[data-no-warm]', '[data-no-warm] a'] } },
+                  ],
+                },
+                eagerness: 'moderate',
+              }],
+            });
+            return html.replace(/<meta name="viewport"[^>]*>/, (m) => `${m}<script type="speculationrules">${rules}</script>`);
+          },
+        },
+      },
+
+      preload.plugin,
+
     ],
 
     ssgOptions: {
@@ -385,11 +454,16 @@ export default defineConfig(({ mode }) => {
           ...blog,
         ];
       },
+      /* Runs after vite-ssg's own preload links and before the minifier. */
+      onPageRendered: preload.onPageRendered,
     },
 
     define: {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '0.0.0'),
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
+      /* `import.meta.env.*`, so no ESLint global is needed in blog-post.vue. */
+      'import.meta.env.KYO_BLOG_STYLE_BOOK': JSON.stringify(_blogAsset(/^style-book-[A-Za-z0-9_-]{8}\.css$/, 'style-book.css')),
+      'import.meta.env.KYO_BLOG_O2H': JSON.stringify(_blogAsset(/^o2h-[A-Za-z0-9_-]{8}\.js$/, 'o2h.js')),
     },
 
     resolve: {

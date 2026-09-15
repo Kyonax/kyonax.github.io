@@ -243,7 +243,9 @@ useHead({
   link: [{
     key: 'kyo-blog-style-book',
     rel: 'stylesheet',
-    href: '/blog/style-book.css',
+    /* The content-hashed copy sync-blog.mjs writes (a year in .htaccess), named
+       by vite.config.js's define, or the plain name when there is none. */
+    href: import.meta.env.KYO_BLOG_STYLE_BOOK,
   }],
   script: [
     {
@@ -282,7 +284,7 @@ useHead({
     },
     {
       key: 'kyo-blog-o2h',
-      src: '/blog/o2h.js',
+      src: import.meta.env.KYO_BLOG_O2H,
       defer: true,
     },
   ],
