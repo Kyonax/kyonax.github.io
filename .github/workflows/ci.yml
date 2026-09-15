@@ -29,6 +29,7 @@
 #   Security Scan excludes eslint.config.mjs (rule strings match patterns)
 #   Security Scan filters xmlns http:// URIs (XML namespace identifiers)
 #   Security Scan filters www.w3.org/ URIs (namespace constants like SVG_NS)
+#   Security Scan filters www.sitemaps.org/ URIs (the sitemap namespace constant SITEMAP_NS)
 #   Security Scan skips Playwright's page.$eval / page.$$eval (a DOM query API)
 #   Protected Files is advisory only, never blocks merge
 
@@ -324,14 +325,17 @@ jobs:
           # URIs (xmlns="http://...") which are standardized identifiers,
           # not fetchable URLs. The same identifiers held in a constant
           # (SVG_NS = 'http://www.w3.org/2000/svg') carry no xmlns, so
-          # www.w3.org/ is filtered as well.
+          # www.w3.org/ is filtered as well. The sitemap protocol's namespace
+          # (SITEMAP_NS in scripts/check-sitemap.mjs) is the same kind of
+          # name, so www.sitemaps.org/ is filtered too.
           HITS=$(grep -rn --include='*.js' --include='*.mjs' --include='*.vue' \
                --exclude-dir='node_modules' --exclude-dir='dist' --exclude-dir='.cache' \
                -E 'http://' . \
                | grep -v 'localhost' \
                | grep -v '127.0.0.1' \
                | grep -v 'xmlns' \
-               | grep -v 'www.w3.org/' || true)
+               | grep -v 'www.w3.org/' \
+               | grep -v 'www.sitemaps.org/' || true)
           if [ -n "$HITS" ]; then
             annotate_hits "$HITS" "insecure-http"
             echo "::error::Insecure http:// URL detected — use https:// instead"
