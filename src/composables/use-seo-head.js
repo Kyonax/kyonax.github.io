@@ -19,6 +19,18 @@ import { useRoute } from 'vue-router';
 const OG_LOCALE = { en: 'en_US', es: 'es_CO' };
 
 /*
+ * THE HIRING KEYWORDS STAY OFF THE BLOG. SEO.keywords is the landing's list
+ * (the name, the roles, the stack, the employers): it describes the person,
+ * and on an archive or an article it would claim the page is about hiring when
+ * it is about what the article says. The owner's decision of 2026-09-14 (Step
+ * 1b, topic 6): the blog does not compete with the landing for those queries.
+ * The route decides, as it does for the feed link below.
+ */
+const keywordsMeta = (path) => (isBlogPath(path)
+  ? []
+  : [{ name: 'keywords', content: SEO.keywords.join(', ') }]);
+
+/*
  * RSS AUTODISCOVERY, on blog routes and nowhere else. Each locale's feed sits
  * beside the archive it syndicates (scripts/generate-feeds.mjs writes
  * <archive>/feed.xml), so its URL is the archive's plus a file name and cannot
@@ -103,7 +115,7 @@ export const useSeoHead = (opts = {}) => {
     ],
     meta: [
       { name: 'description',          content: description },
-      { name: 'keywords',             content: SEO.keywords.join(', ') },
+      ...keywordsMeta(route.path),
       { name: 'author',               content: AUTHOR_INFO.name },
       { name: 'robots',               content: 'index,follow,max-image-preview:large,max-snippet:-1' },
       { name: 'theme-color',                       content: THEME_SETTINGS.themeColor },

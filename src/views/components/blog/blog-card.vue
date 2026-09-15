@@ -24,6 +24,7 @@
  * separately beside it.
  */
 import { blogCardImage } from '@composables/use-blog-images';
+import BlogPicture from '@views/components/blog/blog-picture.vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -35,6 +36,27 @@ const props = defineProps({
 const { t, locale } = useI18n();
 
 const media = computed(() => blogCardImage(props.post));
+
+/*
+ * THE `sizes` ARE THE ARCHIVE'S COLUMNS, WRITTEN OUT. The browser picks a file
+ * from them before any CSS has loaded, so they have to say in advance how wide
+ * each box will be. Measured on the built /blog, where the <img> is the
+ * frame's content box, 2px narrower than its cell for the hairline:
+ *
+ *   the lead   one column below `md`, the board less its 24px gutters (340px
+ *              at 390, 718px at 768); from `md` the 1.15fr side of blog.vue's
+ *              split beside a 36px gap inside 36px gutters (622px at 1280);
+ *              664px once the board stops at 1280px, from a 1352px screen
+ *   a card     one column below `sm` (340px at 390), two to `md` beside a
+ *              24px gap (346px at 768), three from `md` beside two (383px at
+ *              1280), 409px once the board stops
+ *
+ * blog-images.spec.js resolves both against the rendered boxes at several
+ * widths, so a change to blog.vue's grid that forgets them fails there rather
+ * than quietly sending a phone the wrong file.
+ */
+const LEAD_SIZES = '(min-width: 1352px) 664px, (min-width: 64em) calc((100vw - 108px) * 0.535 - 2px), calc(100vw - 50px)';
+const CARD_SIZES = '(min-width: 1352px) 409px, (min-width: 64em) calc((100vw - 126px) / 3), (min-width: 48em) calc((100vw - 76px) / 2), calc(100vw - 50px)';
 
 const date_label = computed(() => {
   if (!props.post.date) {
@@ -58,28 +80,24 @@ const date_label = computed(() => {
     tabindex="-1"
     aria-hidden="true"
   >
-    <img
+    <!-- The lead: one, on page 1 (use-blog.js), wider than a card, so it has
+         sizes of its own. Lazy like every cover (blog-picture.vue says why). -->
+    <BlogPicture
       v-if="media"
-      :src="media.fallback"
-      :width="media.width"
-      :height="media.height"
+      :media="media"
       :alt="post.cardImageAlt || ''"
-      loading="lazy"
-      decoding="async"
+      :sizes="LEAD_SIZES"
     />
   </a>
 
   <article v-else class="blog-card">
     <a class="blog-card__link" :href="post.url">
       <span class="blog-card__frame">
-        <img
+        <BlogPicture
           v-if="media"
-          :src="media.fallback"
-          :width="media.width"
-          :height="media.height"
+          :media="media"
           :alt="post.cardImageAlt || ''"
-          loading="lazy"
-          decoding="async"
+          :sizes="CARD_SIZES"
         />
       </span>
 
@@ -130,12 +148,7 @@ const date_label = computed(() => {
      is a hydration mismatch. Declared in CSS here, so it is stable either way. */
   aspect-ratio: 16/9;
 
-  img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+  /* The picture inside fills this box and crops to it (blog-picture.vue). */
 
   /* The lead's standalone frame sits beside the copy rather than above it, so
      it is free to be taller. */

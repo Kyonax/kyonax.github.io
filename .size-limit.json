@@ -93,7 +93,7 @@
     "gzip": true
   },
   {
-    "name": "blog index chunk (archive + the landing hero: h1, chip, galaxy slot; the archive search: prerendered field, ?search= URL state, status line, All Posts filter; the compact page-N header; 7.57 kB measured 2026-09-15 on vite 8, the hero ~1.1 KB of it; raised from 7.25 KB because splitting the search out would put a chunk on the critical path of every ?search= link)",
+    "name": "blog index chunk (archive + the landing hero: h1, chip, galaxy slot; the archive search: prerendered field, ?search= URL state, status line, All Posts filter; the compact page-N header; the cover pictures: blog-picture.vue, the srcset builder and the glob's URL map of every cover width, about 0.09 kB more per cover, so this chunk grows with the corpus; 8.18 kB measured 2026-09-15 on vite 8 with 7 covers, 7.57 before the pictures; raised from 7.25 KB because splitting the search out would put a chunk on the critical path of every ?search= link)",
     "path": [
       "dist/assets/blog-*.{js,css}",
       "!dist/assets/blog-post-*",
@@ -103,7 +103,7 @@
       "!dist/assets/blog-support-*",
       "!dist/assets/blog-series-*"
     ],
-    "limit": "7.75 KB",
+    "limit": "8.5 KB",
     "gzip": true
   },
   {
@@ -182,12 +182,12 @@
     "gzip": true
   },
   {
-    "name": "section rail (the chip, one async chunk)",
+    "name": "section rail (the chip, one async chunk: the jump re-aimed where it lands, the press that holds the chip, the arrow keys, the nested list; 3.30 kB measured 2026-09-15, 2.45 before)",
     "path": [
       "dist/assets/section-rail-*.js",
       "dist/assets/section-rail-*.css"
     ],
-    "limit": "2.75 KB",
+    "limit": "3.5 KB",
     "gzip": true
   }
 ]

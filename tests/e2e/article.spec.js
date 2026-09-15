@@ -48,6 +48,26 @@ test.beforeEach(async ({ page }) => {
   ));
 });
 
+/*
+ * THE TRAIL SAYS "Blog". The owner's review, 2026-09-15: the archive's full
+ * name ("Kyonax Build in Public") is too long for the trail above a title. The
+ * visible crumb and the BreadcrumbList a search engine reads name it the same.
+ */
+for (const path of [MATH_EN, MATH_ES]) {
+  test(`${path}: the breadcrumb names the archive "Blog"`, async ({ page }) => {
+    await page.goto(path);
+    await settle(page);
+    const archive = path.startsWith('/es/') ? '/es/blog' : '/blog';
+    await expect(page.locator('.ui-crumbs__link').first()).toHaveText('Blog');
+    const crumbs = await page.$$eval('script[type="application/ld+json"]', (nodes) => nodes
+      .flatMap((node) => JSON.parse(node.textContent)['@graph'] || [])
+      .filter((item) => item['@type'] === 'BreadcrumbList')
+      .flatMap((list) => list.itemListElement));
+    expect(crumbs[0], `${path}: the BreadcrumbList does not open on the archive`)
+      .toMatchObject({ position: 1, name: 'Blog', item: `https://kyonax.com${archive}` });
+  });
+}
+
 for (const width of [320, 390]) {
   test(`at ${width}px the breadcrumb stays on one line`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });

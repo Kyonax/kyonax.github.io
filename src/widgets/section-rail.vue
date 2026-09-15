@@ -128,7 +128,11 @@ const startBoil = () => {
   }, BOIL_MS);
 };
 
+/* Clears the pending settle too: a press changes the label AND closes the list
+   in the same tick, and without this the decode started by the close was
+   restarted from noise 160ms later by the label's own timer. */
 const settle = (text) => {
+  window.clearTimeout(settle_timer);
   stopBoil();
   stop();
   if (label_el.value) {
@@ -143,9 +147,90 @@ watch(current_label, (text) => {
   settle_timer = window.setTimeout(() => settle(text), SETTLE_MS);
 });
 
+/*
+ * THE KEYBOARD WALKS THE LIST the way a menu button's does. From the chip, Down
+ * opens it on the first entry and Up on the last — the one sitting right above
+ * the chip, since the list unfolds upward. Inside it Up and Down step and wrap,
+ * Home and End go to its ends, and Tab walks it as before.
+ *
+ * CLOSING HANDS FOCUS BACK TO THE CHIP when it was inside the list. The list is
+ * removed from the DOM, and focus on a removed node falls to <body>, which put
+ * an Escape from the list back at the top of the page's tab order. A `pre`
+ * watcher runs before that removal, while the focused link still exists. A
+ * press moves focus to its heading before it closes the list, so it is left
+ * alone.
+ */
+const STEP = new Map([['ArrowDown', 1], ['ArrowUp', -1]]);
+
+const chip_el = ref(null);
+const list_el = ref(null);
+let pending_step = 0;
+
+const links = () => (list_el.value ? [...list_el.value.querySelectorAll('a')] : []);
+
+const onKeys = (event) => {
+  const all = links();
+  const step = STEP.get(event.key) || 0;
+  if (event.target === chip_el.value) {
+    if (!step) {
+      return;
+    }
+    event.preventDefault();
+    if (open.value && all.length > 0) {
+      all.at(step > 0 ? 0 : -1).focus();
+    } else {
+      pending_step = step;
+      open.value = true;
+    }
+    return;
+  }
+  const at = all.indexOf(event.target);
+  if (at < 0) {
+    return;
+  }
+  let to = -1;
+  if (step) {
+    to = (at + step + all.length) % all.length;
+  } else if (event.key === 'Home') {
+    to = 0;
+  } else if (event.key === 'End') {
+    to = all.length - 1;
+  }
+  if (to >= 0) {
+    event.preventDefault();
+    all.at(to).focus();
+  }
+};
+
 /* A press is settled intent, not a scroll in flight, so it decodes at once and
    never boils. */
-watch(open, () => settle(current_label.value));
+watch(open, (is_open) => {
+  const panel = list_el.value;
+  if (!is_open && panel && panel.contains(document.activeElement)) {
+    chip_el.value.focus();
+  }
+  settle(current_label.value);
+});
+
+/* A LONG LIST OPENS WHERE THE READER IS. It scrolls inside a 26rem box, and it
+   used to open at its top, so on a long article the marked entry was out of
+   sight below the fold of the list itself. */
+watch(open, (is_open) => {
+  const panel = list_el.value;
+  if (!is_open || !panel) {
+    return;
+  }
+  const here = panel.querySelector('[aria-current]');
+  if (here) {
+    panel.scrollTop += here.getBoundingClientRect().top
+      - panel.getBoundingClientRect().top
+      - (panel.clientHeight - here.offsetHeight) / 2;
+  }
+  if (pending_step) {
+    links().at(pending_step > 0 ? 0 : -1).focus();
+    pending_step = 0;
+  }
+}, { flush: 'post' });
 
 onBeforeUnmount(() => {
   window.clearTimeout(settle_timer);
@@ -163,12 +248,14 @@ onBeforeUnmount(() => {
       class="section-rail"
       :class="{ 'is-open': open }"
       :aria-label="label"
+      @keydown="onKeys"
     >
       <!-- TWO CELLS, ONE ROW, sharing the wrapper's border — the hero's chip
            strip idiom: flush against each other, divided by a single hairline,
            and hover paints the CELL rather than moving a border colour. -->
       <div class="section-rail__bar">
         <button
+          ref="chip_el"
           type="button"
           class="section-rail__cell section-rail__chip"
           :aria-expanded="open"
@@ -203,13 +290,20 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
+      <!-- A sub-entry (an article's subsection, `level` 2 and deeper) steps in
+           once, the way the article's own contents list nests it. -->
       <ul
         v-if="open"
         id="section-rail-panel"
+        ref="list_el"
         class="section-rail__list"
         role="list"
       >
-        <li v-for="s in sections" :key="s.id">
+        <li
+          v-for="s in sections"
+          :key="s.id"
+          :class="{ 'is-sub': s.level > 1 }"
+        >
           <a
             :class="{ 'is-active': active === s.id }"
             :href="`#${s.id}`"
@@ -360,5 +454,9 @@ onBeforeUnmount(() => {
 
     &.is-active { color: var(--clr-primary-100); }
   }
+
+  /* One step in, the width of the row's own inset, so a subsection reads as
+     belonging to the entry above it. */
+  .is-sub a { padding-left: 1.8rem; }
 }
 </style>

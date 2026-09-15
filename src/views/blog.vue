@@ -44,6 +44,7 @@
 import { loadBlogIndex } from '@composables/use-blog';
 import useSeoHead from '@composables/use-seo-head';
 import manifest from '@data/blog/manifest.json';
+import { SEO } from '@data/data';
 import { BLOG_INDEX_URLS, blogAlternatesFor, blogUrlsFor } from '@seo/blog-routes';
 import { archivePageHead, buildBlogJsonLd } from '@seo/json-ld/blog-page';
 import UiSectionHeader from '@ui/section-header.vue';
@@ -68,12 +69,22 @@ const corpus = manifest.corpus || null;
    alone are ~2 KB gzip, and both together would more than double the index
    chunk. Neither needs JavaScript to show: vite-ssg awaits async components
    at build, so both ship in the prerendered HTML, the marquee moves by CSS
-   and the drawings by SMIL. The client code only pauses the drawings under
-   reduced motion, so it hydrates when the browser is idle, not on the
-   critical path. */
+   and the drawings by SMIL. The band's client code only pauses the drawings
+   under reduced motion, so it hydrates when the browser is idle, not on the
+   critical path; the marquee never hydrates at all (below). */
+/*
+ * THE MARQUEE IS COMPILED, NOT COMPUTED. Every figure on it is the corpus
+ * block the build writes into the manifest, formatted while the page is
+ * prerendered; it moves by a CSS animation and stops by a CSS media query.
+ * So it is never hydrated: the strategy below never calls `hydrate`, the
+ * prerendered markup stays exactly as the build wrote it, and the browser
+ * runs none of its code — no Intl, no date, no fetch (the owner's review,
+ * 2026-09-15: "dynamic but at compilation level, not in realtime").
+ */
+const NEVER_HYDRATE = () => {};
 const BlogMarquee = defineAsyncComponent({
   loader: () => import('@views/components/blog/blog-marquee.vue'),
-  hydrate: hydrateOnIdle(),
+  hydrate: NEVER_HYDRATE,
 });
 const BlogPipelineBand = defineAsyncComponent({
   loader: () => import('@views/components/blog/blog-pipeline-band.vue'),
@@ -96,6 +107,9 @@ useSeoHead({
   description: page_head?.description,
   urls: blogUrlsFor(route.path) || BLOG_INDEX_URLS,
   alternates: blogAlternatesFor(route.path),
+  /* Every archive page shares its locale's blog card, not the landing's
+     portrait: the picture a share previews is what the page is. */
+  ogImage: SEO.blogOgImage,
   ogType: 'website',
 });
 
@@ -301,6 +315,9 @@ const results = ref(null);
   align-items: center;
   margin-bottom: 4rem;
 
+  /* blog-card.vue's LEAD_SIZES states this split in px for the browser's
+     image choice; change the columns or the gap and change it too
+     (blog-images.spec.js measures the two against each other). */
   &--media {
     @include min-media-query(md) {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
@@ -441,6 +458,9 @@ const results = ref(null);
 
 /* --- the three that follow ---------------------------------------------- */
 
+/* blog-card.vue's CARD_SIZES states these columns and this gap in px for the
+   browser's image choice; change one and change the other
+   (blog-images.spec.js measures the two against each other). */
 .blog-recent {
   display: grid;
   gap: 2rem;

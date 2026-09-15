@@ -51,10 +51,18 @@ const OUT = resolve(arg('out') || join(REPO_ROOT, 'public'));
 const FEED_LIMIT = 20;
 
 /* `language` is the site's own regional tag for the locale: og:locale is
-   en_US / es_CO and every date the site formats uses en-US / es-CO. */
+   en_US / es_CO and every date the site formats uses en-US / es-CO.
+   `heading` and `counted` are llms.txt's words for the locale: the title of
+   its article list, and what follows the count on its blog line. */
 const FEEDS = [
-  { locale: 'en', language: 'en-US', heading: 'Posts (English)' },
-  { locale: 'es', language: 'es-CO', heading: 'Artículos (Español)' },
+  {
+    locale: 'en', language: 'en-US', heading: 'Posts (English)',
+    counted: { one: 'post in English', other: 'posts in English' },
+  },
+  {
+    locale: 'es', language: 'es-CO', heading: 'Artículos (Español)',
+    counted: { one: 'artículo en español', other: 'artículos en español' },
+  },
 ];
 
 /* Repo-relative in the log, unless an override points outside the repo. */
@@ -274,11 +282,31 @@ for (const { locale, language } of FEEDS) {
 
 /* llms.txt (llmstxt.org): a title, a one-line summary, then Markdown link
    lists, blank lines between blocks so the summary's quote does not swallow
-   the lines under it. Every article, newest first, English then Spanish. */
+   the lines under it. First the blog's front door, then every article,
+   newest first, English then Spanish. */
 const llmsLine = (it) => {
   const note = oneLine(it.description);
   return `- [${mdText(it.title)}](${mdUrl(it.link)})${note ? `: ${note}` : ''}`;
 };
+
+/* The blog's front door, one line per locale that has posts: the blog's own
+   name (blog.title, the archive's H1 and its JSON-LD Blog name), that
+   locale's archive, and how many posts it lists. It replaces the old
+   `Blog: <url>` line, which named the English archive only, and named it
+   even when no archive was published. A locale with no post has no line. */
+const blogLine = ({ locale, counted }) => {
+  const count = by_locale.get(locale).length;
+  const name = plain(kyo(locale).blog?.title);
+  if (count > 0 && !name) {
+    warn(`kyo-web.blog.title missing for ${locale}: llms.txt names no ${locale} archive`);
+  }
+  if (count === 0 || !name) {
+    return [];
+  }
+  const archive = mdUrl(`${SITE_ORIGIN}${archivePath(locale)}`);
+  return [`- [${mdText(name)}](${archive}): ${count} ${count === 1 ? counted.one : counted.other}`];
+};
+const homes = FEEDS.flatMap(blogLine);
 
 const llms = [
   `# ${new URL(SITE_ORIGIN).host}`,
@@ -286,8 +314,10 @@ const llms = [
   `> ${plain(kyo(DEFAULT_LOCALE).landing?.meta?.description)}`,
   '',
   `Author: ${AUTHOR_INFO.name}`,
-  `Blog: ${SITE_ORIGIN}${archivePath(DEFAULT_LOCALE)}`,
 ];
+if (homes.length > 0) {
+  llms.push('', '## Blog', '', ...homes);
+}
 for (const { locale, heading } of FEEDS) {
   const items = by_locale.get(locale);
   if (items.length > 0) {

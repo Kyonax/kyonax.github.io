@@ -57,6 +57,20 @@ from 0.83 to 0.99. Then (2026-09-12) refined the article from the owner's phone 
 report: sharing moved to a nav icon and a designed popup, tag chips stop breaking their words,
 code wraps on a phone with a WRAP toggle, equations fit their column, a footnote is one target,
 the viewer gained a zoom toolbar, the cover opens in it, and (engine-side) chart labels wrap.
+Then (2026-09-14 and 15, blog refinement round 2) named the blog Kyonax Build in Public in both
+locales with the owner's signed SEO copy and a CollectionPage and Blog graph whose author is the
+landing's Person, paged the archive (ten posts a page; page N keeps the h1 with a Page N of M line
+and a head of its own), turned the archive search into a filter of All Posts at =?search==
+(=?q== still works), warmed every page link on hover, focus and touch, let Chromium prerender blog
+links, had every prerendered blog page name its own chunks, and kept related posts and prev/next
+inside their language. From the owner's review: the author's name links home, the marquee is
+built at compile time and never hydrates, the article crumb reads Blog again, and the section
+rail names the section a jump landed on (it named a later one on any article with short
+sections). Then (Wave C) cut the blog covers at 480, 720 and 960 px in AVIF and WebP with srcset
+(page 1 at 390 px went from 1.74 MB of images to 46 KB), gave the archive a Kyonax Build in Public
+share card per locale, dated the sitemap's archives by their newest post and took page N out of
+it, named the blog in llms.txt, and took the landing's portrait preload and hiring keywords off
+blog pages.
 
 ** Added
 - =src/views/components/blog/blog-hero.vue= — the archive's new head: the h1 and its subtitle
@@ -189,6 +203,41 @@ the viewer gained a zoom toolbar, the cover opens in it, and (engine-side) chart
   and equations that fit) and two new families in =constructs.spec.js=: (i) every display
   equation fits its column and (j) code wraps on a phone and offers WRAP where it does not fit, at
   all fourteen widths. 41 of them ran red on the previous build first.
+- =src/views/components/blog/blog-pagination.vue=, =src/seo/archive-pages.js= (2026-09-14) — the
+  archive's pager and its six switches: ten posts a page (kyo-blog's =--page-size= /
+  =BLOG_PAGE_SIZE=), every href ending =#all-posts=; page N is self-canonical and index,follow with
+  a title and description of its own ("Kyonax Build in Public · Page 2 of 3") and hreflang only
+  where the other locale has that page. Invisible in production until a locale has eleven posts;
+  built and tested on a paged build (=KYO_REQUIRE_PAGED=1=, =tests/e2e/pagination.spec.js=).
+- =src/composables/use-link-warmer.js= (2026-09-14) — one capture-phase listener that warms the
+  next page on hover (65 ms), focus and touch: its HTML at low priority, then its CSS and JS as
+  prefetches; a cap of ten, skipped under Save-Data and 2g. It replaces =use-warm-route.js=.
+- =scripts/ssg-preload.mjs= (2026-09-15) — every prerendered blog page names the chunks it will
+  import (an article its body and =use-blog=, an archive =use-blog= and the archive index) at low
+  priority. =vite.config.js='s =speculation-rules= plugin prerenders blog links at moderate
+  eagerness in Chromium, and =use-analytics.js= holds Umami's first page view until a prerendered
+  page is shown (=use-analytics.test.js=, the first Vitest test in =src/=).
+- =scripts/preview-cache.mjs= — with =KYO_PREVIEW_CACHE=prod= the preview answers with
+  =public/.htaccess='s Cache-Control and without Vite's =Vary: Origin=, so =prefetch.spec.js= can
+  ask whether a warmed file comes back from the HTTP cache.
+- =src/views/components/blog/blog-picture.vue= (2026-09-15) — a blog cover as a =<picture>=: AVIF,
+  then WebP, each a srcset of the 480, 720 and 960 px cuts =convert-images.mjs= now makes plus the
+  original, the raster as the fallback, and a =sizes= written from the archive's measured columns;
+  every cover lazy. Page 1 at 390 px: 1,740,265 → 45,957 bytes of images; Lighthouse mobile about
+  1.7 MB less.
+- =scripts/generate-og-blog.mjs=, =public/og-blog-en.jpg=, =public/og-blog-es.jpg= (2026-09-15) —
+  the archive's share card per locale, 1200×630: the blog hero at card size, monochrome, with the
+  title, "Cristian D. Moreno writes about AI research, Linux and programming", the address and the
+  galaxy. A manual step like the resume's (=npm run generate:og= runs both); every archive page
+  shares its locale's card.
+- =scripts/check-sitemap.mjs= (2026-09-15) — a precheck gate: strict XML, no archive page past the
+  first, no query or fragment, closed reciprocal hreflang clusters, each archive dated by its
+  locale's newest post, every article listed with its own day.
+- Tests (2026-09-14 and 15): =pagination.spec.js=, =blog-head.spec.js=, =blog-images.spec.js=,
+  =og-blog.spec.js= and =section-rail.spec.js= (18, in Firefox too) are new; =archive.spec.js=,
+  =locale.spec.js= and =prefetch.spec.js= were rewritten; =landing-hero.spec.js= checks that the
+  marquee runs no code in the browser and that the name links home, and =article.spec.js= that
+  the crumb says Blog and a footnote's number is inside its way back.
 
 ** Changed
 - =src/data/snippets.js= — EN =meta.description= rewritten for international and US conversion
@@ -290,6 +339,46 @@ the viewer gained a zoom toolbar, the cover opens in it, and (engine-side) chart
   =.github/workflows/ci.yml= installs Firefox beside Chromium.
 - =.size-limit.json= — the blog post budget 6.25 → 6.75 KB (6.72 measured) and the image viewer
   3.5 → 5.25 KB (4.89 measured); the blog-share entry and exclusion are gone.
+- =src/data/snippets-core.js= (2026-09-14) — the blog is "Kyonax Build in Public" in both locales
+  (the h1 and the RSS title); the metadata titles "Kyonax Build in Public — LATAM Full-Stack
+  Developer's Blog" and "— Desarrollador Web en Villavicencio"; descriptions that are also the
+  hero's subtitle; the search, pager and page-N keys; the share card's alt.
+- =src/seo/json-ld/blog-page.js= — the archive is a =CollectionPage= with a =Blog= node ("Kyonax
+  Build in Public", its =blogPost= summaries and =dateModified=); the author is the landing's
+  =Person= with =jobTitle=, =address= and the seven =sameAs=; every =BlogPosting= is =isPartOf= the
+  Blog, and the article's crumb reads "Blog".
+- =src/views/components/blog/blog-search.vue= — prerendered, and a filter of All Posts: with a
+  query the list shows the matches from every page, the pager hides, and a status line counts them
+  beside a clear button. The term lives at =?search== (on page N the page path stays), an old
+  =?q== is rewritten to it, and the language toggle carries it.
+- =src/views/components/blog/blog-hero.vue= — compact on page N; the author's name in the
+  subtitle links to the landing of its locale (2026-09-15, the owner's review).
+- =src/views/blog.vue= — the All Posts rows are an h3 and a paragraph; the marquee never hydrates:
+  its figures are formatted at build and it moves and stops by CSS (2026-09-15).
+- =src/composables/use-active-section.js=, =src/composables/use-section-nav.js=,
+  =src/widgets/section-rail.vue=, =src/views/blog-post.vue= (2026-09-15, the owner's review) — the
+  section rail. Every press landed, but the chip then named another section: the old "last
+  heading past the middle" rule ran ahead whenever sections were shorter than half a screen (22 of
+  37 presses on the reference post). The chip now names the section a jump landed on, stays
+  current after a flick and names the first section at the top; an article's list is its own
+  table of contents, nested, without the TODO keywords and tags glued to its labels; the arrow
+  keys, Home and End walk it, Escape gives focus back and the list opens on the marked entry.
+- =scripts/generate-sitemap.mjs=, =scripts/generate-feeds.mjs= (2026-09-15) — archive page N is
+  out of the sitemap and each archive's =lastmod= is its locale's newest post; llms.txt names the
+  blog per locale with its post count. =precheck= regenerates the sitemap before checking it.
+- =vite.config.js=, =src/composables/use-seo-head.js= — blog pages no longer preload the
+  landing's portrait or carry its hiring keywords (2026-09-15); =archive-fragment-anchor=
+  re-aligns an archive =#fragment= once the deferred stylesheets land (Firefox mis-landed every
+  one), and =archive-search-hold= keeps a =?search= landing from shifting.
+- =src/composables/use-language.js=, =src/widgets/language-toggle.vue= — on blog paths the toggle
+  is a full page load that keeps the query and the hash; its focus calls no longer scroll the
+  page (a measured 444–455 px jump on the landing, resume and privacy toggles).
+- =src/views/components/blog/blog-footer.vue= — the signature is one text node, which ends a
+  hydration mismatch.
+- =.size-limit.json= (2026-09-15) — the blog index 7.25 → 8.5 KB (8.18 measured: the search and
+  the page-N header, then the cover pictures, whose URL map grows about 0.09 kB per cover); the
+  section rail 2.75 → 3.5 KB (3.30 measured); new entries for the post's nav and series chunks,
+  split out of the post chunk so the article stays inside its budget on vite 8.
 
 ** Removed
 - =src/components/cookie-consent.vue= and Google Analytics with it (GA4 =G-6M3P3M2HG5=, Consent
@@ -299,6 +388,8 @@ the viewer gained a zoom toolbar, the cover opens in it, and (engine-side) chart
   its e2e comparison test. Designs B (track) and C (panel) are gone.
 - =src/views/components/blog/blog-share.vue= (the meta row's SHARE button), its size entry and
   its two article.spec checks — sharing moved to the nav's share sheet.
+- =src/composables/use-warm-route.js= and the =warmRoute= calls in =hero.vue= and
+  =breadcrumbs.vue= (2026-09-14) — one link warmer covers every link now.
 
 ** Decided
 - HSTS kept apex-only (no =includeSubDomains= / =preload=) so future Hostinger subdomains are

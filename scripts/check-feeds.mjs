@@ -9,10 +9,12 @@
  * a feed reader would refuse it); be RSS 2.0 with one channel in its locale's
  * language; hold one item per article of that locale (the 20 newest), in date
  * order, and be exactly those articles; link every item absolute https on the
- * site origin; date every item in RFC 822. llms.txt must list every article.
+ * site origin; date every item in RFC 822. llms.txt must name the blog once
+ * per locale that has posts, with the manifest's count of them, and list
+ * every article.
  *
  * Run: node scripts/check-feeds.mjs
- *      node scripts/check-feeds.mjs --dir=<copy of public/> [--index=<json>]
+ *      node scripts/check-feeds.mjs --dir=<copy of public/> [--index=<json>] [--manifest=<json>]
  */
 
 import { join, resolve } from 'node:path';
@@ -25,9 +27,14 @@ const arg = (name) => process.argv
 
 const DIR = resolve(arg('dir') || join(REPO_ROOT, 'public'));
 const INDEX = resolve(arg('index') || join(REPO_ROOT, 'src/data/blog/index.json'));
-const MANIFEST = join(REPO_ROOT, 'src/data/blog/manifest.json');
+const MANIFEST = resolve(arg('manifest') || join(REPO_ROOT, 'src/data/blog/manifest.json'));
 
 const FEED_LIMIT = 20;
+
+/* The blog's name, signed untranslated in both locales. A literal rather than
+   the catalogue's blog.title the generator reads, so an edit that translates
+   the name fails here instead of shipping. */
+const BLOG_NAME = 'Kyonax Build in Public';
 const FEEDS = [
   { locale: 'en', language: 'en-US' },
   { locale: 'es', language: 'es-CO' },
@@ -236,13 +243,14 @@ for (const feed of FEEDS) {
   checkFeed(feed);
 }
 
-/* llms.txt: the site's name, then every article as a Markdown link. */
+/* llms.txt: the site's name, the blog's front door once per locale, then
+   every article as a Markdown link. */
 console.log(`\n──── ${c('cyan', 'llms.txt')}`);
 const llms = readOr(join(DIR, 'llms.txt'), null);
 if (llms === null) {
   failures.push('llms.txt: missing. Run `npm run generate:feeds`');
 } else {
-  const mark = failures.length;
+  let mark = failures.length;
   const lines = llms.split('\n');
   const host = new URL(SITE_ORIGIN).host;
   if (lines[0] !== `# ${host}`) {
@@ -251,16 +259,61 @@ if (llms === null) {
   if (!lines.some((l) => l.startsWith('> ') && l.length > 2)) {
     failures.push('llms.txt: no "> " one-line description');
   }
-  const posts = lines.filter((l) => l.startsWith('- ['));
-  const urls = posts.map((l) => (/\]\((\S+)\)/.exec(l) || [])[1]);
+
+  /* A link line: `- [text](url)`, then nothing or a `: note`. */
+  const links = lines
+    .map((l) => /^- \[(.*?)\]\(([^\s)]+)\)(.*)$/.exec(l))
+    .filter((k) => k && (k[3] === '' || k[3].startsWith(':')))
+    .map(([, text, url, rest]) => ({ text, url, note: rest.slice(1).trim() }));
+
+  /* The blog's front door: each locale's archive, named for the blog, with a
+     count taken from the MANIFEST (the routes the site publishes), never from
+     the index the generator listed, so a count left stale by a re-sync is
+     caught here. A locale with no post has no line, as it has no archive. */
+  const homes = new Map(FEEDS.map(({ locale }) => [`${SITE_ORIGIN}${archivePath(locale)}`, locale]));
+  const routes = Array.isArray(manifest.routes) ? manifest.routes : [];
+  let published = 0;
+  for (const [home, locale] of homes) {
+    const want = routes.filter((route) => route?.locale === locale).length;
+    const found = links.filter((k) => k.url === home);
+    if (want === 0) {
+      if (found.length > 0) {
+        failures.push(`llms.txt: links the ${locale} archive, but the manifest routes no ${locale} post`);
+      }
+      continue;
+    }
+    published += 1;
+    if (found.length !== 1 || found[0].text !== BLOG_NAME) {
+      failures.push(`llms.txt: expected one "- [${BLOG_NAME}](${home}): …" line for ${locale}, found ${found.length}`);
+      continue;
+    }
+    const count = Number((/\d+/.exec(found[0].note) || [])[0]);
+    if (count !== want) {
+      failures.push(`llms.txt: the ${locale} blog line counts ${Number.isNaN(count) ? 'nothing' : count}, `
+        + `but the manifest routes ${want} ${locale} post(s)`);
+    }
+  }
+  const named = lines.filter((l) => l.includes(BLOG_NAME)).length;
+  if (named !== published) {
+    failures.push(`llms.txt: "${BLOG_NAME}" is on ${named} line(s), expected ${published} (once per locale with posts)`);
+  }
+  passed(mark, `llms.txt: "${BLOG_NAME}" once per locale with posts (${published}), each counted as the manifest counts`);
+
+  /* Every other link line is an article. */
+  mark = failures.length;
+  const broken = lines.filter((l) => l.startsWith('- [')).length - links.length;
+  if (broken > 0) {
+    failures.push(`llms.txt: ${broken} "- [" line(s) are not a Markdown link`);
+  }
+  const urls = links.map((k) => k.url).filter((u) => !homes.has(u));
   const total = rows.filter((row) => row && FEEDS.some((f) => f.locale === row.locale)).length;
-  if (posts.length !== total) {
-    failures.push(`llms.txt: ${posts.length} article line(s), but the index has ${total}`);
+  if (urls.length !== total) {
+    failures.push(`llms.txt: ${urls.length} article line(s), but the index has ${total}`);
   }
   for (const u of urls.filter((x) => !isSiteUrl(x))) {
     failures.push(`llms.txt: "${u}" is not absolute https on ${SITE_ORIGIN}`);
   }
-  passed(mark, `llms.txt: ${posts.length} article line(s), links absolute https`);
+  passed(mark, `llms.txt: ${urls.length} article line(s), links absolute https`);
 }
 
 window.close();

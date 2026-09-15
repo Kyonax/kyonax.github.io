@@ -179,7 +179,8 @@ const toggleShare = () => {
 /*
  * "Which section am I in?" now has ONE implementation, in
  * @composables/use-active-section — the algorithm that used to live here, moved
- * out unchanged when the section rail needed the same answer. Two copies would
+ * out when the section rail needed the same answer (and corrected there on
+ * 2026-09-15 for sections shorter than half a screen). Two copies would
  * have meant the nav highlighting one section while the rail highlighted its
  * neighbour, which is worse than either being slightly wrong alone.
  *

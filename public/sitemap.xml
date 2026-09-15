@@ -69,7 +69,7 @@
     </url>
     <url>
         <loc>https://kyonax.com/blog</loc>
-        <lastmod>2026-09-15</lastmod>
+        <lastmod>2026-08-14</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog"/>
@@ -78,7 +78,7 @@
     </url>
     <url>
         <loc>https://kyonax.com/es/blog</loc>
-        <lastmod>2026-09-15</lastmod>
+        <lastmod>2026-08-14</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog"/>
@@ -91,16 +91,16 @@
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-06-05-a-style-book-not-a-framework"/>
-        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-05-un-libro-de-estilos-no-un-framework"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-05-una-guia-de-estilo-no-un-framework"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-06-05-a-style-book-not-a-framework"/>
     </url>
     <url>
-        <loc>https://kyonax.com/es/blog/engineering/2026-06-05-un-libro-de-estilos-no-un-framework</loc>
+        <loc>https://kyonax.com/es/blog/engineering/2026-06-05-una-guia-de-estilo-no-un-framework</loc>
         <lastmod>2026-06-05</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-06-05-a-style-book-not-a-framework"/>
-        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-05-un-libro-de-estilos-no-un-framework"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-05-una-guia-de-estilo-no-un-framework"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-06-05-a-style-book-not-a-framework"/>
     </url>
     <url>
@@ -154,16 +154,16 @@
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-06-26-embeds-that-respect-the-reader"/>
-        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-26-incrustaciones-que-respetan-al-lector"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-26-insertar-videos-sin-castigar-al-lector"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-06-26-embeds-that-respect-the-reader"/>
     </url>
     <url>
-        <loc>https://kyonax.com/es/blog/engineering/2026-06-26-incrustaciones-que-respetan-al-lector</loc>
+        <loc>https://kyonax.com/es/blog/engineering/2026-06-26-insertar-videos-sin-castigar-al-lector</loc>
         <lastmod>2026-06-26</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-06-26-embeds-that-respect-the-reader"/>
-        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-26-incrustaciones-que-respetan-al-lector"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-06-26-insertar-videos-sin-castigar-al-lector"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-06-26-embeds-that-respect-the-reader"/>
     </url>
     <url>

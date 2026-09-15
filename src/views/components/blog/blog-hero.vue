@@ -36,6 +36,7 @@
  * own line, never inside it, so every page has one <h1> and it is the same.
  */
 
+import { ROUTE_BY_LOCALE } from '@seo/routes';
 import { computed, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -79,6 +80,31 @@ const chip = computed(() => {
      the chip's text still reads as one sentence to anything that reads it. */
   return { lead: text.slice(0, cut), rest: text.slice(cut) };
 });
+
+/*
+ * THE NAME IS THE WAY HOME. The owner, reviewing the blog home: the author's
+ * name in the subtitle takes the reader to the landing, a backlink from the
+ * blog to the site's hiring page. The subtitle stays the meta description
+ * word for word (one source of text, both locales); the name is found in it
+ * and becomes a link, and if a translation ever drops the name the sentence
+ * simply renders without one.
+ */
+const OWNER_NAME = 'Cristian D. Moreno';
+const home_href = computed(() => {
+  return ROUTE_BY_LOCALE[locale.value] || ROUTE_BY_LOCALE.en;
+});
+const subtitle_parts = computed(() => {
+  const text = t('kyo-web.blog.meta.description');
+  const at = text.indexOf(OWNER_NAME);
+  if (at < 0) {
+    return [{ key: 'all', text, home: false }];
+  }
+  return [
+    { key: 'before', text: text.slice(0, at), home: false },
+    { key: 'name', text: OWNER_NAME, home: true },
+    { key: 'after', text: text.slice(at + OWNER_NAME.length), home: false },
+  ].filter((part) => part.text);
+});
 </script>
 
 <template>
@@ -89,7 +115,15 @@ const chip = computed(() => {
       </h1>
       <p v-if="pageLabel" class="blog-hero__page" v-text="pageLabel" />
       <p v-if="!compact" class="blog-hero__subtitle">
-        {{ t('kyo-web.blog.meta.description') }}
+        <template v-for="part in subtitle_parts" :key="part.key">
+          <a
+            v-if="part.home"
+            class="blog-hero__home"
+            :href="home_href"
+            v-text="part.text"
+          />
+          <span v-else v-text="part.text" />
+        </template>
       </p>
     </div>
 
@@ -201,6 +235,18 @@ const chip = computed(() => {
   font-size: var(--fs-400);
   line-height: 1.6;
   letter-spacing: 0.012em;
+}
+
+/* The same link the blog uses everywhere it names a place: bright and
+   underlined at rest, the accent only while pointed at or focused. */
+.blog-hero__home {
+  color: var(--clr-neutral-100);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+
+  &:hover,
+  &:focus-visible { color: var(--clr-primary-100); }
 }
 
 /*

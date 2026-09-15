@@ -167,6 +167,24 @@ const applyPreviewMiddleware = (server) => {
   server.middlewares.use(previewCache(r('./public/.htaccess')));
 };
 
+/*
+ * NO PORTRAIT ON THE BLOG (the owner's decision of 2026-09-14, Step 1b topic
+ * 5). The shell's LCP preload (lcp-preload-injector, below) is the landing's
+ * portrait, and every prerendered page is cut from that shell. No blog page
+ * shows the portrait, so there the preload was a high-priority download racing
+ * the page's own LCP. Blog routes drop it; every other page keeps it.
+ */
+const PORTRAIT_PRELOAD = /<link rel="preload" as="image"[^>]*kyonax_portrait[^>]*>/;
+const LOCALE_SEGMENT = /^[a-z]{2}$/;
+/* /blog…, or /<locale>/blog… (the same paths isBlogPath() in src/seo names). */
+const isBlogRoute = (route) => {
+  const [first = '', second = ''] = String(route).split('/').filter(Boolean);
+  return first === 'blog' || (LOCALE_SEGMENT.test(first) && second === 'blog');
+};
+const withoutBlogPortrait = (route, html) => (isBlogRoute(route)
+  ? html.replace(PORTRAIT_PRELOAD, '')
+  : html);
+
 export default defineConfig(({ mode }) => {
   /* Each prerendered blog page's own chunk preloads (scripts/ssg-preload.mjs):
      a plugin that learns this build's outDir, and the vite-ssg hook that reads
@@ -455,7 +473,11 @@ export default defineConfig(({ mode }) => {
         ];
       },
       /* Runs after vite-ssg's own preload links and before the minifier. */
-      onPageRendered: preload.onPageRendered,
+      onPageRendered: (route, html, ctx) => preload.onPageRendered(
+        route,
+        withoutBlogPortrait(route, html),
+        ctx,
+      ),
     },
 
     define: {

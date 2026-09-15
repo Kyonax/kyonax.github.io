@@ -25,6 +25,12 @@
  * facts instead of a ticker read twice; the messages are in sentence case and
  * CSS does the uppercasing, so that sentence reads as a sentence.
  *
+ * BUILT AT COMPILE TIME, NEVER IN THE BROWSER. Everything below runs while
+ * vite-ssg prerenders the archive; blog.vue gives this component a hydration
+ * strategy that never hydrates, so a reader's browser executes none of it and
+ * the ticker is the markup the build wrote. It needs no script to work: the
+ * motion and the reduced-motion stop are both CSS.
+ *
  * THE BRIGHT VALUES ARE MARKUP, NOT HTML IN A MESSAGE. Each segment is one
  * message with named params; the value the design sets bright is swapped for
  * a sentinel, the translated string is cut there, and the value goes back in
@@ -153,9 +159,7 @@ const sr_text = computed(() => {
         </template>
       </span>
     </div>
-    <p class="blog-marquee__sr sr-only">
-      {{ sr_text }}
-    </p>
+    <p class="blog-marquee__sr sr-only" v-text="sr_text" />
   </div>
 </template>
 

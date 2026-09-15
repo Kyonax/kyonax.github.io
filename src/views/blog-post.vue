@@ -98,10 +98,19 @@ const post = await loadBlogPost(route.path);
 /*
  * THE RAIL'S SECTIONS COME OUT OF THE ARTICLE ITSELF.
  *
- * The body arrives as HTML from the engine, and the engine already gives every
- * top-level heading an id — the same ids its own table of contents links to. So
- * the rail reads the rendered document rather than being handed a second list
- * that could disagree with the headings on screen.
+ * The body arrives as HTML from the engine, with its own table of contents,
+ * and the rail lists exactly what that contents lists: the same ids, in the
+ * same order, at the depth the author chose (toc:N), each with its `level` so
+ * the rail can nest it the same way. An article with no contents falls back to
+ * its top-level headings. So the rail reads the rendered document rather than
+ * being handed a second list that could disagree with the headings on screen.
+ *
+ * IT USED TO TAKE EVERY `.org-section > .org-heading[id]`, on the belief that
+ * only top-level headings carry an id. Every heading of every depth does, so
+ * the reference post handed the rail 37 entries down to h6 — an archived stub
+ * among them — against the 28 its contents lists. The label is the heading's
+ * TEXT (`.org-heading-text`): the whole heading's textContent glued the TODO
+ * keyword, priority and tags to it, "DONEPick the slug and the date".
  *
  * Collected once, after the DOM exists. App.vue keys this view by path, so a
  * client-side move to another article (the language toggle is one) mounts a
@@ -159,9 +168,22 @@ const collectSections = async () => {
     sections.value = [];
     return;
   }
-  sections.value = Array.from(root.querySelectorAll('.org-section > .org-heading[id]'))
-    .map((h) => ({ id: h.id, label: (h.textContent || '').trim() }))
-    .filter((s) => s.id && s.label);
+  const toc = root.querySelector('.org-toc');
+  const by_id = new Map(
+    [...root.querySelectorAll('.org-heading[id]')].map((h) => [h.id, h]),
+  );
+  const headings = toc
+    ? [...toc.querySelectorAll('a[href^="#"]')]
+      .map((a) => by_id.get(a.getAttribute('href').slice(1)))
+    : [...root.querySelectorAll('.org-section > .org-heading.outline-1[id]')];
+  sections.value = headings
+    .filter(Boolean)
+    .map((h) => ({
+      id: h.id,
+      label: (h.querySelector('.org-heading-text') || h).textContent.trim(),
+      level: Number((/\boutline-(\d)\b/.exec(h.className) || [])[1]) || 1,
+    }))
+    .filter((s) => s.label);
 };
 
 onMounted(collectSections);
@@ -192,7 +214,7 @@ const body_html = computed(() => (post ? dressBlogToc(post.html, t('kyo-web.blog
    Home is the site, not a step on the way here, and the row was long enough
    that the crumb that matters — which section you are reading — was third. */
 const crumbs = computed(() => [
-  { label: t('kyo-web.blog.title'), href: blog_href.value },
+  { label: t('kyo-web.blog.breadcrumb'), href: blog_href.value },
   { label: post ? post.title : t('kyo-web.blog.not-found') },
 ]);
 
@@ -207,6 +229,10 @@ useSeoHead({
   keyPrefix: 'kyo-web.blog.meta',
   title: seo_title.value,
   description: post ? post.description : undefined,
+  /* An article still shares the landing banner, so it takes the landing's
+     words for that picture: the blog's og-image-alt describes the archive's
+     card, which an article does not show. */
+  ogImageAlt: t('kyo-web.landing.meta.og-image-alt'),
   urls: post ? blogUrlsFor(route.path) : BLOG_INDEX_URLS,
   alternates: post ? blogAlternatesFor(route.path) : [],
   ogType: 'article',

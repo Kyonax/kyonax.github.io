@@ -37,6 +37,14 @@ export const SEO = {
     en: '/og-resume-en.jpg',
     es: '/og-resume-es.jpg',
   }),
+  /* The blog archive carries a card of its own as well, made by
+     scripts/generate-og-blog.mjs: every archive page shares its locale's, so
+     a share of /blog stops previewing as the homepage. Articles keep the
+     landing banner. */
+  blogOgImage: Object.freeze({
+    en: '/og-blog-en.jpg',
+    es: '/og-blog-es.jpg',
+  }),
   ogImageWidth:   1200,
   ogImageHeight:  630,
   ogImageType:    'image/jpeg',

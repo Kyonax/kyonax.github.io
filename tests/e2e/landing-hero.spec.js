@@ -365,3 +365,69 @@ test('with reduced motion the marquee stops and shows a single copy', async ({ p
   expect(running, `with reduced motion the marquee still runs: ${running.join(', ')}`).toEqual([]);
   await expect(copies.nth(1), 'with reduced motion the marquee still shows its second copy').toBeHidden();
 });
+
+/*
+ * THE MARQUEE IS COMPILED, NOT COMPUTED (the owner's review, 2026-09-15:
+ * "dynamic but at compilation level, not in realtime doing calculations and
+ * fetchings"). Its figures are formatted while the page is prerendered, and
+ * blog.vue never hydrates it, so the browser must run none of its code: every
+ * Intl number format and locale date made on the page is recorded with the
+ * script that made it, and none may come from the marquee's chunk. The ticker
+ * the reader sees is the ticker the build wrote.
+ */
+test('the marquee is built at compile time: the browser runs none of its code', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__formatted_by = [];
+    const where = () => (new Error().stack || '');
+    const NativeNumberFormat = Intl.NumberFormat;
+    Intl.NumberFormat = function NumberFormat(...args) {
+      window.__formatted_by.push(where());
+      return new NativeNumberFormat(...args);
+    };
+    const nativeLocaleDate = Date.prototype.toLocaleDateString;
+    Date.prototype.toLocaleDateString = function toLocaleDateString(...args) {
+      window.__formatted_by.push(where());
+      return nativeLocaleDate.apply(this, args);
+    };
+  });
+  await page.setViewportSize({ width: DESKTOP, height: 900 });
+  await page.goto(ARCHIVE_EN);
+  await settle(page);
+  /* Past the point an idle hydration would have run. */
+  await page.waitForTimeout(2500);
+
+  const by_marquee = await page.evaluate(() => window.__formatted_by.filter((s) => s.includes('blog-marquee')).length);
+  expect(by_marquee, `the marquee's own code formatted ${by_marquee} value(s) in the browser`).toBe(0);
+
+  const html = read(distFile(ARCHIVE_EN));
+  expect(html, `dist${ARCHIVE_EN}index.html is missing — build the site first`).not.toBeNull();
+  const shipped = (html.match(/<div class="blog-marquee"[^>]*>[\s\S]*?<\/p><\/div>/) || [''])[0]
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const live = (await page.locator('.blog-marquee').textContent()).replace(/\s+/g, ' ').trim();
+  expect(shipped.length, 'the prerendered archive carries no marquee text to compare with').toBeGreaterThan(0);
+  expect(live, 'the marquee on screen is not the marquee the build wrote').toBe(shipped);
+});
+
+/*
+ * THE NAME IS THE WAY HOME. In the archive's subtitle the author's name links
+ * to the landing of the same language, and the subtitle is still the meta
+ * description word for word.
+ */
+for (const route of ARCHIVES) {
+  test(`${route.name}: the author's name in the subtitle takes the reader home`, async ({ page }) => {
+    await page.goto(route.path);
+    await settle(page);
+    const subtitle = page.locator('.blog-hero__subtitle');
+    const link = subtitle.locator('a.blog-hero__home');
+    await expect(link, `${route.path}: the subtitle's name is not a link`).toHaveCount(1);
+    await expect(link).toHaveText('Cristian D. Moreno');
+    const home = route.path.startsWith('/es/') ? '/es' : '/';
+    expect(await link.getAttribute('href'), `${route.path}: the name does not lead to ${home}`).toBe(home);
+    const description = await page.locator('meta[name="description"]').getAttribute('content');
+    expect((await subtitle.textContent()).replace(/\s+/g, ' ').trim(), `${route.path}: the subtitle is no longer the meta description`)
+      .toBe(description);
+  });
+}
