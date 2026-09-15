@@ -46,11 +46,10 @@ import { buildBlogJsonLd } from '@seo/json-ld';
 import { ROUTE_BY_LOCALE } from '@seo/routes';
 import ModalLoading from '@ui/modal-loading.vue';
 import { useHead } from '@unhead/vue';
-import BlogPostNav from '@views/components/blog/blog-post-nav.vue';
-import BlogSeries from '@views/components/blog/blog-series.vue';
 import DocumentPage from '@views/components/document-page.vue';
 import {
-  computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref,
+  computed, defineAsyncComponent, hydrateOnIdle, nextTick,
+  onBeforeUnmount, onMounted, ref,
 } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
@@ -61,6 +60,24 @@ const UiImageViewer = defineAsyncComponent({
   loader: () => import('@ui/image-viewer.vue'),
   loadingComponent: ModalLoading,
   delay: 0,
+});
+
+/*
+ * THE SERIES PANEL AND THE READING LINKS ARE CHUNKS OF THEIR OWN. The article
+ * chunk had 35 bytes of budget left, and vite 8 overran it by 25. Both panels
+ * sit at the article's foot, so they are split out and hydrated when the
+ * browser is idle. The server still renders them: Vue awaits an async
+ * component's loader during SSR, so the markup is in the prerendered HTML and
+ * the chunk is modulepreloaded. defer-async-css.mjs keeps their CSS
+ * render-blocking on an article, or the foot would shift when it lands.
+ */
+const BlogSeries = defineAsyncComponent({
+  loader: () => import('@views/components/blog/blog-series.vue'),
+  hydrate: hydrateOnIdle(),
+});
+const BlogPostNav = defineAsyncComponent({
+  loader: () => import('@views/components/blog/blog-post-nav.vue'),
+  hydrate: hydrateOnIdle(),
 });
 
 const { t, locale } = useI18n();

@@ -100,7 +100,8 @@
       "!dist/assets/blog-footer-*",
       "!dist/assets/blog-marquee-*",
       "!dist/assets/blog-pipeline-band-*",
-      "!dist/assets/blog-support-*"
+      "!dist/assets/blog-support-*",
+      "!dist/assets/blog-series-*"
     ],
     "limit": "7.25 KB",
     "gzip": true
@@ -143,8 +144,23 @@
   },
   {
     "name": "blog post chunk (JS+CSS: host styles for the TOC, charts, the whole-note footnote, the phone code wrap and its WRAP look, the phone math size; the author line; tags, h-entry, the support mount; the Lane 5.3 host rules; 6.72 kB measured 2026-09-12)",
-    "path": "dist/assets/blog-post-*.{js,css}",
+    "path": [
+      "dist/assets/blog-post-*.{js,css}",
+      "!dist/assets/blog-post-nav-*"
+    ],
     "limit": "6.75 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog post nav (the related and previous/next reading links at the article's foot; split out of the post chunk and idle-hydrated; 1.59 kB measured 2026-09-14 on vite 8)",
+    "path": "dist/assets/blog-post-nav-*.{js,css}",
+    "limit": "2 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog series panel (the series list at the article's foot; split out of the post chunk and idle-hydrated; 1.14 kB measured 2026-09-14 on vite 8)",
+    "path": "dist/assets/blog-series-*.{js,css}",
+    "limit": "1.5 KB",
     "gzip": true
   },
   {

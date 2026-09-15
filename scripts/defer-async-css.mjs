@@ -48,8 +48,13 @@ const STYLESHEET_RE = /<link rel="stylesheet"([^>]*?)href="\/assets\/(?!app-)([^
  * renders the shell, but its own view chunk stays deferred, and a shell that
  * paints correctly ahead of the view it frames made the archive shift MORE:
  * Lighthouse CLS 0.025 -> 0.89 there. The archive keeps the old loading.
+ *
+ * The article's foot is two chunks of its own (the series panel and the
+ * reading links, split out of blog-post- for its budget): blog-post- already
+ * matches blog-post-nav-, and blog-series- is named here, or the series
+ * panel's CSS would land after paint and shift the foot.
  */
-const ARTICLE_CRITICAL = /^(?:blog-post|document-page)-/;
+const ARTICLE_CRITICAL = /^(?:blog-post|blog-series|document-page)-/;
 
 let totalRewrites = 0;
 for (const file of walkHtml(DIST_DIR)) {

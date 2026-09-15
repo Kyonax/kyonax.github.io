@@ -83,6 +83,11 @@ const page_links = computed(() => PAGES.map((p) => ({
   href: p.map ? (p.map[locale.value] || p.map.en) : blog_href.value,
 })));
 const year = new Date().getFullYear();
+/* Set as the paragraph's exact text (v-text), never as template text. Text on
+   its own line keeps the spaces Vue condenses around it, the prerender's
+   minifier trims them, and that difference was a hydration mismatch on every
+   blog page. */
+const sign = `© ${year} Cristian D. Moreno`;
 
 const SOCIALS = [
   { id: 'github',   url: 'https://github.com/kyonax',      label: 'GitHub' },
@@ -122,9 +127,7 @@ const SOCIALS = [
           :aria-label="t('kyo-web.landing.nav.aria.brand')"
           v-html="logoKyonaxSvg"
         />
-        <p class="blog-footer__sign">
-          © {{ year }} Cristian D. Moreno
-        </p>
+        <p class="blog-footer__sign" v-text="sign" />
       </div>
 
       <!-- THE TWO NAVS ARE DIRECT CHILDREN OF THE ROW, not a nested grid.
