@@ -370,6 +370,7 @@ jobs:
           CI_SECURITY_FILES=".github/workflows/ci.yml .github/workflows/deploy.yml eslint.config.mjs scripts/precheck.mjs scripts/_lib.mjs"
           BUILD_CONFIG_FILES="vite.config.js .gitignore .gitattributes public/.htaccess public/favicon.ico"
           RELEASE_ARTIFACT_FILES="CHANGELOG.org README.org DOC.org"
+          TEST_FIXTURE_FILES="tests/fixtures/blog/content/engineering/everything-org2html-renders.en.org tests/fixtures/blog/content/engineering/todo-lo-que-org2html-renderiza.es.org"
 
           if [ -z "${{ github.base_ref }}" ]; then
             echo "Not a pull_request event — skipping protected-files diff."
@@ -395,6 +396,7 @@ jobs:
           CI_HITS=$(check_category "$CI_SECURITY_FILES")
           BUILD_HITS=$(check_category "$BUILD_CONFIG_FILES")
           RELEASE_HITS=$(check_category "$RELEASE_ARTIFACT_FILES")
+          FIXTURE_HITS=$(check_category "$TEST_FIXTURE_FILES")
 
           COMMENT=""
           add_section() {
@@ -418,6 +420,8 @@ jobs:
             "Build, htaccess, or gitignore config. Verify the build still passes and no ignored paths were accidentally un-ignored."
           add_section "Release Artifact" "$RELEASE_HITS" \
             "Release-tracking files. Expected on release PRs; flag on non-release PRs."
+          add_section "Test Fixture" "$FIXTURE_HITS" \
+            "The kitchen-sink posts are the only versioned copy of the page that renders every org2html construct. A deletion here is never routine; check-blog-fixture fails precheck without them."
 
           if [ -n "$COMMENT" ]; then
             COMMENT="## Protected Files Modified\n\nOne or more files in the protected set were changed in this PR. Each category below explains why the file matters.\n\n${COMMENT}"
