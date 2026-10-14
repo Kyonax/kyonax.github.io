@@ -73,6 +73,20 @@ it, named the blog in llms.txt, and took the landing's portrait preload and hiri
 blog pages.
 
 ** Added
+- =tests/fixtures/blog/= — the kitchen-sink posts ("Everything org2html Renders" and "Todo lo que
+  org2html renderiza") with every include and image they pull in, copied byte for byte from
+  kyo-blog on 2026-09-25 in kyo-blog's own layout. It is the versioned test copy of the page that
+  renders every org2html construct; the four article specs open it.
+- =scripts/blog-mode.mjs= (=npm run preview:kitchen-sink=, =npm run preview:no-articles=) — builds
+  the site against ONLY the fixture (2 posts, local engine first, kyo-blog's manifest generator) or
+  against no blog at all (the empty manifest), optionally serves it, and puts =public/sitemap.xml=
+  back as it was, so a mode build never leaves a wrong sitemap for a commit to pick up.
+- =scripts/check-blog-fixture.mjs= (precheck gate 13, =npm run check:blog-fixture=) — fails when a
+  fixture post is missing or empty, its title (and so its URL) changed, or an include, the
+  SETUPFILE or an image it names no longer resolves inside the fixture. Proven red on a copy with a
+  deleted post, a retitle, a missing include and a missing image.
+- CI Protected Files lists both fixture posts under "Test Fixture"; =tests/fixtures/**= is outside
+  ESLint, because the post splices exact line ranges out of its include files.
 - =public/error-pages/*.html= — the ASCII art presses around the pointer, one character at a
   time: one inline script splits the art into cells and runs the landing page's proximity field
   (=--p = max(0, 1 − d/R)=, =R= = 2.5 em, eased =.2s=); nothing changes under reduced motion, on a

@@ -1,0 +1,19 @@
+# kitchen-sink.es.org — destinos de injerto del artículo "Todo lo que org2html renderiza"
+# (content/engineering/todo-lo-que-org2html-renderiza.es.org).
+#
+# Este archivo nunca se compila solo: includes/ no es una raíz de contenido, así que cada
+# parte de abajo llega a una página solo cuando una línea #+INCLUDE la pide por su nombre.
+
+* Solo llega el cuerpo
+:PROPERTIES:
+:CUSTOM_ID: solo-llega-el-cuerpo
+:END:
+Este párrafo se escribió en =includes/kitchen-sink.es.org=, bajo un encabezado
+que el artículo pidió por su nombre. =:only-contents t= descartó ese encabezado
+y su cajón de propiedades en el camino, así que el párrafo cae dentro de la
+sección en la que esté la línea =#+INCLUDE=.
+
+* Una parte bajada un nivel
+Este encabezado es de nivel uno en su propio archivo. =:minlevel 2= lo movió al
+nivel dos al injertarlo, así que queda bajo la sección que lo incluyó en lugar
+de empezar una sección de primer nivel propia.

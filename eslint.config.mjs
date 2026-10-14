@@ -157,6 +157,10 @@ export default [
          validated artboard); they are specs, never shipped, and a lint
          fix would have to be proven byte-identical in its output. */
       'docs/plans/**',
+      /* Engine inputs, not site code: the kitchen-sink post splices exact
+         line ranges out of its include files (:lines "3-9"), so a lint fix
+         would silently change what the article renders. */
+      'tests/fixtures/**',
     ],
   },
 

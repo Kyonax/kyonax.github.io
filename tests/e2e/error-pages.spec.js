@@ -278,7 +278,11 @@ for (const code of FIELD_CODES) {
       const shift = near.translate.split(' ').map((part) => Number.parseFloat(part));
       expect(shift.length === 2 && shift.every((part) => part > 0), `the hovered glyph did not move down and right (translate ${near.translate})`)
         .toBe(true);
-      expect(far.translate, 'a glyph at rest moved').toMatch(/^(?:none|0px(?: 0px)?)$/);
+      const rest = far.translate.split(' ').map((part) => Number.parseFloat(part));
+      expect(rest.length === 2 && rest.every((part) => part < 0), `a glyph at rest is not parked behind the cell centre (translate ${far.translate})`)
+        .toBe(true);
+      expect(shift.map((part, axis) => Number((part + rest[axis]).toFixed(3))), 'the press is not centred on the cell: rest and hover must be equal and opposite')
+        .toEqual([0, 0]);
       expect(near.color, 'the hovered glyph kept the colour of a glyph at rest').not.toBe(far.color);
     });
   });
