@@ -99,6 +99,30 @@
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
+ * fs-display-tier — re-emit one tier's DISPLAY steps (500 and up) on a subtree.
+ *
+ * The scale switches tiers at `md` and `lg` for the whole site. A surface whose
+ * headings must take a tier EARLIER — the blog takes the medium tier from `sm`,
+ * so a tablet stops reading it at a phone's sizes — re-declares those tokens on
+ * its own root. Custom properties inherit, so every `var(--fs-700)` inside
+ * resolves to the re-declared value and nothing outside the subtree moves. Only
+ * 500 and up: the body and caption steps stay on the tier the page is on.
+ * ──────────────────────────────────────────────────────────────────────────── */
+@mixin fs-display-tier($tier) {
+  @each $size, $value in map.get($typo-scale, $tier) {
+    @if $size >= 500 {
+      --fs-#{$size}: #{$value};
+    }
+  }
+}
+
+/* One value from the scale, for a declaration that cannot reach it through a
+   token — a `--host-*` handed to the org2html style book on :root, say. */
+@function fs-step($tier, $size) {
+  @return map.get(map.get($typo-scale, $tier), $size);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
  * cyberpunk-glow — animated halo around an element.
  *
  * Why this differs from legacy:

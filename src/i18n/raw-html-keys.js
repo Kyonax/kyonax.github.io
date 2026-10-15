@@ -11,6 +11,11 @@ export const RAW_HTML_KEYS = new Set([
      covered by the array-parity check instead of by this allowlist. */
   'kyo-web.privacy.lead',
 
+  /* The blog footer's built-with sentence carries its own inline links. It is
+     the only place that answers "how is this made" now that /colophon is
+     gone, so it is prose with links rather than a pointer to a page. */
+  'kyo-web.landing.footer.built-note',
+
   /* Resume page (/resume, /es/hoja-de-vida) */
   'kyo-web.resume.summary',
   'kyo-web.resume.role-line',

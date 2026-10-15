@@ -1,0 +1,19 @@
+# kitchen-sink.en.org — splice targets for the "Everything org2html Renders" post
+# (content/engineering/everything-org2html-renders.en.org).
+#
+# This file is never built on its own: includes/ is not a content root, so each
+# part below reaches a page only when an #+INCLUDE line asks for it by name.
+
+* Only the body arrives
+:PROPERTIES:
+:CUSTOM_ID: only-the-body-arrives
+:END:
+This paragraph was written in =includes/kitchen-sink.en.org=, under a headline
+the post asked for by name. =:only-contents t= dropped that headline and its
+property drawer on the way in, so the paragraph lands inside whatever section
+the =#+INCLUDE= line sits in.
+
+* A part shifted down a level
+This headline is level one in its own file. =:minlevel 2= moved it to level two
+as it was spliced in, so it sits under the section that included it instead of
+starting a new top-level section of its own.

@@ -74,6 +74,8 @@ Open =http://localhost:5173/= for the EN landing, =http://localhost:5173/es= for
 | Build          | =npm run build=            | Full SSG via vite-ssg                    |
 | Build (CSR)    | =npm run build:csr=        | Escape-hatch SPA build (debug only)      |
 | Preview        | =npm run preview=          | Serve =dist/= at :4173                     |
+| Kitchen sink   | =npm run preview:kitchen-sink= | Build + serve with only =tests/fixtures/blog/= |
+| No articles    | =npm run preview:no-articles=  | Build + serve with no blog (empty manifest)    |
 | Lint           | =npm run lint=             | ESLint (errors + warnings)               |
 | Lint fix       | =npm run lint:fix=         | Auto-fix fixable issues                  |
 | Test           | =npm run test=             | Vitest                                   |

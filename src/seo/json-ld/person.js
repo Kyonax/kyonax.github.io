@@ -4,7 +4,7 @@
  */
 
 import { AUTHOR_INFO, LOCALE_URL, SEO, SITE_ORIGIN,TECHNOLOGIES } from '@data/data';
-import { TRANSLATIONS } from '@data/snippets';
+import { TRANSLATIONS_CORE as TRANSLATIONS } from '@data/snippets-core';
 
 import { PERSON_ID } from './identifiers';
 import { PROJECT_IDS } from './projects';

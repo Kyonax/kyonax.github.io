@@ -1,0 +1,928 @@
+#+TITLE: Todo lo que org2html renderiza
+#+SUBTITLE: Una página, cada construcción que el motor analiza y cómo se ve cada una
+#+DATE: 2026-08-13
+#+AUTHOR: Cristian D. Moreno
+#+LANGUAGE: es
+#+CATEGORY: Ingeniería
+#+FILETAGS: :org:referencia:sintaxis:
+#+KEYWORDS: org mode, org2html, referencia de sintaxis, org a html, sitio estático, marcado
+#+DESCRIPTION: Una página de referencia con cada construcción de Org que org2html analiza, de encabezados, tablas y código a matemáticas e incrustaciones, cada una como se ve.
+#+TRANSLATION_KEY: kitchen-sink
+#+COVER_IMAGE: /blog/media/everything-org2html-renders.png
+#+RELATED: 2026-05-15-de-org-al-ast, 2026-06-05-una-guia-de-estilo-no-un-framework, 2026-05-01-por-que-org-mode-le-gana-a-markdown
+#+HERO_IMAGE: /blog/media/everything-org2html-renders.png
+#+HERO_ALT: Arte de portada de Todo lo que org2html renderiza
+#+HERO_CAPTION: Cada bloque de esta página empezó como texto plano en un solo archivo Org.
+#+SIGNOFF: Escrito en Org y renderizado al compilar, como cada página de este blog.
+#+OPTIONS: toc:2 num:nil pri:t p:t c:t ^:{} -:t ':t
+#+TODO: TODO NEXT WAITING | DONE CANCELLED
+#+MACRO: kbd @@html:<kbd>$1</kbd>@@
+#+MACRO: keys @@html:<kbd>$1</kbd> luego <kbd>$2</kbd>@@
+#+LINK: engine https://github.com/Kyonax/org2html/blob/8c19b203b8180ab03c97461122c531d4dae83b88/%s
+#+SETUPFILE: ../../includes/setup.org
+
+Esta página es una referencia. Cada construcción que org2html sabe analizar
+aparece en ella al menos una vez, renderizada por la misma compilación que
+renderiza todos los demás artículos de {{{sitename}}}. Busca la familia que
+necesitas, lee la nota corta que tiene encima y mira el resultado.
+
+Nada de esto se arregló a mano. Cada sección nombra la sintaxis que produjo lo
+que ves, así que la página sirve también como mapa del código fuente.
+
+* Encabezados
+
+El título en lo alto de esta página es su único =<h1>=. El primer nivel de Org
+se vuelve =<h2>=, y cada nivel siguiente baja un escalón, así que la página
+conserva un solo esquema sin cortes. El índice de arriba lista los dos primeros
+niveles, porque esta página fija =toc:2=.
+
+** Un encabezado de segundo nivel
+Se renderiza como =<h3>=.
+
+*** Un encabezado de tercer nivel
+Se renderiza como =<h4>=.
+
+**** Un encabezado de cuarto nivel
+Se renderiza como =<h5>=.
+
+***** Un encabezado de quinto nivel
+Se renderiza como =<h6>=, que es donde a HTML se le acaban los encabezados.
+
+****** Un encabezado de sexto nivel
+También =<h6>=. Con el título ocupando =<h1>=, el quinto y el sexto nivel de Org
+caen en el mismo elemento. Sus clases siguen siendo distintas, =outline-5=
+frente a =outline-6=, así que una hoja de estilos puede distinguirlos.
+
+******* Un encabezado de séptimo nivel
+Más allá del sexto nivel ya no queda ningún elemento de encabezado, así que un
+encabezado más profundo se vuelve un elemento de lista que carga su propio
+cuerpo, y nunca entra en el índice.
+
+** Estados de tarea, prioridades y etiquetas
+
+Esta página define su propia secuencia de tareas con
+=#+TODO: TODO NEXT WAITING | DONE CANCELLED=. Los estados antes de la barra
+están abiertos, los que van después están cerrados, y un estado cerrado lleva
+una clase propia. Las prioridades pueden ser una letra o un dígito; Org las
+oculta a menos que =#+OPTIONS= diga =pri:t=. Una galleta estadística cuenta
+tareas hijas (=[1/3]=) o casillas (=[50%]=), y una etiqueta puede llevar =@= o
+=#=.
+
+Un encabezado de quince estrellas es una tarea en línea: una nota enmarcada
+dentro del texto corrido en lugar del comienzo de una sección nueva. Una línea
+=END= la cierra.
+
+*************** TODO [#B] Revisar las etiquetas en una pantalla angosta      :movil:
+*************** END
+
+*** NEXT [#A] Publicar este artículo de referencia [1/3]     :alfa:@trabajo:#urgente:
+**** DONE Elegir el slug y la fecha
+**** WAITING [#1] Revisar la versión en español [50%]
+- [X] De los encabezados a las tablas
+- [ ] Del código a las inclusiones
+**** TODO Reemplazar la portada provisional
+
+** Encabezados que no llegan a la página
+
+Tres marcas dejan un subárbol en el código fuente y fuera de la salida. La
+palabra =COMMENT= justo después de las estrellas descarta un encabezado y todo
+lo que cuelga de él. Una etiqueta =:noexport:= hace lo mismo al compilar la
+página. Una etiqueta =:archive:= conserva el encabezado, para que el esquema
+siga mostrando que el subárbol existe, y descarta lo que contiene. Los dos
+primeros tipos están justo debajo de este párrafo, y no puedes ver ninguno de
+los dos. El tercero viene a continuación.
+
+*** COMMENT Notas de redacción para la segunda pasada
+Ajustar la escalera de encabezados antes de cerrar la versión en español.
+
+*** Registro de compilación del primer borrador                     :noexport:
+Diecisiete advertencias, todas por una macro suelta, todas corregidas.
+
+*** Un subárbol archivado                                            :archive:
+Esta oración vive en el archivo fuente y en ningún otro lugar.
+
+** renderEveryConstructTheEngineKnowsWithoutAnyClientJavaScript
+
+El encabezado de arriba es una sola palabra de sesenta caracteres sin ningún
+punto de corte, del tipo que produce un nombre de función largo. Está aquí para
+que un error de maquetación de ese tipo aparezca en esta página antes que en
+cualquier otra.
+
+* Planificación y relojes
+
+Org guarda la planificación en la línea que va justo debajo de un encabezado, y
+el registro de tiempo en líneas =CLOCK:= y en cajones. Su propio exportador deja
+todo eso fuera por defecto; esta página lo activa con =p:t= y =c:t=.
+
+** NEXT Publicar la versión en español
+SCHEDULED: <2026-08-17 lun 09:00 +1w> DEADLINE: <2026-08-21 vie ++1m -3d>
+
+Esa es una línea de planificación con repetidores (=+1w= y =++1m=) y un periodo
+de aviso (=-3d=). Cada marca de tiempo conserva el texto que escribiste y gana
+un atributo =datetime= legible por máquinas.
+
+** DONE Redactar esta página
+CLOSED: [2026-08-13 jue 17:40]
+CLOCK: [2026-08-13 jue 14:05]--[2026-08-13 jue 17:40] =>  3:35
+:LOGBOOK:
+CLOCK: [2026-08-12 mié 09:10]--[2026-08-12 mié 11:25] =>  2:15
+CLOCK: [2026-08-11 mar 16:00]--[2026-08-11 mar 16:50] =>  0:50
+:END:
+:NOTAS:
+Un cajón guarda lo que Org deba mantener fuera del camino. Este es un cajón
+NOTAS personalizado, así que se renderiza como un bloque enmarcado sencillo.
+:END:
+
+Una tarea cerrada lleva una marca =CLOSED:=. La línea =CLOCK:= que va debajo se
+renderiza como una medición, con su inicio, su fin y su duración, cada uno en
+un elemento propio. Las entradas más antiguas, plegadas dentro de un cajón
+=:LOGBOOK:=, se vuelven un acordeón que puedes abrir.
+
+** CANCELLED Publicar una segunda hoja de estilos por defecto
+CLOSED: [2026-08-10 lun 12:00]
+
+* Mobiliario del párrafo
+
+Las líneas que empiezan con dos puntos y un espacio son texto de ancho fijo,
+conservado tal como se escribió:
+
+: $ org2html build content -o dist/blog --include-root includes
+: ✓ content/engineering/todo-lo-que-org2html-renderiza.es.org
+
+Cinco guiones o más en una línea propia dibujan una regla, y
+=#+ATTR_HTML: :class= elige una de tres variantes: discontinua, con marcas y
+con una x en caja.
+
+-----
+
+#+ATTR_HTML: :class org-hr--dashed
+-----
+
+#+ATTR_HTML: :class org-hr--tick
+-----
+
+#+ATTR_HTML: :class org-hr--boxed-x
+-----
+
+Dos barras invertidas terminan una línea sin terminar el párrafo,\\
+así que esta oración empieza en una línea nueva,\\
+y esta también.
+
+Con =-:t=, el valor por defecto de Org, tres guiones forman una raya --- como
+esta --- mientras que dos forman una semirraya para un rango como 2020--2026, y
+tres puntos forman unos puntos suspensivos... Con =':t=, las "comillas rectas"
+y las 'simples' se curvan, y también el apóstrofo de O'Higgins. Un =\-= marca
+un guion suave, así que una palabra larga como esterno\-cleido\-mastoideo se
+corta donde lo permitiste y en ningún otro lugar.
+
+* Listas
+
+Un guion, un signo más y un asterisco con sangría inician elementos no
+ordenados, y la sangría los anida:
+
+- Un guion inicia un elemento
++ Un signo más también
+  * Un asterisco con sangría anida un nivel más abajo
+    - Y un elemento más profundo anida un tercer nivel
+
+Los elementos ordenados llevan un número y un punto:
+
+1. Primero, con punto
+2. Segundo, con punto
+
+O un número y un paréntesis:
+
+1) Primero, con paréntesis
+2) Segundo, con paréntesis
+
+Una sola línea en blanco entre elementos los mantiene en una lista holgada, y
+una línea con sangría bajo un elemento lo continúa:
+
+- El primer elemento holgado
+
+- El segundo elemento holgado, cuyo texto es lo bastante largo como para que
+  el código fuente lo parta en una segunda línea
+
+- El tercer elemento holgado
+
+Una galleta =[@5]= reinicia la cuenta donde la necesites:
+
+1. [@5] Quinto, porque la galleta lo dice
+2. Sexto, contando desde ahí
+
+Las listas de descripción emparejan un término con su definición, y una
+definición puede ocupar varias líneas:
+
+- Término :: Una definición en una sola línea.
+- Un término más largo :: Una definición que sigue más allá de la primera línea
+  del código fuente, porque la continuación tiene sangría bajo su elemento.
+
+Las casillas tienen tres estados, y se anidan:
+
+- [-] Publicar el artículo de referencia
+  - [X] Escribir la página en inglés
+  - [ ] Escribir la versión en español
+- [X] Compilarlo con el motor local
+- [ ] Reemplazar la portada provisional
+
+* Tablas
+
+Una regla bajo la primera fila vuelve esa fila un encabezado. Una fila de
+galletas =<l>=, =<c>= y =<r10>= fija la alineación de cada columna y nunca se
+renderiza. Una fila que empieza con =/= agrupa columnas y tampoco se renderiza.
+Una línea =#+TBLFM:= bajo una tabla es la fórmula de hoja de cálculo de Org, y
+no renderiza nada en absoluto. =#+CAPTION= y =#+NAME= viajan con la tabla, así
+que [[tbl-heading-levels][la siguiente tabla]] se puede enlazar por su nombre.
+
+#+CAPTION: Dónde cae cada nivel de encabezado de Org en esta página.
+#+NAME: tbl-heading-levels
+| Nivel de Org | Elemento | Gancho de clase |
+|--------------+----------+-----------------|
+| <l>          |   <c>    |           <r10> |
+| /            |    <     |               > |
+| 1            |    h2    |       outline-1 |
+| 2            |    h3    |       outline-2 |
+| 3            |    h4    |       outline-3 |
+| 4            |    h5    |       outline-4 |
+| 5            |    h6    |       outline-5 |
+| 6            |    h6    |       outline-6 |
+#+TBLFM: $3='(concat "outline-" $1)
+
+La alineación también puede ir en la regla misma: dos puntos en el extremo
+izquierdo, en el derecho o en ambos extremos de un segmento fijan esa columna.
+
+| Marca en la regla | Alinea    | Clase        |
+|:------------------+:---------:+-------------:|
+| =:---=            | izquierda | =org-left=   |
+| =:---:=           | centro    | =org-center= |
+| =---:=            | derecha   | =org-right=  |
+
+Org también lee las tablas de cuadrícula de table.el, dibujadas con =+= en cada
+esquina:
+
++---------------------+------------------------------+
+| Tabla de cuadrícula | Dibujada con table.el        |
++---------------------+------------------------------+
+| Filas de borde      | guiones, con esquinas de =+= |
+| Se renderiza como   | una tabla común              |
++---------------------+------------------------------+
+
+=#+ATTR_O2H= puede señalar la fila, la columna o la celda que indique el
+argumento. La marca es estructura, una clase en el marcado, así que cualquier
+hoja de estilos puede decidir cómo se ve. Esta tabla resalta su propia segunda
+fila, su cuarta columna y una celda:
+
+#+CAPTION: Tres formas de señalar una parte de una tabla.
+#+ATTR_O2H: :highlight-row 2 :highlight-col 4 :highlight-cell 2.1
+| Palabra clave     | Marca                                 | Ejemplo               | Clase                 |
+|-------------------+---------------------------------------+-----------------------+-----------------------|
+| =:highlight-row=  | una fila del cuerpo, contando desde 1 | =:highlight-row 2=    | =org-row--highlight=  |
+| =:highlight-col=  | una columna, encabezado incluido      | =:highlight-col 4=    | =org-cell--highlight= |
+| =:highlight-cell= | una celda, como columna.fila          | =:highlight-cell 2.1= | =org-cell--highlight= |
+
+Una tabla de diez columnas con una palabra de sesenta caracteres dentro no cabe
+en la columna de lectura. En lugar de aplastar las columnas, el motor pone cada
+tabla en un marco que se desplaza de lado. =org-wide= deja que esta se salga
+primero de la columna:
+
+#+CAPTION: Los interruptores de exportación que fija esta página, frente a los valores por defecto de Org y del motor.
+#+ATTR_HTML: :class org-wide
+| Ajustes           | =toc=   | =num=   | =pri= | =p=   | =c=   | =^=  | =-= | ='=   | En una palabra                                               |
+|-------------------+---------+---------+-------+-------+-------+------+-----+-------+--------------------------------------------------------------|
+| Emacs por defecto | =t=     | =t=     | =nil= | =nil= | =nil= | =t=  | =t= | =nil= | tradicional                                                  |
+| org2html          | apagado | apagado | =nil= | =nil= | =nil= | ={}= | =t= | =nil= | cauteloso                                                    |
+| Esta página       | =2=     | =nil=   | =t=   | =t=   | =t=   | ={}= | =t= | =t=   | renderEveryConstructTheEngineKnowsWithoutAnyClientJavaScript |
+
+=org-full-bleed= lleva una tabla hasta ambos bordes de la ventana:
+
+#+CAPTION: Lo que el motor escribe junto a cada página que compila.
+#+ATTR_HTML: :class org-full-bleed
+| Archivo                | Qué es                                         | Quién lo lee             |
+|------------------------+------------------------------------------------+--------------------------|
+| =index.html=           | la página misma                                | el navegador             |
+| =index.vue=            | la misma página como componente Vue            | un anfitrión Vue         |
+| =metadata.json=        | las palabras clave y los conteos del documento | los índices del sitio    |
+| =og-metadata.json=     | los campos de la tarjeta social                | la cabecera de la página |
+| =relations.json=       | migas de pan, serie y artículos relacionados   | la navegación del sitio  |
+| =structured-data.json= | el grafo JSON-LD                               | los buscadores           |
+
+=#+ATTR_O2H: :chart bar= dibuja una tabla como gráfico de barras mientras el
+sitio se compila. El dibujo es una imagen de la tabla, y la tabla viaja dentro
+de la figura para que un lector de pantalla y un rastreador sigan recibiendo
+los números. Seis barras dejan a cada etiqueta cerca de ocho caracteres a
+tamaño completo, y estas llegan a veintisiete, así que el gráfico baja todas las
+etiquetas un paso y parte cada una en hasta tres líneas bajo su barra, cortando
+solo entre palabras.
+
+#+CAPTION: Los tramos sin corte más largos de esta página, en caracteres.
+#+ATTR_O2H: :chart bar :chart-axis caracteres :chart-label-col 1 :chart-value-col 3 :highlight-row 6
+| Prueba de estrés            | Sección     | Caracteres |
+|-----------------------------+-------------+------------|
+| Encabezado de una palabra   | Encabezados |         60 |
+| Celda de tabla de un token  | Tablas      |         60 |
+| Código y verbatim en línea  | En línea    |         70 |
+| URL suelta en texto corrido | En línea    |        120 |
+| Línea más larga del verso   | Bloques     |        200 |
+| Línea más larga del código  | Código      |        220 |
+
+* Código
+
+Un bloque de código nombra su lenguaje después de =#+BEGIN_SRC=, y la
+compilación lo resalta con la gramática que usaría un editor. Cada bloque
+recibe una barra de cabecera con su lenguaje, un botón de copiar y números de
+línea. Una línea más ancha que el bloque se desplaza en lugar de partirse:
+
+#+BEGIN_SRC javascript
+// Catorce de los ganchos de clase de esta página, en una línea de exactamente 220 caracteres:
+const pageHooks = ["org-inlinetask", "org-planning", "org-clock", "org-callout--danger", "org-tabs", "org-diagram", "org-embed--x", "org-hero", "org-low-level", "org-chart", "org-diff", "org-results", "org-dl", "org-ol"]
+#+END_SRC
+
+=:tangle src/lexer.ts= nombra el archivo al que pertenece un bloque, así que la
+cabecera muestra =lexer.ts=. Este bloque tiene sesenta líneas:
+
+#+BEGIN_SRC typescript :tangle src/lexer.ts
+// Un lexer de Org pequeño a propósito. El real también maneja bloques, cajones
+// y líneas de planificación; este solo tiene que ser lo bastante largo para desplazarse.
+export type TokenType = "HEADING" | "LIST_ITEM" | "TABLE_ROW" | "KEYWORD" | "BLANK" | "TEXT"
+
+export interface Token {
+  type: TokenType
+  value: string
+  line: number
+  level?: number
+}
+
+// Un patrón por construcción, probados en el orden en que los evalúa el bucle de abajo.
+const HEADING = /^(\*+)\s+(.*)$/
+const LIST_ITEM = /^\s*(?:[-+*]|\d+[.)])\s+(.*)$/
+const TABLE_ROW = /^\s*\|/
+const KEYWORD = /^#\+(\w+):\s*(.*)$/
+
+export function tokenize(source: string): Token[] {
+  const tokens: Token[] = []
+  const lines = source.replace(/\r\n?/g, "\n").split("\n")
+
+  lines.forEach((raw, line) => {
+    const trimmed = raw.trim()
+    if (trimmed === "") {
+      tokens.push({ type: "BLANK", value: "", line })
+      return
+    }
+
+    // Un encabezado solo cuenta en la columna cero; una estrella con sangría es una viñeta.
+    const heading = raw.match(HEADING) (ref:heading)
+    if (heading) {
+      tokens.push({ type: "HEADING", value: heading[2], line, level: heading[1].length })
+      return
+    }
+
+    const keyword = trimmed.match(KEYWORD)
+    if (keyword) {
+      tokens.push({ type: "KEYWORD", value: keyword[2], line })
+      return
+    }
+
+    if (TABLE_ROW.test(raw)) {
+      tokens.push({ type: "TABLE_ROW", value: trimmed, line })
+      return
+    }
+
+    const item = raw.match(LIST_ITEM)
+    tokens.push(
+      item
+        ? { type: "LIST_ITEM", value: item[1], line }
+        : { type: "TEXT", value: raw, line },
+    )
+  })
+
+  return tokens
+}
+
+// El esquema es cada encabezado, en el orden del documento.
+export const outline = (tokens: Token[]): Token[] =>
+  tokens.filter((token) => token.type === "HEADING")
+#+END_SRC
+
+La prueba del encabezado está en [[(heading)]]. Esa referencia es una coderef:
+el código fuente marca la línea con =(ref:heading)= al final, la etiqueta
+desaparece del bloque, y =[[(heading)]]= en la prosa nombra la línea que marcó.
+
+Un bloque con nombre y su =#+RESULTS:= viajan juntos. El resultado se estiliza
+como salida y no como un ejemplo más:
+
+#+NAME: answer
+#+BEGIN_SRC python :results output
+print(6 * 7)
+#+END_SRC
+
+#+RESULTS: answer
+#+BEGIN_EXAMPLE
+42
+#+END_EXAMPLE
+
+Rust, un diff y Emacs Lisp. Un bloque =diff= tiñe sus líneas añadidas y
+quitadas y omite los números de línea, porque el diff trae su propio margen. El
+resaltador no tiene gramática de Emacs Lisp, así que ese bloque se entrega como
+texto plano y lo dice en su marcado en lugar de fingir:
+
+#+BEGIN_SRC rust
+fn main() {
+    let constructs = ["heading", "table", "math"];
+    println!("{} constructs, one page", constructs.len());
+}
+#+END_SRC
+
+#+BEGIN_SRC diff
+--- a/todo-lo-que-org2html-renderiza.es.org
++++ b/todo-lo-que-org2html-renderiza.es.org
+@@ -17 +17 @@
+-#+OPTIONS: toc:t
++#+OPTIONS: toc:2 num:nil pri:t p:t c:t ^:{} -:t ':t
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq org-export-with-smart-quotes t
+      org-export-with-planning t)
+#+END_SRC
+
+El código también puede ir dentro de una oración: src_python{sum(range(10))} es
+código en línea. Este motor nunca ejecuta código, así que una llamada de Babel
+en línea puesta aquí call_answer() no agrega nada a la página.
+
+* Bloques
+
+Un bloque de cita:
+
+#+BEGIN_QUOTE
+Un documento es un registro de decisiones. El *renderizador* solo tiene que conservarlas.
+#+END_QUOTE
+
+=#+ATTR_HTML: :class org-quote--pull= convierte una cita en una cita destacada:
+
+#+ATTR_HTML: :class org-quote--pull
+#+BEGIN_QUOTE
+Decide en la compilación, y entrégale al lector un documento en vez de un programa.
+#+END_QUOTE
+
+Un bloque de ejemplo conserva todo al pie de la letra, marcado y espaciado
+incluidos:
+
+#+BEGIN_EXAMPLE
+Un bloque de ejemplo es literal: *estrellas*, /barras/ y ~virgulillas~ quedan como se escribieron,
+    y también    el espaciado.
+#+END_EXAMPLE
+
+Un bloque de verso conserva sus saltos de línea y su sangría inicial:
+
+#+BEGIN_VERSE
+Sanea por defecto,
+  decide en la compilación,
+    y entrégale al lector un documento, no un programa.
+Un verso guarda sus saltos y su sangría, así que una línea tan larga sigue siendo una sola en el código, y se parte solo donde la página se queda sin espacio, nunca donde un analizador decidió unirla.
+#+END_VERSE
+
+#+BEGIN_CENTER
+Un bloque centrado, para la rara línea que se lo gana.
+#+END_CENTER
+
+Siete avisos comparten cuatro intenciones. =IMPORTANT= se renderiza como un
+consejo, =CAUTION= como una advertencia y =ABSTRACT= como una nota, y cada uno
+conserva su propio nombre en la etiqueta:
+
+#+BEGIN_NOTE
+Una nota agrega contexto que el lector puede saltarse.
+#+END_NOTE
+
+#+BEGIN_TIP
+Un consejo sugiere una mejor forma de hacer algo.
+#+END_TIP
+
+#+BEGIN_WARNING
+Una advertencia señala algo que puede salir mal.
+#+END_WARNING
+
+#+BEGIN_DANGER
+El peligro es para el único error que no puedes deshacer, como compilar con =--no-sanitize=.
+#+END_DANGER
+
+#+BEGIN_IMPORTANT
+Importante se renderiza con los colores del consejo y conserva su propia etiqueta.
+#+END_IMPORTANT
+
+#+BEGIN_CAUTION
+Precaución se renderiza con los colores de la advertencia y conserva su propia etiqueta.
+#+END_CAUTION
+
+#+BEGIN_ABSTRACT
+Resumen se renderiza con los colores de la nota y conserva su propia etiqueta.
+#+END_ABSTRACT
+
+Un nombre de bloque que el motor no conoce se vuelve un =<div>= con una clase
+del mismo nombre, así que =#+BEGIN_ASIDE= toma el estilo que una hoja de estilos
+le dé a =.org-aside=:
+
+#+BEGIN_ASIDE
+Un aparte: un bloque especial genérico que lleva su nombre como clase.
+#+END_ASIDE
+
+Un bloque =COMMENT= está entre este párrafo y el siguiente. Nada de lo que
+contiene llega a la página.
+
+#+BEGIN_COMMENT
+Revisor: compara cada aviso con la versión en inglés antes de fusionar.
+#+END_COMMENT
+
+Un bloque =#+BEGIN_JSONLD= no es contenido en absoluto. Se suma a los datos
+estructurados de la página, así que le describe esta página a un buscador sin
+que un lector tenga que pasar por encima de él. Hay uno justo aquí.
+
+#+BEGIN_JSONLD
+{
+  "about": {
+    "@type": "SoftwareSourceCode",
+    "name": "org2html",
+    "codeRepository": "https://github.com/Kyonax/org2html",
+    "programmingLanguage": "TypeScript"
+  }
+}
+#+END_JSONLD
+
+Un bloque dinámico, abierto con =#+BEGIN:= y un nombre, guarda lo último que
+Emacs generó dentro de él. Este es una vista de columnas de las tareas de esta
+página, y su tabla capturada se renderiza como cualquier otra:
+
+#+BEGIN: columnview :hlines 1 :id global :format "%ITEM(Tarea) %TODO(Estado) %PRIORITY(Prioridad)"
+| Tarea                                | Estado  | Prioridad |
+|--------------------------------------+---------+-----------|
+| Publicar este artículo de referencia | NEXT    | A         |
+| Elegir el slug y la fecha            | DONE    |           |
+| Revisar la versión en español        | WAITING | 1         |
+| Reemplazar la portada provisional    | TODO    |           |
+#+END:
+
+=#+BEGIN_TABS= muestra varias alternativas en un solo lugar. Cada línea =#+TAB:=
+abre un panel que puede contener cualquier bloque. Con los scripts apagados, se
+ven todos los paneles, uno tras otro:
+
+#+BEGIN_TABS
+#+TAB: Cita
+#+BEGIN_QUOTE
+Una pestaña puede contener cualquier bloque que el motor renderice, no solo un párrafo.
+#+END_QUOTE
+#+TAB: Ejemplo
+#+BEGIN_EXAMPLE
+$ org2html build content -o dist/blog
+#+END_EXAMPLE
+#+TAB: Tabla
+| Panel   | Contiene             |
+|---------+----------------------|
+| Cita    | un bloque de cita    |
+| Ejemplo | un bloque de ejemplo |
+| Tabla   | esta tabla           |
+#+END_TABS
+
+* Figuras y medios
+
+Un enlace de imagen solo en su línea, con un =#+CAPTION=, se vuelve una figura.
+=#+NAME= le da un ancla, así que [[fig-main-figure][la figura principal]] se
+puede enlazar por su nombre, y =#+ATTR_O2H: :main t= la marca como la imagen
+que representa a toda la página.
+
+#+CAPTION: Una figura con leyenda, con nombre y marcada como la imagen principal de la página.
+#+NAME: fig-main-figure
+#+ATTR_O2H: :main t
+[[/blog/media/from-org-to-ast.png][Portada provisional de De Org al AST]]
+
+Sin leyenda sigue siendo una figura, solo que sin rótulo:
+
+[[/blog/media/build-time-math.png][Portada provisional de Matemáticas en tiempo de compilación]]
+
+Una imagen dentro de una oración, como este diminuto degradado
+[[/blog/media/sample.png][un diminuto degradado de color]], se queda en línea.
+
+=org-wide= saca una figura de la columna de lectura, y =org-full-bleed= la
+lleva hasta ambos bordes de la ventana:
+
+#+CAPTION: Una figura ancha.
+#+ATTR_HTML: :class org-wide
+[[/blog/media/privacy-embeds.png][Portada provisional de Insertar vídeos sin castigar al lector]]
+
+#+CAPTION: Una figura a sangre completa.
+#+ATTR_HTML: :class org-full-bleed
+[[/blog/media/shipping-static.png][Portada provisional de Publicar un sitio estático que siga rápido]]
+
+=org-figure--bracket= y =org-figure--hatch= agregan las dos decoraciones de
+figura del Libro de Estilos:
+
+#+CAPTION: Una figura con corchetes.
+#+ATTR_HTML: :class org-figure--bracket
+[[/blog/media/a-style-book.png][Portada provisional de Una guía de estilo, no un framework]]
+
+#+CAPTION: Una figura con trama.
+#+ATTR_HTML: :class org-figure--hatch
+[[/blog/media/from-org-to-ast.png][Portada provisional de De Org al AST]]
+
+El resto de los medios llega por bloques =#+BEGIN_EXPORT html=, y cada uno pasa
+antes por el saneador. Una fila de imágenes dentro de =.org-carousel-strip= es
+un carrusel que se desplaza y se ancla solo con CSS; el tiempo de ejecución
+agrega botones y puntos cuando los scripts están activos:
+
+#+BEGIN_EXPORT html
+<div class="org-carousel-strip">
+  <img src="/blog/media/from-org-to-ast.png" alt="Portada provisional de De Org al AST"
+       width="1280" height="720" loading="lazy" decoding="async">
+  <img src="/blog/media/privacy-embeds.png" alt="Portada provisional de Insertar vídeos sin castigar al lector"
+       width="1280" height="720" loading="lazy" decoding="async">
+  <img src="/blog/media/shipping-static.png" alt="Portada provisional de Publicar un sitio estático que siga rápido"
+       width="1280" height="720" loading="lazy" decoding="async">
+</div>
+#+END_EXPORT
+
+Un diagrama es SVG escrito a mano que lleva clases y ningún color propio, así
+que sigue al Libro de Estilos. Está dibujado con 720 unidades de ancho y nunca
+se encoge por debajo de 700 píxeles; en una pantalla angosta el marco se
+desplaza en su lugar, y con los scripts activos se vuelve un escenario que
+puedes arrastrar y ampliar:
+
+#+BEGIN_EXPORT html
+<figure class="org-diagram">
+<div class="org-diagram-scroll">
+<svg class="org-diagram-svg" viewBox="0 0 720 200" role="img" aria-label="La tubería de org2html, del código fuente Org al HTML saneado">
+<title>La tubería de org2html</title>
+<defs>
+<marker id="kitchen-sink-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto">
+<path class="org-diagram-arrow" d="M0 0 L8 4 L0 8 Z"/>
+</marker>
+</defs>
+<text class="org-diagram-lane" x="24" y="30">EN TIEMPO DE COMPILACIÓN</text>
+<rect class="org-diagram-band" x="12" y="44" width="696" height="112"/>
+<g class="org-diagram-node"><rect x="24" y="72" width="104" height="56"/><text class="org-diagram-label" x="76" y="97" text-anchor="middle">RESOLVER</text><text class="org-diagram-sub" x="76" y="113" text-anchor="middle">inclusiones</text></g>
+<g class="org-diagram-node"><rect x="160" y="72" width="104" height="56"/><text class="org-diagram-label" x="212" y="97" text-anchor="middle">TOKENIZAR</text><text class="org-diagram-sub" x="212" y="113" text-anchor="middle">líneas</text></g>
+<g class="org-diagram-node"><rect x="296" y="72" width="104" height="56"/><text class="org-diagram-label" x="348" y="97" text-anchor="middle">ANALIZAR</text><text class="org-diagram-sub" x="348" y="113" text-anchor="middle">un árbol</text></g>
+<g class="org-diagram-node"><rect x="432" y="72" width="104" height="56"/><text class="org-diagram-label" x="484" y="97" text-anchor="middle">RENDERIZAR</text><text class="org-diagram-sub" x="484" y="113" text-anchor="middle">HTML</text></g>
+<g class="org-diagram-node is-highlight"><rect x="568" y="72" width="104" height="56"/><text class="org-diagram-label" x="620" y="97" text-anchor="middle">SANEAR</text><text class="org-diagram-sub" x="620" y="113" text-anchor="middle">por defecto</text></g>
+<path class="org-diagram-edge" d="M128 100 H158" marker-end="url(#kitchen-sink-arrow)"/>
+<path class="org-diagram-edge" d="M264 100 H294" marker-end="url(#kitchen-sink-arrow)"/>
+<path class="org-diagram-edge" d="M400 100 H430" marker-end="url(#kitchen-sink-arrow)"/>
+<path class="org-diagram-edge is-highlight" d="M536 100 H566" marker-end="url(#kitchen-sink-arrow)"/>
+<text class="org-diagram-note" x="24" y="182">Cada paso corre una sola vez, en la máquina que compila el sitio.</text>
+</svg>
+</div>
+<figcaption class="org-diagram-caption">La tubería detrás de esta página, dibujada como SVG escrito a mano.</figcaption>
+</figure>
+#+END_EXPORT
+
+Un =<video>= conserva sus controles nativos en la página servida, así que se
+reproduce con los scripts apagados, y luego el tiempo de ejecución pone en su
+lugar los controles propios del Libro de Estilos; un =<audio>= conserva los del
+navegador. ~preload="none"~ significa que no se descarga nada hasta que
+presionas reproducir. El clip y el sonido son muestras CC0 de los recursos
+compartidos de MDN.
+
+#+BEGIN_EXPORT html
+<video controls preload="none" width="960" height="540" poster="/blog/media/everything-org2html-renders.png">
+  <source src="https://mdn.github.io/shared-assets/videos/flower.mp4" type="video/mp4">
+  Un clip de cinco segundos de una flor que se abre.
+</video>
+#+END_EXPORT
+
+#+BEGIN_EXPORT html
+<audio controls preload="none">
+  <source src="https://mdn.github.io/shared-assets/audio/t-rex-roar.mp3" type="audio/mpeg">
+  Un rugido corto, como muestra de audio.
+</audio>
+#+END_EXPORT
+
+El HTML simple también sobrevive, siempre que el saneador lo considere seguro:
+un desplegable, una tecla y una abreviatura.
+
+#+BEGIN_EXPORT html
+<details>
+  <summary>¿Cómo exporto este archivo desde Emacs?</summary>
+  <p>Presiona <kbd>C-c</kbd> <kbd>C-e</kbd> para abrir el despachador de
+  exportación. Este sitio nunca lo hace: compila desde la línea de comandos con
+  la CLI <abbr title="Conversor de Org a HTML">org2html</abbr>.</p>
+</details>
+#+END_EXPORT
+
+* Incrustaciones
+
+Una incrustación es una fachada. La página lleva una portada y un objetivo de
+reproducción, y el reproductor del proveedor carga solo después de un clic, así
+que un lector que nunca presiona reproducir nunca habla con el proveedor. El
+mismo video de tres formas: en la columna, ancho, y a sangre completa con su
+canal nombrado en la línea de origen.
+
+{{< youtube id="jNQXAC9IVRw" title="Me at the zoo" >}}
+
+{{< youtube id="jNQXAC9IVRw" title="Me at the zoo, ancho" wide="t" >}}
+
+{{< youtube id="jNQXAC9IVRw" title="Me at the zoo, a sangre completa" bleed="t" channel="jawed" >}}
+
+Una publicación de X funciona en los mismos términos. X no publica portada, así
+que =poster= nombra una imagen local; =video= nombra el archivo de medios, que
+un clic monta como un =<video>= real en lugar de un marco; =handle= nombra la
+cuenta en la línea de origen.
+
+{{< x src="https://x.com/kyonax_on_tech/status/2094691954227400762/video/1" title="Una publicación del autor del motor" poster="/blog/media/privacy-embeds.png" video="https://video.twimg.com/x.mp4" handle="kyonax_on_tech" >}}
+
+Un componente es un marcador de posición inerte que un anfitrión puede
+hidratar. Dentro de una oración se queda como un =<span>=, como esta
+insignia {{< badge count="3" >}}, así que el párrafo no se parte. Como bloque
+puede recibir sus props como un cuerpo JSON:
+
+#+BEGIN_COMPONENT card :title Tarjeta de referencia :variant compact
+{"sections": ["encabezados", "tablas", "matemáticas"]}
+#+END_COMPONENT
+
+* En línea
+
+** Énfasis y código
+
+Seis marcas: *negrita*, /cursiva/, _subrayado_, +tachado+, ~código~ y
+=verbatim=. Se anidan, como en */negrita cursiva/* y _/subrayado en cursiva/_.
+El código y el verbatim toman su contenido al pie de la letra, por largo que
+sea: ~tokenizeParseRenderSanitizeAndShipEveryOrgConstructToStaticHtmlAtBuild~ y
+=KITCHEN_SINK_EVERY_CONSTRUCT_THE_ENGINE_PARSES_RENDERS_WITHOUT_RUNTIME= tienen
+setenta caracteres cada uno.
+
+** Subíndices, superíndices y entidades
+
+Con =^:{}=, las llaves son obligatorias: H_{2}O y E = mc^{2} se renderizan como
+subíndice y superíndice, mientras que nombres_en_snake_case y 2^10 quedan tal
+como se escribieron.
+
+Las entidades nombran un glifo, así que =\alpha= se renderiza como \alpha. Esta
+oración lleva doce: \alpha, \beta y \pi; \to, \times y \pm; \le, \ge y \infty;
+21\deg{}C; una barra vertical \vert{} literal; y un espacio de no separación en
+5\nbsp{}km.
+
+** Citas, destinos y enlaces difusos
+
+Una cita conserva su clave en un span marcado para que un anfitrión la
+resuelva: [cite:@dominik2010], o varias a la vez, [cite/t:@dominik2010;@schulte2012].
+
+Un destino dedicado marca un lugar: <<el destino dedicado>>esta oración lleva
+uno. Un destino de radio marca un lugar del mismo modo, <<<destino de radio>>> y
+un enlace puede saltar a cualquiera de los dos.
+
+Un enlace sin esquema es difuso. Encuentra un destino, como en
+[[el destino dedicado][de vuelta al destino]] y
+[[destino de radio][al destino de radio]]; un encabezado, como en
+[[Matemáticas][la sección de matemáticas]]; o un =#+NAME=, como en
+[[fig-main-figure][la figura principal]]. Una estrella fuerza un encabezado,
+como en [[*Tablas][las tablas]], y una almohadilla fuerza un =CUSTOM_ID=, como
+en [[#every-link-scheme][la lista de esquemas de enlace]].
+
+** Todos los esquemas de enlace
+:PROPERTIES:
+:CUSTOM_ID: every-link-scheme
+:END:
+
+Un enlace con descripción, [[https://orgmode.org/manual/Hyperlinks.html][el
+manual de Org sobre hipervínculos]], y una URL suelta de 120 caracteres, un
+enlace permanente a las líneas del motor que convierten guiones en rayas y
+curvan las comillas rectas:
+https://github.com/Kyonax/org2html/blob/8c19b203b8180ab03c97461122c531d4dae83b88/src/renderer/html-renderer.ts#L533-L552
+
+Un enlace entre ángulos, <https://orgmode.org/manual/External-Links.html>; una
+dirección de correo, [[mailto:hello@example.com][hello@example.com]]; un número
+de teléfono, [[tel:+15555550123][+1 555 555 0123]]; y un servidor FTP,
+[[ftp://ftp.gnu.org/gnu/emacs/][el archivo de GNU Emacs]].
+
+Un enlace =file:= se vuelve una ruta de este sitio, como con
+[[file:/blog/o2h.js][el script de tiempo de ejecución que carga esta página]].
+Los enlaces =id:= y =roam:= apuntan a una base de conocimiento de Emacs que no
+existe en la web, así que el motor los renderiza como enlaces a ninguna parte,
+=#=, a propósito: [[id:5b0e3f5c-2d6a-4b8e-9a51-7f2c8d0e1a34][un enlace id]] y
+[[roam:Org syntax][un enlace roam]].
+
+=#+LINK: engine …= define una abreviatura, así que
+[[engine:src/parser/parser.ts][el analizador]] se expande a la dirección
+completa del código fuente del analizador del motor.
+
+** Marcas de tiempo
+
+Una marca activa, <2026-08-13 jue>; una inactiva, [2026-08-13 jue]; una con
+hora, <2026-08-13 jue 09:30>; un rango de horas, <2026-08-13 jue 09:30-11:00>;
+un rango de fechas, <2026-08-13 jue>--<2026-08-15 sáb>; y un repetidor,
+<2026-08-17 lun +1w>. Cada una conserva su texto y gana un =datetime=.
+
+** Macros, abreviaturas de enlace y fragmentos de exportación
+
+=#+MACRO:= define una plantilla con argumentos numerados. Esta página define
+dos: {{{kbd(C-c C-e)}}} recibe un argumento y {{{keys(C-c C-e,h h)}}} recibe
+dos. Las macros integradas leen el propio documento: esta página se llama
+{{{title}}}, la escribió {{{author}}}, lleva la fecha {{{date}}}, está archivada
+en {{{keyword(CATEGORY)}}} y tiene la clave de traducción
+{{{property(TRANSLATION_KEY)}}}. =#+SETUPFILE= trae las macros que comparten
+todos los artículos de este blog, y así fue como {{{sitename}}} llegó al primer
+párrafo.
+
+Un fragmento de exportación le habla a un solo backend: @@html:<mark>esta marca
+llegó a la página</mark>@@, y un fragmento de LaTeX justo aquí @@latex:\newpage@@
+se descartó.
+
+* Matemáticas
+
+Las matemáticas se componen en MathML mientras el sitio se compila, así que la
+página no envía ningún compositor. En línea, con dólares, $E = mc^2$, o con
+paréntesis, \(a^2 + b^2 = c^2\). En su propia línea, con dólares dobles:
+
+$$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
+
+Con corchetes:
+
+\[ \int_0^1 x^2 \, dx = \frac{1}{3} \]
+
+Como ecuación numerada:
+
+\begin{equation}
+e^{i\pi} + 1 = 0
+\end{equation}
+
+Como una derivación alineada, con una segunda línea de más de sesenta
+caracteres:
+
+\begin{align*}
+(x + 1)^2 &= x^2 + 2x + 1 \\
+          &= \sum_{k=0}^{2} \binom{2}{k} x^k + \int_0^x 0 \, dt - \lim_{n \to \infty} \frac{1}{n}
+\end{align*}
+
+Y una matriz:
+
+\begin{pmatrix}
+1 & 0 \\
+0 & 1
+\end{pmatrix}
+
+Un signo de dólar no siempre es matemática: esto cuesta $5 y aquello cuesta
+$10, y ninguno de los dos montos se volvió una fórmula.
+
+* Notas al pie
+
+Una nota numerada[fn:1], una con nombre[fn:setup], una definida en línea donde
+se usa[fn:inline: Una definición en línea vive dentro de la propia referencia.],
+y una anónima[fn:: Sin ninguna etiqueta, y el motor la numera de todos modos.].
+Todas terminan en la misma lista numerada al final de la página.
+
+[fn:1] Una nota al pie numerada. Su cuerpo puede llevar un enlace largo, como
+las líneas del analizador que leen referencias a notas como estas:
+https://github.com/Kyonax/org2html/blob/8c19b203b8180ab03c97461122c531d4dae83b88/src/parser/parser.ts#L1606-L1629
+
+[fn:setup] Una nota al pie con nombre, etiquetada =setup= en el código fuente.
+Las notas con nombre y las numeradas comparten una sola secuencia.
+
+* Inclusiones
+
+=#+INCLUDE:= injerta otro archivo en la página antes de analizar nada. El motor
+solo lee de la carpeta del propio documento y de las carpetas que la compilación
+nombra con =--include-root=, así que una ruta extraviada no puede publicar un
+archivo que nadie ofreció. Estas líneas produjeron el resto de esta sección:
+
+#+BEGIN_EXAMPLE
+,#+INCLUDE: "../../includes/snippet.org"
+,#+INCLUDE: "../../includes/sample.js" src js
+,#+INCLUDE: "../../includes/setup.org" example
+,#+INCLUDE: "../../includes/kitchen-sink-lexer.js" src javascript :lines "3-9"
+,#+INCLUDE: "../../includes/kitchen-sink.es.org::*Solo llega el cuerpo" :only-contents t
+,#+INCLUDE: "../../includes/kitchen-sink.es.org::*Una parte bajada un nivel" :minlevel 2
+#+END_EXAMPLE
+
+Una inclusión simple trae prosa Org, analizada como si se hubiera escrito aquí:
+
+#+INCLUDE: "../../includes/snippet.org"
+
+=src js= envuelve el archivo en un bloque de código, resaltado como cualquier
+otro:
+
+#+INCLUDE: "../../includes/sample.js" src js
+
+=example= lo envuelve, en cambio, en un bloque de ejemplo. Este es el archivo
+de configuración que usan todos los artículos de este blog; la línea
+=#+OPTIONS= de esta página gana sobre la que trae dentro:
+
+#+INCLUDE: "../../includes/setup.org" example
+
+=:lines "3-9"= toma una porción del archivo, así que los comentarios de encima
+de la función y la exportación de debajo se quedan atrás:
+
+#+INCLUDE: "../../includes/kitchen-sink-lexer.js" src javascript :lines "3-9"
+
+=::*Encabezado= elige un subárbol por su título, y =:only-contents t= descarta
+el encabezado mismo, así que solo llega su cuerpo:
+
+#+INCLUDE: "../../includes/kitchen-sink.es.org::*Solo llega el cuerpo" :only-contents t
+
+=:minlevel 2= desplaza los encabezados de un subárbol hasta que el menos
+profundo quede en el nivel dos, lo que lo archiva bajo esta sección en lugar de
+empezar una nueva:
+
+#+INCLUDE: "../../includes/kitchen-sink.es.org::*Una parte bajada un nivel" :minlevel 2
+
+* Leer el código fuente
+
+Cada construcción de arriba salió de un solo archivo de texto plano y de un
+puñado de inclusiones pequeñas, renderizada por la misma compilación que todos
+los demás artículos de aquí. Abre el código fuente junto a esta página y cada
+familia se alinea con su sección.

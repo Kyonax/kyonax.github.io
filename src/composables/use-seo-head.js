@@ -9,12 +9,50 @@ import {
   SEO,
   THEME_SETTINGS,
 } from '@data/data';
+import { BLOG_INDEX_URLS, isBlogPath } from '@seo/blog-routes';
 import { absoluteUrl,HREFLANG_ALTERNATES } from '@seo/routes';
 import { useHead } from '@unhead/vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 
 const OG_LOCALE = { en: 'en_US', es: 'es_CO' };
+
+/*
+ * THE HIRING KEYWORDS STAY OFF THE BLOG. SEO.keywords is the landing's list
+ * (the name, the roles, the stack, the employers): it describes the person,
+ * and on an archive or an article it would claim the page is about hiring when
+ * it is about what the article says. The owner's decision of 2026-09-14 (Step
+ * 1b, topic 6): the blog does not compete with the landing for those queries.
+ * The route decides, as it does for the feed link below.
+ */
+const keywordsMeta = (path) => (isBlogPath(path)
+  ? []
+  : [{ name: 'keywords', content: SEO.keywords.join(', ') }]);
+
+/*
+ * RSS AUTODISCOVERY, on blog routes and nowhere else. Each locale's feed sits
+ * beside the archive it syndicates (scripts/generate-feeds.mjs writes
+ * <archive>/feed.xml), so its URL is the archive's plus a file name and cannot
+ * drift from it. The route decides, not an option: blog.vue and blog-post.vue
+ * need no change, and no other page can advertise a feed by accident. `key`
+ * collapses the two entries that coexist while <Suspense> swaps one article
+ * for the next.
+ */
+const feedLink = (path, locale, t) => {
+  const archive = computed(() =>
+    BLOG_INDEX_URLS[locale.value] || BLOG_INDEX_URLS.en);
+  if (!isBlogPath(path) || !archive.value) {
+    return [];
+  }
+  return [{
+    key: 'kyo-blog-feed',
+    rel: 'alternate',
+    type: 'application/rss+xml',
+    title: computed(() => t('kyo-web.blog.rss-title')),
+    href: computed(() => `${archive.value}/feed.xml`),
+  }];
+};
 
 /*
  * `opts` lets a secondary prerendered page (e.g. the resume pages) reuse the
@@ -42,6 +80,7 @@ const OG_LOCALE = { en: 'en_US', es: 'es_CO' };
  */
 export const useSeoHead = (opts = {}) => {
   const { t, locale } = useI18n();
+  const route = useRoute();
 
   const prefix     = opts.keyPrefix || 'kyo-web.landing.meta';
   const urls       = opts.urls || LOCALE_URL;
@@ -72,10 +111,11 @@ export const useSeoHead = (opts = {}) => {
       ...alternates.map((alt) => ({
         rel: 'alternate', hreflang: alt.hreflang, href: alt.href,
       })),
+      ...feedLink(route.path, locale, t),
     ],
     meta: [
       { name: 'description',          content: description },
-      { name: 'keywords',             content: SEO.keywords.join(', ') },
+      ...keywordsMeta(route.path),
       { name: 'author',               content: AUTHOR_INFO.name },
       { name: 'robots',               content: 'index,follow,max-image-preview:large,max-snippet:-1' },
       { name: 'theme-color',                       content: THEME_SETTINGS.themeColor },

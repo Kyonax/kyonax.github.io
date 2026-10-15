@@ -22,6 +22,7 @@
  */
 
 import manifest from '@data/blog/manifest.json';
+import { TOGGLE_KEEPS_PAGE } from '@seo/archive-pages';
 
 export const BLOG_MANIFEST = manifest;
 export const BLOG_BASE = manifest.base || '/blog';
@@ -39,6 +40,30 @@ const prefixFor = (locale) =>
   (locale === BLOG_DEFAULT_LOCALE ? '' : `/${locale}`);
 
 const indexUrlFor = (locale) => `${prefixFor(locale)}${BLOG_BASE}`;
+
+/*
+ * An ENGINE url -> a SITE route.
+ *
+ * relations.json is data, not navigation [P-00]: the engine writes every url in
+ * it ROOT-RELATIVE to its own corpus (`/engineering/2026-05-01-x`), because it
+ * does not know where the host mounts the blog or how the host spells a locale.
+ * Rendering one of those straight into an `href` produces a path this router has
+ * no route for, and the 404 surface sends the reader to the landing page — which
+ * is exactly what previous/next, related reading and every series item did.
+ *
+ * So the base path and the locale prefix are added HERE, once, in the same shape
+ * `indexUrlFor` already uses. Idempotent: a url that already carries the prefix
+ * is returned untouched, so running it twice cannot double it.
+ */
+export const blogSiteUrl = (engineUrl, locale) => {
+  if (!engineUrl || typeof engineUrl !== 'string' || !engineUrl.startsWith('/')) {
+    return engineUrl;
+  }
+  const prefix = `${prefixFor(locale)}${BLOG_BASE}`;
+  return engineUrl.startsWith(`${prefix}/`) || engineUrl === prefix
+    ? engineUrl
+    : `${prefix}${engineUrl}`;
+};
 
 /* Trailing slash is optional in the served URLs (Apache DirectorySlash
    Off), so every comparison accepts both — the rule routes.js applies to
@@ -60,8 +85,19 @@ for (const [locale, pages] of Object.entries(PAGES)) {
   }
 }
 
+/* Each locale's archive pages in order, keyed in a Map so a locale is looked
+   up, never used as a property name. */
+const PAGES_BY_LOCALE = new Map(Object.entries(PAGES));
+const pagesOf = (locale) => PAGES_BY_LOCALE.get(locale) || [];
+
 export const blogPostAt = (path) => BY_URL.get(strip(path)) || null;
 export const blogPageAt = (path) => PAGE_URLS.get(strip(path)) || null;
+
+/* Every archive page for a locale, in order. The pagination renders NUMBERED
+   links, so it needs the siblings and not just prev/next — and this reads the
+   ROUTING manifest, which routes.js already imports eagerly, so it costs the
+   bundle nothing over what is loaded on every page anyway. */
+export const blogPagesFor = (locale) => pagesOf(locale);
 
 export const BLOG_INDEX_URLS = Object.freeze(
   Object.fromEntries(BLOG_LOCALES.map((l) => [l, indexUrlFor(l)])),
@@ -110,12 +146,18 @@ export const blogLocaleSwapTarget = (path, targetLocale) => {
     return (family && family[targetLocale]) || indexUrlFor(targetLocale);
   }
 
-  if (PAGE_URLS.has(p)) {
-    /* Page N in one locale is not page N of the same posts in another —
-       the archives are independent. Land on that locale's index rather
-       than an invented page number. */
-    const pages = PAGES[targetLocale] || [];
-    return (pages[0] && pages[0].url) || indexUrlFor(targetLocale);
+  const page = PAGE_URLS.get(p);
+  if (page) {
+    /* The toggle keeps the reader's PLACE in the archive: page N lands on
+       the other locale's page N — the pair the hreflang below advertises —
+       and on that locale's index when it has no page N. The same depth, not
+       the same posts: the archives are independent, which is why a
+       ?search= term travels with the toggle (use-language.js) and searches
+       every page there. TOGGLE_KEEPS_PAGE off lands every page on the
+       index, as before. */
+    const pages = pagesOf(targetLocale);
+    const twin = TOGGLE_KEEPS_PAGE ? pages[page.number - 1] : null;
+    return (twin || pages[0] || { url: indexUrlFor(targetLocale) }).url;
   }
 
   return indexUrlFor(targetLocale);
@@ -124,7 +166,16 @@ export const blogLocaleSwapTarget = (path, targetLocale) => {
 /*
  * The hreflang rows for a path, built from the translation groups. A post
  * pairs with its twin; an archive page pairs with the same page number in the
- * other locale, falling back to that locale's index.
+ * other locale.
+ *
+ * PAGE N PAIRS ONLY WITH A PAGE N THAT EXISTS. A missing twin used to point at
+ * the other locale's index, which made a one-way pair whenever the archives
+ * had different page counts: the index never names page N back, and hreflang
+ * that is not reciprocal is ignored. So page N names every locale that HAS a
+ * page N, x-default is the default locale's page N (one of the pair, so the
+ * cluster stays closed), and a page N with no twin carries no hreflang at
+ * all — its canonical is still its own (blogUrlsFor). Page 1 is unchanged:
+ * every locale's index, and x-default the default locale's.
  */
 export const blogAlternatesFor = (path) => {
   const p = strip(path);
@@ -144,27 +195,36 @@ export const blogAlternatesFor = (path) => {
     return [];
   }
 
+  const twinIn = (locale) => pagesOf(locale)[page.number - 1];
   const rows = BLOG_LOCALES
-    .filter((l) => (PAGES[l] || []).length > 0)
-    .map((l) => {
-      const twin = (PAGES[l] || [])[page.number - 1];
-      const href = page.number === 1 || !twin ? indexUrlFor(l) : twin.url;
-      return { hreflang: l, href: `${ORIGIN}${href}` };
-    });
+    .filter((l) => twinIn(l))
+    .map((l) => ({ hreflang: l, href: `${ORIGIN}${twinIn(l).url}` }));
+  if (page.number > 1 && rows.length < 2) {
+    return [];
+  }
 
-  rows.push({
-    hreflang: 'x-default',
-    href: `${ORIGIN}${indexUrlFor(BLOG_DEFAULT_LOCALE)}`,
-  });
+  const xd = twinIn(BLOG_DEFAULT_LOCALE);
+  if (xd) {
+    rows.push({ hreflang: 'x-default', href: `${ORIGIN}${xd.url}` });
+  }
   return rows;
 };
 
-/* The { en, es } canonical map useSeoHead expects. */
-export const blogUrlsFor = (path) => Object.fromEntries(
-  blogAlternatesFor(path)
-    .filter((a) => a.hreflang !== 'x-default')
-    .map((a) => [a.hreflang, a.href]),
-);
+/* The { en, es } canonical map useSeoHead expects. A page N with no twin has
+   no hreflang rows, and it is still its own canonical — so the page's own
+   locale is always in the map. */
+export const blogUrlsFor = (path) => {
+  const urls = Object.fromEntries(
+    blogAlternatesFor(path)
+      .filter((a) => a.hreflang !== 'x-default')
+      .map((a) => [a.hreflang, a.href]),
+  );
+  const page = PAGE_URLS.get(strip(path));
+  if (page && !urls[page.locale]) {
+    urls[page.locale] = `${ORIGIN}${page.url}`;
+  }
+  return urls;
+};
 
 // -------------------------------------------------------------- routes ----
 

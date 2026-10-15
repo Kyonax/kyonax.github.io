@@ -1,0 +1,65 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-2.0-only — see LICENSE.
+#
+# tests/fixtures/blog/README.org — The kitchen-sink fixture: what it is and how to use it
+# 2026-09-25
+#
+#   What this is
+#   Using it
+#   Editing it
+#   Never delete it
+
+#+TITLE: The Kitchen-Sink Blog Fixture
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+#+EMAIL: kyonax.corp@gmail.com
+#+DATE: September 25, 2026
+#+FILETAGS: :KYO:WEB:BLOG:FIXTURE:
+#+LAST_UPDATE: September 25, 2026
+#+OPTIONS: toc:nil num:nil H:3
+
+* What this is
+"Everything org2html Renders" (=content/engineering/everything-org2html-renders.en.org=) and its
+Spanish twin "Todo lo que org2html renderiza" (=…/todo-lo-que-org2html-renderiza.es.org=): one
+page that exercises every Org construct org2html parses, from headings, tables and code to math,
+embeds and includes. It is the page the article shell is refined against, and the page
+=constructs.spec.js=, =article.spec.js=, =section-rail.spec.js= and =viewer.spec.js= open.
+
+Everything the two posts pull in lives beside them, in the layout kyo-blog uses, so every
+=#+INCLUDE: "../../includes/…"= resolves unchanged:
+
+| Path        | Holds                                                                                  |
+|-------------+----------------------------------------------------------------------------------------|
+| =content/=  | the two posts                                                                          |
+| =includes/= | =setup.org= (the SETUPFILE), =snippet.org=, =sample.js=, =kitchen-sink.{en,es}.org=, =kitchen-sink-lexer.js= |
+| =media/=    | every image the posts name at =/blog/media/…=, the cover and hero included             |
+
+It was copied byte for byte from kyo-blog on 2026-09-25. kyo-blog keeps its own copy as
+publishable content; this one is the site's test copy of record and does not follow it.
+
+* Using it
+| Command                        | What you get                                                                  |
+|--------------------------------+-------------------------------------------------------------------------------|
+| =npm run preview:kitchen-sink= | the site built with ONLY this fixture (2 posts, EN and ES), served on :4173   |
+| =npm run preview:no-articles=  | the site built with no blog at all (the empty manifest), served on :4173      |
+| =npm run build=                | back to the real corpus from =../kyo-blog/dist=                               |
+
+=node scripts/blog-mode.mjs <kitchen-sink|no-articles> [--serve] [--port N]= is the script
+behind both. It renders with the local engine first (=ORG2HTML_BIN=, then
+=../org-2-html/dist/cli/index.mjs=, then kyo-blog's installed package), builds the manifest with
+kyo-blog's =ci/generate-manifest.mjs= (=KYO_BLOG_DIR=, default =../kyo-blog=), and puts
+=public/sitemap.xml= back as it was once the build ends.
+
+* Editing it
+- Edit the posts here. The engine derives the slug from =#+TITLE=, so a retitle moves the URL
+  every spec targets; =check-blog-fixture= names the title it expects.
+- Two includes splice exact line ranges (=:lines "3-9"= of =kitchen-sink-lexer.js=), which is
+  why =tests/fixtures/**= is outside ESLint: a lint fix would change what the page renders.
+- An image a post names at =/blog/media/<file>= has to exist in =media/=.
+
+* Never delete it
+This is the only versioned copy of the page. Two guards stand in front of it:
+- =scripts/check-blog-fixture.mjs= runs in =npm run precheck=, which the build, Shipwright and
+  CI all run. A missing or emptied post, a changed title, or an include or image that no longer
+  resolves fails it.
+- The CI Protected Files job lists both posts under "Test Fixture", so a PR that touches or
+  deletes them says so in a comment.

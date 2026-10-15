@@ -1,7 +1,34 @@
 {
+  "a-style-book": {
+    "w": 1280,
+    "h": 720,
+    "widths": [
+      480,
+      720,
+      960
+    ]
+  },
   "ai_kyonax_landscape_background": {
     "w": 1920,
     "h": 1080
+  },
+  "build-test-deploy": {
+    "w": 1280,
+    "h": 720,
+    "widths": [
+      480,
+      720,
+      960
+    ]
+  },
+  "build-time-math": {
+    "w": 1280,
+    "h": 720,
+    "widths": [
+      480,
+      720,
+      960
+    ]
   },
   "cyber-code-syndicate": {
     "w": 1920,
@@ -10,6 +37,24 @@
   "diego-yair": {
     "w": 96,
     "h": 96
+  },
+  "everything-org2html-renders": {
+    "w": 1280,
+    "h": 720,
+    "widths": [
+      480,
+      720,
+      960
+    ]
+  },
+  "from-org-to-ast": {
+    "w": 1280,
+    "h": 720,
+    "widths": [
+      480,
+      720,
+      960
+    ]
   },
   "john-montes": {
     "w": 96,
@@ -31,6 +76,15 @@
     "w": 1920,
     "h": 1080
   },
+  "privacy-embeds": {
+    "w": 1280,
+    "h": 720,
+    "widths": [
+      480,
+      720,
+      960
+    ]
+  },
   "reckit": {
     "w": 1920,
     "h": 1080
@@ -42,6 +96,15 @@
   "seo_banner": {
     "w": 1280,
     "h": 720
+  },
+  "shipping-static": {
+    "w": 1280,
+    "h": 720,
+    "widths": [
+      480,
+      720,
+      960
+    ]
   },
   "webcam2ascii": {
     "w": 1920,

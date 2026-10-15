@@ -7,13 +7,19 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-  tag: { type: String, required: true },
+  /* The monospace ordinal ("// 04"). OPTIONAL: it is the band's one accent
+     mark, and the blog archive deliberately spends no accent at all, so it
+     opts out rather than carrying an empty span with its own margin. */
+  tag: { type: String, default: '' },
   title: { type: String, required: true },
   subtitle: { type: String, default: '' },
+  /* '1' exists for the blog archive's masthead: the band shape IS the page
+     head there, so it renders the document's only <h1> rather than a second
+     hand-rolled title that would drift from this one. */
   level: {
     type: String,
     default: '2',
-    validator: (l) => ['2', '3', '4'].includes(l),
+    validator: (l) => ['1', '2', '3', '4'].includes(l),
   },
 });
 
@@ -22,7 +28,7 @@ const heading_tag = computed(() => `h${props.level}`);
 
 <template>
   <header class="ui-section-header">
-    <span class="ui-section-header__index">{{ tag }}</span>
+    <span v-if="tag" class="ui-section-header__index">{{ tag }}</span>
     <component :is="heading_tag" class="ui-section-header__title">
       {{ title }}
     </component>

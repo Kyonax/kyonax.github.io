@@ -16,6 +16,9 @@
 # General Punctuation — em-dash + curly apostrophe
 2014 2019
 
+# Arrows — the blog hero chip's "67 KB → HTML" and the made-with link's ↗
+2192 2197
+
 # CJK Unified Ideographs — HUD watermarks rendered in Geomanist Bold
 # 京 化 去 問 応 未 来 発 答 者 質 進 過 開
 4EAC 5316 53BB 554F 5FDC 672A 6765 767A 7B54 8005

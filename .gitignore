@@ -38,6 +38,13 @@ dist-ssr/
 .vite-ssg-temp/
 *.local
 
+# ── Playwright (the layout e2e gate) ─────────────────────────
+#   The spec and the config ARE committed; these are per-run output.
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
 # ── Build / cache ────────────────────────────────────────────
 .cache/
 .parcel-cache/
@@ -168,5 +175,19 @@ PR.org
 # Blog corpus synced from kyo-blog by scripts/sync-blog.mjs.
 # CONTENT lives in that repo; a copy here is a build artefact, never source.
 src/data/blog/
-public/blog-search/
+# The engine's Style Book, minified in by sync-blog.mjs. Owned by kyo-blog.
+public/blog/style-book.css
+# The engine's interactive runtime, minified in the same way. Owned by kyo-blog.
+public/blog/o2h.js
+# The same two under content-hashed names (style-book-<hash>.css,
+# o2h-<hash>.js), which the articles link and .htaccess caches for a year.
+public/blog/style-book-*.css
+public/blog/o2h-*.js
+# Article-body images, served at the deployed path the documents reference.
+public/blog/media/
 src/assets/blog/
+# RSS per locale and llms.txt, written from the synced index by
+# scripts/generate-feeds.mjs on every predev / precheck / build.
+public/blog/feed.xml
+public/es/blog/feed.xml
+public/llms.txt

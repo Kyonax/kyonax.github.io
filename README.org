@@ -93,7 +93,7 @@ src/
   seo/                             JSON-LD builders + sitemap data
   config/                          [@config] build-time feature flags
   assets/                          static assets (images, brands, ASCII art, fonts, CVs)
-public/                            served as-is (favicons, og-banner, privacy HTML, sitemap)
+public/                            served as-is (favicons, og-banner, error pages, robots.txt, sitemap)
 scripts/                           validation gates + image / ASCII / font / sitemap pipelines
 #+END_EXAMPLE
 
@@ -242,6 +242,9 @@ The =BrandIcon= registry is glob-derived. Drop a new SVG in =src/assets/brands/=
 ** Author info, SEO defaults, social links
 =src/data/data.js= holds =AUTHOR_INFO=, =SEO=, =SUPPORTED_LANGUAGES=, and =DEFAULT_LANGUAGE=. The =SEO.keywords= array feeds =<meta name="keywords">= and the JSON-LD =knowsAbout= node.
 
+** Privacy page and analytics
+The privacy policy is a prerendered route, =/privacy= and =/es/privacy=, rendered through the same document shell as the resume from =src/data/snippets-privacy.js=. Analytics is *Umami Cloud*, which sets no cookies, so the site shows no consent banner. =src/composables/use-analytics.js= appends the tracker after mount from the =ANALYTICS= export in =src/data/data.js=, events are declared with =data-umami-event= attributes, and a visitor can opt out with the toggle on the privacy page (it sets =umami.disabled= in localStorage). The setup, its tests, and the planned move to a self-hosted Umami are in =docs/analytics.md=.
+
 ** Static assets
 | Folder                         | What goes there                                                                            |
 |--------------------------------+--------------------------------------------------------------------------------------------|
@@ -251,7 +254,7 @@ The =BrandIcon= registry is glob-derived. Drop a new SVG in =src/assets/brands/=
 | =src/assets/ascii/=            | =<slug>.txt= ASCII art. =convert:ascii= rasters into =src/assets/projects/=.                |
 | =src/assets/cv/=               | =cv_cristian_d_moreno_<en|es>.pdf=, the EN and ES résumé PDFs linked from the hero CTA.     |
 | =src/assets/fonts/=            | TTF sources. =convert:fonts:subset= emits WOFF2 plus unicode-range subsets.                 |
-| =public/=                      | Served as-is. Holds favicons, =og-banner.jpg=, =privacy/index.html= (en and es), =robots.txt=. |
+| =public/=                      | Served as-is. Holds favicons, =og-banner.jpg=, the error pages, =robots.txt=. The privacy policy is a route, not a file here. |
 
 ** ASCII art
 Sources live at =src/assets/ascii/<slug>.txt=. The alphabet is =░▒▓█= plus space only (foreign Unicode breaks the renderer).

@@ -37,6 +37,14 @@ export const SEO = {
     en: '/og-resume-en.jpg',
     es: '/og-resume-es.jpg',
   }),
+  /* The blog archive carries a card of its own as well, made by
+     scripts/generate-og-blog.mjs: every archive page shares its locale's, so
+     a share of /blog stops previewing as the homepage. Articles keep the
+     landing banner. */
+  blogOgImage: Object.freeze({
+    en: '/og-blog-en.jpg',
+    es: '/og-blog-es.jpg',
+  }),
   ogImageWidth:   1200,
   ogImageHeight:  630,
   ogImageType:    'image/jpeg',
@@ -58,6 +66,30 @@ export const CV_URL = Object.freeze({
 });
 
 export const SITE_ORIGIN = 'https://kyonax.com';
+
+/* Umami Cloud: cookieless page views and click events, injected once per page
+   load by @composables/use-analytics. NOT an env var: the repo has none, and
+   the website id is a public identifier (it ships in every page's <script>),
+   the standing the GA measurement id had. An empty websiteId loads nothing.
+   `domains` is the tracker's own allowlist: on any other hostname (a local
+   preview, the Playwright runs on 127.0.0.1, a staging subdomain) the script
+   loads and sends nothing. www is listed although .htaccess 301s it to the
+   apex, so a request that ever skips the redirect still counts. */
+export const ANALYTICS = Object.freeze({
+  provider:  'umami',
+  host:      'https://cloud.umami.is',
+  websiteId: '986ec25b-3715-4d9e-8e63-f168650bfac7',
+  domains:   Object.freeze(['kyonax.com', 'www.kyonax.com']),
+});
+
+/* The "buy me a coffee" block at the end of every article. The owner has not
+   named the vendor or the account yet, so the block renders nothing (and its
+   chunk is never fetched) while `url` is empty. */
+export const SUPPORT = Object.freeze({
+  vendor: '',
+  url:    '',
+  handle: '',
+});
 
 export const LOCALE_URL = Object.freeze({
   en: 'https://kyonax.com/',

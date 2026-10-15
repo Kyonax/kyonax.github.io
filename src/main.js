@@ -5,6 +5,7 @@
 
 import '@scss/main.scss';
 
+import { installLinkWarmer } from '@composables/use-link-warmer';
 import { createI18nInstance } from '@i18n';
 import { localeFromRoute } from '@i18n/locale-from-route';
 import { ViteSSG } from 'vite-ssg';
@@ -44,6 +45,13 @@ export const createApp = ViteSSG(
       }
       next();
     });
+
+    /* Hover, focus and touch warm the next document for every route link on
+       the page (use-link-warmer.js). Client only: the prerender has no
+       document to listen on, and the route set is the router's own. */
+    if (isClient) {
+      installLinkWarmer(router);
+    }
   },
   { rootContainer: '#root', hydration: import.meta.env.PROD },
 );

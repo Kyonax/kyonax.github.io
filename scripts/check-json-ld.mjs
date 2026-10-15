@@ -33,9 +33,12 @@ const REQUIRED = {
   VideoObject: ['name', 'thumbnailUrl', 'uploadDate'],
   /* The blog graph. BreadcrumbList was already emitted by the resume and
      privacy pages without being listed here — only seo-audit's per-document
-     dangling-@id pass caught it — so both are declared now. */
+     dangling-@id pass caught it — so both are declared now. `blogPost` is not
+     required on Blog: an article's graph names the Blog without listing its
+     posts, and an EMPTY blog (CI syncs none) lists nothing. */
   BlogPosting: ['headline', 'url', 'inLanguage'],
   Blog: ['name', 'url', 'inLanguage'],
+  CollectionPage: ['name', 'url', 'inLanguage', 'isPartOf', 'mainEntity'],
   BreadcrumbList: ['itemListElement'],
 };
 
@@ -47,14 +50,37 @@ head('check-json-ld — validating @graph for each locale');
 const TMP_DIR = resolve(REPO_ROOT, '.cache/json-ld-check');
 mkdirSync(TMP_DIR, { recursive: true });
 
+/*
+ * THE BLOG GRAPHS ARE CHECKED, not just built. This builder always produced
+ * `blog` and then dropped it, so the Blog row above validated nothing. Three
+ * graphs now: the archive's first page with no posts (what CI's empty blog
+ * ships), a later page listing one post, and an article. The post is a fixed
+ * sample rather than the synced corpus, so the gate runs the same with no
+ * blog checkout at all.
+ */
+const SAMPLE_POST = {
+  title: 'check-json-ld sample post',
+  description: 'A sample post the JSON-LD gate builds the blog graphs from.',
+  date: '2026-01-01',
+  cardImage: '/blog/media/sample.png',
+  tags: ['sample'],
+  categories: ['engineering'],
+};
+
 const _build = (locale) => {
   const entry = resolve(TMP_DIR, `entry-${locale}.mjs`);
+  const prefix = locale === 'en' ? '/blog' : `/${locale}/blog`;
+  const post = { ...SAMPLE_POST, locale, url: `${prefix}/engineering/sample` };
+  const page = { number: 2, url: `${prefix}/page/2`, locale, posts: [post] };
   writeFileSync(entry, `
 import { buildSiteJsonLd, buildBlogJsonLd, buildFaqJsonLd } from '@seo/json-ld';
+const locale = ${JSON.stringify(locale)};
 const out = {
-  site: buildSiteJsonLd({ locale: ${JSON.stringify(locale)} }),
-  faq:  buildFaqJsonLd(${JSON.stringify(locale)}),
-  blog: buildBlogJsonLd({ locale: ${JSON.stringify(locale)} }),
+  site: buildSiteJsonLd({ locale }),
+  faq:  buildFaqJsonLd(locale),
+  blog: buildBlogJsonLd({ locale }),
+  blogPage: buildBlogJsonLd({ locale, page: ${JSON.stringify(page)} }),
+  article: buildBlogJsonLd({ locale, post: ${JSON.stringify(post)} }),
 };
 process.stdout.write(JSON.stringify(out));
 `);
@@ -67,24 +93,31 @@ process.stdout.write(JSON.stringify(out));
   }
   try {
     const parsed = JSON.parse(r.stdout);
-    return { graph: parsed.site, faq: parsed.faq };
+    return {
+      graphs: {
+        site: parsed.site,
+        'blog archive': parsed.blog,
+        'blog page 2': parsed.blogPage,
+        'blog article': parsed.article,
+      },
+      faq: parsed.faq,
+      sample: { page, post },
+    };
   } catch (e) {
     return { error: `invalid JSON: ${e.message}`, stdout: r.stdout };
   }
 };
 
-for (const locale of SUPPORTED_LOCALES) {
-  console.log(`\n──── locale :: ${c('cyan', locale)}`);
-  const { graph, faq, error, stdout } = _build(locale);
-  if (error) {
-    failures.push(`builder failed for locale=${locale}: ${error}`);
-    fail(`builder failed for ${locale} — see stderr above`);
-    if (stdout) {
-      console.error('stdout:', stdout.slice(0, 500));
-    }
-    continue;
+/* One graph: every @id reference resolves in it, every node carries its
+   type's required fields, every URL is absolute HTTPS. */
+const _check_graph = (locale, name, graph) => {
+  const where = name === 'site' ? `locale=${locale}` : `locale=${locale} ${name}`;
+  const label = name === 'site' ? locale : `${locale} ${name}`;
+  if (!graph || !Array.isArray(graph['@graph'])) {
+    failures.push(`${where}: the builder returned no @graph`);
+    fail(`${label}: no @graph to check`);
+    return;
   }
-
   const ids = new Set();
   for (const node of graph['@graph'] || []) {
     if (node['@id']) {
@@ -104,7 +137,7 @@ for (const locale of SUPPORTED_LOCALES) {
     for (const [k, v] of Object.entries(node)) {
       if (k === '@id' && path !== '' && typeof v === 'string') {
         if (!ids.has(v)) {
-          failures.push(`locale=${locale}: dangling @id ref → ${v} at ${path}`);
+          failures.push(`${where}: dangling @id ref → ${v} at ${path}`);
         }
       }
       _scan_refs(v, `${path}.${k}`);
@@ -116,7 +149,7 @@ for (const locale of SUPPORTED_LOCALES) {
     }
     _scan_refs(node, node['@type']);
   }
-  ok(`${locale}: ${ids.size} entities, refs resolved`);
+  ok(`${label}: ${ids.size} entities, refs resolved`);
 
   for (const node of graph['@graph'] || []) {
     const t = node['@type'];
@@ -126,11 +159,11 @@ for (const locale of SUPPORTED_LOCALES) {
     }
     for (const field of required) {
       if (node[field] === null || node[field] === undefined || node[field] === '') {
-        failures.push(`locale=${locale}: ${t} ${node['@id'] || '<no @id>'} missing required field "${field}"`);
+        failures.push(`${where}: ${t} ${node['@id'] || '<no @id>'} missing required field "${field}"`);
       }
     }
   }
-  ok(`${locale}: required fields present`);
+  ok(`${label}: required fields present`);
 
   const URL_FIELDS = ['url', 'image', 'logo', 'item', 'primaryImageOfPage'];
   const _scan_urls = (node) => {
@@ -143,13 +176,13 @@ for (const locale of SUPPORTED_LOCALES) {
     for (const [k, v] of Object.entries(node)) {
       if (URL_FIELDS.includes(k) && typeof v === 'string' && v && !v.startsWith('mailto:')) {
         if (!/^https:\/\//.test(v)) {
-          failures.push(`locale=${locale}: ${k}="${v}" is not absolute HTTPS`);
+          failures.push(`${where}: ${k}="${v}" is not absolute HTTPS`);
         }
       }
       if (k === 'sameAs' && Array.isArray(v)) {
         for (const [i, u] of v.entries()) {
           if (typeof u === 'string' && !/^https:\/\//.test(u)) {
-            failures.push(`locale=${locale}: sameAs[${i}]="${u}" is not absolute HTTPS`);
+            failures.push(`${where}: sameAs[${i}]="${u}" is not absolute HTTPS`);
           }
         }
       }
@@ -157,7 +190,52 @@ for (const locale of SUPPORTED_LOCALES) {
     }
   };
   graph['@graph']?.forEach(_scan_urls);
-  ok(`${locale}: URLs are absolute HTTPS`);
+  ok(`${label}: URLs are absolute HTTPS`);
+};
+
+/*
+ * What only the blog can get wrong. A later archive page is a page of its own:
+ * its CollectionPage carries THAT page's url (every archive page used to carry
+ * the index's), and the Blog it is about lists the post the page shows. An
+ * article is part of that Blog as well as of the WebSite.
+ */
+const _typed = (graph, type) => (graph?.['@graph'] || [])
+  .filter((n) => n['@type'] === type);
+
+const _check_blog = (locale, { page, article }, sample) => {
+  const [collection] = _typed(page, 'CollectionPage');
+  if (collection && !String(collection.url).endsWith(sample.page.url)) {
+    failures.push(`locale=${locale} blog page 2: CollectionPage url is ${collection.url}, not the page's own ${sample.page.url}`);
+  }
+  const [blog] = _typed(page, 'Blog');
+  const listed = ((blog && blog.blogPost) || []).map((p) => String(p.url));
+  if (!listed.some((u) => u.endsWith(sample.post.url))) {
+    failures.push(`locale=${locale} blog page 2: the Blog lists ${listed.length} post(s), not the one the page shows`);
+  }
+  const [posting] = _typed(article, 'BlogPosting');
+  const part_of = [posting && posting.isPartOf].flat().map((r) => r && r['@id']);
+  if (!blog || !part_of.includes(blog['@id'])) {
+    failures.push(`locale=${locale} blog article: the BlogPosting is not isPartOf the Blog ${blog && blog['@id']}`);
+  }
+  ok(`${locale}: blog page 2 is its own CollectionPage; the Blog lists its post and holds the article`);
+};
+
+for (const locale of SUPPORTED_LOCALES) {
+  console.log(`\n──── locale :: ${c('cyan', locale)}`);
+  const { graphs, faq, sample, error, stdout } = _build(locale);
+  if (error) {
+    failures.push(`builder failed for locale=${locale}: ${error}`);
+    fail(`builder failed for ${locale} — see stderr above`);
+    if (stdout) {
+      console.error('stdout:', stdout.slice(0, 500));
+    }
+    continue;
+  }
+
+  for (const [name, graph] of Object.entries(graphs)) {
+    _check_graph(locale, name, graph);
+  }
+  _check_blog(locale, { page: graphs['blog page 2'], article: graphs['blog article'] }, sample);
 
   if (!faq || faq['@type'] !== 'FAQPage') {
     failures.push(`locale=${locale}: FAQPage payload missing or wrong @type`);

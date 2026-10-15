@@ -25,7 +25,7 @@
 
  Guidelines:
    Filename MUST stay SECURITY.md — GitHub requires .md exact
-   GA4 measurement ID is a public identifier, not a secret
+   Umami website ID is a public identifier, not a secret
    90-day coordinated disclosure window for security reports
 -->
 
@@ -44,9 +44,9 @@ Maintainer: [Cristian D. Moreno — Kyonax](https://orcid.org/0009-0006-4459-553
 | Hardcoded tokens, secrets, API keys | Credential leak |
 | `http://` URLs | Insecure transport |
 
-The Google Analytics measurement ID `G-6M3P3M2HG5` is a public identifier
-(transmitted in client-side `gtag()` calls) and is not a secret. Do not
-treat it as one.
+The Umami website ID `986ec25b-3715-4d9e-8e63-f168650bfac7` is a public
+identifier (sent in every page as the tracker's `data-website-id`) and is
+not a secret. Do not treat it as one.
 
 ## Enforced by
 

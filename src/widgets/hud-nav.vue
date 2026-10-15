@@ -4,21 +4,25 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
+import useActiveSection from '@composables/use-active-section';
 import useCursorTooltip from '@composables/use-cursor-tooltip';
 import usePageKind from '@composables/use-page-kind';
 import { CV_URL } from '@data/data';
+import { BLOG_INDEX_URLS } from '@seo/blog-routes';
 import AppIcon from '@ui/app-icon.vue';
 import UiButton from '@ui/button.vue';
 import CursorTooltip from '@ui/cursor-tooltip.vue';
 import UiLink from '@ui/link.vue';
 import LanguageToggle from '@widgets/language-toggle.vue';
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import {
+  computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
 
 /*
- * The nav has three modes, one per page kind:
+ * The nav has four modes, one per page kind:
  *   landing  — section links, skip link and the mobile drawer.
  *   resume   — stripped: the section links anchor into the landing and would
  *              dead-link here, so only the brand (back to landing), the CV
@@ -26,17 +30,33 @@ const { t, locale } = useI18n();
  *   privacy  — the same stripped nav WITHOUT the CV download. A policy page is
  *              not a place to offer a résumé, and the button is icon-only, so
  *              its meaning depends entirely on being on the CV page.
- * The brand is the way back for both document kinds.
+ *   blog     — NOT stripped. The archive and the articles are a destination a
+ *              reader arrives at from search, not a document someone opened
+ *              from the landing, so they need a way out: Home and Blog, both
+ *              real routes rather than the landing's in-page anchors. The
+ *              landing nav carries a BLOG item for the same reason in reverse.
+ *              Where the résumé keeps its download, the blog keeps a share
+ *              button.
+ * The brand is the way back for every document kind.
  */
-const { isLanding, isResume, isDocument } = usePageKind();
+const { isLanding, isResume, isBlog, isDocument } = usePageKind();
 const landing_href = computed(() => (locale.value === 'es' ? '/es' : '/'));
+const blog_href = computed(() => BLOG_INDEX_URLS[locale.value] || BLOG_INDEX_URLS.en);
 /* On a document page the brand is the way back; on the landing it is the
    scroll-to-top anchor. */
 const brand_href = computed(() => (isDocument.value ? landing_href.value : '#hero'));
-const cv_href = computed(() => (locale.value === 'es' ? CV_URL.es : CV_URL.en));
+/* The CV's own language: EN for anything that is not ES. The href, the file
+   name and the download event's `lang` all read it, so they cannot disagree. */
+const cv_lang = computed(() => (locale.value === 'es' ? 'es' : 'en'));
+const cv_href = computed(() => (cv_lang.value === 'es' ? CV_URL.es : CV_URL.en));
 const cv_filename = computed(() =>
-  `Cristian-Moreno-Senior-Software-Engineer-${locale.value === 'es' ? 'ES' : 'EN'}.pdf`);
+  `Cristian-Moreno-Senior-Software-Engineer-${cv_lang.value.toUpperCase()}.pdf`);
 
+/*
+ * `id` is an in-page anchor and takes part in the active-section algorithm;
+ * `route` is a real URL and does not. BLOG is the only `route` entry — it
+ * leaves the landing, so there is no section for it to ever be "at".
+ */
 const NAV_LINKS = [
   { id: 'hero',       key: 'kyo-web.landing.nav.hero' },
   { id: 'experience', key: 'kyo-web.landing.nav.experience' },
@@ -44,12 +64,50 @@ const NAV_LINKS = [
   { id: 'skills',     key: 'kyo-web.landing.nav.skills' },
   { id: 'faq',        key: 'kyo-web.landing.nav.faq' },
   { id: 'contact',    key: 'kyo-web.landing.nav.contact' },
+  /* The breadcrumb label, uppercased here rather than duplicated into the nav
+     catalogue — the eager catalogue is main-bundle bytes for every visitor,
+     and this row is the same word twice. */
+  { id: 'blog',       key: 'kyo-web.blog.breadcrumb', route: true },
 ];
+
+/*
+ * ONE list, resolved per page kind, and ONE loop in the template. The blog
+ * branch started as a second <a> beside the landing's and cost 275 B gzipped
+ * in the MAIN bundle — which sits ~150 B under an enforced 180 KB ceiling, so
+ * a duplicated element is not a style question here.
+ *
+ * `aria` is undefined on the blog links on purpose: the landing's are anchors
+ * whose one-word text needs expanding, these are routes whose text already
+ * says where they go, and Vue omits the attribute for undefined.
+ *
+ * The blog hrefs come from the same helpers the archive and the blog footer
+ * use, so the three can never point at different URLs.
+ */
+const nav_links = computed(() => (isLanding.value
+  ? NAV_LINKS
+  : [
+    { id: 'home', href: landing_href.value, label: t('kyo-web.breadcrumb.home') },
+    {
+      id: 'blog',
+      href: blog_href.value,
+      label: t('kyo-web.blog.breadcrumb'),
+      /* Standing state, not scroll state. The landing's active link is
+         whichever SECTION fills the screen; on the blog you are simply IN the
+         blog for the whole visit, on the archive and on every article alike,
+         so BLOG is marked from the moment the page loads. Without this the
+         menu rendered two links that looked identical and neither of which
+         said where you were. */
+      current: true,
+    },
+  ]));
 
 /* Sections that exist in the DOM but have no nav link — mapped to the
  * nearest nav parent so the active-state algorithm doesn't skip them. */
 const SECTION_NAV_MAP = { testimonials: 'hero' };
-const _TRACKED_IDS    = [...NAV_LINKS.map(l => l.id), ...Object.keys(SECTION_NAV_MAP)];
+const _TRACKED_IDS    = [
+  ...NAV_LINKS.filter(l => !l.route).map(l => l.id),
+  ...Object.keys(SECTION_NAV_MAP),
+];
 
 const GITHUB_URL   = 'https://github.com/Kyonax';
 const LINKEDIN_URL = 'https://www.linkedin.com/in/kyonax/';
@@ -70,58 +128,76 @@ const {
 
 const scrolled = ref(false);
 const mobile_open = ref(false);
-const active_section = ref('hero');
 const header_ref = ref(null);
 
-let _scroll_frame = 0;
-let _last_scroll_run = 0;
+/*
+ * THE SHARE BUTTON — the CV button's twin, on every blog page.
+ *
+ * It replaced a text button at the end of an article's meta row that said
+ * SHARE and did one of two invisible things. Here it is where the résumé keeps
+ * its one page action, it reads as "share" from its glyph (Font Awesome
+ * Free's share nodes, CC BY 4.0, in the sprite as `share`), and the tooltip is
+ * its visible label, as the CV button's is. It shows on the archive as well as
+ * on every article: the ask was to share the blog, not one article of it.
+ *
+ * THE BUTTON IS PRERENDERED; THE SHEET IS NOT. The button's box is in the HTML,
+ * so the nav never shifts when the page hydrates. The sheet can only act
+ * through script, so it is its own chunk (@widgets/share-sheet.vue), requested
+ * on the first open and warmed the moment a pointer or focus arrives on the
+ * button, so it is usually on its way before the click lands. `v-if` on the
+ * open state, so every open reads the page afresh and every close removes its
+ * listeners.
+ */
+const loadShareSheet = () => import('@widgets/share-sheet.vue');
+const ShareSheet = defineAsyncComponent(loadShareSheet);
+let _share_warmed = false;
+const warmShare = () => {
+  if (_share_warmed) {
+    return;
+  }
+  _share_warmed = true;
+  loadShareSheet().catch(() => {
+    _share_warmed = false;
+  });
+};
 
+const share_ref = ref(null);
+const share_open = ref(false);
+const {
+  visible: share_tooltip_visible,
+  x: share_tip_x,
+  y: share_tip_y,
+} = useCursorTooltip(share_ref);
+
+/* The drawer and the sheet both drop from the bar, so only one is ever down;
+   a press on the menu button is outside the sheet, and closes it that way. */
+const toggleShare = () => {
+  mobile_open.value = false;
+  share_open.value = !share_open.value;
+};
+
+/*
+ * "Which section am I in?" now has ONE implementation, in
+ * @composables/use-active-section — the algorithm that used to live here, moved
+ * out when the section rail needed the same answer (and corrected there on
+ * 2026-09-15 for sections shorter than half a screen). Two copies would
+ * have meant the nav highlighting one section while the rail highlighted its
+ * neighbour, which is worse than either being slightly wrong alone.
+ *
+ * Every in-page link shows at every width, so this drives the bar's highlight on
+ * desktop and the drawer's on mobile alike.
+ */
+const { active: active_section } = useActiveSection(_TRACKED_IDS, {
+  aliases: SECTION_NAV_MAP,
+  topId: 'hero',
+});
+
+/* Standing state of the BAR itself, which is not a section question — kept
+   here, and deliberately not folded into the composable. */
+let _scroll_frame = 0;
 const _read_scroll = () => {
   _scroll_frame = 0;
-  const now = Date.now();
-  if (now - _last_scroll_run < 100) {
-    return;
-  }
-  _last_scroll_run = now;
-
   scrolled.value = window.scrollY > 24;
-
-  if (window.scrollY < 80) {
-    active_section.value = 'hero';
-    return;
-  }
-
-  /*
-   * "Last section whose top has crossed above 50% of the viewport."
-   * Sorting candidates by their current top position (page order) and
-   * iterating in that order means the LAST one that passes the threshold
-   * is the section actually filling the screen — producing natural,
-   * non-premature active-state transitions.
-   *
-   * Contrast with the previous min-distance approach: that activated the
-   * next section when it was merely "closer to 40% vh" than the current
-   * one, which fired far too early (next section still well below center).
-   */
-  const threshold = window.innerHeight * 0.5;
-
-  const candidates = _TRACKED_IDS
-    .map((id) => {
-      const el = document.querySelector(`#${id}`);
-      return el ? { id, top: el.getBoundingClientRect().top } : null;
-    })
-    .filter(Boolean)
-    .sort((a, b) => a.top - b.top); // ensure page-order regardless of _TRACKED_IDS order
-
-  let winner = null;
-  for (const { id, top } of candidates) {
-    if (top <= threshold) {
-      winner = id;
-    }
-  }
-
-  if (winner) {
-    active_section.value = SECTION_NAV_MAP[winner] ?? winner;
-  }
 };
 
 const onScroll = () => {
@@ -209,7 +285,11 @@ onBeforeUnmount(() => {
     :class="{ 'hud-nav--scrolled': scrolled, 'hud-nav--open': mobile_open }"
     role="banner"
   >
-    <a v-if="isLanding" class="hud-nav__skip-link" href="#hero">{{ t('kyo-web.landing.nav.skip-to-content') }}</a>
+    <a
+      v-if="isLanding || isBlog"
+      class="hud-nav__skip-link"
+      :href="isLanding ? '#hero' : '#main'"
+    >{{ t('kyo-web.landing.nav.skip-to-content') }}</a>
 
     <div class="hud-nav__bar">
       <a
@@ -222,36 +302,53 @@ onBeforeUnmount(() => {
       </a>
 
       <nav
-        v-if="isLanding"
+        v-if="isLanding || isBlog"
         id="hud-nav-menu"
         class="hud-nav__links"
         :class="{ 'is-open': mobile_open }"
-        :aria-label="t('kyo-web.landing.nav.menu')"
+        :aria-label="isLanding ? t('kyo-web.landing.nav.menu') : t('kyo-web.blog.nav-aria')"
       >
+        <!-- `label` present = a resolved route link (blog chrome, and the
+             landing's own BLOG item); `key` present = a landing anchor that
+             takes part in the active-section algorithm and carries an
+             expanded aria label its one-word text does not give. -->
         <a
-          v-for="link in NAV_LINKS"
+          v-for="link in nav_links"
           :key="link.id"
-          :href="`#${link.id}`"
+          :href="link.href || (link.route ? blog_href : `#${link.id}`)"
           class="hud-nav__link"
-          :class="{ 'is-active': active_section === link.id }"
-          :aria-label="t(`kyo-web.landing.nav.aria.${link.id}`)"
-          :aria-current="active_section === link.id ? 'location' : undefined"
+          :class="{
+            'is-active': link.current || (!link.route && active_section === link.id),
+            'hud-nav__link--section': Boolean(link.key) && !link.route && link.id !== 'hero',
+          }"
+          :aria-label="link.key && !link.route ? t(`kyo-web.landing.nav.aria.${link.id}`) : undefined"
+          :aria-current="link.current ? 'page' : (!link.route && active_section === link.id ? 'location' : undefined)"
           @click="onAnchorClick"
         >
-          {{ t(link.key) }}
+          {{ link.label || t(link.key) }}
         </a>
       </nav>
 
       <div class="hud-nav__actions">
+        <!-- target="_blank" IS FOR THE TRACKER, not for a new tab. Umami
+             catches a same-tab <a> that carries data-umami-event, cancels the
+             click and re-navigates with location.href, which drops `download`
+             and opens the PDF over this page. A _blank link is the one kind
+             it leaves alone, so the native download still runs, and with
+             `download` set no tab opens. -->
         <UiLink
           v-if="isResume"
           ref="cv_ref"
           :href="cv_href"
           :download="cv_filename"
+          target="_blank"
+          rel="noopener"
           variant="primary"
           size="sm"
           class="hud-nav__cv"
           :aria-label="t('kyo-web.resume.download-aria')"
+          data-umami-event="cv-download"
+          :data-umami-event-lang="cv_lang"
         >
           <AppIcon name="printer" class="hud-nav__cv-icon" />
         </UiLink>
@@ -262,6 +359,36 @@ onBeforeUnmount(() => {
           :y="cv_tip_y"
         >
           {{ t('kyo-web.resume.tooltip.download') }}
+        </CursorTooltip>
+        <!-- A BUTTON, NOT A LINK: it opens something on this page rather
+             than going anywhere. The wrapper is the sheet's anchor from the
+             `nav` fold up; see `&__share` below. -->
+        <div v-if="isBlog" class="hud-nav__share">
+          <UiButton
+            ref="share_ref"
+            variant="primary"
+            size="sm"
+            class="hud-nav__share-button"
+            aria-haspopup="dialog"
+            aria-controls="share-sheet"
+            :aria-expanded="String(share_open)"
+            :aria-label="t('kyo-web.blog.share-aria')"
+            @pointerenter="warmShare"
+            @focus="warmShare"
+            @click="toggleShare"
+          >
+            <AppIcon name="share" class="hud-nav__share-icon" />
+          </UiButton>
+          <ShareSheet v-if="share_open" @close="share_open = false" />
+        </div>
+        <!-- Silent while the sheet is open: the sheet says "Share" itself. -->
+        <CursorTooltip
+          v-if="isBlog"
+          :visible="share_tooltip_visible && !share_open"
+          :x="share_tip_x"
+          :y="share_tip_y"
+        >
+          {{ t('kyo-web.blog.share-aria') }}
         </CursorTooltip>
         <LanguageToggle class="hud-nav__lang" />
         <span class="hud-nav__separator" aria-hidden="true" />
@@ -286,7 +413,7 @@ onBeforeUnmount(() => {
           </a>
         </div>
         <UiButton
-          v-if="isLanding"
+          v-if="isLanding || isBlog"
           variant="ghost"
           size="md"
           class="hud-nav__menu-toggle"
@@ -403,12 +530,22 @@ onBeforeUnmount(() => {
     transform: translateY(0.1em);
   }
 
+  /*
+   * THE BAR FOLDS INTO THE DRAWER AT `nav` (700px), NOT AT `md`.
+   *
+   * It used to fold at 1024px, so every tablet and every laptop window under
+   * that width got a phone's hamburger over a bar with room to spare — the only
+   * links it has to hold above the fold are HOME and BLOG, since the chip owns
+   * the landing's sections. The owner moved it. Every rule in this file that
+   * switches between the bar and the drawer keys off the same `nav` breakpoint,
+   * and nav.spec.js asserts both sides of the line.
+   */
   &__links {
     display: none;
     gap: 1.25rem;
     justify-content: flex-start;
 
-    @include min-media-query(md) {
+    @include min-media-query(nav) {
       display: inline-flex;
       padding-left: 2rem;
     }
@@ -424,6 +561,12 @@ onBeforeUnmount(() => {
     text-decoration: none;
     font-size: var(--fs-300);
     letter-spacing: 0.08em;
+    /* The casing is a property of the NAV, not of the copy. Every landing
+       label was already capitalised in the catalogue; the blog links reuse
+       the breadcrumb strings, which are title case because a breadcrumb is,
+       and a second all-caps copy of "Blog" in the eager catalogue is main
+       bundle bytes for every visitor to buy the same word twice. */
+    text-transform: uppercase;
     padding: 0.4rem 0.2rem;
     transition: color 0.2s ease;
 
@@ -464,7 +607,7 @@ onBeforeUnmount(() => {
     gap: 0.5rem;
     justify-self: end;
 
-    @include min-media-query(md) {
+    @include min-media-query(nav) {
       gap: 0.75rem;
     }
   }
@@ -475,7 +618,7 @@ onBeforeUnmount(() => {
     height: 1.1rem;
     background: var(--clr-border-100);
 
-    @include min-media-query(md) {
+    @include min-media-query(nav) {
       display: block;
     }
   }
@@ -483,7 +626,7 @@ onBeforeUnmount(() => {
   &__social-group {
     display: none;
 
-    @include min-media-query(md) {
+    @include min-media-query(nav) {
       display: inline-flex;
       gap: 0.15rem;
     }
@@ -495,7 +638,7 @@ onBeforeUnmount(() => {
     text-decoration: none;
     transition: border-color 0.2s ease, color 0.2s ease;
 
-    @include min-media-query(md) {
+    @include min-media-query(nav) {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -521,16 +664,44 @@ onBeforeUnmount(() => {
      hand-rolled box drifted from the toggle on every one of those. Deltas are
      only what an icon-only button needs: square padding, the neutral icon
      colour the toggle also layers over `primary`, and the 44px tap target the
-     toggle uses below md. It never hides — this is the page's only download. */
-  &__cv {
+     toggle uses below md. It never hides — this is the page's only download.
+     The blog's share button is the same box on the same terms, so the two
+     page actions are one rule and cannot drift apart either.
+     The 24px floor is WCAG 2.5.8's: the medium type tier (1024-1199px) sets
+     the icon at 12px, and padding plus border then came to 23.6px. */
+  &__cv,
+  &__share-button {
     color: var(--clr-neutral-50);
+    min-height: 24px;
     padding-left: 0.55rem;
     padding-right: 0.55rem;
 
-    @include max-media-query(md) {
+    @include max-media-query(nav) {
       height: 44px;
       min-height: 44px;
     }
+  }
+
+  /* Open is a state, and state is what the accent is for: the button's rule
+     takes it while its sheet is down, so the reader can see which control the
+     panel belongs to. The fill stays the page's until a hover inverts it. */
+  &__share-button[aria-expanded="true"] {
+    border-color: var(--clr-primary-100);
+  }
+
+  /*
+   * THE SHEET'S ANCHOR, AND ONLY FROM THE FOLD UP — share-sheet.vue holds the
+   * other half of this. From `nav` the wrapper is positioned, so the sheet
+   * hangs off the button's right edge like the language menu. Below it the
+   * wrapper stays static, which makes the sticky header the sheet's containing
+   * block, and the sheet drops under the whole bar like the drawer does.
+   * inline-flex for the language toggle's reason: no line-box leading under
+   * the button.
+   */
+  &__share {
+    display: inline-flex;
+
+    @include min-media-query(nav) { position: relative; }
   }
 
   /* Inline SVG, NOT a Nerd Font glyph: an icon font only paints once that exact
@@ -539,7 +710,8 @@ onBeforeUnmount(() => {
      text box (fs-200, line-height 1) so both buttons stay the same height.
      The fill/stroke flip overrides AppIcon's stroked default — this glyph is
      the solid Font Awesome shape, matching the GitHub/LinkedIn icons. */
-  &__cv &__cv-icon {
+  &__cv &__cv-icon,
+  &__share-button &__share-icon {
     font-size: var(--fs-200);
     fill: currentColor;
     stroke: none;
@@ -547,11 +719,11 @@ onBeforeUnmount(() => {
 
   
   &__menu-toggle {
-    @include min-media-query(md) {
+    @include min-media-query(nav) {
       display: none;
     }
 
-    @include max-media-query(md) {
+    @include max-media-query(nav) {
       width: 44px;
       height: 44px;
       padding: 0;
@@ -565,9 +737,25 @@ onBeforeUnmount(() => {
     }
   }
 
-  
+
+  /*
+   * THE SECTION ANCHORS MOVE TO THE CHIP ON DESKTOP — but HOME stays.
+   *
+   * The chip owns navigating BETWEEN sections; the bar keeps the one link that
+   * is a destination rather than a position, so there is always a way back to
+   * the top that does not require opening anything. `hero` is therefore excluded
+   * from the rule while the other five are hidden.
+   *
+   * HIDDEN, NOT REMOVED, and only above `nav`: below that the drawer is still
+   * how you move around, so the markup has to survive. Deleting it would take
+   * the sections off mobile entirely.
+   */
+  .hud-nav__link--section {
+    @include min-media-query(nav) { display: none; }
+  }
+
   &--open .hud-nav__links {
-    @include max-media-query(md) {
+    @include max-media-query(nav) {
       display: flex;
       flex-direction: column;
       gap: 0;

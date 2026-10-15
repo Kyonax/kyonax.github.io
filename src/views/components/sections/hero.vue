@@ -8,7 +8,6 @@ import useCursorTooltip from '@composables/use-cursor-tooltip';
 import useInViewport from '@composables/use-in-viewport';
 import useObfuscatedEmail from '@composables/use-obfuscated-email';
 import { vProseLinks } from '@composables/use-prose-links';
-import { warmRoute } from '@composables/use-warm-route';
 import HeroVisual from '@sections/hero-visual.vue';
 import { RESUME_ROUTE_BY_LOCALE } from '@seo/routes';
 import AppIcon from '@ui/app-icon.vue';
@@ -35,11 +34,8 @@ const { t, locale } = useI18n();
    content in crawlable HTML (and offers the PDF from its own nav), so sending
    visitors there keeps them on-site and gives the CV a rankable destination. */
 const cv_href = computed(() => RESUME_ROUTE_BY_LOCALE[locale.value] || RESUME_ROUTE_BY_LOCALE.en);
-
-/* Hover/focus is a strong signal the visitor is about to open the CV, so the
-   resume document is prefetched before the click. warmRoute dedups, so binding
-   it on every pointerenter costs nothing after the first. */
-const warmResume = () => warmRoute(cv_href.value);
+/* No warm-on-hover handler here: the site-wide link warmer (main.js,
+   use-link-warmer.js) warms this link like every other route link. */
 const cv_label = computed(() =>
   t(locale.value === 'es' ? 'kyo-web.content-data.download.cv-es' : 'kyo-web.content-data.download.cv-en'),
 );
@@ -171,8 +167,6 @@ useInViewport(section_ref);
             :href="cv_href"
             variant="cyber"
             size="lg"
-            @pointerenter="warmResume"
-            @focus="warmResume"
           >
             {{ cv_label }}
           </UiLink>

@@ -3,8 +3,8 @@
  * Distributed under the terms of GPL-2.0-only — see LICENSE.
  */
 
-import { TRANSLATIONS } from '@data/snippets';
+import { TRANSLATIONS_CORE } from '@data/snippets-core';
 
-export const messages = TRANSLATIONS;
+export const messages = TRANSLATIONS_CORE;
 
 export default messages;

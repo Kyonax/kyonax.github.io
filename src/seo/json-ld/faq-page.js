@@ -9,7 +9,7 @@
  */
 
 import { LOCALE_URL, SITE_ORIGIN } from '@data/data';
-import { TRANSLATIONS } from '@data/snippets';
+import { TRANSLATIONS_CORE as TRANSLATIONS } from '@data/snippets-core';
 
 import { faqPageId, faqQuestionId, today,WEBSITE_ID } from './identifiers';
 import { stripHtml } from './sanitize';

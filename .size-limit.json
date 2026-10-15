@@ -21,30 +21,30 @@
     "gzip": true
   },
   {
-    "name": "resume view chunk (JS+CSS)",
+    "name": "resume view chunk (JS+CSS, carries its own copy)",
     "path": [
       "dist/assets/resume-*.js",
       "dist/assets/resume-*.css"
     ],
-    "limit": "3 KB",
+    "limit": "5 KB",
     "gzip": true
   },
   {
-    "name": "privacy view chunk (JS+CSS)",
+    "name": "privacy view chunk (JS+CSS, carries its own copy)",
     "path": [
       "dist/assets/privacy-*.js",
       "dist/assets/privacy-*.css"
     ],
-    "limit": "2 KB",
+    "limit": "3.5 KB",
     "gzip": true
   },
   {
-    "name": "now-projects chunk (JS+CSS)",
+    "name": "now-projects chunk (JS+CSS, carries the project descriptions)",
     "path": [
       "dist/assets/now-projects-section-*.js",
       "dist/assets/now-projects-section-*.css"
     ],
-    "limit": "11 KB",
+    "limit": "19.5 KB",
     "gzip": true
   },
   {
@@ -57,12 +57,12 @@
     "gzip": true
   },
   {
-    "name": "image-viewer chunk (JS+CSS)",
+    "name": "image-viewer chunk (JS+CSS: the picture plus the zoom toolbar, keys, drag and focus handling; 4.89 kB measured 2026-09-12)",
     "path": [
       "dist/assets/image-viewer-*.js",
       "dist/assets/image-viewer-*.css"
     ],
-    "limit": "3.5 KB",
+    "limit": "5.25 KB",
     "gzip": true
   },
   {
@@ -93,25 +93,101 @@
     "gzip": true
   },
   {
-    "name": "blog index chunk",
+    "name": "blog index chunk (archive + the landing hero: h1, chip, galaxy slot; the archive search: prerendered field, ?search= URL state, status line, All Posts filter; the compact page-N header; the cover pictures: blog-picture.vue, the srcset builder and the glob's URL map of every cover width, about 0.09 kB more per cover, so this chunk grows with the corpus; 8.18 kB measured 2026-09-15 on vite 8 with 7 covers, 7.57 before the pictures; raised from 7.25 KB because splitting the search out would put a chunk on the critical path of every ?search= link)",
     "path": [
       "dist/assets/blog-*.{js,css}",
       "!dist/assets/blog-post-*",
-      "!dist/assets/blog-footer-*"
+      "!dist/assets/blog-footer-*",
+      "!dist/assets/blog-marquee-*",
+      "!dist/assets/blog-pipeline-band-*",
+      "!dist/assets/blog-support-*",
+      "!dist/assets/blog-series-*"
     ],
+    "limit": "8.5 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog marquee (the corpus ticker, one async chunk; 1.64 KB measured 2026-09-11)",
+    "path": "dist/assets/blog-marquee-*.{js,css}",
+    "limit": "2 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog pipeline band (three SMIL drawings + the made-with line, one async chunk; 3.44 KB measured 2026-09-11)",
+    "path": "dist/assets/blog-pipeline-band-*.{js,css}",
+    "limit": "4 KB",
+    "gzip": true
+  },
+  {
+    "name": "share sheet (the nav's share popup: six networks, copy, the system sheet; fetched on first open, warmed on intent; 5.80 kB measured 2026-09-12)",
+    "path": "dist/assets/share-sheet-*.{js,css}",
     "limit": "6 KB",
     "gzip": true
   },
   {
-    "name": "blog post chunk",
-    "path": "dist/assets/blog-post-*.{js,css}",
-    "limit": "4 KB",
+    "name": "article enhance (the WRAP toggles and the equation fit; fetched after an article mounts; 1.24 kB measured 2026-09-12)",
+    "path": "dist/assets/article-enhance-*.js",
+    "limit": "1.5 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog support (the article's support block; fetched only once SUPPORT.url is set)",
+    "path": "dist/assets/blog-support-*.{js,css}",
+    "limit": "1 KB",
+    "gzip": true
+  },
+  {
+    "name": "ascii galaxy (the hero's animated pre, one async chunk; 1.78 KB measured 2026-09-11)",
+    "path": "dist/assets/ascii-galaxy-*.{js,css}",
+    "limit": "2 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog post chunk (JS+CSS: host styles for the TOC, charts, the whole-note footnote, the phone code wrap and its WRAP look, the phone math size; the author line; tags, h-entry, the support mount; the Lane 5.3 host rules; 6.72 kB measured 2026-09-12)",
+    "path": [
+      "dist/assets/blog-post-*.{js,css}",
+      "!dist/assets/blog-post-nav-*"
+    ],
+    "limit": "6.75 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog post nav (the related and previous/next reading links at the article's foot; split out of the post chunk and idle-hydrated; 1.59 kB measured 2026-09-14 on vite 8)",
+    "path": "dist/assets/blog-post-nav-*.{js,css}",
+    "limit": "2 KB",
+    "gzip": true
+  },
+  {
+    "name": "blog series panel (the series list at the article's foot; split out of the post chunk and idle-hydrated; 1.14 kB measured 2026-09-14 on vite 8)",
+    "path": "dist/assets/blog-series-*.{js,css}",
+    "limit": "1.5 KB",
+    "gzip": true
+  },
+  {
+    "name": "chart picture (turns a chart into a zoomable image; fetched on first tap)",
+    "path": "dist/assets/chart-picture-*.js",
+    "limit": "1 KB",
+    "gzip": true
+  },
+  {
+    "name": "analytics opt-out (the privacy page's toggle, one async chunk; 667 B measured 2026-09-11)",
+    "path": "dist/assets/analytics-opt-out-*.{js,css}",
+    "limit": "1 KB",
     "gzip": true
   },
   {
     "name": "blog footer chunk",
     "path": "dist/assets/blog-footer-*.{js,css}",
-    "limit": "1.5 KB",
+    "limit": "2.5 KB",
+    "gzip": true
+  },
+  {
+    "name": "section rail (the chip, one async chunk: the jump re-aimed where it lands, the press that holds the chip, the arrow keys, the nested list; 3.30 kB measured 2026-09-15, 2.45 before)",
+    "path": [
+      "dist/assets/section-rail-*.js",
+      "dist/assets/section-rail-*.css"
+    ],
+    "limit": "3.5 KB",
     "gzip": true
   }
 ]

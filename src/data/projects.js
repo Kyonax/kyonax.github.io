@@ -86,7 +86,7 @@ export const PROJECTS = {
       en: 'TypeScript CLI on npm that converts Emacs Org-mode files into static HTML for blogs and sites.',
       es: 'CLI en TypeScript en npm que convierte Org-mode a HTML estático para blogs y sitios.',
     },
-    url: 'https://github.com/kyonax/org2html',
+    url: 'https://github.com/Kyonax/org2html',
     featured: true,
     status: 'IN_PROGRESS',
     version: 'v0.1.0',

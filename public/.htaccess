@@ -64,6 +64,13 @@ AddDefaultCharset UTF-8
   <FilesMatch "-[A-Za-z0-9_-]{8}\.(js|css|woff2|avif|webp|jpg|jpeg|png|svg|gif|ico)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
+  # The blog's Style Book and o2h.js under their PLAIN names. Articles now link
+  # the content-hashed copies sync-blog.mjs writes (/blog/style-book-<hash>.css,
+  # /blog/o2h-<hash>.js: immutable by the rule above); the plain names stay one
+  # release for pages cached before the switch. No rule matched them before.
+  <FilesMatch "^(style-book\.css|o2h\.js)$">
+    Header set Cache-Control "public, max-age=300, must-revalidate"
+  </FilesMatch>
   # Apex-level static images: 30 days
   <FilesMatch "^(og-banner|favicon)\.(jpg|jpeg|png|svg|ico)$">
     Header set Cache-Control "public, max-age=2592000"
@@ -83,6 +90,9 @@ AddDefaultCharset UTF-8
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
   # Partial CSP: no script-src — the deferred-CSS onload handlers need inline execution.
+  # A future script-src must also allow 'inline-speculation-rules': every page
+  # carries an inline <script type="speculationrules"> (vite.config.js), and
+  # without it Chromium drops the rules and prerenders nothing.
   Header always set Content-Security-Policy "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
   Header always set Cross-Origin-Opener-Policy "same-origin"
 
@@ -111,7 +121,7 @@ DirectoryIndex index.html
 
 # === Error pages ============================================================
 # Branded cyberpunk error pages live in /error-pages/. Each is standalone HTML
-# under 6 KB with inline CSS, noindex+nofollow, EN+ES copy, and a redirect
+# under 7 KB with inline CSS and JS, noindex+nofollow, EN+ES copy, and a redirect
 # list back into the site. The 404 surface replaces the SPA-fallback wiring
 # that previously served index.html on every miss.
 ErrorDocument 400 /error-pages/400.html

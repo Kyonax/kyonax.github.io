@@ -616,30 +616,21 @@ On click, if consent isn't granted it opens an **in-facade consent modal**
 z-index:4`, 80% black + `blur(6px)`) containing a `__consent-card`
 (neutral-500, primary border) with title, body, and Decline/Accept buttons
 (SpaceMono uppercase; accept is primary-tinted). Escape or Decline dismisses;
-Accept persists `kyo:consent=granted`, updates gtag, and mounts the
+Accept persists `kyo:yt-consent=granted` and mounts the
 `youtube-nocookie.com` iframe. Focus moves to Decline on open, to the iframe on
-mount.
+mount. This prompt is about YouTube, not analytics: the site has no cookie
+banner, because its analytics (Umami) sets no cookies — see
+`docs/analytics.md`.
 
-### 10.7 Cookie consent banner — `components/cookie-consent.vue`
-
-A **non-modal** pop-up (`role=dialog aria-modal=false`), bottom-anchored toast:
-`position:fixed; bottom/left/right:1rem; z-index:900; max-width:520px`,
-margin-left:auto (right-aligned on desktop). 88% neutral bg + `blur(8px)`,
-hairline border, drop shadow, SpaceMono. `__copy` + a primary privacy `__link`,
-and a right-aligned `__actions` row of two `__btn`s: `--ghost` (Decline,
-autofocused) and `--primary` (Accept, filled yellow). Both flip to filled-yellow
-on hover/focus; focus adds a neutral outline. Escape declines. Only shown when
-no prior decision is stored; gtag is injected lazily on the user's choice.
-
-### 10.8 Cursor tooltips (teleported pop-ups)
+### 10.7 Cursor tooltips (teleported pop-ups)
 
 See §7.9 (`.kyo-cursor-tooltip`). Hover captions that follow the pointer,
 teleported to `<body>`, used on the hero's CCS/ORCID tags and the ZeroNet
 prose link (hero + experience).
 
-**Overlay z-index ladder:** cursor tooltip `9999` > skip-link `1000` > cookie
-banner `900` > modal backdrop `200` > mobile drawer chrome `100` (within nav) >
-sticky nav `50` > hero content `1–2` > hud-deco `0` > flares/glows `-1/-2`.
+**Overlay z-index ladder:** cursor tooltip `9999` > skip-link `1000` > modal
+backdrop `200` > mobile drawer chrome `100` (within nav) > sticky nav `50` >
+hero content `1–2` > hud-deco `0` > flares/glows `-1/-2`.
 
 ---
 
@@ -967,7 +958,7 @@ Mobile-first. Layouts collapse to single column on phones and expand at
   glow was rewritten to `filter: drop-shadow` + opacity pulse to dodge Safari
   per-frame CPU rasterization.
 - **`transform: translateZ(0)` + `will-change`** promote every `backdrop-filter`
-  surface (nav, modals, tooltips, badges, cookie banner) to its own GPU layer.
+  surface (nav, modals, tooltips, badges) to its own GPU layer.
 - **`contain: layout paint`** + **`isolation: isolate`** on cards, tiles,
   countdowns, stat boxes, and image frames to scope reflow/repaint and stacking.
 - **Viewport-gated flares** — `.element-flare` runs only under

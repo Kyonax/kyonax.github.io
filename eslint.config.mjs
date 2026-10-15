@@ -153,6 +153,14 @@ export default [
       '.cache/**',
       'public/**',
       'src/assets/**',
+      /* Plans carry design generators (Node scripts whose output is the
+         validated artboard); they are specs, never shipped, and a lint
+         fix would have to be proven byte-identical in its output. */
+      'docs/plans/**',
+      /* Engine inputs, not site code: the kitchen-sink post splices exact
+         line ranges out of its include files (:lines "3-9"), so a lint fix
+         would silently change what the article renders. */
+      'tests/fixtures/**',
     ],
   },
 
@@ -180,9 +188,9 @@ export default [
     rules: ccsBaseRules,
   },
 
-  // ── Node-only files (scripts/, vite.config.js) ──────────
+  // ── Node-only files (scripts/, vite.config.js, playwright.config.js) ────
   {
-    files: ['scripts/**/*.{js,mjs}', 'vite.config.js'],
+    files: ['scripts/**/*.{js,mjs}', 'vite.config.js', 'playwright.config.js'],
     languageOptions: {
       globals: {
         ...globals.node,

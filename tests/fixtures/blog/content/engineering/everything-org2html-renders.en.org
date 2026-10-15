@@ -1,0 +1,901 @@
+#+TITLE: Everything org2html Renders
+#+SUBTITLE: One page, every construct the engine parses, and what each one looks like
+#+DATE: 2026-08-13
+#+AUTHOR: Cristian D. Moreno
+#+LANGUAGE: en
+#+CATEGORY: Engineering
+#+FILETAGS: :org:reference:syntax:
+#+KEYWORDS: org mode, org2html, syntax reference, org to html, static site, markup
+#+DESCRIPTION: One reference page that exercises every Org construct org2html parses, from headings, tables and code to math, embeds and includes, each shown as it renders.
+#+TRANSLATION_KEY: kitchen-sink
+#+COVER_IMAGE: /blog/media/everything-org2html-renders.png
+#+RELATED: 2026-05-15-from-org-to-ast, 2026-06-05-a-style-book-not-a-framework, 2026-05-01-why-org-mode-beats-markdown
+#+HERO_IMAGE: /blog/media/everything-org2html-renders.png
+#+HERO_ALT: Cover artwork for Everything org2html Renders
+#+HERO_CAPTION: Every block on this page began as plain text in a single Org file.
+#+SIGNOFF: Written in Org and rendered at build time, like every page on this blog.
+#+OPTIONS: toc:2 num:nil pri:t p:t c:t ^:{} -:t ':t
+#+TODO: TODO NEXT WAITING | DONE CANCELLED
+#+MACRO: kbd @@html:<kbd>$1</kbd>@@
+#+MACRO: keys @@html:<kbd>$1</kbd> then <kbd>$2</kbd>@@
+#+LINK: engine https://github.com/Kyonax/org2html/blob/8c19b203b8180ab03c97461122c531d4dae83b88/%s
+#+SETUPFILE: ../../includes/setup.org
+
+This page is a reference. Every construct org2html knows how to parse appears
+on it at least once, rendered by the same build that renders every other post
+on {{{sitename}}}. Find the family you need, read the short note above it, and
+look at the result.
+
+Nothing here was dressed by hand. Each section names the syntax that produced
+what you see, so the page doubles as a map of the source.
+
+* Headings
+
+The title at the top of this page is its only =<h1>=. Org's first level becomes
+=<h2>=, and each level after it steps down one, so the page keeps a single
+unbroken outline. The contents box at the top lists the first two levels,
+because this page sets =toc:2=.
+
+** A second-level heading
+Rendered as =<h3>=.
+
+*** A third-level heading
+Rendered as =<h4>=.
+
+**** A fourth-level heading
+Rendered as =<h5>=.
+
+***** A fifth-level heading
+Rendered as =<h6>=, which is where HTML runs out of headings.
+
+****** A sixth-level heading
+Also =<h6>=. With the title holding =<h1>=, Org's fifth and sixth levels land
+on the same element. Their classes still differ, =outline-5= against
+=outline-6=, so a stylesheet can tell them apart.
+
+******* A seventh-level heading
+Past the sixth level there is no heading element left, so a deeper headline
+becomes a list item that carries its own body, and it never joins the table of
+contents.
+
+** Task states, priorities and tags
+
+This page defines its own task sequence with
+=#+TODO: TODO NEXT WAITING | DONE CANCELLED=. States before the bar are open,
+states after it are closed, and a closed state wears a class of its own.
+Priorities can be a letter or a digit; Org hides them unless =#+OPTIONS= says
+=pri:t=. A statistics cookie counts child tasks (=[1/3]=) or checkboxes
+(=[50%]=), and a tag may carry =@= or =#=.
+
+A headline fifteen stars deep is an inline task: a boxed note inside the
+running text rather than the start of a new section. An =END= line closes it.
+
+*************** TODO [#B] Check the tag chips on a narrow screen      :mobile:
+*************** END
+
+*** NEXT [#A] Ship this reference post [1/3]            :alpha:@work:#urgent:
+**** DONE Pick the slug and the date
+**** WAITING [#1] Review the Spanish twin [50%]
+- [X] Headings through tables
+- [ ] Code through includes
+**** TODO Replace the placeholder cover
+
+** Headings that stay out of the page
+
+Three markers keep a subtree in the source and out of the output. The word
+=COMMENT= right after the stars drops a headline and everything under it. A
+=:noexport:= tag does the same when the page is built. An =:archive:= tag keeps
+the headline, so the outline still shows the subtree exists, and drops what it
+holds. The first two kinds sit directly below this paragraph, and you cannot see
+either of them. The third comes next.
+
+*** COMMENT Drafting notes for the second pass
+Tighten the heading ladder before the Spanish twin is written.
+
+*** Build log from the first draft                                :noexport:
+Seventeen warnings, every one of them about a stray macro, all fixed.
+
+*** An archived subtree                                            :archive:
+This sentence lives in the source file and nowhere else.
+
+** renderEveryConstructTheEngineKnowsWithoutAnyClientJavaScript
+
+The headline above is a single sixty-character word with nowhere to break,
+the kind a long function name produces. It is here so that a layout bug of that
+kind shows up on this page before it shows up anywhere else.
+
+* Planning and clocks
+
+Org keeps scheduling on the line right under a headline, and time tracking in
+=CLOCK:= lines and drawers. Its own exporter leaves all of that out by default;
+this page opts in with =p:t= and =c:t=.
+
+** NEXT Publish the Spanish twin
+SCHEDULED: <2026-08-17 Mon 09:00 +1w> DEADLINE: <2026-08-21 Fri ++1m -3d>
+
+That is a planning line with repeaters (=+1w= and =++1m=) and a warning period
+(=-3d=). Each timestamp keeps the text you typed and gains a machine-readable
+=datetime= attribute.
+
+** DONE Draft this page
+CLOSED: [2026-08-13 Thu 17:40]
+CLOCK: [2026-08-13 Thu 14:05]--[2026-08-13 Thu 17:40] =>  3:35
+:LOGBOOK:
+CLOCK: [2026-08-12 Wed 09:10]--[2026-08-12 Wed 11:25] =>  2:15
+CLOCK: [2026-08-11 Tue 16:00]--[2026-08-11 Tue 16:50] =>  0:50
+:END:
+:NOTES:
+A drawer holds whatever Org should keep out of the way. This one is a custom
+NOTES drawer, so it renders as a plain framed block.
+:END:
+
+A closed task carries a =CLOSED:= stamp. The =CLOCK:= line under it renders as
+a measurement, with its start, its end and its duration each in an element of
+their own. Older entries folded into a =:LOGBOOK:= drawer become an accordion
+you can open.
+
+** CANCELLED Ship a second default stylesheet
+CLOSED: [2026-08-10 Mon 12:00]
+
+* Paragraph furniture
+
+Lines that start with a colon and a space are fixed-width text, kept exactly as
+typed:
+
+: $ org2html build content -o dist/blog --include-root includes
+: ✓ content/engineering/everything-org2html-renders.en.org
+
+Five or more dashes on a line of their own draw a rule, and
+=#+ATTR_HTML: :class= picks one of three variants: dashed, tick and boxed-x.
+
+-----
+
+#+ATTR_HTML: :class org-hr--dashed
+-----
+
+#+ATTR_HTML: :class org-hr--tick
+-----
+
+#+ATTR_HTML: :class org-hr--boxed-x
+-----
+
+Two backslashes end a line without ending the paragraph,\\
+so this sentence starts on a new line,\\
+and so does this one.
+
+With =-:t=, Org's default, three hyphens make an em dash --- like this ---
+while two make an en dash for a range such as 2020--2026, and three dots make an
+ellipsis... With =':t=, "straight quotes" and 'single ones' curl, and so does
+the apostrophe in it's. A =\-= marks a soft hyphen, so a long word such as
+extra\-ordinarily\-long\-winded breaks where you allowed it and nowhere else.
+
+* Lists
+
+A dash, a plus sign and an indented asterisk all start unordered items, and
+indentation nests them:
+
+- A dash starts an item
++ So does a plus sign
+  * An indented asterisk nests one level down
+    - And a deeper item nests a third level
+
+Ordered items take a number and a period:
+
+1. First, with a period
+2. Second, with a period
+
+Or a number and a parenthesis:
+
+1) First, with a parenthesis
+2) Second, with a parenthesis
+
+A single blank line between items keeps them in one loose list, and a line
+indented under an item continues it:
+
+- The first loose item
+
+- The second loose item, whose text runs long enough that
+  the source wraps it onto a second line
+
+- The third loose item
+
+A =[@5]= cookie restarts the count wherever you need it:
+
+1. [@5] Fifth, because the cookie says so
+2. Sixth, counted on from there
+
+Description lists pair a term with its definition, and a definition may run
+over several lines:
+
+- Term :: A definition on one line.
+- A longer term :: A definition that keeps going past the first line of the
+  source, because the continuation is indented under its item.
+
+Checkboxes come in three states, and they nest:
+
+- [-] Publish the reference post
+  - [X] Write the English page
+  - [ ] Write the Spanish twin
+- [X] Build it with the local engine
+- [ ] Replace the placeholder cover
+
+* Tables
+
+A rule under the first row makes that row a header. A row of =<l>=, =<c>= and
+=<r10>= cookies sets each column's alignment and never renders. A row that
+starts with =/= groups columns and never renders either. A =#+TBLFM:= line
+under a table is Org's spreadsheet formula, and it renders nothing at all.
+=#+CAPTION= and =#+NAME= ride on the table, so [[tbl-heading-levels][the next
+table]] can be linked by name.
+
+#+CAPTION: Where each Org headline level lands on this page.
+#+NAME: tbl-heading-levels
+| Org level | Element | Class hook |
+|-----------+---------+------------|
+| <l>       |   <c>   |      <r10> |
+| /         |    <    |          > |
+| 1         |   h2    |  outline-1 |
+| 2         |   h3    |  outline-2 |
+| 3         |   h4    |  outline-3 |
+| 4         |   h5    |  outline-4 |
+| 5         |   h6    |  outline-5 |
+| 6         |   h6    |  outline-6 |
+#+TBLFM: $3='(concat "outline-" $1)
+
+Alignment can also ride on the rule itself: a colon at the left end, the right
+end or both ends of a segment sets that column.
+
+| Marker on the rule | Aligns | Class        |
+|:-------------------+:------:+-------------:|
+| =:---=             | left   | =org-left=   |
+| =:---:=            | centre | =org-center= |
+| =---:=             | right  | =org-right=  |
+
+Org also reads the grid tables of table.el, drawn with =+= at every corner:
+
++----------------+--------------------------+
+| Grid table     | Drawn with table.el      |
++----------------+--------------------------+
+| Border rows    | dashes, with =+= corners |
+| Rendered as    | an ordinary table        |
++----------------+--------------------------+
+
+=#+ATTR_O2H= can point at the row, the column or the single cell that carries
+the argument. The mark is structure, a class in the markup, so any stylesheet
+can decide how it looks. This table highlights its own second row, its fourth
+column and one cell:
+
+#+CAPTION: Three ways to point at part of a table.
+#+ATTR_O2H: :highlight-row 2 :highlight-col 4 :highlight-cell 2.1
+| Keyword           | Marks                        | Example               | Class                 |
+|-------------------+------------------------------+-----------------------+-----------------------|
+| =:highlight-row=  | one body row, counted from 1 | =:highlight-row 2=    | =org-row--highlight=  |
+| =:highlight-col=  | one column, header included  | =:highlight-col 4=    | =org-cell--highlight= |
+| =:highlight-cell= | one cell, as column.row      | =:highlight-cell 2.1= | =org-cell--highlight= |
+
+A table ten columns wide with one sixty-character word in it cannot fit the
+reading column. Rather than crush the columns, the engine puts every table in a
+frame that scrolls sideways. =org-wide= lets this one break out of the column
+first:
+
+#+CAPTION: The export switches this page sets, against Org's defaults and the engine's.
+#+ATTR_HTML: :class org-wide
+| Settings      | =toc= | =num= | =pri= | =p=   | =c=   | =^=  | =-= | ='=   | In one word                                                  |
+|---------------+-------+-------+-------+-------+-------+------+-----+-------+--------------------------------------------------------------|
+| Emacs default | =t=   | =t=   | =nil= | =nil= | =nil= | =t=  | =t= | =nil= | traditional                                                  |
+| org2html      | off   | off   | =nil= | =nil= | =nil= | ={}= | =t= | =nil= | cautious                                                     |
+| This page     | =2=   | =nil= | =t=   | =t=   | =t=   | ={}= | =t= | =t=   | renderEveryConstructTheEngineKnowsWithoutAnyClientJavaScript |
+
+=org-full-bleed= runs a table to both edges of the window:
+
+#+CAPTION: What the engine writes beside every page it builds.
+#+ATTR_HTML: :class org-full-bleed
+| File                   | What it is                           | Who reads it          |
+|------------------------+--------------------------------------+-----------------------|
+| =index.html=           | the page itself                      | the browser           |
+| =index.vue=            | the same page as a Vue component     | a Vue host            |
+| =metadata.json=        | the document's keywords and counts   | the site's indexes    |
+| =og-metadata.json=     | the social card fields               | the page head         |
+| =relations.json=       | breadcrumb, series and related posts | the site's navigation |
+| =structured-data.json= | the JSON-LD graph                    | search engines        |
+
+=#+ATTR_O2H: :chart bar= draws a table as a bar chart while the site builds. The
+drawing is a picture of the table, and the table travels inside the figure so a
+screen reader and a crawler still get the numbers. Six bars leave each label
+about eight characters at full size, and these run to twenty-seven, so the chart
+sets every label a step smaller and wraps it onto up to three lines under its
+bar, breaking only between words.
+
+#+CAPTION: The longest unbroken runs on this page, in characters.
+#+ATTR_O2H: :chart bar :chart-axis characters :chart-label-col 1 :chart-value-col 3 :highlight-row 6
+| Stress test                 | Section  | Characters |
+|-----------------------------+----------+------------|
+| Unbreakable heading word    | Headings |         60 |
+| Single-token table cell     | Tables   |         60 |
+| Inline code and verbatim    | Inline   |         70 |
+| Bare URL in running text    | Inline   |        120 |
+| Longest line of the verse   | Blocks   |        200 |
+| Longest line of source code | Code     |        220 |
+
+* Code
+
+A source block names its language after =#+BEGIN_SRC=, and the build highlights
+it with the grammar an editor would use. Every block gets a header bar with its
+language, a copy button and line numbers. A line wider than the block scrolls
+rather than wraps:
+
+#+BEGIN_SRC javascript
+// Fourteen of the class hooks on this page, on one line exactly 220 characters wide:
+const pageHooks = ["org-inlinetask", "org-planning", "org-clock", "org-callout--danger", "org-tabs", "org-diagram", "org-embed--x", "org-hero", "org-low-level", "org-chart", "org-diff", "org-results", "org-dl", "org-ol"]
+#+END_SRC
+
+=:tangle src/lexer.ts= names the file a block belongs to, so the header shows
+=lexer.ts=. This block is sixty lines long:
+
+#+BEGIN_SRC typescript :tangle src/lexer.ts
+// A deliberately small Org lexer. The real one also handles blocks, drawers
+// and planning lines; this one only has to be long enough to scroll.
+export type TokenType = "HEADING" | "LIST_ITEM" | "TABLE_ROW" | "KEYWORD" | "BLANK" | "TEXT"
+
+export interface Token {
+  type: TokenType
+  value: string
+  line: number
+  level?: number
+}
+
+// One pattern per construct, tried in the order the loop below tests them.
+const HEADING = /^(\*+)\s+(.*)$/
+const LIST_ITEM = /^\s*(?:[-+*]|\d+[.)])\s+(.*)$/
+const TABLE_ROW = /^\s*\|/
+const KEYWORD = /^#\+(\w+):\s*(.*)$/
+
+export function tokenize(source: string): Token[] {
+  const tokens: Token[] = []
+  const lines = source.replace(/\r\n?/g, "\n").split("\n")
+
+  lines.forEach((raw, line) => {
+    const trimmed = raw.trim()
+    if (trimmed === "") {
+      tokens.push({ type: "BLANK", value: "", line })
+      return
+    }
+
+    // A headline only counts at column zero; an indented star is a bullet.
+    const heading = raw.match(HEADING) (ref:heading)
+    if (heading) {
+      tokens.push({ type: "HEADING", value: heading[2], line, level: heading[1].length })
+      return
+    }
+
+    const keyword = trimmed.match(KEYWORD)
+    if (keyword) {
+      tokens.push({ type: "KEYWORD", value: keyword[2], line })
+      return
+    }
+
+    if (TABLE_ROW.test(raw)) {
+      tokens.push({ type: "TABLE_ROW", value: trimmed, line })
+      return
+    }
+
+    const item = raw.match(LIST_ITEM)
+    tokens.push(
+      item
+        ? { type: "LIST_ITEM", value: item[1], line }
+        : { type: "TEXT", value: raw, line },
+    )
+  })
+
+  return tokens
+}
+
+// The outline is every headline, in document order.
+export const outline = (tokens: Token[]): Token[] =>
+  tokens.filter((token) => token.type === "HEADING")
+#+END_SRC
+
+The headline test sits on [[(heading)]]. That reference is a coderef: the source
+marks the line with =(ref:heading)= at its end, the label disappears from the
+block, and =[[(heading)]]= in the prose names the line it marked.
+
+A named block and its =#+RESULTS:= travel together. The result is styled as
+output rather than as one more example:
+
+#+NAME: answer
+#+BEGIN_SRC python :results output
+print(6 * 7)
+#+END_SRC
+
+#+RESULTS: answer
+#+BEGIN_EXAMPLE
+42
+#+END_EXAMPLE
+
+Rust, a diff and Emacs Lisp. A =diff= block tints its added and removed lines
+and drops the line numbers, since the diff carries its own gutter. There is no
+Emacs Lisp grammar in the highlighter, so that block ships as plain text and
+says so in its markup rather than pretending:
+
+#+BEGIN_SRC rust
+fn main() {
+    let constructs = ["heading", "table", "math"];
+    println!("{} constructs, one page", constructs.len());
+}
+#+END_SRC
+
+#+BEGIN_SRC diff
+--- a/everything-org2html-renders.en.org
++++ b/everything-org2html-renders.en.org
+@@ -17 +17 @@
+-#+OPTIONS: toc:t
++#+OPTIONS: toc:2 num:nil pri:t p:t c:t ^:{} -:t ':t
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq org-export-with-smart-quotes t
+      org-export-with-planning t)
+#+END_SRC
+
+Code can also sit inside a sentence: src_python{sum(range(10))} is inline
+source. This engine never runs code, so an inline Babel call placed here
+call_answer() adds nothing to the page.
+
+* Blocks
+
+A quote block:
+
+#+BEGIN_QUOTE
+A document is a record of decisions. The *renderer* only has to keep them.
+#+END_QUOTE
+
+=#+ATTR_HTML: :class org-quote--pull= turns a quote into a pull quote:
+
+#+ATTR_HTML: :class org-quote--pull
+#+BEGIN_QUOTE
+Decide in the build, and ship the reader a document rather than a program.
+#+END_QUOTE
+
+An example block keeps everything literally, markup and spacing included:
+
+#+BEGIN_EXAMPLE
+An example block is verbatim: *stars*, /slashes/ and ~tildes~ stay as typed,
+    and so does    the spacing.
+#+END_EXAMPLE
+
+A verse block keeps its line breaks and its leading indentation:
+
+#+BEGIN_VERSE
+Sanitize by default,
+  decide in the build,
+    and ship the reader a document, not a program.
+A verse keeps its line breaks and its indentation, so a line this long stays one line in the source and wraps only where the page runs out of room, and never where a parser decided to join it for you.
+#+END_VERSE
+
+#+BEGIN_CENTER
+A centre block, for the rare line that earns it.
+#+END_CENTER
+
+Seven admonitions share four intents. =IMPORTANT= renders as a tip, =CAUTION=
+as a warning and =ABSTRACT= as a note, each keeping its own name on the label:
+
+#+BEGIN_NOTE
+A note adds context the reader can skip.
+#+END_NOTE
+
+#+BEGIN_TIP
+A tip suggests a better way to do something.
+#+END_TIP
+
+#+BEGIN_WARNING
+A warning flags something that can go wrong.
+#+END_WARNING
+
+#+BEGIN_DANGER
+Danger is for the one mistake you cannot undo, such as building with =--no-sanitize=.
+#+END_DANGER
+
+#+BEGIN_IMPORTANT
+Important renders with the tip's colours and keeps its own label.
+#+END_IMPORTANT
+
+#+BEGIN_CAUTION
+Caution renders with the warning's colours and keeps its own label.
+#+END_CAUTION
+
+#+BEGIN_ABSTRACT
+Abstract renders with the note's colours and keeps its own label.
+#+END_ABSTRACT
+
+A block name the engine does not know becomes a =<div>= with a class of the
+same name, so =#+BEGIN_ASIDE= is styled by whatever a stylesheet says about
+=.org-aside=:
+
+#+BEGIN_ASIDE
+An aside: a generic special block, carrying its name as its class.
+#+END_ASIDE
+
+A =COMMENT= block sits between this paragraph and the next one. Nothing inside
+it reaches the page.
+
+#+BEGIN_COMMENT
+Reviewer: check every callout against the Spanish twin before merging.
+#+END_COMMENT
+
+A =#+BEGIN_JSONLD= block is not content at all. It joins the page's structured
+data, so it describes this page to a search engine without a reader ever
+scrolling past it. One sits right here.
+
+#+BEGIN_JSONLD
+{
+  "about": {
+    "@type": "SoftwareSourceCode",
+    "name": "org2html",
+    "codeRepository": "https://github.com/Kyonax/org2html",
+    "programmingLanguage": "TypeScript"
+  }
+}
+#+END_JSONLD
+
+A dynamic block, opened with =#+BEGIN:= and a name, holds whatever Emacs last
+generated into it. This one is a column view of the tasks on this page, and its
+captured table renders like any other:
+
+#+BEGIN: columnview :hlines 1 :id global :format "%ITEM(Task) %TODO(State) %PRIORITY(Priority)"
+| Task                          | State   | Priority |
+|-------------------------------+---------+----------|
+| Ship this reference post      | NEXT    | A        |
+| Pick the slug and the date    | DONE    |          |
+| Review the Spanish twin       | WAITING | 1        |
+| Replace the placeholder cover | TODO    |          |
+#+END:
+
+=#+BEGIN_TABS= shows several alternatives in one place. Each =#+TAB:= line opens
+a panel that can hold any block. With scripting off, every panel shows, one
+after another:
+
+#+BEGIN_TABS
+#+TAB: Quote
+#+BEGIN_QUOTE
+A tab can hold any block the engine renders, not only a paragraph.
+#+END_QUOTE
+#+TAB: Example
+#+BEGIN_EXAMPLE
+$ org2html build content -o dist/blog
+#+END_EXAMPLE
+#+TAB: Table
+| Panel   | Holds            |
+|---------+------------------|
+| Quote   | a quote block    |
+| Example | an example block |
+| Table   | this table       |
+#+END_TABS
+
+* Figures and media
+
+An image link alone on its line, with a =#+CAPTION=, becomes a figure.
+=#+NAME= gives it an anchor, so [[fig-main-figure][the main figure]] can be
+linked by name, and =#+ATTR_O2H: :main t= marks it as the image that stands
+for the whole page.
+
+#+CAPTION: A captioned figure, named and marked as the page's main image.
+#+NAME: fig-main-figure
+#+ATTR_O2H: :main t
+[[/blog/media/from-org-to-ast.png][Placeholder cover for From Org to AST]]
+
+Without a caption it is still a figure, just an unlabelled one:
+
+[[/blog/media/build-time-math.png][Placeholder cover for Mathematics at Build Time]]
+
+An image inside a sentence, like this tiny gradient
+[[/blog/media/sample.png][a tiny colour gradient]], stays inline.
+
+=org-wide= breaks a figure out of the reading column, and =org-full-bleed= runs
+it to both edges of the window:
+
+#+CAPTION: A wide figure.
+#+ATTR_HTML: :class org-wide
+[[/blog/media/privacy-embeds.png][Placeholder cover for Embeds That Respect the Reader]]
+
+#+CAPTION: A full-bleed figure.
+#+ATTR_HTML: :class org-full-bleed
+[[/blog/media/shipping-static.png][Placeholder cover for Shipping a Static Site That Stays Fast]]
+
+=org-figure--bracket= and =org-figure--hatch= add the Style Book's two figure
+decorations:
+
+#+CAPTION: A bracketed figure.
+#+ATTR_HTML: :class org-figure--bracket
+[[/blog/media/a-style-book.png][Placeholder cover for A Style Book, Not a Framework]]
+
+#+CAPTION: A hatched figure.
+#+ATTR_HTML: :class org-figure--hatch
+[[/blog/media/from-org-to-ast.png][Placeholder cover for From Org to AST]]
+
+The remaining media arrive through =#+BEGIN_EXPORT html= blocks, and every one
+of them passes through the sanitizer first. A row of images inside
+=.org-carousel-strip= is a carousel that scrolls and snaps with CSS alone; the
+runtime adds buttons and dots when scripting is on:
+
+#+BEGIN_EXPORT html
+<div class="org-carousel-strip">
+  <img src="/blog/media/from-org-to-ast.png" alt="Placeholder cover for From Org to AST"
+       width="1280" height="720" loading="lazy" decoding="async">
+  <img src="/blog/media/privacy-embeds.png" alt="Placeholder cover for Embeds That Respect the Reader"
+       width="1280" height="720" loading="lazy" decoding="async">
+  <img src="/blog/media/shipping-static.png" alt="Placeholder cover for Shipping a Static Site That Stays Fast"
+       width="1280" height="720" loading="lazy" decoding="async">
+</div>
+#+END_EXPORT
+
+A diagram is authored SVG that carries classes and no colours of its own, so it
+follows the Style Book. It is drawn 720 units wide and never shrinks below
+700 pixels; on a narrow screen the frame scrolls instead, and with scripting on
+it becomes a stage you can drag and zoom:
+
+#+BEGIN_EXPORT html
+<figure class="org-diagram">
+<div class="org-diagram-scroll">
+<svg class="org-diagram-svg" viewBox="0 0 720 200" role="img" aria-label="The org2html pipeline, from Org source to sanitized HTML">
+<title>The org2html pipeline</title>
+<defs>
+<marker id="kitchen-sink-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto">
+<path class="org-diagram-arrow" d="M0 0 L8 4 L0 8 Z"/>
+</marker>
+</defs>
+<text class="org-diagram-lane" x="24" y="30">AT BUILD TIME</text>
+<rect class="org-diagram-band" x="12" y="44" width="696" height="112"/>
+<g class="org-diagram-node"><rect x="24" y="72" width="104" height="56"/><text class="org-diagram-label" x="76" y="97" text-anchor="middle">RESOLVE</text><text class="org-diagram-sub" x="76" y="113" text-anchor="middle">includes</text></g>
+<g class="org-diagram-node"><rect x="160" y="72" width="104" height="56"/><text class="org-diagram-label" x="212" y="97" text-anchor="middle">TOKENIZE</text><text class="org-diagram-sub" x="212" y="113" text-anchor="middle">lines</text></g>
+<g class="org-diagram-node"><rect x="296" y="72" width="104" height="56"/><text class="org-diagram-label" x="348" y="97" text-anchor="middle">PARSE</text><text class="org-diagram-sub" x="348" y="113" text-anchor="middle">a tree</text></g>
+<g class="org-diagram-node"><rect x="432" y="72" width="104" height="56"/><text class="org-diagram-label" x="484" y="97" text-anchor="middle">RENDER</text><text class="org-diagram-sub" x="484" y="113" text-anchor="middle">HTML</text></g>
+<g class="org-diagram-node is-highlight"><rect x="568" y="72" width="104" height="56"/><text class="org-diagram-label" x="620" y="97" text-anchor="middle">SANITIZE</text><text class="org-diagram-sub" x="620" y="113" text-anchor="middle">by default</text></g>
+<path class="org-diagram-edge" d="M128 100 H158" marker-end="url(#kitchen-sink-arrow)"/>
+<path class="org-diagram-edge" d="M264 100 H294" marker-end="url(#kitchen-sink-arrow)"/>
+<path class="org-diagram-edge" d="M400 100 H430" marker-end="url(#kitchen-sink-arrow)"/>
+<path class="org-diagram-edge is-highlight" d="M536 100 H566" marker-end="url(#kitchen-sink-arrow)"/>
+<text class="org-diagram-note" x="24" y="182">Every step runs once, on the machine that builds the site.</text>
+</svg>
+</div>
+<figcaption class="org-diagram-caption">The pipeline behind this page, drawn as authored SVG.</figcaption>
+</figure>
+#+END_EXPORT
+
+A =<video>= keeps its native controls in the served page, so it plays with
+scripting off, and the runtime then swaps in the Style Book's own controls; an
+=<audio>= keeps the browser's. ~preload="none"~ means nothing is fetched until
+you press play. The clip and the sound are CC0 samples from MDN's shared assets.
+
+#+BEGIN_EXPORT html
+<video controls preload="none" width="960" height="540" poster="/blog/media/everything-org2html-renders.png">
+  <source src="https://mdn.github.io/shared-assets/videos/flower.mp4" type="video/mp4">
+  A five-second clip of a flower opening.
+</video>
+#+END_EXPORT
+
+#+BEGIN_EXPORT html
+<audio controls preload="none">
+  <source src="https://mdn.github.io/shared-assets/audio/t-rex-roar.mp3" type="audio/mpeg">
+  A short roar, as an audio sample.
+</audio>
+#+END_EXPORT
+
+Plain HTML survives too, as long as the sanitizer considers it safe: a
+disclosure, a keyboard key and an abbreviation.
+
+#+BEGIN_EXPORT html
+<details>
+  <summary>How do I export this file from Emacs?</summary>
+  <p>Press <kbd>C-c</kbd> <kbd>C-e</kbd> to open the export dispatcher. This
+  site never does: it builds from the command line with the
+  <abbr title="Org-to-HTML converter">org2html</abbr> CLI.</p>
+</details>
+#+END_EXPORT
+
+* Embeds
+
+An embed is a facade. The page carries a poster and a play target, and the
+provider's player loads only after a click, so a reader who never presses play
+never talks to the provider. The same video three ways: in the column, wide,
+and full-bleed with its channel named on the source line.
+
+{{< youtube id="jNQXAC9IVRw" title="Me at the zoo" >}}
+
+{{< youtube id="jNQXAC9IVRw" title="Me at the zoo, wide" wide="t" >}}
+
+{{< youtube id="jNQXAC9IVRw" title="Me at the zoo, full-bleed" bleed="t" channel="jawed" >}}
+
+A post from X works on the same terms. X publishes no poster, so =poster= names
+a local image; =video= names the media file, which a click mounts as a real
+=<video>= instead of a frame; =handle= names the account on the source line.
+
+{{< x src="https://x.com/kyonax_on_tech/status/2094691954227400762/video/1" title="A post from the engine's author" poster="/blog/media/privacy-embeds.png" video="https://video.twimg.com/x.mp4" handle="kyonax_on_tech" >}}
+
+A component is an inert placeholder a host can hydrate. Inside a sentence it
+stays a =<span>=, like this badge {{< badge count="3" >}}, so the paragraph is
+not split. As a block it can take its props as a JSON body:
+
+#+BEGIN_COMPONENT card :title Reference card :variant compact
+{"sections": ["headings", "tables", "math"]}
+#+END_COMPONENT
+
+* Inline
+
+** Emphasis and code
+
+Six markers: *bold*, /italic/, _underlined_, +struck through+, ~code~ and
+=verbatim=. They nest, as in */bold italic/* and _/underlined italic/_.
+Code and verbatim take their contents literally, however long:
+~tokenizeParseRenderSanitizeAndShipEveryOrgConstructToStaticHtmlAtBuild~ and
+=KITCHEN_SINK_EVERY_CONSTRUCT_THE_ENGINE_PARSES_RENDERS_WITHOUT_RUNTIME= are
+seventy characters each.
+
+** Sub- and superscripts and entities
+
+With =^:{}=, braces are required: H_{2}O and E = mc^{2} render as sub- and
+superscripts, while snake_case_names and 2^10 stay exactly as typed.
+
+Entities spell a glyph by name, so =\alpha= renders as \alpha. This sentence
+carries twelve of them: \alpha, \beta and \pi; \to, \times and \pm; \le, \ge
+and \infty; 21\deg{}C; a literal \vert{} pipe; and a non-breaking space in
+5\nbsp{}km.
+
+** Citations, targets and fuzzy links
+
+A citation keeps its key in a marked span for a host to resolve:
+[cite:@dominik2010], or several at once, [cite/t:@dominik2010;@schulte2012].
+
+A dedicated target marks a spot: <<the dedicated target>>this sentence carries
+one. A radio target marks a spot the same way, <<<radio target>>> and a link
+can jump to either.
+
+A link with no scheme is fuzzy. It finds a target, as in
+[[the dedicated target][back to the target]] and
+[[radio target][to the radio target]]; a headline, as in
+[[Math][the math section]]; or a =#+NAME=, as in
+[[fig-main-figure][the main figure]]. A star forces a headline, as in
+[[*Tables][the tables]], and a hash forces a =CUSTOM_ID=, as in
+[[#every-link-scheme][the list of link schemes]].
+
+** Every link scheme
+:PROPERTIES:
+:CUSTOM_ID: every-link-scheme
+:END:
+
+A described link, [[https://orgmode.org/manual/Hyperlinks.html][the Org manual
+on hyperlinks]], and a bare URL of 120 characters, a permalink to the lines of
+the engine that turn hyphens into dashes and curl straight quotes:
+https://github.com/Kyonax/org2html/blob/8c19b203b8180ab03c97461122c531d4dae83b88/src/renderer/html-renderer.ts#L533-L552
+
+An angle-bracketed link, <https://orgmode.org/manual/External-Links.html>; an
+email address, [[mailto:hello@example.com][hello@example.com]]; a phone number,
+[[tel:+15555550123][+1 555 555 0123]]; and an FTP server,
+[[ftp://ftp.gnu.org/gnu/emacs/][the GNU Emacs archive]].
+
+A =file:= link becomes a path on this site, as with [[file:/blog/o2h.js][the
+runtime script this page loads]]. =id:= and =roam:= links point into an Emacs
+knowledge base that does not exist on the web, so the engine renders them as
+links to nowhere, =#=, by design: [[id:5b0e3f5c-2d6a-4b8e-9a51-7f2c8d0e1a34][an
+id link]] and [[roam:Org syntax][a roam link]].
+
+=#+LINK: engine …= defines an abbreviation, so [[engine:src/parser/parser.ts][the
+parser]] expands to the full address of the engine's parser source.
+
+** Timestamps
+
+An active stamp, <2026-08-13 Thu>; an inactive one, [2026-08-13 Thu]; one with
+a time, <2026-08-13 Thu 09:30>; a time range, <2026-08-13 Thu 09:30-11:00>; a
+date range, <2026-08-13 Thu>--<2026-08-15 Sat>; and a repeater,
+<2026-08-17 Mon +1w>. Each keeps its text and gains a =datetime=.
+
+** Macros, link abbreviations and export snippets
+
+=#+MACRO:= defines a template with numbered arguments. This page defines two:
+{{{kbd(C-c C-e)}}} takes one argument and {{{keys(C-c C-e,h h)}}} takes two.
+Built-in macros read the document itself: this is {{{title}}}, by {{{author}}},
+dated {{{date}}}, filed under {{{keyword(CATEGORY)}}}, with the translation key
+{{{property(TRANSLATION_KEY)}}}. =#+SETUPFILE= brings in the macros every post
+on this blog shares, which is how {{{sitename}}} got into the first paragraph.
+
+An export snippet speaks to one backend only: @@html:<mark>this mark reached the
+page</mark>@@, and a LaTeX snippet right here @@latex:\newpage@@ was dropped.
+
+* Math
+
+Mathematics is typeset to MathML while the site builds, so the page ships no
+typesetter. Inline, with dollars, $E = mc^2$, or with parentheses,
+\(a^2 + b^2 = c^2\). On its own line, with double dollars:
+
+$$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
+
+With square brackets:
+
+\[ \int_0^1 x^2 \, dx = \frac{1}{3} \]
+
+As a numbered equation:
+
+\begin{equation}
+e^{i\pi} + 1 = 0
+\end{equation}
+
+As an aligned derivation, with a second line wider than sixty characters:
+
+\begin{align*}
+(x + 1)^2 &= x^2 + 2x + 1 \\
+          &= \sum_{k=0}^{2} \binom{2}{k} x^k + \int_0^x 0 \, dt - \lim_{n \to \infty} \frac{1}{n}
+\end{align*}
+
+And a matrix:
+
+\begin{pmatrix}
+1 & 0 \\
+0 & 1
+\end{pmatrix}
+
+A dollar sign is not always mathematics: this costs $5 and that costs $10, and
+neither amount became a formula.
+
+* Footnotes
+
+A numbered footnote[fn:1], a named one[fn:setup], one defined inline where it
+is used[fn:inline: An inline definition lives inside the reference itself.],
+and an anonymous one[fn:: No label at all, and the engine numbers it anyway.].
+Every kind lands in the same numbered list at the end of the page.
+
+[fn:1] A numbered footnote. Its body can carry a long link, such as the lines
+of the parser that read footnote references like these:
+https://github.com/Kyonax/org2html/blob/8c19b203b8180ab03c97461122c531d4dae83b88/src/parser/parser.ts#L1606-L1629
+
+[fn:setup] A named footnote, labelled =setup= in the source. Named and numbered
+footnotes share one sequence.
+
+* Includes
+
+=#+INCLUDE:= splices another file into the page before anything is parsed. The
+engine reads only from the document's own folder and from folders the build
+names with =--include-root=, so a stray path cannot publish a file nobody
+offered. These lines produced the rest of this section:
+
+#+BEGIN_EXAMPLE
+,#+INCLUDE: "../../includes/snippet.org"
+,#+INCLUDE: "../../includes/sample.js" src js
+,#+INCLUDE: "../../includes/setup.org" example
+,#+INCLUDE: "../../includes/kitchen-sink-lexer.js" src javascript :lines "3-9"
+,#+INCLUDE: "../../includes/kitchen-sink.en.org::*Only the body arrives" :only-contents t
+,#+INCLUDE: "../../includes/kitchen-sink.en.org::*A part shifted down a level" :minlevel 2
+#+END_EXAMPLE
+
+A plain include brings in Org prose, parsed as if it had been typed here:
+
+#+INCLUDE: "../../includes/snippet.org"
+
+=src js= wraps the file in a source block, highlighted like any other:
+
+#+INCLUDE: "../../includes/sample.js" src js
+
+=example= wraps it in an example block instead. This is the setup file every
+post on this blog pulls in; this page's own =#+OPTIONS= line wins over the one
+inside it:
+
+#+INCLUDE: "../../includes/setup.org" example
+
+=:lines "3-9"= takes a slice of the file, so the comments above the function
+and the export below it stay behind:
+
+#+INCLUDE: "../../includes/kitchen-sink-lexer.js" src javascript :lines "3-9"
+
+=::*Headline= picks one subtree by its title, and =:only-contents t= drops the
+headline itself, so only its body arrives:
+
+#+INCLUDE: "../../includes/kitchen-sink.en.org::*Only the body arrives" :only-contents t
+
+=:minlevel 2= shifts a subtree's headlines until the shallowest sits at level
+two, which files it under this section instead of starting a new one:
+
+#+INCLUDE: "../../includes/kitchen-sink.en.org::*A part shifted down a level" :minlevel 2
+
+* Reading the source
+
+Every construct above came from one plain-text file and a handful of small
+includes, rendered by the same build as every other post here. Open the source
+beside this page and each family lines up with its section.
