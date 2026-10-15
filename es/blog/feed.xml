@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kyonax Build in Public — Desarrollador Web en Villavicencio</title>
+    <link>https://kyonax.com/es/blog</link>
+    <description>Hola! Soy Cristian D. Moreno, desarrollador web en Villavicencio, Colombia. Hago Build in Public y escribo sobre IA, Linux y programación.</description>
+    <language>es-CO</language>
+    <lastBuildDate>Fri, 01 May 2026 00:00:00 -0500</lastBuildDate>
+    <atom:link href="https://kyonax.com/es/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Por Qué Org Mode</title>
+      <link>https://kyonax.com/es/blog/engineering/2026-05-01-por-que-org-mode</link>
+      <guid isPermaLink="true">https://kyonax.com/es/blog/engineering/2026-05-01-por-que-org-mode</guid>
+      <pubDate>Fri, 01 May 2026 00:00:00 -0500</pubDate>
+      <description>Esta es una ENTRADA PLANTILLA que demuestra las convenciones; no es contenido terminado. Reemplázala con texto real. El archivo en español es un documento propi...</description>
+    </item>
+  </channel>
+</rss>

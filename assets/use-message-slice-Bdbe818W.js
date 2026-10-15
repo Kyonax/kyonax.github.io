@@ -1,0 +1,1 @@
+import{at as e}from"./app-Bsbpikho.js";var t=t=>{let{mergeLocaleMessage:n}=e({useScope:`global`});for(let e of Object.keys(t))n(e,t[e])};export{t};

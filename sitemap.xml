@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://kyonax.com/</loc>
+        <lastmod>2026-10-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es</loc>
+        <lastmod>2026-10-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/resume</loc>
+        <lastmod>2026-10-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/resume"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/hoja-de-vida"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/resume"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/hoja-de-vida</loc>
+        <lastmod>2026-10-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/resume"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/hoja-de-vida"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/resume"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/cv/Cristian-Moreno-Senior-Software-Engineer-EN.pdf</loc>
+        <lastmod>2026-10-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://kyonax.com/cv/Cristian-Moreno-Senior-Software-Engineer-ES.pdf</loc>
+        <lastmod>2026-10-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://kyonax.com/privacy</loc>
+        <lastmod>2026-10-15</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/privacy"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/privacy"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/privacy"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/privacy</loc>
+        <lastmod>2026-10-15</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/privacy"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/privacy"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/privacy"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/blog</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/blog</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/blog/engineering/2026-05-01-why-org-mode</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-05-01-why-org-mode"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-05-01-por-que-org-mode"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-05-01-why-org-mode"/>
+    </url>
+    <url>
+        <loc>https://kyonax.com/es/blog/engineering/2026-05-01-por-que-org-mode</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://kyonax.com/blog/engineering/2026-05-01-why-org-mode"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://kyonax.com/es/blog/engineering/2026-05-01-por-que-org-mode"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://kyonax.com/blog/engineering/2026-05-01-why-org-mode"/>
+    </url>
+</urlset>

@@ -1,0 +1,18 @@
+# kyonax.com
+
+> Remote LATAM Full-Stack Developer and Senior Software Engineer building fast, high-converting web apps with Vue.js, React, and Next.js. Available to US teams.
+
+Author: Cristian D. Moreno (Kyonax)
+
+## Blog
+
+- [Kyonax Build in Public](https://kyonax.com/blog): 1 post in English
+- [Kyonax Build in Public](https://kyonax.com/es/blog): 1 artículo en español
+
+## Posts (English)
+
+- [Why Org Mode](https://kyonax.com/blog/engineering/2026-05-01-why-org-mode): This is a TEMPLATE POST demonstrating the conventions, not finished writing. Replace it with real content. Four keywords do the structural work. #+LANGUAGE sets...
+
+## Artículos (Español)
+
+- [Por Qué Org Mode](https://kyonax.com/es/blog/engineering/2026-05-01-por-que-org-mode): Esta es una ENTRADA PLANTILLA que demuestra las convenciones; no es contenido terminado. Reemplázala con texto real. El archivo en español es un documento propi...
