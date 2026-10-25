@@ -115,7 +115,7 @@
     "vite-node": "^6.0.0",
     "vite-plugin-html": "^3.2.2",
     "vite-ssg": "^28.3.0",
-    "vitest": "^4.1.4",
+    "vitest": "^4.1.12",
     "vue-eslint-parser": "^9.4.3"
   },
   "browserslist": [
